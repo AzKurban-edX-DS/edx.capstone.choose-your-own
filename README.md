@@ -1,2 +1,2 @@
-# edx.capstone.peer-grading.template
-edx.Capstone MovieLens project for Peer grading
+# edx.capstone.choose-your-own
+edx.Capstone Choose Your Own project
