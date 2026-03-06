@@ -47,3 +47,7 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+creds.powershell/
+r/creds/
+data/
+data0/
