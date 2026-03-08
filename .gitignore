@@ -51,3 +51,6 @@ creds.powershell/
 r/creds/
 data/
 data0/
+bak/
+r/support-scripts/setup0.R
+powershell/sys-env.keys.cmd
