@@ -3,6 +3,8 @@ options(timeout = max(300, getOption("timeout")))
 
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
 #> https://github.com/AzKurban-edX-DS/harvardx-movielens
+if(!require("logr")) 
+  install.packages("logr")
 
 if(!require(tidyverse))
   install.packages("tidyverse")

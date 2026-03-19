@@ -1,7 +1,10 @@
 # 21 Working with Matrices in R ------------------------------------------------
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#sec-mnist
 
-## 21.2 Case Study: MNIST ------------------------------------------
+## Setup -----------------------------------------------------------------------
+
+if(!require("logr")) 
+  install.packages("logr")
 
 if(!require(matrixStats))
   install.packages("matrixStats")
@@ -15,11 +18,48 @@ if(!require(prodlim))
 if(!require(caret))
   install.packages("caret")
 
+if(!require(randomForest))
+  install.packages("randomForest")
+
+# if(!require())
+#   install.packages("")
+
+if(!require(doParallel))
+  install.packages("doParallel")
+
 library(matrixStats)
 library(dslabs)
 library(tidyverse)
+
 library(prodlim)
 library(caret)
+library(randomForest)
+
+library(logr)
+library(doParallel)
+
+r.path <- "r"
+
+# support_scripts.folder <- "support-scripts"
+support_functions.folder <- "support-functions"
+
+# support_scripts.path <- file.path(r.src.path, support_scripts.folder)
+support_functions.path <- file.path(r.path, support_functions.folder)
+
+
+### Define Logging Functions ---------------------------------------------------
+log_func_script.file_path <- file.path(support_functions.path, "logging-functions.R")
+
+source(log_func_script.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+## 21.2 Case Study: MNIST ------------------------------------------
+
 
 mnist <- read_mnist()
 str(mnist)
@@ -133,14 +173,8 @@ x - colMeans(x)
 grid <- matrix(x[3,], 28, 28)
 grid
 
-
-
-# data(mnist_27)
-# str(mnist_27)
-
-
 image(grid)
-
+image(grid[, 28:1])
 image(1:28, 1:28, grid[, 28:1])
 
 # Do some digits require more ink to write than others? --------------------
@@ -224,20 +258,21 @@ t(scale(t(x)))
 
 ## 31.1 Case study: handwritten digit recognition ------------------------------
 
+### Sample of 1000 elements -------------------
 set.seed(1990)
 index <- sample(nrow(mnist$train$images), 10000)
-x10e3 <- mnist$train$images[index,]
-str(x10e3)
+x1e3 <- mnist$train$images[index,]
+str(x1e3)
 
-y10e3 <- factor(mnist$train$labels[index])
-str(y10e3)
+y1e3 <- factor(mnist$train$labels[index])
+str(y1e3)
 
 index <- sample(nrow(mnist$test$images), 1000)
-x_test <- mnist$test$images[index,]
-y_test <- factor(mnist$test$labels[index])
+x1e3_test <- mnist$test$images[index,]
+y1e3_test <- factor(mnist$test$labels[index])
 
-colnames(x10e3) <- 1:ncol(mnist$train$images)
-colnames(x_test) <- colnames(x10e3)
+colnames(x1e3) <- 1:ncol(mnist$train$images)
+colnames(x1e3_test) <- colnames(x1e3)
 
 
 ## 31.3 Preprocessing --------------------------------
@@ -258,8 +293,8 @@ image(matrix(1:784 %in% nzv, 28, 28))
 #> Below is an example demonstrating how to remove predictors with near-zero variance 
 #> and then center the remaining predictors:
 
-str(x10e3)  
-pp <- preProcess(x10e3, method = c("nzv", "center"))
+str(x1e3)  
+pp <- preProcess(x1e3, method = c("nzv", "center"))
 str(pp)
 
 centered_subsetted_x_test <- predict(pp, newdata = x_test)
@@ -267,3 +302,222 @@ dim(centered_subsetted_x_test)
 #> [1] 1000  252
 
 str(centered_subsetted_x_test)
+
+## 31.5 k-nearest neighbors ----------------------------------------------------
+
+### Optimizing `k` --------
+
+train_knn <- train(x1e3, y1e3, method = "knn", 
+                   preProcess = "nzv",
+                   trControl = trainControl("cv", number = 20, p = 0.95),
+                   tuneGrid = data.frame(k = seq(1, 7, 2)))
+str(train_knn)
+
+y_hat_knn <- predict(train_knn, x_test, type = "raw")
+str(y_hat_knn)
+length(y_hat_knn)
+
+mean(y_hat_knn == y_test)
+#> [1] 0.952
+
+test_result1e3 <- list(predicted = y_hat_knn,
+                              actual = y_test,
+                              img = x_test)
+
+str(test_result1e3)
+
+
+show_digit <- function(idx) {
+  
+  print_log1("predicted: %1", y_hat_knn[idx])
+  print_log1("actual: %1", y_test[idx])
+
+  grid <- matrix(x_test[idx,], 28, 28)
+  image(grid[, 28:1])
+  # image(grid)
+  #image(1:28, 1:28, grid[, 28:1])
+}
+
+show_digit(3)
+
+## Train and test on entire `mnist` dataset ------------------------------------
+
+x <- mnist$train$images
+y <- mnist$train$labels
+
+x_test <- mnist$test$images
+y_test <- mnist$test$labels
+
+colnames(x) <- 1:ncol(mnist$train$images)
+colnames(x_test) <- colnames(x)
+
+### k-nearest neighbors ----------------------------------------------------
+start_date <- print_start_date()
+train_knn <- train(x, y, method = "knn", 
+                   preProcess = "nzv",
+                   trControl = trainControl("cv", number = 20, p = 0.95),
+                   tuneGrid = data.frame(k = seq(1, 7, 2)))
+
+y_hat_knn <- predict(train_knn, x_test, type = "raw")
+print_end_date(start = start_date)
+#> Time difference of 1.510466 hours
+
+mean(y_hat_knn == y_test)
+#> [1] 0.9275
+
+### Dimension reduction with PCA
+
+library(doParallel)
+
+#### Start Do Parallel -----------------------
+nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
+nc
+
+cl <- makeCluster(nc)
+registerDoParallel(cl)
+
+#> As an example, suppose we want to retain the smallest number of PCs that explain 
+#> at least 90% of the variability:
+
+start <- print_start_date()
+pca <- prcomp(x)
+str(pca)
+
+p <- which(cumsum(pca$sdev^2) / sum(pca$sdev^2) >= 0.9)[1]
+p 
+#> [1] 87
+
+print_end_date(start)
+#> Time difference of 1.399422 mins
+
+str(y)
+y <- factor(y)
+str(y)
+
+start <- print_start_date()
+#> We can now re-run our algorithm using only these 87 transformed features:
+fit_knn_pca <- knn3(pca$x[, 1:p], y, k = train_knn$bestTune)
+print_end_date(start)
+#> Time difference of 0.01428485 secs
+
+#> A critical point when using PCA for prediction is that the PCA transformation 
+#> must be learned only from the training set. If we use the validation or test set 
+#> to compute principal components, or even to compute the means used for centering, 
+#> we inadvertently leak information from those sets into the training process, 
+#> leading to overtraining.
+
+#> To avoid this, we compute the necessary centering and rotation matrices on the training set:
+
+start <- print_start_date()
+newdata <- sweep(x_test, 2, colMeans(x)) %*% pca$rotation[, 1:p]
+y_hat_knn_pca <- predict(fit_knn_pca, newdata, type = "class")
+print_end_date(start)
+#> Time difference of 45.38669 secs
+
+stopCluster(cl)
+stopImplicitCluster()
+#### End Do Parallel -----------------------
+
+mean(y_hat_knn_pca == y_test)
+#> [1] 0.9744
+
+
+#> Here is how we modify our earlier code to let caret perform PCA during preprocessing:
+
+#### Start Do Parallel -----------------------
+nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
+nc
+
+cl <- makeCluster(nc)
+registerDoParallel(cl)
+
+start <- print_start_date()
+train_knn_pca <- train(x, y, method = "knn", 
+                       preProcess = c("nzv", "pca"),
+                       trControl = trainControl("cv", number = 20, p = 0.95,
+                                                preProcOptions = list(thresh = 0.9)),
+                       tuneGrid = data.frame(k = seq(1, 7, 2)))
+
+y_hat_knn_pca <- predict(train_knn_pca, x_test, type = "raw")
+mean(y_hat_knn_pca == y_test)
+#> [1] 0.9741
+
+print_end_date(start)
+#> Time difference of 11.14748 mins
+
+stopCluster(cl)
+stopImplicitCluster()
+#### End Do Parallel -----------------------
+
+## 31.6 Random Forest ----------------------------------------------------------
+
+#> With the random forest algorithm several parameters can be optimized, but the main one is `mtry`, 
+#> the number of predictors that are randomly selected for each tree. 
+#> This is also the only tuning parameter that the `caret` function `train` permits 
+#> when using the default implementation from the randomForest package.
+
+#### Start Do Parallel -----------------------
+nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
+nc
+
+cl <- makeCluster(nc)
+registerDoParallel(cl)
+
+start <- print_start_date()
+library(randomForest)
+
+train1e3_rf <- train(x1e3, y1e3, method = "rf", 
+                  preProcess = "nzv",
+                  tuneGrid = data.frame(mtry = seq(5, 15)))
+
+# Now that we have optimized our algorithm, we are ready to fit our final model:
+y1e3_hat_rf <- predict(train1e3_rf, x1e3_test, type = "raw")
+
+
+print_end_date(start)
+#> Time difference of 11.14748 mins
+
+stopCluster(cl)
+stopImplicitCluster()
+#### End Do Parallel -----------------------
+
+# As with `kNN`, we also achieve high accuracy:
+mean(y1e3_hat_rf == y1e3_test)
+#> [1] 0.954
+
+y_hat_rf <- predict(train1e3_rf, x_test, type = "raw")
+mean(y_hat_rf == y_test)
+#> [1] 0.9514
+
+#### Start Do Parallel -----------------------
+nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
+nc
+
+cl <- makeCluster(nc)
+registerDoParallel(cl)
+
+start <- print_start_date()
+library(randomForest)
+
+train_rf <- train(x, y, method = "rf", 
+                  preProcess = "nzv",
+                  tuneGrid = data.frame(mtry = seq(5, 15)))
+
+# Now that we have optimized our algorithm, we are ready to fit our final model:
+y_hat_rf <- predict(train_rf, x_test, type = "raw")
+
+
+print_end_date(start)
+#> Time difference of 11.14748 mins
+
+stopCluster(cl)
+stopImplicitCluster()
+#### End Do Parallel -----------------------
+
+# As with `kNN`, we also achieve high accuracy:
+mean(y_hat_rf == y_test)
+#> [1] 
+
+
+
+
