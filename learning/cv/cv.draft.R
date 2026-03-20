@@ -1,6 +1,6 @@
 # Raw Data Loading -------------------------------------------------------------
 kaggle_dataset <- "maryamlsgumel/drone-detection-dataset"
-raw_data_path <- "data/raw"
+raw_data_path <- "learning/cv/data/raw"
 # zip_file_name <- "drone-detection-dataset.zip"
 
 # full_zip_file_name <- file.path(raw_data_path, zip_file_name)

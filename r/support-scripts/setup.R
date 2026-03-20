@@ -3,29 +3,44 @@ options(timeout = max(300, getOption("timeout")))
 
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
 #> https://github.com/AzKurban-edX-DS/harvardx-movielens
-if(!require("logr")) 
-  install.packages("logr")
+if(!require(matrixStats))
+  install.packages("matrixStats")
 
+if(!require(dslabs))
+  install.packages("dslabs")
 if(!require(tidyverse))
   install.packages("tidyverse")
-
-library(tidyverse)
 
 #> `stringr` library is already included to the `tidyverse` package,
 #> there's no need to install `stringr`
 # if(!require(stringr))
 #   install.packages("stringr")
 
-# if(!require())
-#   install.packages("")
-# if(!require())
-#   install.packages("")
+if(!require("logr")) 
+  install.packages("logr")
+
+if(!require(prodlim))
+  install.packages("prodlim")
+if(!require(caret))
+  install.packages("caret")
+
+if(!require(randomForest))
+  install.packages("randomForest")
 
 if(!require(remotes))
   install.packages("remotes")
 
-# if(!require(tensorflow))
-#   remotes::install_github("rstudio/tensorflow")
+if(!require(doParallel))
+  install.packages("doParallel")
+
+if(!require(reticulate))
+  install.packages("reticulate")
+
+if(!require(keras3)) {
+  install.packages("keras3")
+  install_keras()
+}
+
 
 # if(!require(tensorflow))
 #   remotes::install_github("rstudio/tensorflow")
@@ -33,28 +48,43 @@ if(!require(remotes))
 # library(tensorflow)
 # install_tensorflow(envname = "r-tensorflow")
 
-
-if(!require(reticulate))
-  install.packages("reticulate")
-
-library(reticulate)
-
-# py_require(python_version = ">=3.11")
-reticulate::install_python(version = "3.11")
-
-if (!require("pacman")) 
+if (!require(pacman)) 
   install.packages("pacman")
+
+if(!require(imager))
+  install.packages("imager")
+
+if(!require(magick))
+  install.packages("magick")
+
+
+# if(!require())
+#   install.packages("")
+
+
+#load the packages in R
+
+library(matrixStats)
+library(dslabs)
+library(tidyverse)
+
+library(prodlim)
+library(caret)
+library(randomForest)
+
+library(logr)
+library(reticulate)
+# py_require(python_version = "3.11")
+reticulate::install_python(version = "3.11")
 
 library(pacman)
 p_load(conflicted)
 
-if(!require(keras3)) {
-  install.packages("keras3")
-  install_keras()
-}
-
 library(tensorflow)
 library(keras3)
+
+library(imager)
+library(magick)
 
 conflict_prefer("shape", "keras3", quiet = TRUE)
 conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
@@ -65,4 +95,6 @@ conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
 
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
+
+library(doParallel)
 

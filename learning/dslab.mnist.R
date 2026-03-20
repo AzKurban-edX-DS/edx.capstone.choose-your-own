@@ -38,6 +38,9 @@ library(randomForest)
 library(logr)
 library(doParallel)
 
+N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
+N_pcCores
+
 r.path <- "r"
 
 # support_scripts.folder <- "support-scripts"
@@ -460,7 +463,7 @@ stopImplicitCluster()
 nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
 nc
 
-cl <- makeCluster(nc)
+cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 start <- print_start_date()
@@ -469,53 +472,72 @@ library(randomForest)
 train1e3_rf <- train(x1e3, y1e3, method = "rf", 
                   preProcess = "nzv",
                   tuneGrid = data.frame(mtry = seq(5, 15)))
-
-# Now that we have optimized our algorithm, we are ready to fit our final model:
-y1e3_hat_rf <- predict(train1e3_rf, x1e3_test, type = "raw")
-
-
+#str(train1e3_rf)
+stopCluster(cl)
+stopImplicitCluster()
 print_end_date(start)
 #> Time difference of 11.14748 mins
 
-stopCluster(cl)
-stopImplicitCluster()
 #### End Do Parallel -----------------------
 
+plot(train1e3_rf)
+
+# Now that we have optimized our algorithm, we are ready to fit our final model:
+# y1e3_hat_rf <- predict(train1e3_rf, x1e3_test, type = "raw")
+y_hat_rf <- predict(train1e3_rf, x_test, type = "raw")
+
 # As with `kNN`, we also achieve high accuracy:
-mean(y1e3_hat_rf == y1e3_test)
+#mean(y1e3_hat_rf == y1e3_test)
 #> [1] 0.954
 
-y_hat_rf <- predict(train1e3_rf, x_test, type = "raw")
 mean(y_hat_rf == y_test)
-#> [1] 0.9514
+#> [1] 0.9518
 
-#### Start Do Parallel -----------------------
-nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
-nc
+#> By optimizing some of the other algorithm parameters, we can achieve even higher accuracy.
 
-cl <- makeCluster(nc)
-registerDoParallel(cl)
+## Testing and improving computation time --------------------------------------
 
-start <- print_start_date()
-library(randomForest)
+#> The default method for estimating accuracy used by the train function is 
+#> to test prediction on 25 bootstrap samples. 
+#> This can result in long compute times. 
 
-train_rf <- train(x, y, method = "rf", 
-                  preProcess = "nzv",
-                  tuneGrid = data.frame(mtry = seq(5, 15)))
+nzv <- nearZeroVar(x)
+str(nzv)
 
-# Now that we have optimized our algorithm, we are ready to fit our final model:
-y_hat_rf <- predict(train_rf, x_test, type = "raw")
+system.time({fit_rf <- randomForest(x[, -nzv], y,  mtry = 9)})
+#>    user  system elapsed 
+#> 1247.32    3.98 1254.93 
+
+# use this to estimate the total time for the 250 iterations. In this case it will be several hours.
 
 
-print_end_date(start)
-#> Time difference of 11.14748 mins
-
-stopCluster(cl)
-stopImplicitCluster()
+#### Start Do Parallel with Entire Dataset -----------------------
+# nc <- detectCores() - 1   # it is convention to leave 1 core for the OS
+# nc
+# 
+# cl <- makeCluster(nc)
+# registerDoParallel(cl)
+# 
+# start <- print_start_date()
+# library(randomForest)
+# 
+# train_rf <- train(x, y, method = "rf", 
+#                   preProcess = "nzv",
+#                   tuneGrid = data.frame(mtry = seq(5, 15)))
+# 
+# # Now that we have optimized our algorithm, we are ready to fit our final model:
+# y_hat_rf <- predict(train_rf, x_test, type = "raw")
+# 
+# 
+# print_end_date(start)
+# #> Time difference of 11.14748 mins
+# 
+# stopCluster(cl)
+# stopImplicitCluster()
 #### End Do Parallel -----------------------
 
 # As with `kNN`, we also achieve high accuracy:
-mean(y_hat_rf == y_test)
+# mean(y_hat_rf == y_test)
 #> [1] 
 
 
