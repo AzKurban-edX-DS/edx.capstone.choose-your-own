@@ -74,17 +74,20 @@ library(randomForest)
 
 library(logr)
 library(reticulate)
-# py_require(python_version = "3.11")
-reticulate::install_python(version = "3.11")
 
 library(pacman)
-p_load(conflicted)
 
 library(tensorflow)
 library(keras3)
 
 library(imager)
 library(magick)
+
+library(doParallel)
+
+# py_require(python_version = "3.11")
+reticulate::install_python(version = "3.11")
+p_load(conflicted)
 
 conflict_prefer("shape", "keras3", quiet = TRUE)
 conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
@@ -96,5 +99,9 @@ conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
 
-library(doParallel)
+N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
+N_pcCores
+
+
+
 
