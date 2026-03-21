@@ -47,41 +47,56 @@ kaggle_dataset <- "tarunkumarkaggle/english-alphabets-28-and-64-px-handwritten-f
 raw_data.path <- "data/raw"
 
 raw_data.folder_name <- "handwritten.enChars"
-raw_data.folder_path <- file.path(raw_data.path, raw_data.folder_name)
-raw_data.folder_path
+raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
+raw_data.chars.path
 
-kaggle_cli.download(kaggle_dataset, raw_data.folder_path)
+kaggle_cli.download(kaggle_dataset, raw_data.chars.path)
 
-A_Z.img_path <- file.path(raw_data.folder_path, "A-Z/Augmentated 28 X 28")
-A_Z.img_path
+Upper.Img28.dir_path <- file.path(raw_data.chars.path, "A-Z/Augmentated 28 X 28")
+Upper.Img28.dir_path
 
-charLabels_A_Z28 <- dir(A_Z.img_path)
-charLabels_A_Z28
+# Upper.Img28.labels <- dir(Upper.Img28.dir_path)
+# Upper.Img28.labels
 
-output_n <- length(charLabels_A_Z28)
-output_n
+Upper.Img28File.list <- img.file_path.get_list(Upper.Img28.dir_path)
+# str(Upper.Img28File.list)
 
-#list all the img files in img path
-A_Z.imgFile.list <- lapply(charLabels_A_Z28, function(label){
-  filePath.list <- list.files(file.path(A_Z.img_path, label), 
-             full.names = TRUE, 
-             pattern = "png",
-             recursive = FALSE) 
-  # lapply(filePath.list, function(filePath) {
-  #   c(filePath = filePath, label = label)
-  # })
-  
-  list(file_list = filePath.list,
-       label = label)
-})
-
-str(A_Z.imgFile.list)
-
-charLabels_A_Z28[[4]]
-# head(A_Z.imgFile.list[[1]])
-# head(A_Z.imgFile.list[[2]])
-fileList4 <- A_Z.imgFile.list[[4]]
+fileList4 <- Upper.Img28File.list[[4]]
 #str(as.data.frame(fileList4))
-#head(fileList4)
+
 head(fileList4$file_list)
 fileList4$label
+fileList4$label |> substr(1,1)
+fileList4$label |> str_sub(end = 1)
+
+lower.Img28.dir_path <- file.path(raw_data.chars.path, "a_z/Augmentation 28 X 28")
+lower.Img28.dir_path
+
+# lower.Img28.labels <- dir(lower.Img28.dir_path)
+# lower.Img28.labels
+
+lower.Img28File.list <- img.file_path.get_list(lower.Img28.dir_path)
+# str(lower.Img28File.list)
+
+file.list4 <- lower.Img28File.list[[4]]
+head(file.list4$file_path.list)
+file.list4$label
+file.list4$label |> substr(1,1)
+file.list4$label |> str_sub(end = 1)
+
+
+
+# output_n <- length(Upper.Img28.labels)
+# output_n
+
+#list all the img files in img path
+# Upper.Img28File.list <- lapply(Upper.Img28.labels, function(label){
+#   file_path.list <- list.files(file.path(Upper.Img28.dir_path, label), 
+#              full.names = TRUE, 
+#              pattern = "png",
+#              recursive = FALSE) 
+# 
+#   list(file_list = filePath.list,
+#        label = label)
+# })
+

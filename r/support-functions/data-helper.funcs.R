@@ -14,3 +14,18 @@ kaggle_cli.download <- function(dataset.path, data.local_path) {
     stop(get_log1("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.path))
   }
 }
+
+img.file_path.get_list <- function(dir_path) {
+  folder.list <- dir(dir_path)
+
+  lapply(folder.list, function(folder.name){
+    label <- folder.name |> substr(1,1)
+    file_path.list <- list.files(file.path(dir_path, label), 
+                                 full.names = TRUE, 
+                                 pattern = "png",
+                                 recursive = FALSE) 
+    
+    list(file_path.list = file_path.list,
+         label = label)
+  })
+}
