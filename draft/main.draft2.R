@@ -53,53 +53,61 @@ raw_data.folder_name <- "Vaibs.HW-Chars"
 raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
 raw_data.chars.path
 
-kaggle_cli.download(kaggle_dataset, raw_data.chars.path)
+if(!dir.exists(raw_data.chars.path)) {
+  print_log1("Downloading dataset `%1` ...", kaggle_dataset)
+  kaggle_cli.download(kaggle_dataset, raw_data.chars.path, unzip = TRUE)
+  print_log1("The Kaggle dataset has been downloaded and unzip to folder: `%1`", raw_data.chars.path)
+} else {
+  warning(get_log1("Nothing to do: directory already exists: `%1`", raw_data.chars.path))
+}
 
-Upper.Img28.dir_path <- file.path(raw_data.chars.path, "A-Z/Augmentated 28 X 28")
-Upper.Img28.dir_path
+# Remove duplicate files:
+dir.to_remove <- file.path(raw_data.chars.path, "dataset")
+dir.to_remove
 
-# Upper.Img28.labels <- dir(Upper.Img28.dir_path)
+if (dir.exists(dir.to_remove)) {
+  print_log1("Deleting the folder with duplicate files: `%1`...", dir.to_remove)
+  unlink(dir.to_remove, recursive = TRUE, force = TRUE)
+  print_log1("Directory removed: `%1`", dir.to_remove)
+} else {
+  warning(get_log1("Nothing to do: directory does not exist: `%1`", dir.to_remove))
+}
+
+# ------------------------------------------------------------------------------
+
+train_img32.dir_path <- file.path(raw_data.chars.path, "Train")
+train_img32.dir_path
+
+# Upper.Img28.labels <- dir(train_img32.dir_path)
 # Upper.Img28.labels
 
-Upper.Img28File.list <- img.file_path.get_list(Upper.Img28.dir_path)
-# str(Upper.Img28File.list)
+train_img32.file_list <- img.file_path.get_list(train_img32.dir_path)
+# str(train_img32.file_list)
 
-fileList4 <- Upper.Img28File.list[[4]]
-#str(as.data.frame(fileList4))
+fileList4 <- train_img32.file_list[[4]]
 
-head(fileList4$file_list)
+head(fileList4$file_path.list)
 fileList4$label
-fileList4$label |> substr(1,1)
-fileList4$label |> str_sub(end = 1)
 
-lower.Img28.dir_path <- file.path(raw_data.chars.path, "a_z/Augmentation 28 X 28")
-lower.Img28.dir_path
+fileList5 <- train_img32.file_list[[5]]
 
-# lower.Img28.labels <- dir(lower.Img28.dir_path)
-# lower.Img28.labels
+head(fileList5$file_path.list)
+fileList5$label
 
-lower.Img28File.list <- img.file_path.get_list(lower.Img28.dir_path)
-# str(lower.Img28File.list)
 
-file.list4 <- lower.Img28File.list[[4]]
-head(file.list4$file_path.list)
-file.list4$label
-file.list4$label |> substr(1,1)
-file.list4$label |> str_sub(end = 1)
+img_list5 <- map_il(fileList5$file_path.list[1:5], imager::load.image)
+img_list5
+str(img_list5)
 
 
 
-# output_n <- length(Upper.Img28.labels)
-# output_n
 
-#list all the img files in img path
-# Upper.Img28File.list <- lapply(Upper.Img28.labels, function(label){
-#   file_path.list <- list.files(file.path(Upper.Img28.dir_path, label), 
-#              full.names = TRUE, 
-#              pattern = "png",
-#              recursive = FALSE) 
-# 
-#   list(file_list = filePath.list,
-#        label = label)
-# })
+
+
+
+
+
+
+
+
 
