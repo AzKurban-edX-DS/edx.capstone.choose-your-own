@@ -62,9 +62,9 @@ source(log_func_script.file_path,
 
 
 ## 21.2 Case Study: MNIST ------------------------------------------
+library(dslabs)
 
-
-mnist <- read_mnist()
+mnist <- dslabs::read_mnist()
 str(mnist)
 
 x <- mnist$train$images

@@ -18,12 +18,14 @@ img.file_path.get_list <- function(dir_path) {
 
   lapply(folder.list, function(folder.name){
     label <- folder.name |> substr(1,1)
-    file_path.list <- list.files(file.path(dir_path, label), 
+    file.dir_path <- file.path(dir_path, label)
+    file_path.list <- list.files(file.dir_path, 
                                  full.names = TRUE, 
-                                 # pattern = "jpg",
                                  recursive = FALSE) 
     
     list(file_path.list = file_path.list,
+         dir_path = file.dir_path,
          label = label)
   })
 }
+
