@@ -57,6 +57,8 @@ if(!require(imager))
 if(!require(magick))
   install.packages("magick")
 
+if(!require(sqldf))
+  install.packages("sqldf")
 
 # if(!require())
 #   install.packages("")
@@ -85,7 +87,10 @@ library(magick)
 
 library(doParallel)
 
-# py_require(python_version = "3.11")
+# Importing sqldf
+library(sqldf)
+
+v# py_require(python_version = "3.11")
 reticulate::install_python(version = "3.11")
 p_load(conflicted)
 

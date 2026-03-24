@@ -13,19 +13,43 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   }
 }
 
-img.file_path.get_list <- function(dir_path) {
-  folder.list <- dir(dir_path)
+img.file_path.get_list <- function(dir_path, folder.list) {
+  # folder.list <- dir(dir_path)
 
   lapply(folder.list, function(folder.name){
-    label <- folder.name |> substr(1,1)
-    file.dir_path <- file.path(dir_path, label)
+    # label <- folder.name |> substr(1,1)
+    file.dir_path <- file.path(dir_path, folder.name)
     file_path.list <- list.files(file.dir_path, 
-                                 full.names = TRUE, 
-                                 recursive = FALSE) 
+                                 full.names = TRUE)
     
     list(file_path.list = file_path.list,
-         dir_path = file.dir_path,
-         label = label)
+         dir_path = file.dir_path)
+         # label = label)
   })
 }
+
+load.kaggle_img <- function(file) {
+  imager::load.image(file) |> 
+    grayscale() |> 
+    resize(size_x = 28,
+           size_y = 28)
+}
+
+reshape.cimg_tensor <- function(cimg) {
+  as.vector(cimg[,,1,1])
+}
+
+reshape.cimg_tensor.list <- function(cimg.list) {
+  map(cimg.list, reshape.cimg_tensor)
+}
+
+reshape.cimg_tensor.mx <- function(cimg.list, label) {
+  mx <- map(cimg.list, reshape.cimg_tensor) |>
+    unlist() |>
+    matrix(ncol = 28*28)
+  
+  rownames(mx) <- base::rep(label, times = nrow(mx))
+  mx
+}
+
 
