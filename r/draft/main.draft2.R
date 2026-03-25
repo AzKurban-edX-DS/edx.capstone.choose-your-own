@@ -84,10 +84,8 @@ img.train.root_path
 # train.labels <- dir(img.train.root_path)
 # train.labels
 
-img.train.file_list <- img.file_path.get_list(img.train.root_path)
-#names(img.train.file_list) <- train.labels
-names(img.train.file_list)
-str(img.train.file_list)
+
+
 
 #> 0
 # Validation Dataset ----------------------------------------------------------

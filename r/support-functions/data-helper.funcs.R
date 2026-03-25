@@ -51,15 +51,26 @@ as.matrix.cimg <- function(cimg.list, label) {
                            1:mx.ncols))
 }
 
-
 char.image <- function(char.vector) {
   image(matrix(char.vector, nrow = 28)[, 28:1])
 }
 
-create.file_path.list <- function() {
+create.hwChar_dataset <- function(root_path, label.list = NULL){
+  img.file_list <- img.file_path.get_list(root_path, label.list)
   
-}
-
-create.hwChar_dataset <- function(root_path){
+  img_list <- lapply(img.file_list, function(img_f){
+    list(cimg.list = map_il(img_f$file_path.list, load.kaggle_img),
+         fpath.list = img_f$file_path.list)
+  })
   
+  cimg.list <- lapply(names(img_list), function(label){
+    img_list[[label]]$cimg.list |> 
+      as.matrix.cimg(label)
+  })
+  
+  img.mx <- do.call(rbind, cimg.list)
+  
+  list(img.files = img.file_list,
+       img.list = cimg.list,
+       my_mnist = img.mx)
 }

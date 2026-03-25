@@ -1,4 +1,9 @@
 # Train -------------------------
+img.train.file_list <- img.file_path.get_list(img.train.root_path)
+#names(img.train.file_list) <- train.labels
+names(img.train.file_list)
+str(img.train.file_list)
+
 
 img.train.file_list.sample16 <- img.train.file_list[1:16]
 str(img.train.file_list.sample16)
@@ -56,7 +61,7 @@ img_list.names <- names(img_list)
 img_list.names
 length(img_list.names)
 
-img_files.list <- lapply(img_list.names, function(label){
+img_file.named_list <- lapply(img_list.names, function(label){
   fpathslist <- img_list[[label]]$fpath.list
   fpaths <- as.vector(fpathslist)
   names(fpaths) <- base::rep(label, times = length(fpaths))
@@ -69,7 +74,9 @@ img_files.list <- lapply(img_list.names, function(label){
   # )
 })
 
-img_files <- unlist(img_files.list)
+str(img_file.named_list)
+
+img_files <- unlist(img_file.named_list)
 str(img_files)
 dim(img_files)
 
@@ -92,12 +99,18 @@ str(cimg.list)
 # dim(cimgs)
 
 img.mx <- do.call(rbind, cimg.list)
-# colnames(img.mx) <- 1:(28*28) 
-# --------------------------------------------------
 
 str(img.mx)
 dim(img.mx)
 class(img.mx)
+
+
+
+# --------------------------------------------------
+
+img.dat.probe <- create.hwChar_dataset(img.train.root_path, img.train.root_path)
+str(img.dat.probe)
+
 
 
 # --------------------------------------------------------
