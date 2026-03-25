@@ -1,13 +1,13 @@
 # Train -------------------------
 
-fileList4 <- train_img32.file_list[[4]]
-fileList1_4 <- train_img32.file_list[1:4]
+fileList4 <- img.train.file_list[[4]]
+fileList1_4 <- img.train.file_list[1:4]
 str(fileList1_4)
 
 head(fileList4$file_path.list)
 fileList4$label
 
-fileList5 <- train_img32.file_list[[5]]
+fileList5 <- img.train.file_list[[5]]
 
 head(fileList5$file_path.list)
 fileList5$label

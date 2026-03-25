@@ -1,27 +1,27 @@
 # Train -------------------------
 
-train_img32.file_list.sample16 <- train_img32.file_list[1:16]
-str(train_img32.file_list.sample16)
+img.train.file_list.sample16 <- img.train.file_list[1:16]
+str(img.train.file_list.sample16)
 
-train_img32.file_list15 <- train_img32.file_list[[15]]
+img.train.file_list15 <- img.train.file_list[[15]]
 
-head(train_img32.file_list15$file_path.list)
-train_img32.file_list15$label
+head(img.train.file_list15$file_path.list)
+img.train.file_list15$label
 
 
-train_img32.file_list.sample16f7 <- lapply(train_img32.file_list.sample16, function(ls){
+img.train.file_list.sample16f7 <- lapply(img.train.file_list.sample16, function(ls){
   ls$file_path.list <- ls$file_path.list[1:7]
   ls
 })
 
-str(train_img32.file_list.sample16f7)
-head(train_img32.file_list.sample16f7)
+str(img.train.file_list.sample16f7)
+head(img.train.file_list.sample16f7)
 
-# train.img_list5 <- map_il(train_img32.file_list15$file_path.list[1:5], imager::load.image)
+# train.img_list5 <- map_il(img.train.file_list15$file_path.list[1:5], imager::load.image)
 
 # Probe -------------------
 
-img.file_list.probe <- train_img32.file_list.sample16f7
+img.file_list.probe <- img.train.file_list.sample16f7
 str(img.file_list.probe)
 head(img.file_list.probe)
 img.file_list.probe$A
@@ -41,9 +41,12 @@ names(img_list)
 dim(img_list)
 
 img_list$B
+img_list$B$fpath.list
 img_list$B$cimg.list
+
 img_list[["B"]]
 length(img_list[["B"]]$fpath.list)
+img_list[["B"]]$cimg.list
 
 class(img_list$B$cimg.list)
 dim(img_list$B$cimg.list[[2]])
@@ -73,23 +76,28 @@ dim(img_files)
 img_list$B$cimg.list
 dim(img_list$B$cimg.list)
 length(img_list$B$cimg.list)
+str(img_list$B$cimg.list)
+# names(img_list$B$cimg.list)
+
+
 
 cimg.list <- lapply(img_list.names, function(label){
   img_list[[label]]$cimg.list |> 
-    reshape.cimg_tensor.mx(label)
+    as.matrix.cimg(label)
 })
 
-img.mx <- do.call(rbind, cimg.list)
-colnames(img.mx) <- 1:(28*28) 
-
 str(cimg.list)
+# cimgs <- unlist(cimg.list)
+# str(cimgs)
+# dim(cimgs)
+
+img.mx <- do.call(rbind, cimg.list)
+# colnames(img.mx) <- 1:(28*28) 
+# --------------------------------------------------
+
 str(img.mx)
 dim(img.mx)
 class(img.mx)
-
-# cimgs <- unlist(cimg.list)
-str(cimgs)
-dim(cimgs)
 
 
 # --------------------------------------------------------
@@ -161,7 +169,7 @@ train.img_list5
 dim(train.img_list5)
 
 train.list_0.1_5 <- list(images = train.img_list5,
-                         file_list = train_img32.file_list15$file_path.list[1:5])
+                         file_list = img.train.file_list15$file_path.list[1:5])
 str(train.list_0.1_5)
 
 max(train.img_list5[[5]])

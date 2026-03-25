@@ -75,26 +75,33 @@ if (dir.exists(dir.to_remove)) {
 
 # Train Dataset ----------------------------------------------------------
 
-train_img32.dir_path <- file.path(raw_data.chars.path, "Train")
-train_img32.dir_path
+img.train.root_path <- file.path(raw_data.chars.path, "Train")
+img.train.root_path
 
-# Upper.Img28.labels <- dir(train_img32.dir_path)
+# Upper.Img28.labels <- dir(img.train.root_path)
 # Upper.Img28.labels
 
-train.labels <- dir(train_img32.dir_path)
-train.labels
+# train.labels <- dir(img.train.root_path)
+# train.labels
 
-train_img32.file_list <- img.file_path.get_list(train_img32.dir_path,
-                                                train.labels)
-names(train_img32.file_list) <- train.labels
-names(train_img32.file_list)
-str(train_img32.file_list)
+img.train.file_list <- img.file_path.get_list(img.train.root_path)
+#names(img.train.file_list) <- train.labels
+names(img.train.file_list)
+str(img.train.file_list)
 
 #> 0
-# TEst Dataset ----------------------------------------------------------
-test_img32.file_list <- img.file_path.get_list(test_img32.dir_path)
+# Validation Dataset ----------------------------------------------------------
+img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
+img.validation.root_path
 
-test_img32.dir_path <- file.path(raw_data.chars.path, "Validation")
-test_img32.dir_path
+img.validation.file_list <- img.file_path.get_list(img.validation.root_path)
+names(img.validation.file_list)
+str(img.validation.file_list)
+img.validation.file_list
+
+
+
+
+
 
 

@@ -68,6 +68,8 @@ mnist <- dslabs::read_mnist()
 str(mnist)
 
 x <- mnist$train$images
+str(x)
+dim(x)
 y <- mnist$train$labels
 str(y)
 
@@ -83,10 +85,11 @@ ncol(x)
 ### Subsetting --------------------------------------
 
 x[300, 100]
-x[1:300, 1:100]
 
 x[1:10,]
+head(x[,1:10])
 
+x[1:20, 1:15]
 
 #> If we subset just one row or just one column, the resulting object is no longer a matrix. 
 #> For example notice what happens here: 
@@ -148,12 +151,63 @@ mat
 #> A common example of matrix vectorization is centering rows: subtracting the 
 #> mean of each row from its corresponding entries. Although this can be done 
 #> with the `scale()` function
+image(1:28, 1:28, matrix(x[1,], nrow = 28)[, 28:1])
+image(matrix(x[1,], nrow = 28))
+image(matrix(x[1,], nrow = 28)[, 28:1])
+char.image(x[2,])
+char.image(x[1,])
+rmeans_x <- rowMeans(x)
+rmean_x1 <- mean(x[1,])
+rmean_x1
 
-scale(x, scale = FALSE)
+boxplot(rmeans_x ~ y)
+rmeans_x[1:100]
 
+char.image(x[1,])
+scaled_x <- scale(x, scale = FALSE)
+char.image(scaled_x[1,])
+dim(scaled_x)
+rmns_scld_x <- rowMeans(scaled_x)
+rmns_scld_x[1:100]
+
+
+x.scl2 <- scale(scaled_x, scale = FALSE)
+char.image(x.scl2[1,])
+rmns.x_scaled2 <- rowMeans(x.scl2)
+rmns.x_scaled2[1:100]
 # we can center each row of x with this single line of code:
 
-x - rowMeans(x)
+x.scl3 <- scale(x.scl2, scale = FALSE)
+char.image(x.scl3[1,])
+rmns.x_scaled3 <- rowMeans(x.scl3)
+rmns.x_scaled3[1:100]
+
+# --------
+
+rmeans_x[1:100]
+rmean_x1
+rmeans_x[1]
+my.scaled_x <- x - rmeans_x
+char.image(my.scaled_x[1,])
+my.rmns_scld_x <- rowMeans(my.scaled_x)
+my.rmns_scld_x[1:100]
+mean.my.scaled_x1 <- mean(x[1,] - rmean_x1)
+mean.my.scaled_x1
+
+char.image(x.scl2[1,])
+my.x.scl2 <- my.scaled_x - my.rmns_scld_x
+char.image(my.x.scl2[1,])
+my.rmns.x_scaled2 <- rowMeans(my.x.scl2)
+my.rmns.x_scaled2[1:100]
+# we can center each row of x with this single line of code:
+
+char.image(x.scl3[1,])
+my.x.scl3 <- my.x.scl2 - my.rmns.x_scaled2
+char.image(my.x.scl3[1,])
+my.rmns.x_scaled3 <- rowMeans(my.x.scl3)
+my.rmns.x_scaled3[1:100]
+
+
 
 ### The `sweep` function ------------------------------
 

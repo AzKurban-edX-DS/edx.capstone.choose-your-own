@@ -13,19 +13,21 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   }
 }
 
-img.file_path.get_list <- function(dir_path, folder.list) {
-  # folder.list <- dir(dir_path)
-
-  lapply(folder.list, function(folder.name){
-    # label <- folder.name |> substr(1,1)
-    file.dir_path <- file.path(dir_path, folder.name)
-    file_path.list <- list.files(file.dir_path, 
-                                 full.names = TRUE)
-    
-    list(file_path.list = file_path.list,
-         dir_path = file.dir_path)
-         # label = label)
+img.file_path.get_list <- function(root_path, label.list = NULL) {
+  folder.list <- dir(root_path)
+  
+  if(is.null(label.list))
+    label.list <- folder.list
+  
+  path_list <- lapply(dir(root_path), function(folder_name){
+    file.root_path <- file.path(root_path, folder_name)
+    list(root_path = file.root_path,
+         file_path.list = list.files(file.root_path, 
+                                     full.names = TRUE))
   })
+  
+  names(path_list) <- label.list
+  path_list
 }
 
 load.kaggle_img <- function(file) {
@@ -35,21 +37,29 @@ load.kaggle_img <- function(file) {
            size_y = 28)
 }
 
-reshape.cimg_tensor <- function(cimg) {
+as.vector.cimg <- function(cimg) {
   as.vector(cimg[,,1,1])
 }
 
-reshape.cimg_tensor.list <- function(cimg.list) {
-  map(cimg.list, reshape.cimg_tensor)
-}
-
-reshape.cimg_tensor.mx <- function(cimg.list, label) {
-  mx <- map(cimg.list, reshape.cimg_tensor) |>
-    unlist() |>
-    matrix(ncol = 28*28)
+as.matrix.cimg <- function(cimg.list, label) {
+  mx.ncols <- 28*28
   
-  rownames(mx) <- base::rep(label, times = nrow(mx))
-  mx
+  map(cimg.list, as.vector.cimg) |>
+    unlist() |>
+    matrix(ncol = mx.ncols, 
+           dimnames = list(base::rep(label, times = length(cimg.list)),
+                           1:mx.ncols))
 }
 
 
+char.image <- function(char.vector) {
+  image(matrix(char.vector, nrow = 28)[, 28:1])
+}
+
+create.file_path.list <- function() {
+  
+}
+
+create.hwChar_dataset <- function(root_path){
+  
+}
