@@ -47,7 +47,27 @@ dim(img_list)
 
 img_list$B
 img_list$B$fpath.list
-img_list$B$cimg.list
+cimg.B1 <- img_list$B$char_matrix.list[[1]]
+plot(cimg.B1)
+
+img.B1 <- cimg.B1[,,1,1]
+img.B1
+vimg.B1 <- as.vector(img.B1)
+vimg.B1
+char.image(vimg.B1)
+
+vimg.B1.bin <- (vimg.B1 > 0.1)*1
+str(vimg.B1.bin)
+vimg.B1.bin
+plot(cimg.B1)
+char.image(vimg.B1.bin)
+
+
+img_hashtag1 <- img_list[[1]]$char_matrix.list[[1]]
+img_hashtag1[,,1,1]
+
+bin_img.B1
+
 
 img_list[["B"]]
 length(img_list[["B"]]$fpath.list)
@@ -100,20 +120,113 @@ str(cimg.list)
 
 img.mx <- do.call(rbind, cimg.list)
 
+char.image(img.mx[1,])
+
 str(img.mx)
 dim(img.mx)
 class(img.mx)
 
+  # img.mx[1:20, 1:20]
+  char.image(img.mx[1,])
+  str(cimg.list)
+  str(cimg.list[[1]])
+  char.image(cimg.list[[1]])
+  char.image(cimg.list[[2]])
+  char.image(cimg.list[[16]])
+  char.image(cimg.list[[15]])
+  dim(cimg.list[[15]])
+  char.image(cimg.list[[15]][1,])
+  dim(cimg.list[["A"]])
+  names(cimg.list[[15]])
+  rownames(cimg.list[[15]])
+  img_A <- cimg.list[[15]]
+  dim(img_A)
+  char.image(img_A[1,])
+  char.image(img_A[2,])
+  char.image(img_A[3,])
+  char.image(img_A[4,])
+  dim(img_A[4,])
+  img_A[4,]
+  str(img_list)
+  str(img_list["A"])
+  str(img_list[["A"]])
+  img_list.A <- img_list[["A"]]
+  str(img_list.A)
+  cimg_list.A <- img_list.A[[1]]
+  str(cimg_list.A)
+  str(cimg_list.A[[1]])
+  plot(cimg_list.A[[1]])
+  
+  cimg.A_1 <- cimg_list.A[[1]]
+  plot(cimg.A_1)
+  
+  mx.A_1 <- cimg.A_1[,,1,1]
+  dim(mx.A_1)
+  mx.A_1
+  plot(mx.A_1)
+  image(mx.A_1)
+  
+  mx.A_1.vector <- as.vector(mx.A_1)
+  plot(mx.A_1.vector)
+  char.image(mx.A_1.vector)
+  
+  chars.mx.list <- cimg.list
+  str(chars.mx.list)
+  rownames(cimg.list[[15]])
+  
+  cimg.list.A <- cimg.list[[15]]
+  dim(cimg.list.A)
+  
+  cimg.list.A_1 <- cimg.list.A[1,]
+  cimg.list.A_1
+  char.image(cimg.list.A_1)
+  
+  label <- "A"
+  plot(img_list[[label]]$cimg.list[[1]])
+  
+  cimg_list.A <- img_list[[label]]$cimg.list
+  cimg_list.A_1 <- img_list[[label]]$cimg.list[[1]]
+  plot(cimg_list.A_1)
+  
+# Shuffle Matrix rows ----------------------------------------------------------
+  
+  # 1. Create an example matrix
+  mat <- matrix(data = 1:20, nrow = 5, byrow = TRUE)
+  print("Original Matrix:")
+  print(mat)
+  
+  # 2. Generate a random permutation of the row indices
+  # nrow(mat) gives the total number of rows (in this case, 5)
+  # sample() returns a random permutation of numbers from 1 to 5
+  random_indices <- sample(nrow(mat))
+  print("Random Row Indices:")
+  print(random_indices)
+  
+  # 3. Use the random indices to reorder the matrix rows
+  # The comma after 'random_indices' ensures all columns are selected
+  shuffled_mat <- mat[random_indices, ]
+  print("Shuffled Matrix:")
+  print(shuffled_mat)
+  
+# Reserch:A_list.mx ---------------------
+str(A_list.mx)  
+dim(A_list.mx)  
+str(A_list.mx[1,])  
+char.image(A_list.mx[1,])  
+char.image(A_list.mx[2,])  
+  
+# Research: Visualization ------------------------------------------------------
 
-
-# --------------------------------------------------
-
-img.dat.probe <- create.hwChar_dataset(img.train.root_path, img.train.root_path)
+img.dat.probe <- create.hwChar_dataset(img.train.root_path, img_list.names)
 str(img.dat.probe)
+my_minst.16ch <- img.dat.probe$my_mnist
+char.image(my_minst.16ch[1,])
+char.image(my_minst.16ch[15700,])
+char.image(my_minst.16ch[15701,])
+char.image(my_minst.16ch[15702,])
 
 
-
-# --------------------------------------------------------
+# Research: Arrays & Matrices --------------------------------------------------
 
 length(images.df.list)
 str(images.df.list)
@@ -135,21 +248,7 @@ str(img.array)
 
 
 
-
-
-
-
-
-# library(sqldf)
-# 
-# img_set <- structure(img_list)
-# 
-# labels <- sqldf("select [label] from img_list")
-# labels
-
-
-
-# Reference:
+# References: ------------------------------------------------------------------
 #> 21  Working with Matrices in R
 #> https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html 
 #> 21.2 Case study: MNIST

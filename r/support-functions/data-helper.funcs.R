@@ -13,20 +13,18 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   }
 }
 
-img.file_path.get_list <- function(root_path, label.list = NULL) {
-  folder.list <- dir(root_path)
-  
-  if(is.null(label.list))
-    label.list <- folder.list
-  
-  path_list <- lapply(dir(root_path), function(folder_name){
+img.file_path.get_list <- function(root_path, folder.list = NULL) {
+  if(is.null(folder.list))
+    folder.list <- dir(root_path)
+
+  path_list <- lapply(folder.list, function(folder_name){
     file.root_path <- file.path(root_path, folder_name)
     list(root_path = file.root_path,
          file_path.list = list.files(file.root_path, 
                                      full.names = TRUE))
   })
   
-  names(path_list) <- label.list
+  names(path_list) <- folder.list |> substr(1,1)
   path_list
 }
 
@@ -47,6 +45,7 @@ as.matrix.cimg <- function(cimg.list, label) {
   map(cimg.list, as.vector.cimg) |>
     unlist() |>
     matrix(ncol = mx.ncols, 
+           byrow = TRUE,
            dimnames = list(base::rep(label, times = length(cimg.list)),
                            1:mx.ncols))
 }
@@ -55,22 +54,84 @@ char.image <- function(char.vector) {
   image(matrix(char.vector, nrow = 28)[, 28:1])
 }
 
-create.hwChar_dataset <- function(root_path, label.list = NULL){
-  img.file_list <- img.file_path.get_list(root_path, label.list)
+create.hwChar_dataset <- function(root_path, folder.list = NULL){
+  start <- put_start_date()
+  put_log("Getting file path lists...")
+  img.file_list <- img.file_path.get_list(root_path, folder.list)
+  put_end_date(start)
+  put_log("File path lists have been created")
+  put(str(img.file_list))
   
+  start <- put_start_date()
+  put_log("Loading image files...")
   img_list <- lapply(img.file_list, function(img_f){
     list(cimg.list = map_il(img_f$file_path.list, load.kaggle_img),
          fpath.list = img_f$file_path.list)
   })
+  put_end_date(start)
+  put_log("Image files have been loaded.")
+  put(str(img_list))
   
-  cimg.list <- lapply(names(img_list), function(label){
+  start <- put_start_date()
+  put_log("Converting image lists to matrices...")
+  char_matrix.list <- lapply(names(img_list), function(label){
     img_list[[label]]$cimg.list |> 
       as.matrix.cimg(label)
   })
+  put_end_date(start)
+  put_log("Image matrix list has been created.")
+  put(str(char_matrix.list))
   
-  img.mx <- do.call(rbind, cimg.list)
+  start <- put_start_date()
+  put_log("Combining image data to single matrix...")
+  img.mx <- do.call(rbind, char_matrix.list)
+  put_end_date(start)
+  put_log("Image dataset matrix has been created.")
+  put(dim(img.mx))
   
   list(img.files = img.file_list,
-       img.list = cimg.list,
+       img.list = char_matrix.list,
        my_mnist = img.mx)
 }
+
+## Data processing functions -------------------------------
+sample_train_test_sets.mx <- function(data, seed, test.ratio = 0.2){ 
+  put_log("Function: `sample_train_test_sets.mx`: Sampling 20% of the `data` data...")
+
+  idx_group.list <- split(seq_len(nrow(data)), 
+                           as.factor(rownames(data)))
+  #str(idx_group.list)
+  set.seed(seed)
+  
+  test.idx <-
+    sapply(idx_group.list,
+           function(idx_group) 
+             sample(idx_group, 
+                    ceiling(length(idx_group)*test.ratio))) |>
+    unlist(use.names = FALSE) |>
+    sort()
+  
+  #str(test.idx)
+  put_log("Function: `sample_train_test_sets.mx`: 
+Extracting 80% of the original index set of `data` not used for the test Set...")
+  
+  train.set <- data[-test.idx,]
+  # str(train.set)
+  # dim(train.set)
+  
+  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `train.set`")
+
+  put_log("Function: `sample_train_test_sets.mx`: 
+Extracting 20% of the original index set of `data` used for the test Set.")
+  
+  test.set <- data[test.idx,]
+  # str(test.set)
+  # dim(test.set)
+  
+  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
+
+  # Return result datassets
+  list(train_set = train.set,
+       test_set = test.set)
+}
+

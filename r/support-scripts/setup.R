@@ -88,10 +88,8 @@ library(magick)
 library(doParallel)
 
 # Importing sqldf
-library(sqldf)
+#library(sqldf)
 
-v# py_require(python_version = "3.11")
-reticulate::install_python(version = "3.11")
 p_load(conflicted)
 
 conflict_prefer("shape", "keras3", quiet = TRUE)
@@ -100,6 +98,8 @@ conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
 # reticulate::virtualenv_remove("r-tensorflow")
 # install_tensorflow(extra_packages="pillow")
 # install_tensorflow(envname = "r-tensorflow")
+
+# reticulate::install_python(version = "3.11")
 
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
