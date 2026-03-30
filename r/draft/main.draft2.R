@@ -234,6 +234,59 @@ char.image(x[1e5,])
 char.image(bin_x[1e5,])
 char.image(x.scaled[1e5,])
 
+## Preprocessing ---------------------------------------------------------------
+# Reference:
+# 31.3 Preprocessing
+# https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing
+
+library(matrixStats)
+hist(colSds(x), breaks = 256)
+hist(colSds(x.scaled), breaks = 256)
+hist(colSds(bin_x), breaks = 256)
+
+start <- put_start_date()
+nzv <- nearZeroVar(x)
+put_end_date(start)
+nzv
+
+# Columns to remove:
+length(nzv)
+#> 41 
+
+image(matrix(1:784 %in% nzv, 28, 28))
+
+### Split Train Dataset --------------------------------------------------------
+seed <- 1234
+train.dataset.list <- sample_train_test_sets.mx(my_minst.train, seed)
+str(train.dataset.list)
+
+x.train <- train.dataset.list$train_set
+x.test <- train.dataset.list$test_set
+dim(x.test)
+#> [1] 166823    784
+
+### The First MOdel ------------------------------------------------------------
+library(caret)
+library(doParallel)
+
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+pp <- preProcess(x.train, method = c("nzv", "center"))
+centered_subsetted_x_test <- predict(pp, newdata = x.test)
+stopCluster(cl)
+stopImplicitCluster()
+put_end_date(start)
+
+dim(centered_subsetted_x_test)
+#> [1] 166823    743
+str(centered_subsetted_x_test)
+
+y.test <- as.factor(rownames(x.test))
+y.test
+overall_accuracy <- mean(y.test == as.factor(rownames(centered_subsetted_x_test)))
+overall_accuracy
 
 ## Cross Validation ------------------------------------------------------------
 # Reference:
@@ -244,11 +297,6 @@ char.image(x.scaled[1e5,])
 
 
 
-
-### Split Train Dataset --------------------------------------------------------
-seed <- 1
-train.dataset.list <- sample_train_test_sets.mx(my_minst.train, seed)
-str(train.dataset.list)
 
 
 
