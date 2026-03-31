@@ -11,6 +11,36 @@ support_functions.path <- file.path(r.path, support_functions.folder)
 
 setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 
+data.path <- "data"
+raw_data.path <- file.path(data.path, "raw")
+raw_data.path
+
+raw_data.folder_name <- "Vaibs.HW-Chars"
+raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
+raw_data.chars.path
+
+img.train.root_path <- file.path(raw_data.chars.path, "Train")
+img.train.root_path
+
+img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
+img.validation.root_path
+
+dataset.path <- file.path(data.path, "dataset")
+dir.create(dataset.path)
+dataset.path
+
+train.data.path <- file.path(dataset.path, "train")
+dir.create(train.data.path)
+train.data.path
+
+final_test.data.path <- file.path(dataset.path, "final_test")
+dir.create(final_test.data.path)
+final_test.data.path
+
+ds.subsets.path <- file.path(train.data.path, "subsets")
+dir.create(ds.subsets.path)
+ds.subsets.path
+
 ## Setup -----------------------------------------------------------------------
 source(setup_script.file_path, 
        catch.aborts = TRUE,
@@ -41,17 +71,16 @@ source(data_helper.funcs.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
+
+### Open log: Load Dataset -----------------------------------------------------
+open_logfile(".load-dataset")
 ## Download the Kaggle Dataset -------------------------------------------------
+
 # Reference: https://www.kaggle.com/datasets/vaibhao/handwritten-characters
 s
 # Kaggle CLI command:
 # kaggle datasets download vaibhao/handwritten-characters
 kaggle_dataset <- "vaibhao/handwritten-characters"
-raw_data.path <- "data/raw"
-
-raw_data.folder_name <- "Vaibs.HW-Chars"
-raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
-raw_data.chars.path
 
 if(!dir.exists(raw_data.chars.path)) {
   print_log1("Downloading dataset `%1` ...", kaggle_dataset)
@@ -74,27 +103,72 @@ if (dir.exists(dir.to_remove)) {
 }
 
 ## Crating Datasets ------------------------------------------------------------
-### Create Train Dataset ----------------------------------------------
+### Load Train Data ------------------------------------------------------------
+ds.train.list.file_path <- file.path(train.data.path, "train-data-list.RData")
+ds.train.list.file_path
 
-img.train.root_path <- file.path(raw_data.chars.path, "Train")
-img.train.root_path
+if (file.exists(ds.train.list.file_path)) {
+  start <- put_start_date()
+  load(ds.train.list.file_path)
+  put_end_date(start)
+} else {
+  # Create Train Data list
+  img.train.dat <- hwChar_data.load(img.train.root_path)
+  str(img.train.dat)
+  
+  start <- put_start_date()
+  save(img.train.dat, file = ds.train.list.file_path)
+  put_end_date(start)
+}
 
-img.train.dat <- create.hwChar_dataset(img.train.root_path)
-str(img.train.dat)
-my_minst.train <- img.train.dat$my_mnist
-char.image(my_minst.train[1,])
+### Load Final Test Data -------------------------------------------------------
 
-### Create Final Test Dataset ---------------------------------------------------
-img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
-img.validation.root_path
+ds.final_test.list.file_path <- file.path(final_test.data.path, "final-test-data-list.RData")
+ds.final_test.list.file_path
 
-img.validation.dat <- create.hwChar_dataset(img.train.root_path)
-str(img.validation.dat)
-my_minst.final_test <- img.validation.dat$my_mnist
+if (file.exists(ds.final_test.list.file_path)) {
+  start <- put_start_date()
+  load(ds.final_test.list.file_path)
+  put_end_date(start)
+} else {
+  # Create Train Data list
+  img.final_test.dat <- hwChar_data.load(img.train.root_path)
+  str(img.final_test.dat)
+  
+  start <- put_start_date()
+  save(img.final_test.dat, file = ds.final_test.list.file_path)
+  put_end_date(start)
+}
+
+my_minst.final_test <- img.final_test.dat$my_mnist
 char.image(my_minst.final_test[1,])
 
-
 ## Data Analysis ---------------------------------------------------------------
+### Load Train Data Subset----------------------------------------------------
+char_files.max <- 64 
+char_files.max
+
+
+ds.train.subset64.file_path <- file.path(train.data.path, "train-data-subset64.RData")
+ds.train.subset64.file_path
+
+if (file.exists(ds.train.subset64.file_path)) {
+  start <- put_start_date()
+  load(ds.train.subset64.file_path)
+  put_end_date(start)
+} else {
+  # Create Train Data list
+  train.dat.subset64 <- hwChar_data.load(img.train.root_path, 
+                                         char_files.max = char_files.max)
+  
+  start <- put_start_date()
+  save(train.dat.subset64, file = ds.train.subset64.file_path)
+  put_end_date(start)
+}
+
+str(train.dat.subset64)
+
+
 ### Qustion: iS Matrix centered? --------------------------
 # Reference:
 # 21.4 Vectorization for matrices /
@@ -264,6 +338,9 @@ x.train <- train.dataset.list$train_set
 x.test <- train.dataset.list$test_set
 dim(x.test)
 #> [1] 166823    784
+
+### Close Log ---------------------------------------------------------------
+log_close()
 
 ### The First MOdel ------------------------------------------------------------
 library(caret)

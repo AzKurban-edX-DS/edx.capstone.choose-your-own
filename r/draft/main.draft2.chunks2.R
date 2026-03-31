@@ -98,5 +98,72 @@ Extracting 20% of the original index set of `data` used for the test Set.")
   # Return result datassets
   list(train_set = train_set,
        test_set = test_set)
-# }
-
+# } ---------
+  ### Open log: Load Dataset -----------------------------------------------------
+  open_logfile(".load-dataset")
+  
+#  hwChar_data.load <- function(root_path, 
+#                               folder.list = NULL, 
+#                               char_files.max = NA){ --------------------------
+    
+  root_path <- img.train.root_path
+  root_path
+  char_files.max
+  folder.list <- NULL
+  folder.list
+  
+  start <- put_start_date()
+    put_log("Getting file path lists...")
+    img.file_list <- img.file_path.get_list(root_path, 
+                                            folder.list,
+                                            char_files.max)
+    put_end_date(start)
+    put_log("File path lists have been created")
+    put(str(img.file_list))
+    
+    start <- put_start_date()
+    put_log("Loading image files...")
+    img_list <- lapply(img.file_list, function(img_f){
+      list(cimg.list = map_il(img_f$file_path.list, load.kaggle_img),
+           fpath.list = img_f$file_path.list)
+    })
+    put_end_date(start)
+    put_log("Image files have been loaded.")
+    put(str(img_list))
+    
+    start <- put_start_date()
+    put_log("Converting image lists to matrices...")
+    char_matrix.list <- lapply(names(img_list), function(label){
+      img_list[[label]]$cimg.list |> 
+        as.matrix.cimg(label)
+    })
+    put_end_date(start)
+    put_log("Image matrix list has been created.")
+    put(str(char_matrix.list))
+    
+    start <- put_start_date()
+    put_log("Combining image data to single matrix...")
+    img.mx <- do.call(rbind, char_matrix.list)
+    put_end_date(start)
+    put_log("Image dataset matrix has been created.")
+    put(dim(img.mx))
+    
+    label_list <- as.factor(names(img.file_list))
+    # str(label_list)
+    
+    
+train.dat.subset64 <- list(img.files = img.file_list,
+                           label.list = label_list,
+                           img.list = char_matrix.list,
+                           my_mnist = img.mx)
+#  } ------------------------
+    
+rm(root_path)
+rm(folder.list)
+rm(char_files.max)
+    
+    
+    
+  
+  
+  

@@ -81,8 +81,21 @@ str(img_list5)
 names(img_list5) <- c("A","A","A","A","A")
 str(img_list5)
 
+str(img_list5[[1]])
+
 img1 <- img_list5[[1]]
 dim(img1)
+dim(img1)[4]
+
+nch <- channels(img1)
+str(nch)
+
+sh1 <- shape(img1)
+
+str(sh1)
+class(sh1)
+
+sh1[[4]]
 
 img1[,,1,1]
 

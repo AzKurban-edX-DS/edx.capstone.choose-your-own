@@ -217,7 +217,7 @@ char.image(A_list.mx[2,])
   
 # Research: Visualization ------------------------------------------------------
 
-img.dat.probe <- create.hwChar_dataset(img.train.root_path, img_list.names)
+img.dat.probe <- hwChar_data.load(img.train.root_path, img_list.names)
 str(img.dat.probe)
 my_minst.16ch <- img.dat.probe$my_mnist
 char.image(my_minst.16ch[1,])
