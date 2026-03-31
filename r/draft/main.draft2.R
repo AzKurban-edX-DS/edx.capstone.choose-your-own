@@ -168,6 +168,30 @@ if (file.exists(ds.train.subset64.file_path)) {
 
 str(train.dat.subset64)
 
+### Load Test Data Subset----------------------------------------------------
+char_files.max <- 64 
+char_files.max
+
+
+ds.train.subset64.file_path <- file.path(train.data.path, "train-data-subset64.RData")
+ds.train.subset64.file_path
+
+if (file.exists(ds.train.subset64.file_path)) {
+  start <- put_start_date()
+  load(ds.train.subset64.file_path)
+  put_end_date(start)
+} else {
+  # Create Train Data list
+  train.dat.subset64 <- hwChar_data.load(img.train.root_path, 
+                                         char_files.max = char_files.max)
+  
+  start <- put_start_date()
+  save(train.dat.subset64, file = ds.train.subset64.file_path)
+  put_end_date(start)
+}
+
+str(train.dat.subset64)
+
 
 ### Qustion: iS Matrix centered? --------------------------
 # Reference:

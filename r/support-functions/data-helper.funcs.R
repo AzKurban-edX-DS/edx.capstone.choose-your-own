@@ -75,7 +75,8 @@ char.image <- function(char.vector) {
 
 hwChar_data.load <- function(root_path, 
                              folder.list = NULL, 
-                             char_files.max = NA){
+                             char_files.max = NA,
+                             shuffle.rows = FALSE){
   start <- put_start_date()
   put_log("Getting file path lists...")
   img.file_list <- img.file_path.get_list(root_path, 
@@ -119,11 +120,13 @@ hwChar_data.load <- function(root_path,
   list(img.files = img.file_list,
        label.list = label_list,
        img.list = char_matrix.list,
-       my_mnist = img.mx)
+       my_mnist = ifelse(shuffle.rows, shuffle.mxrows(img.mx), img.mx))
 }
 
 ## Data processing functions -------------------------------
-sample_train_test_sets.mx <- function(data, seed, test.ratio = 0.2){ 
+sample_train_test_sets.mx <- function(data, seed, 
+                                      test.ratio = 0.2,
+                                      shuffle.test_rows = FALSE){ 
   put_log("Function: `sample_train_test_sets.mx`: Sampling 20% of the `data` data...")
 
   idx_group.list <- split(seq_len(nrow(data)), 
@@ -160,6 +163,10 @@ Extracting 20% of the original index set of `data` used for the test Set.")
 
   # Return result datassets
   list(train_set = train.set,
-       test_set = test.set)
+       test_set = ifelse(shuffle.test_rows, shuffle.mxrows(test.set), test.set))
 }
 
+shuffle.mxrows <- function(mx) {
+  random.idx <- sample(nrow(mx))
+  mx[random.idx]
+}
