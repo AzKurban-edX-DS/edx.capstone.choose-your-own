@@ -24,6 +24,9 @@ if(!require(prodlim))
 if(!require(caret))
   install.packages("caret")
 
+if(!require(utils))
+  install.packages("utils")
+
 if(!require(randomForest))
   install.packages("randomForest")
 
@@ -75,6 +78,7 @@ library(caret)
 library(randomForest)
 
 library(logr)
+library(utils)
 library(reticulate)
 
 library(pacman)

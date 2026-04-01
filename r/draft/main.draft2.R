@@ -77,7 +77,6 @@ open_logfile(".load-dataset")
 ## Download the Kaggle Dataset -------------------------------------------------
 
 # Reference: https://www.kaggle.com/datasets/vaibhao/handwritten-characters
-s
 # Kaggle CLI command:
 # kaggle datasets download vaibhao/handwritten-characters
 kaggle_dataset <- "vaibhao/handwritten-characters"
@@ -103,45 +102,141 @@ if (dir.exists(dir.to_remove)) {
 }
 
 ## Crating Datasets ------------------------------------------------------------
+### Open log: Load Train Data --------------------------------------------------
+open_logfile(".load-train-data")
 ### Load Train Data ------------------------------------------------------------
 ds.train.list.file_path <- file.path(train.data.path, "train-data-list.RData")
 ds.train.list.file_path
 
 if (file.exists(ds.train.list.file_path)) {
-  start <- put_start_date()
-  load(ds.train.list.file_path)
-  put_end_date(start)
-} else {
-  # Create Train Data list
-  img.train.dat <- hwChar_data.load(img.train.root_path)
-  str(img.train.dat)
+  put_log1("Loading Train Data from cache file: 
+%1", ds.train.list.file_path)
   
   start <- put_start_date()
-  save(img.train.dat, file = ds.train.list.file_path)
+  load(ds.train.list.file_path)
+  put_log("Train Data list has been loaded from cache.")
+  put_end_date(start)
+} else {
+  put_log1("Creating Train Data list from raw data files from root directory:
+%1", img.train.root_path)
+  start <- put_start_date()
+  img.train.dat <- hwChar_data.load(img.train.root_path)
+  
+  put_log1("Final Test Data list structure:
+%1", capture.output(str(img.train.dat)))
+  
+  put_log("Train Data list has been created from raw data files.")
+  put_end_date(start)
+  
+  img.train.files <- img.train.dat$img.files
+  train.labels <- img.train.dat$label.list
+  img.train.list <- img.train.dat$img.list
+  my_minst.train <- img.train.dat$my_mnist
+  
+  rm(img.train.dat)
+
+  put_log1("Saving Train Data to the cache file: 
+%1", ds.train.list.file_path)
+  start <- put_start_date()
+  save(img.train.files,
+       img.train.list,
+       my_minst.train, 
+       file = ds.train.list.file_path)
+  put_log("Train Data list has been cached to the File System.")
   put_end_date(start)
 }
 
+put_log1("Train image file list structure:
+%1", capture.output(str(img.train.files)))
+
+put_log1("Train dataset labels:
+%1", train.labels, .sep = " ")
+
+put_log1("`img.train.list` data structure:
+%1", capture.output(str(img.train.list)))
+
+put_log1("`my_minst.train` dataset matrix dimensions: 
+%1", dim(my_minst.train), .sep = " ")
+
+# Visualize the first char:
+char.image(my_minst.train[1,])
+
+# rm(img.train.files)
+rm(img.train.list)
+rm(my_minst.train)
+
+### Close Log ---------------------------------------------------------------
+log_close()
+
+### Open log: Load Final Test Data --------------------------------------------------
+open_logfile(".load-final-test-data")
 ### Load Final Test Data -------------------------------------------------------
 
 ds.final_test.list.file_path <- file.path(final_test.data.path, "final-test-data-list.RData")
 ds.final_test.list.file_path
 
 if (file.exists(ds.final_test.list.file_path)) {
+  put_log1("Loading Final Test Data from cache file: 
+%1", ds.final_test.list.file_path)
+
   start <- put_start_date()
   load(ds.final_test.list.file_path)
+  put_log("Final Test Data list has been loaded from cache.")
   put_end_date(start)
 } else {
-  # Create Train Data list
-  img.final_test.dat <- hwChar_data.load(img.train.root_path)
-  str(img.final_test.dat)
-  
+  put_log1("Creating Final Test Data list from raw data files from root directory:
+%1", img.validation.root_path)
   start <- put_start_date()
-  save(img.final_test.dat, file = ds.final_test.list.file_path)
+  img.final_test.dat <- hwChar_data.load(img.validation.root_path,
+                                    shuffle.rows = TRUE,
+                                    shuffle.seed = 1)
+  
+  put_log1("Final Test Data list structure:
+%1", capture.output(str(img.final_test.dat)))
+
+  put_log("Final Test Data list has been created from raw data files.")
+  put_end_date(start)
+  
+  img.final_test.files <- img.final_test.dat$img.files
+  img.final_test.list <- img.final_test.dat$img.list
+  final_test.labels <- img.final_test.dat$label.list
+  my_minst.final_test <- img.final_test.dat$my_mnist
+  
+  rm(img.final_test.dat)
+  
+  put_log1("Saving Final Test Data to the cache file: 
+%1", ds.final_test.list.file_path)
+  start <- put_start_date()
+  save(img.final_test.files,
+       img.final_test.list,
+       my_minst.final_test, 
+       file = ds.final_test.list.file_path)
+  put_log("Final Test Data list has been cached to the File System.")
   put_end_date(start)
 }
 
-my_minst.final_test <- img.final_test.dat$my_mnist
+put_log1("Final Test image file list structure:
+%1", capture.output(str(img.final_test.files)))
+
+put_log1("Final Test dataset labels:
+%1", final_test.labels, .sep = " ")
+
+put_log1("`img.final_test.list` data structure:
+%1", capture.output(str(img.final_test.list)))
+
+put_log1("`my_minst.final_test` dataset matrix dimensions: 
+%1", dim(my_minst.final_test), .sep = " ")
+
 char.image(my_minst.final_test[1,])
+
+my_minst.final_test[1:120, 1:7]
+
+# rm(img.final_test.files)
+rm(img.final_test.list)
+# rm(my_minst.final_test)
+
+### Close Log ---------------------------------------------------------------
+log_close()
 
 ## Data Analysis ---------------------------------------------------------------
 ### Load Train Data Subset----------------------------------------------------
@@ -168,6 +263,9 @@ if (file.exists(ds.train.subset64.file_path)) {
 
 str(train.dat.subset64)
 
+### Close Log ---------------------------------------------------------------
+log_close()
+
 ### Load Test Data Subset----------------------------------------------------
 char_files.max <- 64 
 char_files.max
@@ -192,6 +290,9 @@ if (file.exists(ds.train.subset64.file_path)) {
 
 str(train.dat.subset64)
 
+
+### Close Log ---------------------------------------------------------------
+log_close()
 
 ### Qustion: iS Matrix centered? --------------------------
 # Reference:

@@ -25,27 +25,37 @@ put_end_date <- function(start){
   put(Sys.time() - start)
 }
 
-print_log <- function(msg){
-  print(str_glue(msg))
-}
-put_log <- function(msg){
-  put(str_glue(msg))
+arg.to_str <- function(arg, .sep = "\n"){
+  arg <- as.character(arg)
+  
+  if(length(arg) > 1)
+    arg <- paste(arg, collapse = .sep)
+  arg
 }
 
-get_log1 <- function(msg_template, arg1) {
-  str_glue(str_replace_all(msg_template, "%1", as.character(arg1)))
+print_log <- function(msg, .sep = "\n"){
+  print(str_glue(arg.to_str(msg, .sep)))
 }
-print_log1 <- function(msg_template, arg1){
-  print(get_log1(msg_template, arg1))
+put_log <- function(msg, .sep = "\n"){
+  put(str_glue(msg, .sep))
 }
-put_log1 <- function(msg_template, arg1){
-  put(get_log1(msg_template, arg1))
+
+
+get_log1 <- function(msg_template, arg1, .sep = "\n") {
+  str_glue(str_replace_all(msg_template, "%1", 
+                           arg.to_str(arg1, .sep)))
+}
+print_log1 <- function(msg_template, arg1, .sep = "\n"){
+  print(get_log1(msg_template, arg1, .sep))
+}
+put_log1 <- function(msg_template, arg1, .sep = "\n"){
+  put(get_log1(msg_template, arg1, .sep))
 }
 
 get_log2 <- function(msg_template, arg1, arg2) {
   msg_template |> 
-    str_replace_all("%1", as.character(arg1)) |>
-    str_replace_all("%2", as.character(arg2)) |>
+    str_replace_all("%1", arg.to_str(arg1)) |>
+    str_replace_all("%2", arg.to_str(arg2)) |>
     str_glue()
 }
 print_log2 <- function(msg_template, arg1, arg2){
@@ -57,9 +67,9 @@ put_log2 <- function(msg_template, arg1, arg2){
 
 get_log3 <- function(msg_template, arg1, arg2, arg3) {
   msg_template |> 
-    str_replace_all("%1", as.character(arg1)) |>
-    str_replace_all("%2", as.character(arg2)) |>
-    str_replace_all("%3", as.character(arg3)) |>
+    str_replace_all("%1", arg.to_str(arg1)) |>
+    str_replace_all("%2", arg.to_str(arg2)) |>
+    str_replace_all("%3", arg.to_str(arg3)) |>
     str_glue()
 }
 print_log3 <- function(msg_template, arg1, arg2, arg3){
@@ -71,10 +81,10 @@ put_log3 <- function(msg_template, arg1, arg2, arg3){
 
 get_log4 <- function(msg_template, arg1, arg2, arg3, arg4) {
   msg_template |> 
-    str_replace_all("%1", as.character(arg1)) |>
-    str_replace_all("%2", as.character(arg2)) |>
-    str_replace_all("%3", as.character(arg3)) |>
-    str_replace_all("%4", as.character(arg4)) |>
+    str_replace_all("%1", arg.to_str(arg1)) |>
+    str_replace_all("%2", arg.to_str(arg2)) |>
+    str_replace_all("%3", arg.to_str(arg3)) |>
+    str_replace_all("%4", arg.to_str(arg4)) |>
     str_glue()
 }
 print_log4 <- function(msg_template, arg1, arg2, arg3, arg4){

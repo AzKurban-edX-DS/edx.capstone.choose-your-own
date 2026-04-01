@@ -73,10 +73,12 @@ char.image <- function(char.vector) {
   image(matrix(char.vector, nrow = 28)[, 28:1])
 }
 
+## Data processing functions -------------------------------
 hwChar_data.load <- function(root_path, 
                              folder.list = NULL, 
                              char_files.max = NA,
-                             shuffle.rows = FALSE){
+                             shuffle.rows = FALSE,
+                             shuffle.seed = NA){
   start <- put_start_date()
   put_log("Getting file path lists...")
   img.file_list <- img.file_path.get_list(root_path, 
@@ -116,17 +118,21 @@ hwChar_data.load <- function(root_path,
   label_list <- as.factor(names(img.file_list))
   # str(label_list)
 
+  if (shuffle.rows) {
+    img.mx <- shuffle.mxrows(img.mx, shuffle.seed)
+  }
   
   list(img.files = img.file_list,
        label.list = label_list,
        img.list = char_matrix.list,
-       my_mnist = ifelse(shuffle.rows, shuffle.mxrows(img.mx), img.mx))
+       my_mnist = img.mx)
 }
 
-## Data processing functions -------------------------------
-sample_train_test_sets.mx <- function(data, seed, 
+sample_train_test_sets.mx <- function(data, 
+                                      seed, 
                                       test.ratio = 0.2,
-                                      shuffle.test_rows = FALSE){ 
+                                      shuffle.test_rows = FALSE,
+                                      shuffle.seed = NA){ 
   put_log("Function: `sample_train_test_sets.mx`: Sampling 20% of the `data` data...")
 
   idx_group.list <- split(seq_len(nrow(data)), 
@@ -161,12 +167,18 @@ Extracting 20% of the original index set of `data` used for the test Set.")
   
   put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
 
+  if (shuffle.test_rows) {
+    test.set <- shuffle.mxrows(test.set, shuffle.seed)
+  }
   # Return result datassets
   list(train_set = train.set,
-       test_set = ifelse(shuffle.test_rows, shuffle.mxrows(test.set), test.set))
+       test_set = test.set)
 }
 
-shuffle.mxrows <- function(mx) {
+shuffle.mxrows <- function(mx, seed = NA) {
+  if (!is.na(seed)) {
+    set.seed(seed)
+  }
   random.idx <- sample(nrow(mx))
-  mx[random.idx]
+  mx[random.idx,]
 }
