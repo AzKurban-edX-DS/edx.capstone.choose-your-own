@@ -246,7 +246,34 @@ img.array <- sapply(img_list, function(item){
 dim(img.array)
 str(img.array)
 
+### Open log: Load Train Data Subset (Max 64 files per char class) -------------
+open_logfile(".load-train-data-subset64")
+### Load Train Data Subset (Max 64 files per char class) -----------------------
+char_files.max64 <- 64 
+char_files.max64
 
+
+ds.train.subset64.file_path <- file.path(ds.subsets.path, "train-data-subset64.RData")
+ds.train.subset64.file_path
+
+if (file.exists(ds.train.subset64.file_path)) {
+  start <- put_start_date()
+  load(ds.train.subset64.file_path)
+  put_end_date(start)
+} else {
+  # Create Train Data list
+  train.dat.subset64 <- hwChar_data.load(img.train.root_path, 
+                                         char_files.max = char_files.max64)
+  
+  start <- put_start_date()
+  save(train.dat.subset64, file = ds.train.subset64.file_path)
+  put_end_date(start)
+}
+
+str(train.dat.subset64)
+
+### Close Log ---------------------------------------------------------------
+log_close()
 
 # References: ------------------------------------------------------------------
 #> 21  Working with Matrices in R

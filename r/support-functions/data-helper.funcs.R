@@ -21,15 +21,20 @@ img.file_path.get_list <- function(root_path,
 
   path_list <- lapply(folder.list, function(folder_name){
     file.root_path <- file.path(root_path, folder_name)
+    folder.idx <- which(folder.list == folder_name)
     
     put_log1("Getting file path list from the following char's root folders:
 %1", file.root_path)
 
-        fpath.list <- list.files(file.root_path, 
+    fpath.list <- list.files(file.root_path, 
                              full.names = TRUE)
     
-    if(!is.na(char_files.max) && length(fpath.list) > char_files.max){
-      fpath.list <- fpath.list[seq_len(char_files.max)]
+    fpath.len <- length(fpath.list)
+
+    if(!is.na(char_files.max) && fpath.len > char_files.max){
+      set.seed(fpath.len + folder.idx)
+      random.idx <- sample(fpath.len, size = char_files.max)
+      fpath.list <- fpath.list[random.idx]
     }
     
     put_log2("%1 files in folder: %2", length(fpath.list), folder_name)
@@ -77,13 +82,15 @@ char.image <- function(char.vector) {
 hwChar_data.load <- function(root_path, 
                              folder.list = NULL, 
                              char_files.max = NA,
+                             char_files.seed = NA,
                              shuffle.rows = FALSE,
                              shuffle.seed = NA){
   start <- put_start_date()
   put_log("Getting file path lists...")
   img.file_list <- img.file_path.get_list(root_path, 
                                           folder.list,
-                                          char_files.max)
+                                          char_files.max,
+                                          char_files.seed)
   put_end_date(start)
   put_log("File path lists have been created")
   put(str(img.file_list))
@@ -131,20 +138,20 @@ hwChar_data.load <- function(root_path,
 sample_train_test_sets.mx <- function(data, 
                                       seed, 
                                       test.ratio = 0.2,
-                                      shuffle.test_rows = FALSE,
-                                      shuffle.seed = NA){ 
+                                      shuffle.test_rows = FALSE){ 
   put_log("Function: `sample_train_test_sets.mx`: Sampling 20% of the `data` data...")
 
   idx_group.list <- split(seq_len(nrow(data)), 
                            as.factor(rownames(data)))
   #str(idx_group.list)
-  set.seed(seed)
   
   test.idx <-
     sapply(idx_group.list,
-           function(idx_group) 
+           function(idx_group) {
+             set.seed(seed + max(idx_group))
              sample(idx_group, 
-                    ceiling(length(idx_group)*test.ratio))) |>
+                    ceiling(length(idx_group)*test.ratio))
+           }) |>
     unlist(use.names = FALSE) |>
     sort()
   
@@ -168,8 +175,9 @@ Extracting 20% of the original index set of `data` used for the test Set.")
   put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
 
   if (shuffle.test_rows) {
-    test.set <- shuffle.mxrows(test.set, shuffle.seed)
+    test.set <- shuffle.mxrows(test.set, seed + length(test.idx))
   }
+  
   # Return result datassets
   list(train_set = train.set,
        test_set = test.set)

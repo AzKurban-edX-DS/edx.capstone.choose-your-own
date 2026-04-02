@@ -122,7 +122,7 @@ if (file.exists(ds.train.list.file_path)) {
   start <- put_start_date()
   img.train.dat <- hwChar_data.load(img.train.root_path)
   
-  put_log1("Final Test Data list structure:
+  put_log1("Train Data list structure:
 %1", capture.output(str(img.train.dat)))
   
   put_log("Train Data list has been created from raw data files.")
@@ -139,6 +139,7 @@ if (file.exists(ds.train.list.file_path)) {
 %1", ds.train.list.file_path)
   start <- put_start_date()
   save(img.train.files,
+       train.labels,
        img.train.list,
        my_minst.train, 
        file = ds.train.list.file_path)
@@ -239,88 +240,111 @@ rm(img.final_test.list)
 log_close()
 
 ## Data Analysis ---------------------------------------------------------------
-### Load Train Data Subset----------------------------------------------------
-char_files.max <- 64 
-char_files.max
+### Open log: Load Train Data Subset (Max 256 files per char class) -------------
+open_logfile(".load-train-data-subset256")
+### Load Train Data Subset (Max 256 files per char class) -----------------------
+char_files.max256 <- 256 
+char_files.max256
 
+ds.train.subset256.file_path <- file.path(ds.subsets.path, "train-data-subset256.RData")
+ds.train.subset256.file_path
 
-ds.train.subset64.file_path <- file.path(train.data.path, "train-data-subset64.RData")
-ds.train.subset64.file_path
-
-if (file.exists(ds.train.subset64.file_path)) {
-  start <- put_start_date()
-  load(ds.train.subset64.file_path)
-  put_end_date(start)
-} else {
-  # Create Train Data list
-  train.dat.subset64 <- hwChar_data.load(img.train.root_path, 
-                                         char_files.max = char_files.max)
+if (file.exists(ds.train.subset256.file_path)) {
+  put_log1("Loading Train Data subset (Max 256 files per char class) from cache file: 
+%1", ds.train.subset256.file_path)
   
   start <- put_start_date()
-  save(train.dat.subset64, file = ds.train.subset64.file_path)
+  load(ds.train.subset256.file_path)
+  put_log("Train Data list has been loaded from cache.")
+  put_end_date(start)
+} else {
+  put_log1("Creating Train Data subset (Max 256 files per char class) list 
+from raw data files from root directory:
+%1", img.train.root_path)
+  
+  start <- put_start_date()
+  train.dat.subset256 <- hwChar_data.load(img.train.root_path, 
+                                          char_files.max = char_files.max256)
+  
+  put_log1("Train Data subset (Max 256 files per char class) list structure:
+%1", capture.output(str(train.dat.subset256)))
+  
+  put_log("Train Data subset (Max 256 files per char class) list 
+has been created from raw data files.")
+  put_end_date(start)
+  
+  train.files.subset256 <- train.dat.subset256$img.files
+  train.labels256 <- train.dat.subset256$label.list
+  train.images.subset256 <- train.dat.subset256$img.list
+  my_minst.train.subset256 <- train.dat.subset256$my_mnist
+  
+  rm(train.dat.subset256)
+  
+  put_log1("Saving Train Data subset (Max 256 files per char class) to the cache file: 
+%1", ds.train.subset256.file_path)
+  start <- put_start_date()
+  save(train.files.subset256,
+       train.labels256,
+       train.images.subset256,
+       my_minst.train.subset256, 
+       file = ds.train.subset256.file_path)
+  put_log("Train Data subset (Max 256 files per char class) list has been cached to the File System.")
   put_end_date(start)
 }
 
-str(train.dat.subset64)
+put_log1("Train image file list subset (Max 256 files per char class) structure:
+%1", capture.output(str(train.files.subset256)))
+
+put_log1("Train dataset labels:
+%1", train.labels256, .sep = " ")
+
+put_log1("`train.images.subset256` data structure:
+%1", capture.output(str(train.images.subset256)))
+
+put_log1("`my_minst.train.subset256` dataset matrix dimensions: 
+%1", dim(my_minst.train.subset256), .sep = " ")
+
+# Visualize the first char:
+char.image(my_minst.train.subset256[1,])
+
+# rm(train.files.subset256)
+# rm(train.images.subset256)
+# rm(my_minst.train.subset256)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
 
-### Load Test Data Subset----------------------------------------------------
-char_files.max <- 64 
-char_files.max
-
-
-ds.train.subset64.file_path <- file.path(train.data.path, "train-data-subset64.RData")
-ds.train.subset64.file_path
-
-if (file.exists(ds.train.subset64.file_path)) {
-  start <- put_start_date()
-  load(ds.train.subset64.file_path)
-  put_end_date(start)
-} else {
-  # Create Train Data list
-  train.dat.subset64 <- hwChar_data.load(img.train.root_path, 
-                                         char_files.max = char_files.max)
-  
-  start <- put_start_date()
-  save(train.dat.subset64, file = ds.train.subset64.file_path)
-  put_end_date(start)
-}
-
-str(train.dat.subset64)
-
-
-### Close Log ---------------------------------------------------------------
-log_close()
-
-### Qustion: iS Matrix centered? --------------------------
-# Reference:
-# 21.4 Vectorization for matrices /
-# Matrix–vector operations
-# https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#matrixvector-operations
-
-x <- my_minst.train
+### Analysis of subset `my_minst.train.subset256` ------------------------------
+#### Init `x` & `y` variables --------------------------------------------------
+ch.labels <- train.labels256
+x <- my_minst.train.subset256
 dim(x)
 class(x)
 str(x)
 
 y <- as.factor(rownames(x))
 str(y)
+length(y)
+
+### Qustion: iS Matrix centered? -----------------------------------------------
+# Reference:
+# 21.4 Vectorization for matrices /
+# Matrix–vector operations
+# https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#matrixvector-operations
+
 
 row_means.x <- rowMeans(x)
 max(row_means.x)
-#> 0.4063876
+#> 0.37509
 min(row_means.x)
-#> 0
+#> 0.37509
 
 #### Answer: No, let's center the matrix ----------------------
 x.centered <- x - row_means.x
 max(x.centered)
-#> 0.9755002
+#> 0.9413265
 min(x.centered)
 #> -0.4063876
-
 
 y[1]
 #> "#"
@@ -329,10 +353,10 @@ char.image(x.centered[1,])
 
 middle.idx <- as.integer(length(y)/2)
 middle.idx
-#> 417018
+#> 4992
 
 y[middle.idx]
-#> "7"
+#> "F"
 char.image(x.centered[middle.idx,])
 
 row_means.x.centered <- rowMeans(x.centered)
@@ -387,10 +411,6 @@ str(x.hist)
 
 # f <- x.hist$counts
 
-# bin_x <- x
-# bin_x[x < 0.5] <- 0 
-# bin_x[bin_x > 0] <- 1
-
 str(x[1,])
 x[1,]
 char.image(x[1,])
@@ -400,13 +420,13 @@ bin.x1 <- (x[1,] > 0.5)*1
 bin.x1
 char.image(bin.x1)
 
-bin.x2e4 <- (x[2e4,] > 0.5)*1
-# bin.x2e4
-char.image(bin.x2e4)
+bin.x2e3 <- (x[2e3,] > 0.5)*1
+# bin.x2e3
+char.image(bin.x2e3)
 
 bin_x <- (x > 0.5)*1
 char.image(bin_x[1,])
-char.image(bin_x[20000,])
+char.image(bin_x[2e3,])
 
 ### Standardize the chars --------------------------------------------------------
 # Reference:
@@ -440,7 +460,7 @@ char.image(x.scaled[1e5,])
 
 library(matrixStats)
 hist(colSds(x), breaks = 256)
-hist(colSds(x.scaled), breaks = 256)
+#hist(colSds(x.scaled), breaks = 256)
 hist(colSds(bin_x), breaks = 256)
 
 start <- put_start_date()
@@ -450,16 +470,22 @@ nzv
 
 # Columns to remove:
 length(nzv)
-#> 41 
+#> 33 
 
 image(matrix(1:784 %in% nzv, 28, 28))
 
+
+### Open log: Load Train Data Subset (Max 256 files per char class) -------------
+open_logfile(".split-train-data-subset256")
 ### Split Train Dataset --------------------------------------------------------
-seed <- 1234
-train.dataset.list <- sample_train_test_sets.mx(my_minst.train, seed)
+x.sample.seed <- 256
+train.dataset.list <- sample_train_test_sets.mx(x, 
+                                                x.sample.seed,
+                                                shuffle.test_rows = TRUE)
 str(train.dataset.list)
 
 x.train <- train.dataset.list$train_set
+dim(x.train)
 x.test <- train.dataset.list$test_set
 dim(x.test)
 #> [1] 166823    784
@@ -476,18 +502,24 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 pp <- preProcess(x.train, method = c("nzv", "center"))
-centered_subsetted_x_test <- predict(pp, newdata = x.test)
+str(pp)
+pp
+
+
+fit <- predict(pp, newdata = x.tst)
+str(x.test.fit)
+
 stopCluster(cl)
 stopImplicitCluster()
 put_end_date(start)
 
-dim(centered_subsetted_x_test)
+dim(x.test.fit)
 #> [1] 166823    743
-str(centered_subsetted_x_test)
+str(x.test.fit)
 
 y.test <- as.factor(rownames(x.test))
 y.test
-overall_accuracy <- mean(y.test == as.factor(rownames(centered_subsetted_x_test)))
+overall_accuracy <- mean(y.test == as.factor(rownames(x.test.fit)))
 overall_accuracy
 
 ## Cross Validation ------------------------------------------------------------
