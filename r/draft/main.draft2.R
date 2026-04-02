@@ -503,10 +503,12 @@ registerDoParallel(cl)
 
 pp <- preProcess(x.train, method = c("nzv", "center"))
 str(pp)
-pp
+pp$dim
+pp$method
+pp$mean
+pp$median
 
-
-fit <- predict(pp, newdata = x.tst)
+fit <- predict(pp, newdata = x.test)
 str(x.test.fit)
 
 stopCluster(cl)
