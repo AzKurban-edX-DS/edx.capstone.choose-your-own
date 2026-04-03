@@ -15,7 +15,8 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
 
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 
-                                   char_files.max = NA) {
+                                   char_files.max = NA,
+                                   seed = NA) {
   if(is.null(folder.list))
     folder.list <- dir(root_path)
 
@@ -23,7 +24,8 @@ img.file_path.get_list <- function(root_path,
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
-    put_log1("Getting file path list from the following char's root folders:
+    put_log1("Function: `img.file_path.get_list`:
+Getting file path list from the following char's root folders:
 %1", file.root_path)
 
     fpath.list <- list.files(file.root_path, 
@@ -32,12 +34,16 @@ img.file_path.get_list <- function(root_path,
     fpath.len <- length(fpath.list)
 
     if(!is.na(char_files.max) && fpath.len > char_files.max){
-      set.seed(fpath.len + folder.idx)
+      if (!is.na(seed)) {
+        set.seed(seed + folder.idx)
+      }
+      
       random.idx <- sample(fpath.len, size = char_files.max)
       fpath.list <- fpath.list[random.idx]
     }
     
-    put_log2("%1 files in folder: %2", length(fpath.list), folder_name)
+    put_log2("Function: `img.file_path.get_list`:
+%1 files in folder: %2", length(fpath.list), folder_name)
 
     list(root_path = file.root_path,
          file_path.list = fpath.list)
@@ -132,13 +138,14 @@ hwChar_data.load <- function(root_path,
   list(img.files = img.file_list,
        label.list = label_list,
        img.list = char_matrix.list,
-       my_mnist = img.mx)
+       hwChars.mnist = img.mx)
 }
 
 sample_train_test_sets.mx <- function(data, 
-                                      seed, 
+                                      seed = NA, 
                                       test.ratio = 0.2,
-                                      shuffle.test_rows = FALSE){ 
+                                      shuffle.test_rows = FALSE,
+                                      shuffle.seed = NA){ 
   put_log("Function: `sample_train_test_sets.mx`: Sampling 20% of the `data` data...")
 
   idx_group.list <- split(seq_len(nrow(data)), 
@@ -148,7 +155,9 @@ sample_train_test_sets.mx <- function(data,
   test.idx <-
     sapply(idx_group.list,
            function(idx_group) {
-             set.seed(seed + max(idx_group))
+             if (!is.na(seed)) {
+               set.seed(seed + max(idx_group))
+             }
              sample(idx_group, 
                     ceiling(length(idx_group)*test.ratio))
            }) |>
@@ -175,7 +184,7 @@ Extracting 20% of the original index set of `data` used for the test Set.")
   put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
 
   if (shuffle.test_rows) {
-    test.set <- shuffle.mxrows(test.set, seed + length(test.idx))
+    test.set <- shuffle.mxrows(test.set, shuffle.seed)
   }
   
   # Return result datassets

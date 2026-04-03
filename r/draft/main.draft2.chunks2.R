@@ -1,7 +1,7 @@
 library(data.table)
 
-str(my_minst.train)
-data <- my_minst.train
+str(hwChars.mnist.train)
+data <- hwChars.mnist.train
 seed <- 1
 
 # sample_train_test_sets.mx <- function(data, seed, test.ratio = 0.2){ -----
@@ -155,7 +155,7 @@ Extracting 20% of the original index set of `data` used for the test Set.")
 train.dat.subset64 <- list(img.files = img.file_list,
                            label.list = label_list,
                            img.list = char_matrix.list,
-                           my_mnist = img.mx)
+                           hwChars.mnist = img.mx)
 #  } ------------------------
     
 rm(root_path)

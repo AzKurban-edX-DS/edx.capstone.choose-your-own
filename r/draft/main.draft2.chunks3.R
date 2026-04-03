@@ -12,10 +12,10 @@ train.label.list
 
 img.train.list <- img.train.dat$img.list
 str(img.train.list)
-my_minst.train <- img.train.dat$my_mnist
+hwChars.mnist.train <- img.train.dat$hwChars.mnist
 
 # Visualize the first char:
-char.image(my_minst.train[1,])
+char.image(hwChars.mnist.train[1,])
 
 # Final Test Set ----------------------------------
 

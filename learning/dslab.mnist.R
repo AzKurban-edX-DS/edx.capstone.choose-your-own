@@ -65,10 +65,10 @@ source(log_func_script.file_path,
 library(dslabs)
 
 mnist <- dslabs::read_mnist()
-str(mnist)
+# str(mnist)
 
 x <- mnist$train$images
-str(x)
+# str(x)
 dim(x)
 y <- mnist$train$labels
 str(y)
@@ -318,21 +318,58 @@ t(scale(t(x)))
 ### Sample of 1000 elements -------------------
 set.seed(1990)
 index <- sample(nrow(mnist$train$images), 10000)
-x1e3 <- mnist$train$images[index,]
-str(x1e3)
+x <- mnist$train$images[index,]
+str(x)
 
-y1e3 <- factor(mnist$train$labels[index])
-str(y1e3)
+y <- factor(mnist$train$labels[index])
+str(y)
 
 index <- sample(nrow(mnist$test$images), 1000)
-x1e3_test <- mnist$test$images[index,]
-y1e3_test <- factor(mnist$test$labels[index])
+x_test <- mnist$test$images[index,]
+y_test <- factor(mnist$test$labels[index])
 
-colnames(x1e3) <- 1:ncol(mnist$train$images)
-colnames(x1e3_test) <- colnames(x1e3)
+colnames(x) <- 1:ncol(mnist$train$images)
+colnames(x_test) <- colnames(x)
 
 
-## 31.3 Preprocessing --------------------------------
+## 31.2 The `caret` package ----------------------------------------------------
+
+### The `train` function -----------------
+
+library(caret)
+
+str(mnist_27)
+y <- mnist_27$train$y
+str(y)
+
+cl <- parallel::makeCluster(N_pcCores)
+doParallel::registerDoParallel(cl)
+
+train_glm <- caret::train(y ~ ., method = "glm", data = mnist_27$train)
+str(train_glm)
+
+parallel::stopCluster(cl)
+
+train_qda <- caret::train(y ~ ., method = "qda", data = mnist_27$train)
+
+train_knn <- caret::train(y ~ ., method = "knn", data = mnist_27$train)
+
+### The `predict` function ----------------------------
+
+cl <- parallel::makeCluster(N_pcCores)
+doParallel::registerDoParallel(cl)
+
+fit <- glm(y ~ ., family = "binomial", data = mnist_27$train)
+str(fit)
+
+p_hat <- predict(fit, newdata = mnist_27$test)
+str(p_hat)
+
+parallel::stopCluster(cl)
+
+p_hat
+
+## 31.3 Preprocessing ----------------------------------------------------------
 
 # library(matrixStats)
 hist(colSds(x), breaks = 256)
@@ -350,13 +387,18 @@ image(matrix(1:784 %in% nzv, 28, 28))
 #> Below is an example demonstrating how to remove predictors with near-zero variance 
 #> and then center the remaining predictors:
 
-str(x1e3)  
-pp <- preProcess(x1e3, method = c("nzv", "center"))
+str(x)  
+pp <- preProcess(x, method = c("nzv", "center"))
 str(pp)
 
+str(x_test)
+dim(x_test)
 centered_subsetted_x_test <- predict(pp, newdata = x_test)
 dim(centered_subsetted_x_test)
 #> [1] 1000  252
+str(centered_subsetted_x_test)
+which(centered_subsetted_x_test[1,])
+
 
 str(centered_subsetted_x_test)
 
@@ -364,24 +406,35 @@ str(centered_subsetted_x_test)
 
 ### Optimizing `k` --------
 
-train_knn <- train(x1e3, y1e3, method = "knn", 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+start <- print_start_date()
+train_knn <- caret::train(x, y, method = "knn", 
                    preProcess = "nzv",
                    trControl = trainControl("cv", number = 20, p = 0.95),
                    tuneGrid = data.frame(k = seq(1, 7, 2)))
-str(train_knn)
 
-y_hat_knn <- predict(train_knn, x_test, type = "raw")
+print_end_date(start)
+str(train_knn)
+stopCluster(cl)
+stopImplicitCluster()
+
+start <- print_start_date()
+y_hat_knn <- stats::predict(train_knn, x_test, type = "raw")
+print_end_date(start)
 str(y_hat_knn)
 length(y_hat_knn)
+
 
 mean(y_hat_knn == y_test)
 #> [1] 0.952
 
-test_result1e3 <- list(predicted = y_hat_knn,
+test_result <- list(predicted = y_hat_knn,
                               actual = y_test,
                               img = x_test)
 
-str(test_result1e3)
+str(test_result)
 
 
 show_digit <- function(idx) {
@@ -523,7 +576,7 @@ registerDoParallel(cl)
 start <- print_start_date()
 library(randomForest)
 
-train1e3_rf <- train(x1e3, y1e3, method = "rf", 
+train1e3_rf <- train(x, y, method = "rf", 
                   preProcess = "nzv",
                   tuneGrid = data.frame(mtry = seq(5, 15)))
 #str(train1e3_rf)
@@ -537,11 +590,11 @@ print_end_date(start)
 plot(train1e3_rf)
 
 # Now that we have optimized our algorithm, we are ready to fit our final model:
-# y1e3_hat_rf <- predict(train1e3_rf, x1e3_test, type = "raw")
+# y_hat_rf <- predict(train1e3_rf, x_test, type = "raw")
 y_hat_rf <- predict(train1e3_rf, x_test, type = "raw")
 
 # As with `kNN`, we also achieve high accuracy:
-#mean(y1e3_hat_rf == y1e3_test)
+#mean(y_hat_rf == y_test)
 #> [1] 0.954
 
 mean(y_hat_rf == y_test)

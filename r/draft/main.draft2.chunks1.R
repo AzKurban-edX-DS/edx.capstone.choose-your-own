@@ -219,11 +219,11 @@ char.image(A_list.mx[2,])
 
 img.dat.probe <- hwChar_data.load(img.train.root_path, img_list.names)
 str(img.dat.probe)
-my_minst.16ch <- img.dat.probe$my_mnist
-char.image(my_minst.16ch[1,])
-char.image(my_minst.16ch[15700,])
-char.image(my_minst.16ch[15701,])
-char.image(my_minst.16ch[15702,])
+hwChars.mnist.16ch <- img.dat.probe$hwChars.mnist
+char.image(hwChars.mnist.16ch[1,])
+char.image(hwChars.mnist.16ch[15700,])
+char.image(hwChars.mnist.16ch[15701,])
+char.image(hwChars.mnist.16ch[15702,])
 
 
 # Research: Arrays & Matrices --------------------------------------------------
@@ -280,23 +280,6 @@ log_close()
 #> https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html 
 #> 21.2 Case study: MNIST
 #> https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#sec-mnist
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # ----------------------------------

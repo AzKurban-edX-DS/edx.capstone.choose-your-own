@@ -101,7 +101,7 @@ if (dir.exists(dir.to_remove)) {
   warning(get_log1("Nothing to do: directory does not exist: `%1`", dir.to_remove))
 }
 
-## Crating Datasets ------------------------------------------------------------
+## Creating Datasets -----------------------------------------------------------
 ### Open log: Load Train Data --------------------------------------------------
 open_logfile(".load-train-data")
 ### Load Train Data ------------------------------------------------------------
@@ -131,7 +131,7 @@ if (file.exists(ds.train.list.file_path)) {
   img.train.files <- img.train.dat$img.files
   train.labels <- img.train.dat$label.list
   img.train.list <- img.train.dat$img.list
-  my_minst.train <- img.train.dat$my_mnist
+  hwChars.mnist.train <- img.train.dat$hwChars.mnist
   
   rm(img.train.dat)
 
@@ -141,7 +141,7 @@ if (file.exists(ds.train.list.file_path)) {
   save(img.train.files,
        train.labels,
        img.train.list,
-       my_minst.train, 
+       hwChars.mnist.train, 
        file = ds.train.list.file_path)
   put_log("Train Data list has been cached to the File System.")
   put_end_date(start)
@@ -156,20 +156,69 @@ put_log1("Train dataset labels:
 put_log1("`img.train.list` data structure:
 %1", capture.output(str(img.train.list)))
 
-put_log1("`my_minst.train` dataset matrix dimensions: 
-%1", dim(my_minst.train), .sep = " ")
+put_log1("`hwChars.mnist.train` dataset matrix dimensions: 
+%1", dim(hwChars.mnist.train), .sep = " ")
 
 # Visualize the first char:
-char.image(my_minst.train[1,])
+char.image(hwChars.mnist.train[1,])
 
-# rm(img.train.files)
+# rmc(img.train.files)
+# rm(hwChars.mnist.train)
 rm(img.train.list)
-rm(my_minst.train)
 
-### Close Log ---------------------------------------------------------------
+#### Init `x` & `y` variables -------------------
+x <- hwChars.mnist.train
+rm(hwChars.mnist.train)
+
+dim(x)
+class(x)
+str(x)
+mean(rowMeans(x))
+
+y <- as.factor(rownames(x))
+str(y)
+length(y)
+mean(y)
+mean(is.na(y))
+max(is.na(y))
+
+
+
+#### Split Train Dataset --------------------------------------------------------
+dim.x <- dim(x)
+dim.x
+dim.x[1]
+dim.x[2]
+
+x.sample.seed <- dim.x[1]
+x.sample.seed
+test.sample.seed <- as.integer(x.sample.seed*0.2)
+test.sample.seed
+
+train.dataset.list <- sample_train_test_sets.mx(x, 
+                                                x.sample.seed,
+                                                shuffle.test_rows = TRUE,
+                                                shuffle.seed = test.sample.seed)
+str(train.dataset.list)
+
+x.train <- train.dataset.list$train_set
+dim(x.train)
+y.train <- as.factor(rownames(x.train))
+str(y.train)
+length(y.train)
+
+x.test <- train.dataset.list$test_set
+dim(x.test)
+#> [1] 166823    784
+
+y.test <- as.factor(rownames(x.test))
+str(y.test)
+length(y.test)
+
+### Close Log ------------------------------------------------------------------
 log_close()
 
-### Open log: Load Final Test Data --------------------------------------------------
+### Open log: Load Final Test Data ---------------------------------------------
 open_logfile(".load-final-test-data")
 ### Load Final Test Data -------------------------------------------------------
 
@@ -201,7 +250,7 @@ if (file.exists(ds.final_test.list.file_path)) {
   img.final_test.files <- img.final_test.dat$img.files
   img.final_test.list <- img.final_test.dat$img.list
   final_test.labels <- img.final_test.dat$label.list
-  my_minst.final_test <- img.final_test.dat$my_mnist
+  hwChars.mnist.final_test <- img.final_test.dat$hwChars.mnist
   
   rm(img.final_test.dat)
   
@@ -210,7 +259,7 @@ if (file.exists(ds.final_test.list.file_path)) {
   start <- put_start_date()
   save(img.final_test.files,
        img.final_test.list,
-       my_minst.final_test, 
+       hwChars.mnist.final_test, 
        file = ds.final_test.list.file_path)
   put_log("Final Test Data list has been cached to the File System.")
   put_end_date(start)
@@ -225,16 +274,16 @@ put_log1("Final Test dataset labels:
 put_log1("`img.final_test.list` data structure:
 %1", capture.output(str(img.final_test.list)))
 
-put_log1("`my_minst.final_test` dataset matrix dimensions: 
-%1", dim(my_minst.final_test), .sep = " ")
+put_log1("`hwChars.mnist.final_test` dataset matrix dimensions: 
+%1", dim(hwChars.mnist.final_test), .sep = " ")
 
-char.image(my_minst.final_test[1,])
+char.image(hwChars.mnist.final_test[1,])
 
-my_minst.final_test[1:120, 1:7]
+hwChars.mnist.final_test[1:120, 1:7]
 
 # rm(img.final_test.files)
 rm(img.final_test.list)
-# rm(my_minst.final_test)
+# rm(hwChars.mnist.final_test)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
@@ -264,7 +313,8 @@ from raw data files from root directory:
   
   start <- put_start_date()
   train.dat.subset256 <- hwChar_data.load(img.train.root_path, 
-                                          char_files.max = char_files.max256)
+                                          char_files.max = char_files.max256,
+                                          char_files.seed = char_files.max256)
   
   put_log1("Train Data subset (Max 256 files per char class) list structure:
 %1", capture.output(str(train.dat.subset256)))
@@ -276,7 +326,7 @@ has been created from raw data files.")
   train.files.subset256 <- train.dat.subset256$img.files
   train.labels256 <- train.dat.subset256$label.list
   train.images.subset256 <- train.dat.subset256$img.list
-  my_minst.train.subset256 <- train.dat.subset256$my_mnist
+  hwChars.mnist.train.subset256 <- train.dat.subset256$hwChars.mnist
   
   rm(train.dat.subset256)
   
@@ -286,7 +336,7 @@ has been created from raw data files.")
   save(train.files.subset256,
        train.labels256,
        train.images.subset256,
-       my_minst.train.subset256, 
+       hwChars.mnist.train.subset256, 
        file = ds.train.subset256.file_path)
   put_log("Train Data subset (Max 256 files per char class) list has been cached to the File System.")
   put_end_date(start)
@@ -301,23 +351,23 @@ put_log1("Train dataset labels:
 put_log1("`train.images.subset256` data structure:
 %1", capture.output(str(train.images.subset256)))
 
-put_log1("`my_minst.train.subset256` dataset matrix dimensions: 
-%1", dim(my_minst.train.subset256), .sep = " ")
+put_log1("`hwChars.mnist.train.subset256` dataset matrix dimensions: 
+%1", dim(hwChars.mnist.train.subset256), .sep = " ")
 
 # Visualize the first char:
-char.image(my_minst.train.subset256[1,])
+char.image(hwChars.mnist.train.subset256[1,])
 
 # rm(train.files.subset256)
 # rm(train.images.subset256)
-# rm(my_minst.train.subset256)
+# rm(hwChars.mnist.train.subset256)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
 
-### Analysis of subset `my_minst.train.subset256` ------------------------------
-#### Init `x` & `y` variables --------------------------------------------------
+### Analysis of subset `hwChars.mnist.train.subset256` -------------------------
+#### Init `x` & `y` variables (Max 256 items per char class) -------------------
 ch.labels <- train.labels256
-x <- my_minst.train.subset256
+x <- hwChars.mnist.train.subset256
 dim(x)
 class(x)
 str(x)
@@ -406,8 +456,8 @@ str(x.hist)
 # Binarize the data
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data
 
-# img.train.dat$my_mnist[1,]
-# my_minst.train[1,]
+# img.train.dat$hwChars.mnist[1,]
+# hwChars.mnist.train[1,]
 
 # f <- x.hist$counts
 
@@ -478,51 +528,176 @@ image(matrix(1:784 %in% nzv, 28, 28))
 ### Open log: Load Train Data Subset (Max 256 files per char class) -------------
 open_logfile(".split-train-data-subset256")
 ### Split Train Dataset --------------------------------------------------------
-x.sample.seed <- 256
+dim.x <- dim(x)
+dim.x
+dim.x[1]
+dim.x[2]
+
+x.sample.seed <- dim.x[1]
+x.sample.seed
+test.sample.seed <- as.integer(x.sample.seed*0.2)
+test.sample.seed
+
 train.dataset.list <- sample_train_test_sets.mx(x, 
                                                 x.sample.seed,
-                                                shuffle.test_rows = TRUE)
+                                                shuffle.test_rows = TRUE,
+                                                shuffle.seed = test.sample.seed)
 str(train.dataset.list)
 
 x.train <- train.dataset.list$train_set
 dim(x.train)
+
+y.train <- as.factor(rownames(x.train))
+str(y.train)
+
 x.test <- train.dataset.list$test_set
 dim(x.test)
 #> [1] 166823    784
 
+y.test <- as.factor(rownames(x.test))
+str(y.test)
+
 ### Close Log ---------------------------------------------------------------
 log_close()
 
-### The First MOdel ------------------------------------------------------------
+### The First MOdel (k-nearest neighbors) --------------------------------------
+# Reference:
+# 31.5 k-nearest neighbors
+# https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice
+
 library(caret)
 library(doParallel)
+
+str(x.train)
+
+y.train <- as.factor(rownames(x.train))
+str(y.train)
+length(y.train)
+
+str(x.test)
+
+y.test <- as.factor(rownames(x.test))
+str(y.test)
+length(y.test)
 
 start <- put_start_date()
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-pp <- preProcess(x.train, method = c("nzv", "center"))
-str(pp)
-pp$dim
-pp$method
-pp$mean
-pp$median
+train_knn <- caret::train(x.train, y.train, method = "knn", 
+                          preProcess = "nzv",
+                          trControl = trainControl("cv", number = 20, p = 0.95),
+                          tuneGrid = data.frame(k = seq(1, 7, 2)))
 
-fit <- predict(pp, newdata = x.test)
-str(x.test.fit)
 
 stopCluster(cl)
 stopImplicitCluster()
-put_end_date(start)
+print_end_date(start)
+# str(train_knn)
+train_knn
 
-dim(x.test.fit)
-#> [1] 166823    743
-str(x.test.fit)
+start <- print_start_date()
+y.train.hat_knn <- stats::predict(train_knn, x.test, type = "raw")
+print_end_date(start)
+str(y.train.hat_knn)
+length(y.train.hat_knn)
 
-y.test <- as.factor(rownames(x.test))
-y.test
-overall_accuracy <- mean(y.test == as.factor(rownames(x.test.fit)))
+
+overall_accuracy <- mean(y.train.hat_knn == y.test)
 overall_accuracy
+#> [1] 0.7657791
+
+#### Optimizing `k`
+# Reference:
+# Optimizing `k`
+# https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#optimizing-k
+
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+# First step of optimizing:
+train_knn <- caret::train(x.train, y.train, method = "knn", 
+                   preProcess = "nzv",
+                   trControl = trainControl("cv", number = 20, p = 0.95),
+                   tuneGrid = data.frame(k = seq(1, 7, 2)))
+
+stopCluster(cl)
+stopImplicitCluster()
+print_end_date(start)
+# str(train_knn)
+train_knn
+
+start <- put_start_date()
+y_hat_knn <- stats::predict(train_knn, x.test, type = "raw")
+print_end_date(start)
+str(y.train.hat_knn)
+length(y.train.hat_knn)
+
+# We achieve relatively high accuracy:
+overall_accuracy <- mean(y.train.hat_knn == y.test)
+overall_accuracy
+#> 0.7657791
+
+#### Dimension reduction with PCA --------------------------------
+# Reference:
+# Dimension reduction with PCA
+# https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
+
+
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+train_knn_pca <- caret::train(x.train, y.train, method = "knn", 
+                       preProcess = c("nzv", "pca"),
+                       trControl = trainControl("cv", number = 20, p = 0.95,
+                                                preProcOptions = list(thresh = 0.9)),
+                       tuneGrid = data.frame(k = seq(1, 7, 2)))
+stopCluster(cl)
+stopImplicitCluster()
+print_end_date(start)
+train_knn_pca
+
+start <- put_start_date()
+y_hat_knn_pca <- stats::predict(train_knn_pca, x.test, type = "raw")
+print_end_date(start)
+
+mean(y_hat_knn_pca == y.test)
+#> [1] 
+
+##### Validate on full size dataset -----------------------------
+open_logfile(".load-train-data")
+###### Load Train Data ---------------------------------------------------------
+
+put_log1("Loading Train Data from cache file: 
+%1", ds.train.list.file_path)
+  
+start <- put_start_date()
+load(ds.train.list.file_path)
+put_log("Train Data list has been loaded from cache.")
+put_end_date(start)
+  
+put_log1("Train image file list structure:
+%1", capture.output(str(img.train.files)))
+
+put_log1("Train dataset labels:
+%1", train.labels, .sep = " ")
+
+put_log1("`img.train.list` data structure:
+%1", capture.output(str(img.train.list)))
+
+put_log1("`hwChars.mnist.train` dataset matrix dimensions: 
+%1", dim(hwChars.mnist.train), .sep = " ")
+
+# Visualize the first char:
+char.image(hwChars.mnist.train[1,])
+
+# rm(img.train.files)
+rm(img.train.list)
+rm(hwChars.mnist.train)
+
+
 
 ## Cross Validation ------------------------------------------------------------
 # Reference:
