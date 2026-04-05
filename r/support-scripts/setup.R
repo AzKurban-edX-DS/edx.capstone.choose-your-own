@@ -1,6 +1,6 @@
 # Setup -----------------------------------------------------------------------
 options(timeout = max(300, getOption("timeout")))
-
+## Install Packages ------------------------------------------------------------
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
 #> https://github.com/AzKurban-edX-DS/harvardx-movielens
 if(!require(matrixStats))
@@ -67,7 +67,7 @@ if(!require(sqldf))
 #   install.packages("")
 
 
-#load the packages in R
+## Load Libraries & resolve conflicts ------------------------------------------
 
 library(matrixStats)
 library(dslabs)

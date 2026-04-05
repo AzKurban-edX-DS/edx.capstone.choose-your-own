@@ -41,6 +41,18 @@ ds.subsets.path <- file.path(train.data.path, "subsets")
 dir.create(ds.subsets.path)
 ds.subsets.path
 
+models.path <- file.path(data.path, "models")
+dir.create(models.path)
+models.path
+
+models.random_forest.path <- file.path(models.path, "random-forest")
+dir.create(models.random_forest.path)
+models.random_forest.path
+
+models.random_forest.research.path <- file.path(models.random_forest.path, "research")
+dir.create(models.random_forest.research.path)
+models.random_forest.research.path
+
 ## Setup -----------------------------------------------------------------------
 source(setup_script.file_path, 
        catch.aborts = TRUE,
@@ -560,6 +572,9 @@ str(y.test)
 ### Close Log ---------------------------------------------------------------
 log_close()
 
+## Model Building --------------------------------------------------------------
+### Open log: First Model (kNN) ------------------------------------------------
+open_logfile(".first-model.knn")
 ### The First MOdel (k-nearest neighbors) --------------------------------------
 # Reference:
 # 31.5 k-nearest neighbors
@@ -639,6 +654,11 @@ overall_accuracy <- mean(y.train.hat_knn == y.test)
 overall_accuracy
 #> 0.7657791
 
+### Close Log ------------------------------------------------------------------
+log_close()
+
+### Open log: Dimension reduction with PCA -------------------------------------
+open_logfile(".model.dim-reduction-pca")
 #### Dimension reduction with PCA --------------------------------
 # Reference:
 # Dimension reduction with PCA
@@ -646,7 +666,7 @@ overall_accuracy
 
 
 start <- put_start_date()
-cl <- makeCluster(N_pcCores)
+cl <- makeCluster(as.integer(N_pcCores / 2))
 registerDoParallel(cl)
 
 train_knn_pca <- caret::train(x.train, y.train, method = "knn", 
@@ -665,6 +685,9 @@ print_end_date(start)
 
 mean(y_hat_knn_pca == y.test)
 #> [1] 
+
+### Close Log ------------------------------------------------------------------
+log_close()
 
 ##### Validate on full size dataset -----------------------------
 open_logfile(".load-train-data")
