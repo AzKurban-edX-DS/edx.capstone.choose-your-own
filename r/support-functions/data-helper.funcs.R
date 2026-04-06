@@ -138,7 +138,7 @@ hwChar_data.load <- function(root_path,
   list(img.files = img.file_list,
        label.list = label_list,
        img.list = char_matrix.list,
-       hwChars.mnist = img.mx)
+       my_emnist = img.mx) # my Extended MNIST-like dataset.
 }
 
 sample_train_test_sets.mx <- function(data, 

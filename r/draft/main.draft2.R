@@ -84,8 +84,8 @@ source(data_helper.funcs.file_path,
        keep.source = TRUE)
 
 
-### Open log: Load Dataset -----------------------------------------------------
-open_logfile(".load-dataset")
+### Open log: Download Kaggle Dataset -----------------------------------------------------
+open_logfile(".download-kaggle-dataset")
 ## Download the Kaggle Dataset -------------------------------------------------
 
 # Reference: https://www.kaggle.com/datasets/vaibhao/handwritten-characters
@@ -112,6 +112,9 @@ if (dir.exists(dir.to_remove)) {
 } else {
   warning(get_log1("Nothing to do: directory does not exist: `%1`", dir.to_remove))
 }
+
+### Close Log ------------------------------------------------------------------
+log_close()
 
 ## Creating Datasets -----------------------------------------------------------
 ### Open log: Load Train Data --------------------------------------------------
@@ -143,9 +146,8 @@ if (file.exists(ds.train.list.file_path)) {
   img.train.files <- img.train.dat$img.files
   train.labels <- img.train.dat$label.list
   img.train.list <- img.train.dat$img.list
-  hwChars.mnist.train <- img.train.dat$hwChars.mnist
+  my_emnist.train <- img.train.dat$my_emnist
   
-  rm(img.train.dat)
 
   put_log1("Saving Train Data to the cache file: 
 %1", ds.train.list.file_path)
@@ -153,10 +155,12 @@ if (file.exists(ds.train.list.file_path)) {
   save(img.train.files,
        train.labels,
        img.train.list,
-       hwChars.mnist.train, 
+       my_emnist.train, 
        file = ds.train.list.file_path)
   put_log("Train Data list has been cached to the File System.")
   put_end_date(start)
+  
+  rm(img.train.dat)
 }
 
 put_log1("Train image file list structure:
@@ -168,19 +172,19 @@ put_log1("Train dataset labels:
 put_log1("`img.train.list` data structure:
 %1", capture.output(str(img.train.list)))
 
-put_log1("`hwChars.mnist.train` dataset matrix dimensions: 
-%1", dim(hwChars.mnist.train), .sep = " ")
+put_log1("My Extended MNIST-like dataset (matrix) dimensions: 
+%1", dim(my_emnist.train), .sep = " ")
 
 # Visualize the first char:
-char.image(hwChars.mnist.train[1,])
+char.image(my_emnist.train[1,])
 
-# rmc(img.train.files)
-# rm(hwChars.mnist.train)
+# rm(img.train.files)
+# rm(my_emnist.train)
 rm(img.train.list)
 
 #### Init `x` & `y` variables -------------------
-x <- hwChars.mnist.train
-rm(hwChars.mnist.train)
+x <- my_emnist.train
+rm(my_emnist.train)
 
 dim(x)
 class(x)
@@ -194,8 +198,11 @@ mean(y)
 mean(is.na(y))
 max(is.na(y))
 
+### Close Log ---------------------------------------------------------------
+log_close()
 
-
+### Open log: Split Train Data Subset -------------
+open_logfile(".split-train-data")
 #### Split Train Dataset --------------------------------------------------------
 dim.x <- dim(x)
 dim.x
@@ -262,7 +269,7 @@ if (file.exists(ds.final_test.list.file_path)) {
   img.final_test.files <- img.final_test.dat$img.files
   img.final_test.list <- img.final_test.dat$img.list
   final_test.labels <- img.final_test.dat$label.list
-  hwChars.mnist.final_test <- img.final_test.dat$hwChars.mnist
+  my_emnist.final_test <- img.final_test.dat$my_emnist
   
   rm(img.final_test.dat)
   
@@ -271,7 +278,7 @@ if (file.exists(ds.final_test.list.file_path)) {
   start <- put_start_date()
   save(img.final_test.files,
        img.final_test.list,
-       hwChars.mnist.final_test, 
+       my_emnist.final_test, 
        file = ds.final_test.list.file_path)
   put_log("Final Test Data list has been cached to the File System.")
   put_end_date(start)
@@ -286,16 +293,16 @@ put_log1("Final Test dataset labels:
 put_log1("`img.final_test.list` data structure:
 %1", capture.output(str(img.final_test.list)))
 
-put_log1("`hwChars.mnist.final_test` dataset matrix dimensions: 
-%1", dim(hwChars.mnist.final_test), .sep = " ")
+put_log1("`my_emnist.final_test` dataset matrix dimensions: 
+%1", dim(my_emnist.final_test), .sep = " ")
 
-char.image(hwChars.mnist.final_test[1,])
+char.image(my_emnist.final_test[1,])
 
-hwChars.mnist.final_test[1:120, 1:7]
+my_emnist.final_test[1:120, 1:7]
 
 # rm(img.final_test.files)
 rm(img.final_test.list)
-# rm(hwChars.mnist.final_test)
+# rm(my_emnist.final_test)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
@@ -338,7 +345,7 @@ has been created from raw data files.")
   train.files.subset256 <- train.dat.subset256$img.files
   train.labels256 <- train.dat.subset256$label.list
   train.images.subset256 <- train.dat.subset256$img.list
-  hwChars.mnist.train.subset256 <- train.dat.subset256$hwChars.mnist
+  my_emnist.train.subset256 <- train.dat.subset256$my_emnist
   
   rm(train.dat.subset256)
   
@@ -348,7 +355,7 @@ has been created from raw data files.")
   save(train.files.subset256,
        train.labels256,
        train.images.subset256,
-       hwChars.mnist.train.subset256, 
+       my_emnist.train.subset256, 
        file = ds.train.subset256.file_path)
   put_log("Train Data subset (Max 256 files per char class) list has been cached to the File System.")
   put_end_date(start)
@@ -363,23 +370,23 @@ put_log1("Train dataset labels:
 put_log1("`train.images.subset256` data structure:
 %1", capture.output(str(train.images.subset256)))
 
-put_log1("`hwChars.mnist.train.subset256` dataset matrix dimensions: 
-%1", dim(hwChars.mnist.train.subset256), .sep = " ")
+put_log1("`my_emnist.train.subset256` dataset matrix dimensions: 
+%1", dim(my_emnist.train.subset256), .sep = " ")
 
 # Visualize the first char:
-char.image(hwChars.mnist.train.subset256[1,])
+char.image(my_emnist.train.subset256[1,])
 
 # rm(train.files.subset256)
 # rm(train.images.subset256)
-# rm(hwChars.mnist.train.subset256)
+# rm(my_emnist.train.subset256)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
 
-### Analysis of subset `hwChars.mnist.train.subset256` -------------------------
+### Analysis of subset `my_emnist.train.subset256` -------------------------
 #### Init `x` & `y` variables (Max 256 items per char class) -------------------
 ch.labels <- train.labels256
-x <- hwChars.mnist.train.subset256
+x <- my_emnist.train.subset256
 dim(x)
 class(x)
 str(x)
@@ -468,8 +475,8 @@ str(x.hist)
 # Binarize the data
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data
 
-# img.train.dat$hwChars.mnist[1,]
-# hwChars.mnist.train[1,]
+# img.train.dat$my_emnist[1,]
+# my_emnist.train[1,]
 
 # f <- x.hist$counts
 
@@ -710,15 +717,15 @@ put_log1("Train dataset labels:
 put_log1("`img.train.list` data structure:
 %1", capture.output(str(img.train.list)))
 
-put_log1("`hwChars.mnist.train` dataset matrix dimensions: 
-%1", dim(hwChars.mnist.train), .sep = " ")
+put_log1("`my_emnist.train` dataset matrix dimensions: 
+%1", dim(my_emnist.train), .sep = " ")
 
 # Visualize the first char:
-char.image(hwChars.mnist.train[1,])
+char.image(my_emnist.train[1,])
 
 # rm(img.train.files)
 rm(img.train.list)
-rm(hwChars.mnist.train)
+rm(my_emnist.train)
 
 
 
