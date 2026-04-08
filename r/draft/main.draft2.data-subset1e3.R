@@ -68,7 +68,7 @@ has been created from raw data files.")
   train.files.subset1e3 <- train.dat.subset1e3$img.files
   train.labels1e3 <- train.dat.subset1e3$label.list
   train.images.subset1e3 <- train.dat.subset1e3$img.list
-  hwChars.mnist.train.subset1e3 <- train.dat.subset1e3$hwChars.mnist
+  my_emnist.train.subset1e3 <- train.dat.subset1e3$my_emnist
   
   rm(train.dat.subset1e3)
   
@@ -78,7 +78,7 @@ has been created from raw data files.")
   save(train.files.subset1e3,
        train.labels1e3,
        train.images.subset1e3,
-       hwChars.mnist.train.subset1e3, 
+       my_emnist.train.subset1e3, 
        file = ds.train.subset1e3.file_path)
   put_log("Train Data subset (Max 1e3 files per char class) list has been cached to the File System.")
   put_end_date(start)
@@ -93,19 +93,19 @@ put_log1("Train dataset labels:
 put_log1("`train.images.subset1e3` data structure:
 %1", capture.output(str(train.images.subset1e3)))
 
-put_log1("`hwChars.mnist.train.subset1e3` dataset matrix dimensions: 
-%1", dim(hwChars.mnist.train.subset1e3), .sep = " ")
+put_log1("`my_emnist.train.subset1e3` dataset matrix dimensions: 
+%1", dim(my_emnist.train.subset1e3), .sep = " ")
 
 # Visualize the first char:
-char.image(hwChars.mnist.train.subset1e3[1,])
+char.image(my_emnist.train.subset1e3[1,])
 
 # rm(train.files.subset1e3)
 # rm(train.images.subset1e3)
-# rm(hwChars.mnist.train.subset1e3)
+# rm(my_emnist.train.subset1e3)
 
 #### Init `x1e3` & `y1e3` variables (Max 1e3 items per char class) -------------------
 ch.labels <- train.labels1e3
-x1e3 <- hwChars.mnist.train.subset1e3
+x1e3 <- my_emnist.train.subset1e3
 dim(x1e3)
 class(x1e3)
 str(x1e3)

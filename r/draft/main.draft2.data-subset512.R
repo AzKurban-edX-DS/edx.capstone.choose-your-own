@@ -68,7 +68,7 @@ has been created from raw data files.")
   train.files.subset512 <- train.dat.subset512$img.files
   train.labels512 <- train.dat.subset512$label.list
   train.images.subset512 <- train.dat.subset512$img.list
-  hwChars.mnist.train.subset512 <- train.dat.subset512$hwChars.mnist
+  my_emnist.train.subset512 <- train.dat.subset512$my_emnist
   
   rm(train.dat.subset512)
   
@@ -78,7 +78,7 @@ has been created from raw data files.")
   save(train.files.subset512,
        train.labels512,
        train.images.subset512,
-       hwChars.mnist.train.subset512, 
+       my_emnist.train.subset512, 
        file = ds.train.subset512.file_path)
   put_log("Train Data subset (Max 512 files per char class) list has been cached to the File System.")
   put_end_date(start)
@@ -93,19 +93,19 @@ put_log1("Train dataset labels:
 put_log1("`train.images.subset512` data structure:
 %1", capture.output(str(train.images.subset512)))
 
-put_log1("`hwChars.mnist.train.subset512` dataset matrix dimensions: 
-%1", dim(hwChars.mnist.train.subset512), .sep = " ")
+put_log1("`my_emnist.train.subset512` dataset matrix dimensions: 
+%1", dim(my_emnist.train.subset512), .sep = " ")
 
 # Visualize the first char:
-char.image(hwChars.mnist.train.subset512[1,])
+char.image(my_emnist.train.subset512[1,])
 
 # rm(train.files.subset512)
 # rm(train.images.subset512)
-# rm(hwChars.mnist.train.subset512)
+# rm(my_emnist.train.subset512)
 
 #### Init `x512` & `y512` variables (Max 512 items per char class) -------------------
 ch.labels <- train.labels512
-x512 <- hwChars.mnist.train.subset512
+x512 <- my_emnist.train.subset512
 dim(x512)
 class(x512)
 str(x512)
