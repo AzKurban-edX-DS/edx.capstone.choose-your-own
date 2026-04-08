@@ -1,58 +1,5 @@
 # Main Script ------------------------------------------------------------------
 
-## Initial Paths ---------------------------------------------------------------
-r.path <- "r"
-
-support_functions.folder <- "support-functions"
-support_scripts.folder <- "support-scripts"
-
-support_scripts.path <- file.path(r.path, support_scripts.folder)
-support_functions.path <- file.path(r.path, support_functions.folder)
-
-setup_script.file_path <- file.path(support_scripts.path, "setup.R")
-
-data.path <- "data"
-raw_data.path <- file.path(data.path, "raw")
-raw_data.path
-
-raw_data.folder_name <- "Vaibs.HW-Chars"
-raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
-raw_data.chars.path
-
-img.train.root_path <- file.path(raw_data.chars.path, "Train")
-img.train.root_path
-
-img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
-img.validation.root_path
-
-dataset.path <- file.path(data.path, "dataset")
-dir.create(dataset.path)
-dataset.path
-
-train.data.path <- file.path(dataset.path, "train")
-dir.create(train.data.path)
-train.data.path
-
-final_test.data.path <- file.path(dataset.path, "final_test")
-dir.create(final_test.data.path)
-final_test.data.path
-
-ds.subsets.path <- file.path(train.data.path, "subsets")
-dir.create(ds.subsets.path)
-ds.subsets.path
-
-models.path <- file.path(data.path, "models")
-dir.create(models.path)
-models.path
-
-models.random_forest.path <- file.path(models.path, "random-forest")
-dir.create(models.random_forest.path)
-models.random_forest.path
-
-models.random_forest.research.path <- file.path(models.random_forest.path, "research")
-dir.create(models.random_forest.research.path)
-models.random_forest.research.path
-
 ## Setup -----------------------------------------------------------------------
 source(setup_script.file_path, 
        catch.aborts = TRUE,
