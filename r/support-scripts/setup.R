@@ -164,6 +164,10 @@ models.random_forest.research.path <- file.path(models.random_forest.path, "rese
 dir.create(models.random_forest.research.path)
 models.random_forest.research.path
 
+knn_pca.path = file.path(models.path, "knn-pca")
+if(!dir.exists(knn_pca.path)) {
+  dir.create(knn_pca.path)
+}
 
 
 

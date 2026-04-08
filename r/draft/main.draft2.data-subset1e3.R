@@ -154,17 +154,25 @@ length(y1e3.test)
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-## Model Building -------------------------------------------------------------
-
-### Open log: Dimension reduction with PCA -------------------------------------
-open_logfile(".model.dim-reduction-pca")
-### Dimension reduction with PCA --------------------------------
+## Model Building --------------------------------------------------------------
+### Open log: Train Model kNN+PCA ----------------------------------------------
+open_logfile(".train-model.knn+pca")
+### Training Model using the following methods: kNN, PCA -----------------------
 # Reference:
 # Dimension reduction with PCA
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
 
+knn_pca.path = file.path(models.path, "knn-pca")
 
-dim_reduction.x1e3.train_knn_pca.file_path <- file.path(models.path, "dim-reduction.x1e3.train_knn_pca.RData")
+if(!dir.exists(knn_pca.path)) {
+  dir.create(knn_pca.path)
+}
+
+dim_reduction.x1e3.train_knn_pca.file_path <- 
+  file.path(knn_pca.path, "dim-reduction.x1e3.train.k4-5-6nn+pca.RData")
+
+k_values <- seq(1, 7, 2)
+k_values <- c(4, 5, 6)
 
 if (file.exists(dim_reduction.x1e3.train_knn_pca.file_path)) {
   put_log1("Loading Model Fit Data from cache file: 
@@ -176,31 +184,66 @@ if (file.exists(dim_reduction.x1e3.train_knn_pca.file_path)) {
   put_end_date(start)
   
 } else {
+  put_log("Training Model `kNN+PCA` on the dataset subset: `x1e3.train`..." )
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
   train_knn_pca <- caret::train(x1e3.train, y1e3.train, method = "knn", 
                                 preProcess = c("nzv", "pca"),
-                                trControl = trainControl("cv", number = 20, p = 0.95,
+                                trControl = trainControl("cv", number = 5, p = 0.95,
                                                          preProcOptions = list(thresh = 0.9)),
-                                tuneGrid = data.frame(k = seq(1, 7, 2)))
+                                tuneGrid = data.frame(k = k_values))
   stopCluster(cl)
   stopImplicitCluster()
   print_end_date(start)
+  # Time difference of 10.72675 mins
+  # Time difference of 8.459877 mins
+  put_log("The Model `kNN+PCA` has been trained on the dataset subset: `x1e3.train`")
   
+  put_log("Saving Model in the cache file: `kNN+PCA`...")
+  # start <- put_start_date()
   save(train_knn_pca, file = dim_reduction.x1e3.train_knn_pca.file_path)
+  # print_end_date(start)
+  put_log1("The Model `kNN+PCA` trained on the dataset subset `x1e3.train` has been cached in file:
+`%1`", dim_reduction.x1e3.train_knn_pca.file_path)
 }
 
 plot(train_knn_pca)
 train_knn_pca
+#train_knn_pca.k1_7.2 <- train_knn_pca
+# k  Accuracy   Kappa    
+# 1  0.7934615  0.7880263
+# 3  0.8058974  0.8007895
+# 5  0.8114744  0.8065132
+# 7  0.8110256  0.8060526
 
+train_knn_pca.k4.5.6 <- train_knn_pca
+# k  Accuracy   Kappa    
+# 4  0.8061538  0.8010526
+# 5  0.8093590  0.8043421
+# 6  0.8092628  0.8042434
+
+put_log("Predicting on `x1e3.test`")
 start <- put_start_date()
-y_hat_knn_pca <- stats::predict(train_knn_pca, x1e3.test, type = "raw")
+y1e3_hat_knn_pca <- stats::predict(train_knn_pca, x1e3.test, type = "raw")
 print_end_date(start)
+# Time difference of 32.93572 secs
 
-mean(y_hat_knn_pca == y1e3.test)
+mean(y1e3_hat_knn_pca == y1e3.test)
+# train_knn_pca.k1_7.2
 #> [1] 0.8226923
+# train_knn_pca.k4.5.6
+#> [1] 0.8238462
+
+put_log("Predicting on `x.test`")
+start <- put_start_date()
+y_hat_knn_pca <- stats::predict(train_knn_pca, x.test, type = "raw")
+print_end_date(start)
+# Time difference of 11.01372 mins
+
+mean(y_hat_knn_pca == y.test)
+#> [1] 0.8410531
 
 ### Close Log ------------------------------------------------------------------
 log_close()
@@ -208,13 +251,13 @@ log_close()
 
 
 ## Clean Up Environment (x1e3, y1e3) -------------------------------------------
-rm(x1e3)
-rm(x1e3.train)
-rm(x1e3.test)
-
-rm(y1e3)
-rm(y1e3.train)
-rm(y1e3.test)
+# rm(x1e3)
+# rm(x1e3.train)
+# rm(x1e3.test)
+# 
+# rm(y1e3)
+# rm(y1e3.train)
+# rm(y1e3.test)
 
 ### Open log: Random Forest -------------------------------------
 open_logfile(".model.random-forest")
