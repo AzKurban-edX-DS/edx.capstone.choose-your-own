@@ -207,7 +207,7 @@ log_close()
 
 
 
-## Clean Up Environment --------------------------------------------------------
+## Clean Up Environment (x1e3, y1e3) -------------------------------------------
 rm(x1e3)
 rm(x1e3.train)
 rm(x1e3.test)
