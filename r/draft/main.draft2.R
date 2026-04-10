@@ -63,7 +63,7 @@ source(setup_script.file_path,
 
 
 ## Load Logging Helper Functions ---------------------------------------------------
-log_func_script.file_path <- file.path(support_functions.path, "logging-functions.R")
+log_func_script.file_path <- file.path(support_functions.path, "logging-helper.R")
 
 source(log_func_script.file_path, 
        catch.aborts = TRUE,
@@ -73,7 +73,7 @@ source(log_func_script.file_path,
        keep.source = TRUE)
 
 ## Load Data Helper Functions --------------------------------------------------
-data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.funcs.R")
+data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.R")
 
 
 source(data_helper.funcs.file_path, 

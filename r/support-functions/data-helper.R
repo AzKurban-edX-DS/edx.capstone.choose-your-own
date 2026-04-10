@@ -199,3 +199,29 @@ shuffle.mxrows <- function(mx, seed = NA) {
   random.idx <- sample(nrow(mx))
   mx[random.idx,]
 }
+
+splitDataset <- function(x, n.parts){
+  x.size <- nrow(x)
+  part.size <- as.integer(x.size / n.parts)
+  
+  start.idx <- 1
+  end.idx <- start.idx + part.size - 1
+  
+  part.list <- list(x = list(), y = list())
+  
+  for (i in seq_len(n.parts)) {
+    end.idx <-  ifelse(end.idx > x.size, x.size, end.idx)
+    x.part <- x[seq(start.idx,end.idx, 1),]
+    
+    part.list$x[[i]] <- x.part
+    part.list$y[[i]] <- as.factor(rownames(x.part))
+    
+    start.idx <- end.idx + 1
+    
+    if (start.idx > x.size) {
+      break
+    }
+    end.idx <- start.idx + part.size - 1
+  }
+  part.list
+}

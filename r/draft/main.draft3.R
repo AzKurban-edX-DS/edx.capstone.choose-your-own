@@ -10,7 +10,7 @@ source(setup_script.file_path,
 
 
 ## Load Logging Helper Functions ---------------------------------------------------
-log_func_script.file_path <- file.path(support_functions.path, "logging-functions.R")
+log_func_script.file_path <- file.path(support_functions.path, "logging-helper.R")
 
 source(log_func_script.file_path, 
        catch.aborts = TRUE,
@@ -20,7 +20,7 @@ source(log_func_script.file_path,
        keep.source = TRUE)
 
 ## Load Data Helper Functions --------------------------------------------------
-data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.funcs.R")
+data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.R")
 
 
 source(data_helper.funcs.file_path, 
@@ -125,8 +125,8 @@ put_log1("My Extended MNIST-like dataset (matrix) dimensions:
 # Visualize the first char:
 char.image(my_emnist.train[1,])
 
-# rm(img.train.files)
-# rm(my_emnist.train)
+#### Clean up Environment -----------------------
+rm(img.train.files)
 rm(img.train.list)
 
 #### Init `x` & `y` variables -------------------
@@ -144,6 +144,9 @@ length(y)
 mean(y)
 mean(is.na(y))
 max(is.na(y))
+
+##### Clean up Environment -----------------------
+rm(my_emnist.train)
 
 ### Close Log ---------------------------------------------------------------
 log_close()

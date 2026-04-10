@@ -24,11 +24,14 @@ if(!require(prodlim))
 if(!require(caret))
   install.packages("caret")
 
-if(!require(utils))
-  install.packages("utils")
-
 if(!require(randomForest))
   install.packages("randomForest")
+
+if(!require(kernlab))
+  install.packages("kernlab")
+
+if(!require(utils))
+  install.packages("utils")
 
 if(!require(remotes))
   install.packages("remotes")
@@ -76,6 +79,7 @@ library(tidyverse)
 library(prodlim)
 library(caret)
 library(randomForest)
+library(kernlab)
 
 library(logr)
 library(utils)
