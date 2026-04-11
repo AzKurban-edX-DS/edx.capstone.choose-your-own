@@ -613,7 +613,7 @@ log_close()
 
 ## Clean Up Environment (x4e3, y4e3) -------------------------------------------
 # rm(x4e3)
-# rm(x4e3.train)
+# rm(x0.1.train)
 # rm(x4e3.test)
 # 
 # rm(y4e3)
@@ -621,7 +621,7 @@ log_close()
 # rm(y4e3.test)
 
 ### Open log: Random Forest -------------------------------------
-open_logfile(".model.random-forest")
+open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
 ### Random Forest --------------------------------------------------------------
 # Reference:
 # 3.6 Random Forest
@@ -629,31 +629,31 @@ open_logfile(".model.random-forest")
 
 # library(randomForest)
 
-#### Research ----------------------
+#### Research and estimate performance of the `Random Forest` method -----------
 
-research.randoms_forest.x4e3.fit_rf.nzv.mtry9.file_path <- file.path(models.random_forest.research.path, 
-                                                                 "random-forest.x4e3.fit_rf.nzv.mtry9.RData")
+x0.1.train.fit_rf.nzv.mtry9.file_path <- 
+  file.path(models.random_forest.research.path, 
+            "x0.1.train.fit_rf.nzv.mtry9.RData")
 
-if (file.exists(research.randoms_forest.x4e3.fit_rf.nzv.mtry9.file_path)) {
+if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   put_log1("Loading Model Fit Data from cache file: 
-%1", research.randoms_forest.x4e3.fit_rf.nzv.mtry9.file_path)
+%1", x0.1.train.fit_rf.nzv.mtry9.file_path)
   
   start <- put_start_date()
-  load(research.randoms_forest.x4e3.fit_rf.nzv.mtry9.file_path)
+  load(x0.1.train.fit_rf.nzv.mtry9.file_path)
   put_log("Train Data list has been loaded from cache.")
   
 } else {
   
   start <- put_start_date()
-  nzv <- nearZeroVar(x4e3.train)
+  nzv <- nearZeroVar(x0.1.train)
   put_end_date(start)
   
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
-  system.time({fit_rf.nzv.mtry9 <- randomForest(x4e3.train[, -nzv], y4e3.train,  mtry = 9)})
- #    user  system elapsed 
- # 958.22    2.45  963.12 
+  
+  fit_rf.nzv.mtry9 <- randomForest(x0.1.train[, -nzv], y4e3.train,  mtry = 9)
 
   stopCluster(cl)
   stopImplicitCluster()
@@ -663,20 +663,24 @@ if (file.exists(research.randoms_forest.x4e3.fit_rf.nzv.mtry9.file_path)) {
   plot(fit_rf.nzv.mtry9)
   
   save(fit_rf.nzv.mtry9, 
-       file = research.randoms_forest.x4e3.fit_rf.nzv.mtry9.file_path)
+       file = x0.1.train.fit_rf.nzv.mtry9.file_path)
 }
+##### Close Log ------------------------------------------------------------------
+log_close()
+### Open log: Random Forest -------------------------------------
+open_logfile(".x0.1.train.fit_rf.nzv.mtry5_15")
 
 #### Random Forest (implementation) --------------------------------------------
 
-randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path <- file.path(models.random_forest.path, 
-                                                                 "x4e3.train_rf.nzv.mtry5_15.RData")
+x0.1.train.rf.nzv.mtry5_15.file_path <- file.path(models.random_forest.path, 
+                                                                 "x0.1.train_rf.nzv.mtry5_15.RData")
 
-if (file.exists(randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)) {
+if (file.exists(x0.1.train.rf.nzv.mtry5_15.file_path)) {
   put_log1("Loading Model Fit Data from cache file: 
-%1", randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)
+%1", x0.1.train.rf.nzv.mtry5_15.file_path)
   
   start <- put_start_date()
-  load(randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)
+  load(x0.1.train.rf.nzv.mtry5_15.file_path)
   put_log("Train Data list has been loaded from cache.")
   put_end_date(start)
   
@@ -685,7 +689,7 @@ if (file.exists(randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)) {
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  train.x4e3_rf.cv5.ntree200 <- caret::train(x4e3.train, y4e3.train, method = "rf", 
+  x0.1.train.rf.cv5.ntree200 <- caret::train(x0.1.train, y0.1.train, method = "rf", 
                            preProcess = "nzv",
                            trControl = trainControl(method = "cv", number = 5, p = .8),
                            ntree = 200,
@@ -698,21 +702,21 @@ if (file.exists(randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)) {
 # Time difference of 57.23111 mins
 
 put_log1("Saving Train fit result to the cache file:
-%1...", randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)
+%1...", x0.1.train.rf.nzv.mtry5_15.file_path)
 
   start <- put_start_date()
-  save(train.x4e3_rf.cv5.ntree200, 
-       file = randoms_forest.x4e3.train_rf.nzv.mtry5_15.file_path)
+  save(x0.1.train.rf.cv5.ntree200, 
+       file = x0.1.train.rf.nzv.mtry5_15.file_path)
   put_log("The Train fit result has been cached on the local File System.")
   put_end_date(start)
 }
 
-plot(train.x4e3_rf.cv5.ntree200)
-train.x4e3_rf.cv5.ntree200
+plot(x0.1.train.rf.cv5.ntree200)
+x0.1.train.rf.cv5.ntree200
 
 put_log("Predicting values on the Test Set")
 start <- put_start_date()
-y_hat_rf <- stats::predict(train.x4e3_rf.cv5.ntree200, x4e3.test, type = "raw")
+y_hat_rf <- stats::predict(x0.1.train.rf.cv5.ntree200, x4e3.test, type = "raw")
 put_end_date(start)
 
 mean(y_hat_rf == y4e3.test)
@@ -725,7 +729,7 @@ log_close()
 
 ## Clean Up Environment --------------------------------------------------------
 rm(x4e3)
-rm(x4e3.train)
+rm(x0.1.train)
 rm(x4e3.test)
 
 rm(y4e3)
