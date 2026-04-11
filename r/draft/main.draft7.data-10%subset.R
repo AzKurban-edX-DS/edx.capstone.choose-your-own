@@ -471,9 +471,9 @@ k.4to6.best == k.1to7step2.best
 
 ### Close Log ------------------------------------------------------------------
 log_close()
-##### Open log: Predictions for `k5NN+PCA` (fine-tuned) Model on `x0.1.test` dataset ----
+##### Open log: Predictions for `k5NN+PCA` (fine-tuned) Model for `x0.1.test` dataset ----
 open_logfile(".x0.1.test.predict.k4-6nn+pca(fine-tuned)")
-##### Construct Predictions for k5NN+PCA Fine-tuned Model ------------
+##### Construct Predictions for k5NN+PCA (fine-tuned) Model for `x0.1.test` dataset ----
 cache_file.path <-
   file.path(knn_pca.path, "x0.1.test.k4-6nn+pca.predictions.RData")
 
@@ -530,9 +530,9 @@ stopImplicitCluster()
 ##### Close Log ------------------------------------------------------------------
 log_close()
 
-##### Open log: Predictions for kNN+PCA Pre-trained Model on `x0.9.test.list` ----
+##### Open log: Predictions for `k5NN+PCA` (fine-tuned) Model for `x0.9.test` dataset ----
 open_logfile(".predict.k4-6nn+pca(fine-tuned)x0.9.test.list")
-##### Predict for kNN+PCA Pre-trained Model on `x0.9.test.list` ----------------
+##### Construct Predictions for k5NN+PCA (fine-tuned) Model for `x0.9.test` dataset ----
 cache_file.path <-
   file.path(knn_pca.path, "x0.9.test.list.k4-6nn+pca.predictions.RData")
 
@@ -653,7 +653,7 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  fit_rf.nzv.mtry9 <- randomForest(x0.1.train[, -nzv], y4e3.train,  mtry = 9)
+  fit_rf.nzv.mtry9 <- randomForest(x0.1.train[, -nzv], y0.1.train,  mtry = 9)
 
   stopCluster(cl)
   stopImplicitCluster()
@@ -689,7 +689,7 @@ if (file.exists(x0.1.train.rf.nzv.mtry5_15.file_path)) {
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  x0.1.train.rf.cv5.ntree200 <- caret::train(x0.1.train, y0.1.train, method = "rf", 
+  x0.1.train.rf.cv5.ntree200.fit <- caret::train(x0.1.train, y0.1.train, method = "rf", 
                            preProcess = "nzv",
                            trControl = trainControl(method = "cv", number = 5, p = .8),
                            ntree = 200,
@@ -705,18 +705,18 @@ put_log1("Saving Train fit result to the cache file:
 %1...", x0.1.train.rf.nzv.mtry5_15.file_path)
 
   start <- put_start_date()
-  save(x0.1.train.rf.cv5.ntree200, 
+  save(x0.1.train.rf.cv5.ntree200.fit, 
        file = x0.1.train.rf.nzv.mtry5_15.file_path)
   put_log("The Train fit result has been cached on the local File System.")
   put_end_date(start)
 }
 
-plot(x0.1.train.rf.cv5.ntree200)
-x0.1.train.rf.cv5.ntree200
+plot(x0.1.train.rf.cv5.ntree200.fit)
+x0.1.train.rf.cv5.ntree200.fit
 
 put_log("Predicting values on the Test Set")
 start <- put_start_date()
-y_hat_rf <- stats::predict(x0.1.train.rf.cv5.ntree200, x4e3.test, type = "raw")
+y_hat_rf <- stats::predict(x0.1.train.rf.cv5.ntree200.fit, x4e3.test, type = "raw")
 put_end_date(start)
 
 mean(y_hat_rf == y4e3.test)
