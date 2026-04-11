@@ -626,8 +626,6 @@ log_close()
 # rm(y4e3.train)
 # rm(y4e3.test)
 
-### Open log: Random Forest -------------------------------------
-open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
 ### Random Forest --------------------------------------------------------------
 # Reference:
 # 3.6 Random Forest
@@ -635,6 +633,8 @@ open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
 
 # library(randomForest)
 
+### Open log: Random Forest: Research ------------------------------------------
+open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
 #### Research and estimate performance of the `Random Forest` method -----------
 
 x0.1.train.fit_rf.nzv.mtry9.file_path <- 
@@ -674,10 +674,10 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
 }
 ##### Close Log ------------------------------------------------------------------
 log_close()
-### Open log: Random Forest -------------------------------------
+### Open log: Random Fores: Training -------------------------------------
 open_logfile(".x0.1.train.fit_rf.nzv.mtry5_15")
 
-#### Random Forest (implementation) --------------------------------------------
+#### Random Forest: Training --------------------------------------------
 
 x0.1.train.rf.nzv.mtry5_15.file_path <- file.path(models.random_forest.path, 
                                                                  "x0.1.train_rf.nzv.mtry5_15.RData")
