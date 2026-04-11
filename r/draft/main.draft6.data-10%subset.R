@@ -524,7 +524,7 @@ open_logfile(".fine-tune-model.knn+pca")
 k_values <- c(4, 5, 6)
 
 cache_file.path <-
-  file.path(knn_pca.path, "dim-reduction.x0.1.train.k4-6nn+pca.RData")
+  file.path(knn_pca.path, "x0.1.train.fine-tune.k4-6NN+PCa.RData")
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
@@ -533,14 +533,14 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(cache_file.path)) {
-  put_log1("Loading Model Fit Data from cache file: 
+  put_log("Loading `kNN+PCA` model Fit Data from the cache file: 
 %1", cache_file.path)
   
   load(cache_file.path)
-  put_log("Train Data list has been loaded from cache.")
+  put_log("The `kNN+PCA` model Fit Data has been loaded from the cache file.")
 
 } else {
-  put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
+  put_log("Fine-tuning `kNN+PCA` model on the dataset subset: `x0.1.train`..." )
   
   train_knn_pca.k4_6 <- caret::train(x0.1.train, y0.1.train, method = "knn", 
                                 preProcess = c("nzv", "pca"),
@@ -549,14 +549,14 @@ if (file.exists(cache_file.path)) {
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
   # Time difference of 8.459877 mins
-  put_log("The Model `kNN+PCA` has been trained on the dataset subset: `x0.1.train`")
+  put_log("The Model `kNN+PCA` has been fine-tuned on the dataset subset: `x0.1.train`")
 
-  put_log("Saving pre-trained `kNN+PCA` Model in the cache file...")
+  put_log("Saving fine-tuned `kNN+PCA` Model in the cache file...")
   start <- put_start_date()
   save(train_knn_pca.k4_6, file = cache_file.path)
   put_end_date(start)
   
-  put_log1("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
 `%1`", cache_file.path)
   # [1] "Thu Apr  9 09:55:40 2026"
   # Time difference of 40.88067 mins
