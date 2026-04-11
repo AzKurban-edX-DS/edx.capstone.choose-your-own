@@ -33,13 +33,26 @@ arg.to_str <- function(arg, .sep = "\n"){
   arg
 }
 
-print_log <- function(msg, .sep = "\n"){
-  print(str_glue(arg.to_str(msg, .sep)))
-}
-put_log <- function(msg, .sep = "\n"){
-  put(str_glue(msg, .sep))
+get_log <- function(msg_template, ..., .sep = "\n"){
+  arg_ls <- list(...)
+
+  log <- msg_template
+  
+  for (i in seq_len(length(arg_ls))) {
+    log <- log |>
+      str_replace_all(paste0("%", as.character(i)), 
+                      arg.to_str(arg_ls[[i]], .sep))
+  }
+  
+  str_glue(log)
 }
 
+print_log <- function(msg_template, ..., .sep = "\n"){
+  print(get_log(msg_template, ..., .sep))
+}
+put_log <- function(msg_template, ..., .sep = "\n"){
+  put(get_log(msg_template, ..., .sep))
+}
 
 get_log1 <- function(msg_template, arg1, .sep = "\n") {
   str_glue(str_replace_all(msg_template, "%1", 

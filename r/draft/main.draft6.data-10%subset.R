@@ -451,7 +451,9 @@ if (file.exists(cache_file.path)) {
   put_log("Predicted Data have been loaded from cache.")
 } else {
 
-  y_hat_knn_pca.k1_7.2.x0.9.test.list <- lapply(x0.9.test.list$x, function(x.test){
+  test.x_list <- x0.9.test.list$x
+  
+  y_hat_knn_pca.k1_7.2.x0.9.test.list <- lapply(test.x_list, function(x.test){
     put_log("Predicting on `x0.9.test.list`")
     start <- put_start_date()
     y_hat <- stats::predict(train_knn_pca.k1_7.2, x.test, type = "raw")
@@ -467,8 +469,16 @@ and tested on %2 size proportion of the large test set:
     y_hat
   })
 
+  put_log("Cashing prediction results of `x0.1 kNN+PCA` model trained on subset of %1 size proportion,
+tuned for sequence of k 1-7 by step 2,
+and tested on %2 size proportion large test set list", 
+           0.1, 0.9)
+  
   save(y_hat_knn_pca.k1_7.2.x0.9.test.list,
        file = cache_file.path)
+  
+  put_log("Prediction results have been cashed in the File System
+%1", cache_file.path)
 }
 
 stopCluster(cl)
@@ -478,35 +488,24 @@ stopImplicitCluster()
 log_close()
 
 ##### Accuracy of the kNN+PCA Pre-trained Model Predictions on `x0.9.test.list` ----
-start <- put_start_date()
-
-put_log3("Predicted data list structure of `x0.1 kNN+PCA` model trained on subset of %1 size proportion,
+put_log("Predicted data list structure of `x0.1 kNN+PCA` model trained on subset of %1 size proportion,
 tuned for sequence of k 1-7 by step 2,
 and tested on %2 size proportion test set list:
 %3", 0.1, 0.9, capture.output(str(y_hat_knn_pca.k1_7.2.x0.9.test.list)))
 
-prediction.result <- lapply(seq_len(length(y_hat_knn_pca.k1_7.2.x0.9.test.list)), function(i){
-  y_hat_knn_pca.k1_7.2.x0.9.test.list[[i]] == x0.9.test.list[[i]]
-})
+prediction.result <- lapply(seq_len(length(x0.9.test.list$y)), function(i){
+  y_hat_knn_pca.k1_7.2.x0.9.test.list[[i]] == x0.9.test.list$y[[i]]
+}) |> unlist()
 
-
-
-xy0.9.knn_pca.k1_7.2.accuracy <- mean(y_hat == y0.9.test)
-put_end_date(start)
-# Time difference of 11.01372 mins
-
+xy0.9.knn_pca.k1_7.2.accuracy <- mean(prediction.result)
 xy0.9.knn_pca.k1_7.2.accuracy
-#> 0.8676296
+#> 0.8677351
 
 put_log3("Accuracy of `x0.1` kNN+PCA model trained on subset of %1 size proportion,
 tuned for sequence of k 1-7 by step 2,
 and tested on %2 size proportion test set:
 %3", 0.1, 0.9, xy0.9.knn_pca.k1_7.2.accuracy)
 #> [1] 0.867629564204937
-
-
-
-  
 
 ## Clean Up Environment (x4e3, y4e3) -------------------------------------------
 # rm(x4e3)
