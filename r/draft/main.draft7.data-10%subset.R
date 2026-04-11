@@ -294,8 +294,8 @@ if(!dir.exists(knn_pca.path)) {
 }
 
 #### Open log: Pre-training kNN+PCA Model Log ----------------------------------
-open_logfile(".pre-train-model.knn+pca")
-#### Tuning kNN+PCA model by *k* parameter ranging from 1 to 7 by step 2 -------
+open_logfile(".pre-train-model.k1-7.2nn+pca")
+#### Tuning k1_7.2NN+PCA model by *k* parameter ranging from 1 to 7 by step 2 -------
 k.values <- seq(1, 7, 2)
 
 cache_file.path <-
@@ -381,12 +381,12 @@ k.1to7step2.best
 ### Close Log ------------------------------------------------------------------
 log_close()
 #### Open log: Fine-tuning kNN+PCA Model Log ---------------------------------
-open_logfile(".fine-tune-model.knn+pca")
+open_logfile(".fine-tune-model.k4-6nn+pca")
 #### Fine-tuning kNN+PCA Model by *k* parameter (4 to 6) of kNN ----------------
 k.values <- c(4, 5, 6)
 
 cache_file.path <-
-  file.path(knn_pca.path, "x0.1.train.fine-tune.k4-6NN+PCa.RData")
+  file.path(knn_pca.path, "x0.1.train.fine-tune.k4-6NN+PCA.RData")
 
 start <- put_start_date()
 # w.pc_cores <- as.integer(N_pcCores / 2 + 1) 
@@ -472,10 +472,10 @@ k.4to6.best == k.1to7step2.best
 ### Close Log ------------------------------------------------------------------
 log_close()
 ##### Open log: Predictions on `k5NN+PCA` (fine-tuned) Model for `x0.1.test` dataset ----
-open_logfile(".x0.1.test.predict.rf")
+open_logfile(".x0.1.test.predict.k5nn+pca")
 ##### Constructing Predictions on k5NN+PCA (fine-tuned) Model for `x0.1.test` dataset ----
 cache_file.path <-
-  file.path(knn_pca.path, "x0.1.test.k4-6nn+pca.predictions.RData")
+  file.path(knn_pca.path, "x0.1.test.k5NN+PCA.predictions.RData")
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
@@ -537,10 +537,10 @@ and tested on the 10% sample from the remaining data of the `Train Set`:
 log_close()
 
 ##### Open log: Predictions on `k5NN+PCA` (fine-tuned) Model for `x0.9.test` dataset ----
-open_logfile(".predict.rfx0.9.test.list")
-##### Construct Predictions on k5NN+PCA (fine-tuned) Model for `x0.9.test` dataset ----
+open_logfile(".x0.9.test.list.predict.k5nn+pca")
+##### Constructing Predictions on k5NN+PCA (fine-tuned) Model for `x0.9.test` dataset ----
 cache_file.path <-
-  file.path(knn_pca.path, "x0.9.test.list.k4-6nn+pca.predictions.RData")
+  file.path(knn_pca.path, "x0.9.test.list.k5NN+PCA.predictions.RData")
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
@@ -642,7 +642,7 @@ x0.1.train.fit_rf.nzv.mtry9.file_path <-
             "x0.1.train.fit_rf.nzv.mtry9.RData")
 
 if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
-  put_log1("Loading Model Fit Data from cache file: 
+  put_log("Loading Model Fit Data from cache file: 
 %1", x0.1.train.fit_rf.nzv.mtry9.file_path)
   
   start <- put_start_date()
@@ -654,6 +654,7 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   start <- put_start_date()
   nzv <- nearZeroVar(x0.1.train)
   put_end_date(start)
+  # Time difference of 56.0386 secs
   
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
@@ -664,7 +665,7 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
-  #> Time difference of 16.08939 mins
+  #> Time difference of 44.35714 mins
 
   plot(fit_rf.nzv.mtry9)
   
@@ -735,7 +736,7 @@ log_close()
 
 ##### Open log: Predictions on `RF` Model for `x0.1.test` dataset ----
 open_logfile(".x0.1.test.predict.rf")
-##### Construct Predictions on `RF` Model for `x0.1.test` dataset ----
+##### Constructing Predictions on `RF` Model for `x0.1.test` dataset ----
 cache_file.path <-
   file.path(knn_pca.path, "x0.1.test.k4-6nn+pca.predictions.RData")
 
@@ -794,7 +795,7 @@ log_close()
 
 ##### Open log: Predictions on `RF` Model for `x0.9.test` dataset ----
 open_logfile(".predict.rfx0.9.test.list")
-##### Construct Predictions for k5NN+PCA (fine-tuned) Model for `x0.9.test` dataset ----
+##### Constructing Predictions for k5NN+PCA (fine-tuned) Model for `x0.9.test` dataset ----
 cache_file.path <-
   file.path(knn_pca.path, "x0.9.test.list.k4-6nn+pca.predictions.RData")
 
