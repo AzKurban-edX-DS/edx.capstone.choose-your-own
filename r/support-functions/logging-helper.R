@@ -33,8 +33,17 @@ arg.to_str <- function(arg, .sep = "\n"){
   arg
 }
 
-get_log <- function(msg_template, ..., .sep = "\n"){
+get_log <- function(msg_template, ..., 
+                    capture_output = NULL,
+                    .sep = "\n"){
   arg_ls <- list(...)
+  
+  if (!is.null(capture_output)) {
+    for (i in capture_output) {
+      arg_ls[[capture_output]] <-
+        capture.output(arg_ls[[capture_output]])
+    }
+  }
 
   log <- msg_template
   
@@ -47,13 +56,22 @@ get_log <- function(msg_template, ..., .sep = "\n"){
   str_glue(log)
 }
 
-print_log <- function(msg_template, ..., .sep = "\n"){
-  print(get_log(msg_template, ..., .sep))
+print_log <- function(msg_template, ...,
+                      capture_output = NULL,
+                      .sep = "\n"){
+  print(get_log(msg_template, ...,
+                capture_output = capture_output,
+                .sep))
 }
-put_log <- function(msg_template, ..., .sep = "\n"){
-  put(get_log(msg_template, ..., .sep))
+put_log <- function(msg_template, ...,
+                    capture_output = NULL, 
+                    .sep = "\n"){
+  put(get_log(msg_template, ..., 
+              capture_output = capture_output,
+              .sep))
 }
 
+## Obsolete: TO DELETE SOON, DO NOT USE IN FUTURE FPOJECTS!!! -------------------------------------------------
 get_log1 <- function(msg_template, arg1, .sep = "\n") {
   str_glue(str_replace_all(msg_template, "%1", 
                            arg.to_str(arg1, .sep)))

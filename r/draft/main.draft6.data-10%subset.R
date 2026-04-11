@@ -299,7 +299,7 @@ open_logfile(".pre-train-model.knn+pca")
 k.values <- seq(1, 7, 2)
 
 cache_file.path <-
-  file.path(knn_pca.path, "dim-reduction.x0.1.train.k1-7.2nn+pca.RData")
+  file.path(knn_pca.path, "x0.1.train.k1-7.2nn+pca.RData")
  
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
@@ -321,7 +321,9 @@ if (file.exists(cache_file.path)) {
   
   train_knn_pca.k1_7.2 <- caret::train(x0.1.train, y0.1.train, method = "knn", 
                                 preProcess = c("nzv", "pca"),
-                                trControl = trainControl("cv", number = 5, p = 0.95,
+                                trControl = trainControl("cv", 
+                                                         number = 5, 
+                                                         p = 0.95,
                                                          preProcOptions = list(thresh = 0.9)),
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
@@ -332,8 +334,8 @@ if (file.exists(cache_file.path)) {
   start <- put_start_date()
   save(train_knn_pca.k1_7.2, file = cache_file.path)
   put_end_date(start)
-  # Time difference of mins
-
+  # Time difference of 12.37275 secs
+  
   put_log1("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
 `%1`", cache_file.path)
 
@@ -342,9 +344,18 @@ if (file.exists(cache_file.path)) {
 stopCluster(cl)
 stopImplicitCluster()
 
-plot(train_knn_pca.k1_7.2)
-put_log1("kNN+PCA Model trained result:
-%1",capture.output(train_knn_pca.k1_7.2))
+put_log("kNN+PCA Model trained result:
+%1", train_knn_pca.k1_7.2,
+  capture_output = 1)
+
+acc.max.idx <- which.max(train_knn_pca.k1_7.2$results$Accuracy)
+acc.max.idx
+
+k.1to7step2.max_accuracy <- train_knn_pca.k1_7.2$results$Accuracy[acc.max.idx]
+k.1to7step2.max_accuracy
+
+k.1to7step2.best <- train_knn_pca.k1_7.2$results$k[acc.max.idx]
+k.1to7step2.best
 
 # 
 # k-Nearest Neighbors 
@@ -521,15 +532,16 @@ log_close()
 #### Open log: Fine-tune kNN+PCA Model ---------------------------------
 open_logfile(".fine-tune-model.knn+pca")
 #### Fine-tuning k for kNN -------------------------------
-k_values <- c(4, 5, 6)
+k.values <- c(4, 5, 6)
 
 cache_file.path <-
   file.path(knn_pca.path, "x0.1.train.fine-tune.k4-6NN+PCa.RData")
 
 start <- put_start_date()
-# Thu Apr 9 09:14:47 2026
+# w.pc_cores <- as.integer(N_pcCores / 2 + 1) 
+# w.pc_cores  
 
-cl <- makeCluster(N_pcCores)
+cl <- makeCluster(N_pcCores, type='PSOCK', outfile="")
 registerDoParallel(cl)
 
 if (file.exists(cache_file.path)) {
@@ -544,17 +556,21 @@ if (file.exists(cache_file.path)) {
   
   train_knn_pca.k4_6 <- caret::train(x0.1.train, y0.1.train, method = "knn", 
                                 preProcess = c("nzv", "pca"),
-                                trControl = trainControl("cv", number = 5, p = 0.95,
-                                                         preProcOptions = list(thresh = 0.9)),
+                                trControl = trainControl("cv", 
+                                                         number = 5, 
+                                                         p = 0.95,
+                                                         preProcOptions = list(thresh = 0.9),
+                                                         verboseIter = TRUE),
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
-  # Time difference of 8.459877 mins
+  # Time difference of 39.72623 mins
   put_log("The Model `kNN+PCA` has been fine-tuned on the dataset subset: `x0.1.train`")
 
   put_log("Saving fine-tuned `kNN+PCA` Model in the cache file...")
   start <- put_start_date()
   save(train_knn_pca.k4_6, file = cache_file.path)
   put_end_date(start)
+  # Time difference of 12.37275 secs
   
   put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
 `%1`", cache_file.path)
@@ -565,18 +581,47 @@ if (file.exists(cache_file.path)) {
 stopCluster(cl)
 stopImplicitCluster()
 plot(train_knn_pca.k4_6)
-put_log1("kNN+PCA Model trained result:
-%1",capture.output(train_knn_pca.k4_6))
+put_log("kNN+PCA Model trained result:
+%1",train_knn_pca.k4_6,
+         capture_output = 1)
 
-# k  Accuracy   Kappa    
-# 4  0.8061538  0.8010526
-# 5  0.8093590  0.8043421
-# 6  0.8092628  0.8042434
+str(train_knn_pca.k4_6)
+
+acc.max.idx <- which.max(train_knn_pca.k4_6$results$Accuracy)
+k.4to6.max_accuracy <- train_knn_pca.k4_6$results$Accuracy[acc.max.idx]
+k.4to6.max_accuracy
+
+k.4to6.best <- train_knn_pca.k4_6$results$k[acc.max.idx]
+k.4to6.best
+
+k.4to6.best == k.1to7step2.best
+#> TRUE 
+
+# kNN+PCA Model trained result:
+#   k-Nearest Neighbors 
+# 
+# 75032 samples
+# 784 predictor
+# 39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
+# 
+# Pre-processing: principal component signal extraction (743), centered (743), scaled (743), remove (41) 
+# Resampling: Cross-Validated (5 fold) 
+# Summary of sample sizes: 60027, 60026, 60028, 60021, 60026 
+# Resampling results across tuning parameters:
+#   
+#   k  Accuracy   Kappa    
+# 1  0.8509833  0.8450118
+# 3  0.8602059  0.8545233
+# 5  0.8635644  0.8579822
+# 7  0.8624317  0.8567740
+# 
+# Accuracy was used to select the optimal model using the largest value.
+# The final value used for the model was k = 5.
 
 ### Close Log ------------------------------------------------------------------
 log_close()
 ##### Open log: Construct Predictions for kNN+PCA Fine-tuned Model ------------
-open_logfile(".predict.knn+pca.pre-trained-model")
+open_logfile(".predict.k5-7nn+pca.fine-tuned.x0.1.test")
 ##### Construct Predictions for kNN+PCA Fine-tuned Model ------------
 cache_file.path <-
   file.path(knn_pca.path, "x0.1.train.k4_6.2nn+pca.predictions.RData")
