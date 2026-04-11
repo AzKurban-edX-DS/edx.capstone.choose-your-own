@@ -466,3 +466,12 @@ make_ordinal_no <- function(n){
     str_glue("{n}th")
   }
 }
+
+n.to_ordinal <- function(n) {
+  suffix <- switch (n,"st", "nd", "rd")
+  
+  if(is.null(suffix))
+    suffix <- "th"
+  
+  paste0(as.character(n), suffix)
+}

@@ -451,9 +451,10 @@ if (file.exists(cache_file.path)) {
   put_log("Predicted Data have been loaded from cache.")
 } else {
 
-  test.x_list <- x0.9.test.list$x
-  
-  y_hat_knn_pca.k1_7.2.x0.9.test.list <- lapply(test.x_list, function(x.test){
+  y_hat_knn_pca.k1_7.2.x0.9.test <- lapply(seq_len(length(x0.9.test.list$x)), 
+                                                   function(i){
+    x.test <- x0.9.test.list$x[[i]]
+    y_hat <- x0.9.test.list$y[[i]]
     put_log("Predicting on `x0.9.test.list`")
     start <- put_start_date()
     y_hat <- stats::predict(train_knn_pca.k1_7.2, x.test, type = "raw")
@@ -461,51 +462,52 @@ if (file.exists(cache_file.path)) {
 
     plot(y_hat)
     
-    put_log3("Predicted data Summary of `x0.1 kNN+PCA` model trained on subset of %1 size proportion,
-tuned for sequence of k 1-7 by step 2,
-and tested on %2 size proportion of the large test set:
-%3", 0.1, 0.1, capture.output(summary(y_hat)))
+    put_log("Summary of predicted data for the `x0.1 kNN+PCA` model,
+trained on a 10% sample of the`Train Set` dataset,
+optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
+and tested on the %1 10% subset of the remaining 90% of the `Train Set`:
+%2", n.to_ordinal(i), capture.output(summary(y_hat)))
     
     y_hat
-  })
-
-  put_log("Cashing prediction results of `x0.1 kNN+PCA` model trained on subset of %1 size proportion,
-tuned for sequence of k 1-7 by step 2,
-and tested on %2 size proportion large test set list", 
-           0.1, 0.9)
+  }) |> unlist()
   
-  save(y_hat_knn_pca.k1_7.2.x0.9.test.list,
+  put_log("Summary of predicted data for the `x0.1 kNN+PCA` model,
+trained on a 10% sample of the`Train Set` dataset,
+optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
+and tested on the remaining 90% of the `Train Set`:
+%1", capture.output(summary(y_hat_knn_pca.k1_7.2.x0.9.test)))
+  
+  plot(y_hat_knn_pca.k1_7.2.x0.9.test)
+
+  put_log("Cashing prediction results in the file system...")
+  save(y_hat_knn_pca.k1_7.2.x0.9.test,
        file = cache_file.path)
   
-  put_log("Prediction results have been cashed in the File System
+  put_log("The prediction results have been saved to the file::
 %1", cache_file.path)
 }
 
 stopCluster(cl)
 stopImplicitCluster()
 
-##### Close Log ------------------------------------------------------------------
-log_close()
-
 ##### Accuracy of the kNN+PCA Pre-trained Model Predictions on `x0.9.test.list` ----
-put_log("Predicted data list structure of `x0.1 kNN+PCA` model trained on subset of %1 size proportion,
-tuned for sequence of k 1-7 by step 2,
-and tested on %2 size proportion test set list:
-%3", 0.1, 0.9, capture.output(str(y_hat_knn_pca.k1_7.2.x0.9.test.list)))
+put_log("Validating predictions for the pre-tuned `x0.1 kNN+PCA` model...")
 
-prediction.result <- lapply(seq_len(length(x0.9.test.list$y)), function(i){
-  y_hat_knn_pca.k1_7.2.x0.9.test.list[[i]] == x0.9.test.list$y[[i]]
-}) |> unlist()
-
-xy0.9.knn_pca.k1_7.2.accuracy <- mean(prediction.result)
+xy0.9.knn_pca.k1_7.2.accuracy <- 
+  mean(y_hat_knn_pca.k1_7.2.x0.9.test == unlist(x0.9.test.list$y))
 xy0.9.knn_pca.k1_7.2.accuracy
 #> 0.8677351
 
-put_log3("Accuracy of `x0.1` kNN+PCA model trained on subset of %1 size proportion,
-tuned for sequence of k 1-7 by step 2,
-and tested on %2 size proportion test set:
-%3", 0.1, 0.9, xy0.9.knn_pca.k1_7.2.accuracy)
-#> [1] 0.867629564204937
+put_log("Accuracy of the predicted data for the `x0.1 kNN+PCA` model,
+trained on a 10% sample of the`Train Set` dataset,
+optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
+and tested on the remaining 90% of the `Train Set`:
+%1", xy0.9.knn_pca.k1_7.2.accuracy)
+#> [1] 0.867735081163533
+
+##### Close Log ------------------------------------------------------------------
+log_close()
+
 
 ## Clean Up Environment (x4e3, y4e3) -------------------------------------------
 # rm(x4e3)
