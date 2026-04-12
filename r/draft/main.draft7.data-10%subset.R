@@ -771,12 +771,12 @@ cache_file.path <- file.path(models.random_forest.path,
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-if (file.exists(x0.1.train.rf.nzv.mtry5_15.file_path)) {
+if (file.exists(cache_file.path)) {
   put_log1("Loading Model Fit Data from cache file: 
-%1", x0.1.train.rf.nzv.mtry5_15.file_path)
+%1", cache_file.path)
   
   start <- put_start_date()
-  load(x0.1.train.rf.nzv.mtry5_15.file_path)
+  load(cache_file.path)
   put_log("Train Data list has been loaded from cache.")
   put_end_date(start)
   
@@ -803,7 +803,7 @@ if (file.exists(x0.1.train.rf.nzv.mtry5_15.file_path)) {
 
   start <- put_start_date()
   save(x0.1.train.rf.cv5.ntree200.fit, 
-       file = x0.1.train.rf.nzv.mtry5_15.file_path)
+       file = cache_file.path)
   
   put_log("The Train fit result has been saved to the cache file:
 %1.", cache_file.path)
