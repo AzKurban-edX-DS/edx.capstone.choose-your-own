@@ -662,8 +662,10 @@ from the `Train set`: `x0.1.train`..." )
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
+  
+  x0.1.train_nzv <- x0.1.train[, -nzv]
 
-  fit_rf.nzv.mtry9 <- randomForest(x0.1.train[, -nzv], y0.1.train,  mtry = 9)
+  fit_rf.nzv.mtry9 <- randomForest(, y0.1.train,  mtry = 9)
 
   stopCluster(cl)
   stopImplicitCluster()
@@ -682,6 +684,68 @@ from the `Train set`: `x0.1.train`..." )
 put_log("Summary of the fit data produced by pre-training the `Random Forest` model:
 %1", summary(fit_rf.nzv.mtry9),
         capture_output = 1)
+
+##### Close Log ------------------------------------------------------------------
+log_close()
+##### Open log: Predictions on `RF` Model for `x0.1.test` dataset ----
+open_logfile(".x0.1.test.predict.rf.mtry9")
+##### Constructing Predictions on `RF.mtry9` Model for `x0.1.test` dataset ----
+cache_file.path <-
+  file.path(models.random_forest.research.path, "x0.1.test.rf.mtry9.predictions.RData")
+
+start <- put_start_date()
+# Thu Apr 9 09:14:47 2026
+
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+if (file.exists(cache_file.path)) {
+  put_log1("Loading Predicted Data from cache file: 
+%1...", cache_file.path)
+  
+  load(cache_file.path)
+  put_end_date(start)
+  # Time difference of 
+  
+  put_log("Predicted Data have been loaded from cache.")
+} else {
+  put_log("Predicting `RF.mtry9` model on `x0.1.test`...")
+  
+  y0.1_hat_rf.mtry9 <- stats::predict(fit_rf.nzv.mtry9, x0.1.test, type = "response")
+  put_end_date(start)
+  # Time difference of 2.74791 mins
+  
+  put_log("The `RF.mtry9` Model: Generating predictions have been completed `x0.1.test` dataset.")
+  
+  
+  put_log("Validating accuracy of the k5NN+PCA (fine-tuned) Model predictions 
+made for the `x0.1.test` dataset...")
+
+  xy0.rf.mtry9.accuracy <- mean(y0.1_hat_rf.mtry9 == y0.1.test)
+  # Time difference of ??? mins
+  put_log("The accuracy value is %1", xy0.rf.mtry9.accuracy)
+#> [1] 0.876092421884353
+  
+  save(y0.1_hat_rf.mtry9,
+       xy0.rf.mtry9.accuracy,
+       file = cache_file.path)
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+
+put_log("Summary of predicted data made using the `RF.mtry9` model,
+trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
+and tested on the 10% sample from the remaining 90% data of the `Train Set`:
+%1", summary(y0.1_hat_rf.mtry9))
+
+
+put_log("Accuracy of the predicted data for the `k5NN+PCA` model,
+trained on a 10% sample of the`Train Set` dataset,
+optimized for a sequence of *k* values ranging from 4 to 6,
+and tested on the 10% sample from the remaining data of the `Train Set`:
+%1", xy0.rf.mtry9.accuracy)
+#> 0.876092421884353
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
@@ -712,7 +776,7 @@ from the `Train Set`: `x0.1.train`..." )
                            preProcess = "nzv",
                            trControl = trainControl(method = "cv", number = 5, p = .8),
                            ntree = 200,
-                           tuneGrid = data.frame(mtry = seq(5, 15)))
+                           tuneGrid = data.frame(mtry = seq(5, 15, 5)))
   
   put_log("The `Random Forest` model has been trained on the dataset: `x0.1.train`." )
   
