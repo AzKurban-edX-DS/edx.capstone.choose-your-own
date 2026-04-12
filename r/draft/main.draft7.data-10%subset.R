@@ -637,9 +637,8 @@ log_close()
 open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
 #### Research and estimate performance of the `Random Forest` method -----------
 
-x0.1.train.fit_rf.nzv.mtry9.file_path <- 
-  file.path(models.random_forest.research.path, 
-            "x0.1.train.fit_rf.nzv.mtry9.RData")
+cache_file.path <- file.path(models.random_forest.research.path, 
+                             "x0.1.train.fit_rf.nzv.mtry9.RData")
 
 if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   put_log("Loading Model Fit Data from cache file: 
@@ -658,8 +657,8 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   
   x0.1.train_nzv <- x0.1.train[, -nzv]
   
-  put_log("Pre-training `Random Forest` model on the following 10% sample 
-from the `Train set`: `x0.1.train`..." )
+  put_log("Pre-training `RF.mtry9` model on a 10% sample from the `Train set`,
+          pre-processed by NZV method (`x0.1.train_nzv`)..." )
   
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
@@ -671,18 +670,24 @@ from the `Train set`: `x0.1.train`..." )
   stopCluster(cl)
   stopImplicitCluster()
   
-  put_log("The `Random Forest` model has been pre-trained on the dataset: `x0.1.train`." )
+  put_log("The `RF` model has been pre-trained on the dataset: `x0.1.train`
+with parameter value: `.mtry = 9`." )
   put_end_date(start)
   #> Time difference of 44.35714 mins
 
   plot(fit_rf.nzv.mtry9)
   
-  save(fit_rf.nzv.mtry9, 
-       file = x0.1.train.fit_rf.nzv.mtry9.file_path)
+  put_log("Saving Pre-train fit result...", )
+  
+  save(fit_rf.nzv.mtry9,
+       x0.1.train_nzv,
+       file = cache_file.path)
+
+  put_log("The Pre-train fit result has been saved to the cache file:
+%1.", cache_file.path)
 }
 
-
-put_log("Summary of the fit data produced by pre-training the `Random Forest` model:
+put_log("Summary of fitting results obtained during the preliminary training of the `RFs` model:
 %1", summary(fit_rf.nzv.mtry9),
         capture_output = 1)
 
@@ -727,9 +732,15 @@ made for the `x0.1.test` dataset...")
   put_log("The accuracy value is %1", xy0.rf.mtry9.accuracy)
 #> [1] 0.876092421884353
   
-  save(y0.1_hat_rf.mtry9,
+  put_log("Saving predicted results...", )
+
+    save(y0.1_hat_rf.mtry9,
        xy0.rf.mtry9.accuracy,
        file = cache_file.path)
+    
+    put_log("Saving Train fit result...", )
+    put_log("The Train fit result has been saved to the cache file:
+%1.", cache_file.path)
 }
 
 stopCluster(cl)
@@ -738,7 +749,8 @@ stopImplicitCluster()
 put_log("Summary of predicted data made using the `RF.mtry9` model,
 trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
 and tested on the 10% sample from the remaining 90% data of the `Train Set`:
-%1", summary(y0.1_hat_rf.mtry9))
+%1", summary(y0.1_hat_rf.mtry9),
+        capture_output = 1)
 
 
 put_log("Accuracy of the predicted data for the `k5NN+PCA` model,
@@ -754,8 +766,8 @@ log_close()
 open_logfile(".x0.1.train.fit_rf.nzv.mtry5_15")
 #### Random Forest: Training --------------------------------------------
 
-x0.1.train.rf.nzv.mtry5_15.file_path <- file.path(models.random_forest.path, 
-                                                                 "x0.1.train_rf.nzv.mtry5_15.RData")
+cache_file.path <- file.path(models.random_forest.path, 
+                             "x0.1.train_rf.nzv.mtry5_15.RData")
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
@@ -771,27 +783,30 @@ if (file.exists(x0.1.train.rf.nzv.mtry5_15.file_path)) {
 } else {
   start <- put_start_date()
   
-  put_log("Training `Random Forest` model on the following 10% sample 
-from the `Train Set`: `x0.1.train`..." )
-  x0.1.train.rf.cv5.ntree200.fit <- caret::train(x0.1.train, y0.1.train, method = "rf", 
-                           preProcess = "nzv",
+  
+  put_log("Training `RF.mtry5_15.5` model on a 10% sample from the `Train set`,
+          pre-processed by NZV method (`x0.1.train_nzv`)..." )
+
+    x0.1.train.rf.cv5.ntree200.fit <- caret::train(x0.1.train_nzv, y0.1.train, method = "rf", 
+                           # preProcess = "nzv",
                            trControl = trainControl(method = "cv", number = 5, p = .8),
                            ntree = 200,
                            tuneGrid = data.frame(mtry = seq(5, 15, 5)))
   
-  put_log("The `Random Forest` model has been trained on the dataset: `x0.1.train`." )
+  put_log("The `RF.mtry5_15.5` model has been trained on the pre-processed dataset: `x0.1.train_nzv`." )
   
   put_end_date(start)
 # [1] "Sun Apr  5 08:29:02 2026"
 # Time difference of 57.23111 mins
 
-put_log("Saving Train fit result...", )
+  put_log("Saving Train fit result...", )
 
   start <- put_start_date()
   save(x0.1.train.rf.cv5.ntree200.fit, 
        file = x0.1.train.rf.nzv.mtry5_15.file_path)
+  
   put_log("The Train fit result has been saved to the cache file:
-%1.", x0.1.train.rf.nzv.mtry5_15.file_path)
+%1.", cache_file.path)
   put_end_date(start)
 }
 
