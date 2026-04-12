@@ -646,27 +646,26 @@ log_close()
 
 # library(randomForest)
 
+#### Research and estimate performance of the `Random Forest` method -----------
 ### Open log: Random Forest: Research ------------------------------------------
 open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
-#### Research and estimate performance of the `Random Forest` method -----------
 ##### Optimizing for mtry = 9 --------------------------------------------------
 cache_file.path <- file.path(models.random_forest.research.path, 
                              "x0.1.train.fit_rf.nzv.mtry9.RData")
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+start <- put_start_date()
 
 if (file.exists(cache_file.path)) {
   put_log("Loading Model Fit Data from cache file: 
 %1", cache_file.path)
   
-  start <- put_start_date()
   load(cache_file.path)
   put_log("Train Data list has been loaded from cache.")
   
 } else {
   
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-  
-  start <- put_start_date()
   nzv <- nearZeroVar(x0.1.train)
   put_end_date(start)
   # Time difference of 56.0386 secs
@@ -679,9 +678,6 @@ if (file.exists(cache_file.path)) {
   start <- put_start_date()
   fit_rf.nzv.mtry9 <- randomForest(x0.1.train_nzv, y0.1.train,  mtry = 9)
 
-  stopCluster(cl)
-  stopImplicitCluster()
-  
   put_log("The `RF` model has been pre-trained on the dataset: `x0.1.train`
 with parameter value: `.mtry = 9`." )
   put_end_date(start)
@@ -697,12 +693,15 @@ with parameter value: `.mtry = 9`." )
 %1.", cache_file.path)
 }
 
+stopCluster(cl)
+stopImplicitCluster()
+  
 plot(fit_rf.nzv.mtry9)
 
 put_log("Summary of fitting results obtained during the preliminary training of the `RFs` model:
 %1", summary(fit_rf.nzv.mtry9),
         capture_output = 1)
-str(fit_rf.nzv.mtry9)
+# str(fit_rf.nzv.mtry9)
 mean(fit_rf.nzv.mtry9$err.rate)
 
 ##### Close Log ------------------------------------------------------------------
@@ -724,21 +723,21 @@ if (file.exists(cache_file.path)) {
 %1...", cache_file.path)
   
   load(cache_file.path)
+  put_log("Predicted Data have been loaded from cache.")
   put_end_date(start)
   # Time difference of 
   
-  put_log("Predicted Data have been loaded from cache.")
 } else {
   put_log("Predicting `RF.mtry9` model on `x0.1.test`...")
   
   y0.1_hat_rf.mtry9 <- stats::predict(fit_rf.nzv.mtry9, x0.1.test, type = "response")
+  
+  put_log("The `RF.mtry9` Model: Generating predictions have been completed `x0.1.test` dataset.")
   put_end_date(start)
   # Time difference of 2.74791 mins
   
-  put_log("The `RF.mtry9` Model: Generating predictions have been completed `x0.1.test` dataset.")
   
-  
-  put_log("Validating accuracy of the k5NN+PCA (fine-tuned) Model predictions 
+  put_log("Validating accuracy of the `RF.mtry9` Model predictions 
 made for the `x0.1.test` dataset...")
 
   xy0.rf.mtry9.accuracy <- mean(y0.1_hat_rf.mtry9 == y0.1.test)
@@ -771,6 +770,92 @@ trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
 and tested on the 10% sample from the remaining 90% data of the `Train Set`:
 %1", xy0.rf.mtry9.accuracy)
 #> 0.876092421884353
+
+##### Close Log ------------------------------------------------------------------
+log_close()
+### Open log: Optimizing for mtry = c(5, 10, 15) -------------------------------
+open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
+##### Optimizing for mtry = c(5, 10, 15) & ntree = 200 -------------------------
+cache_file.path <- file.path(models.random_forest.research.path, 
+                             "x0.1.train.fit_rf.nzv.mtry5,10,15.accuracy.RData")
+
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+start <- put_start_date()
+
+if (file.exists(cache_file.path)) {
+  put_log("Loading Model Fit Data from cache file: 
+%1", cache_file.path)
+  
+  load(cache_file.path)
+  put_log("Train Data list has been loaded from cache.")
+  put_end_date(start)
+  
+} else {
+  
+  fit_rf.nzv.mtry5_10_15 = c(5, 10, 15)
+  
+  # Time difference of 56.0386 secs
+  
+  
+  fit_rf.nzv.mtry5_10_15.tuned_result <- lapply( fit_rf.nzv.mtry5_10_15, function(mtry.val){
+    put_log("Tuning `RF` model for `mtry = %1`...", mtry.val)
+    start <- put_start_date()
+    
+    fit <-randomForest(x0.1.train_nzv, 
+                       y0.1.train,  
+                       mtry = mtry.val, 
+                       ntree = 200)
+    
+    plot(fit)
+
+    put_log("The `RF` model has been pre-trained on the dataset: `x0.1.train`
+with parameter value: `.mtry = %1`.", mtry.val)
+    put_end_date(start)
+    
+    put_log("Predicting `RF` model on `x0.1.test` for `mtry = %1`...", mtry.val)
+    start <- put_start_date()
+    
+    y_hat <- stats::predict(fit, x0.1.test, type = "response")
+    
+    put_log("The `RF` Model: Generating predictions task has been completed.")
+
+    
+    put_log("Validating accuracy of the `RF.mtry9` Model predictions 
+made for the `x0.1.test` dataset...")
+    
+    acc <- mean(y_hat == y0.1.test)
+    put_log("The accuracy value is %1", acc)
+    put_end_date(start)
+    # Time difference of ??? mins
+    
+    c(mtry=mtry.val, 
+      predictions = y_hat,
+      err.rate = fit$err.rate,
+      accuracy = acc)
+  }) 
+
+  put_end_date(start)
+  #> Time difference of 44.35714 mins
+
+  put_log("Saving the model tuning result...")
+  
+  save(fit_rf.nzv.mtry5_10_15.tuned_result,
+       fit_rf.nzv.mtry5_10_15,
+       file = cache_file.path)
+
+  put_log("The Pre-train fit result has been saved to the cache file:
+%1.", cache_file.path)
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+put_log("Summary of tuned results for the `RF` model:
+%1", summary(fit_rf.nzv.mtry5_10_15.tuned_result),
+        capture_output = 1)
+
+str(fit_rf.nzv.mtry5_10_15.tuned_result)
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
