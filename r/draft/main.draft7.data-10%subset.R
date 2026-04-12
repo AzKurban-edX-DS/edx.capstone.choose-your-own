@@ -737,7 +737,6 @@ made for the `x0.1.test` dataset...")
        xy0.rf.mtry9.accuracy,
        file = cache_file.path)
     
-    put_log("Saving Train fit result...", )
     put_log("The Train fit result has been saved to the cache file:
 %1.", cache_file.path)
 }
@@ -752,10 +751,9 @@ and tested on the 10% sample from the remaining 90% data of the `Train Set`:
         capture_output = 1)
 
 
-put_log("Accuracy of the predicted data for the `k5NN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
-optimized for a sequence of *k* values ranging from 4 to 6,
-and tested on the 10% sample from the remaining data of the `Train Set`:
+put_log("Accuracy of the predicted data for the `RF.mtry9` model,
+trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
+and tested on the 10% sample from the remaining 90% data of the `Train Set`:
 %1", xy0.rf.mtry9.accuracy)
 #> 0.876092421884353
 
