@@ -19,6 +19,19 @@ source(log_func_script.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
+## Load Common Helper Functions --------------------------------------------------
+common_helper.funcs.file_path <- file.path(support_functions.path, "common-helper.R")
+
+
+source(common_helper.funcs.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+
 ## Load Data Helper Functions --------------------------------------------------
 data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.R")
 
@@ -636,16 +649,16 @@ log_close()
 ### Open log: Random Forest: Research ------------------------------------------
 open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
 #### Research and estimate performance of the `Random Forest` method -----------
-
+##### Optimizing for mtry = 9 --------------------------------------------------
 cache_file.path <- file.path(models.random_forest.research.path, 
                              "x0.1.train.fit_rf.nzv.mtry9.RData")
 
-if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
+if (file.exists(cache_file.path)) {
   put_log("Loading Model Fit Data from cache file: 
-%1", x0.1.train.fit_rf.nzv.mtry9.file_path)
+%1", cache_file.path)
   
   start <- put_start_date()
-  load(x0.1.train.fit_rf.nzv.mtry9.file_path)
+  load(cache_file.path)
   put_log("Train Data list has been loaded from cache.")
   
 } else {
@@ -674,8 +687,6 @@ with parameter value: `.mtry = 9`." )
   put_end_date(start)
   #> Time difference of 44.35714 mins
 
-  plot(fit_rf.nzv.mtry9)
-  
   put_log("Saving Pre-train fit result...")
   
   save(fit_rf.nzv.mtry9,
@@ -686,9 +697,13 @@ with parameter value: `.mtry = 9`." )
 %1.", cache_file.path)
 }
 
+plot(fit_rf.nzv.mtry9)
+
 put_log("Summary of fitting results obtained during the preliminary training of the `RFs` model:
 %1", summary(fit_rf.nzv.mtry9),
         capture_output = 1)
+str(fit_rf.nzv.mtry9)
+mean(fit_rf.nzv.mtry9$err.rate)
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
