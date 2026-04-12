@@ -650,6 +650,9 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   
 } else {
   
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   start <- put_start_date()
   nzv <- nearZeroVar(x0.1.train)
   put_end_date(start)
@@ -661,10 +664,6 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
           pre-processed by NZV method (`x0.1.train_nzv`)..." )
   
   start <- put_start_date()
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-  
-
   fit_rf.nzv.mtry9 <- randomForest(x0.1.train_nzv, y0.1.train,  mtry = 9)
 
   stopCluster(cl)
@@ -677,7 +676,7 @@ with parameter value: `.mtry = 9`." )
 
   plot(fit_rf.nzv.mtry9)
   
-  put_log("Saving Pre-train fit result...", )
+  put_log("Saving Pre-train fit result...")
   
   save(fit_rf.nzv.mtry9,
        x0.1.train_nzv,
