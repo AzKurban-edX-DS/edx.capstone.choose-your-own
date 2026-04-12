@@ -656,6 +656,8 @@ if (file.exists(x0.1.train.fit_rf.nzv.mtry9.file_path)) {
   put_end_date(start)
   # Time difference of 56.0386 secs
   
+  x0.1.train_nzv <- x0.1.train[, -nzv]
+  
   put_log("Pre-training `Random Forest` model on the following 10% sample 
 from the `Train set`: `x0.1.train`..." )
   
@@ -663,9 +665,8 @@ from the `Train set`: `x0.1.train`..." )
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  x0.1.train_nzv <- x0.1.train[, -nzv]
 
-  fit_rf.nzv.mtry9 <- randomForest(, y0.1.train,  mtry = 9)
+  fit_rf.nzv.mtry9 <- randomForest(x0.1.train_nzv, y0.1.train,  mtry = 9)
 
   stopCluster(cl)
   stopImplicitCluster()
