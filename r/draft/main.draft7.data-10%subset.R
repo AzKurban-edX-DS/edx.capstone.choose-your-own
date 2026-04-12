@@ -731,7 +731,7 @@ made for the `x0.1.test` dataset...")
   put_log("The accuracy value is %1", xy0.rf.mtry9.accuracy)
 #> [1] 0.876092421884353
   
-  put_log("Saving predicted results...", )
+  put_log("Saving predicted results...")
 
     save(y0.1_hat_rf.mtry9,
        xy0.rf.mtry9.accuracy,
