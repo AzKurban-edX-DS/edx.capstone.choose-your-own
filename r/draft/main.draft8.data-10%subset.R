@@ -44,6 +44,18 @@ source(data_helper.funcs.file_path,
        keep.source = TRUE)
 
 
+## Load Model Helper Functions --------------------------------------------------
+model_helper.funcs.file_path <- file.path(support_functions.path, "models-helper.R")
+
+
+source(model_helper.funcs.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
 ### Open log: Load Train Data --------------------------------------------------
 open_logfile(".load-train-data")
 ### Load Train Data ------------------------------------------------------------
