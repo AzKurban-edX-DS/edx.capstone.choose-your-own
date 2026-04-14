@@ -871,15 +871,15 @@ log_close()
 open_logfile(".research.x0.1.train.fit_rf.nzv.mtry16,17,20")
 ##### Optimizing for mtry = c(16, 17, 20) & ntree = 200 -------------------------
 cache_file.path <- file.path(models.random_forest.research.path, 
-                             "x0.1.train.fit_rf.nzv.mtry16,17,20.accuracy.RData")
-
+                             "x0.1.train.fit_rf.nzv.mtry18,19.accuracy.RData")
+mtry16.17.20 = c(16, 17, 20)
 
 start <- put_start_date()
 fit_rf.nzv.mtry16.17.20.tuned_result <- tune.rf(x0.1.train_nzv, 
                                                 y0.1.train,
                                                 x0.1.test,
                                                 y0.1.test,
-                                                mtry = c(16, 17, 20),
+                                                mtry = mtry16.17.20,
                                                 cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
@@ -892,14 +892,56 @@ put_end_date(start)
 fit_rf.mtry16.17.20.accuracy <- 
   sapply(fit_rf.nzv.mtry16.17.20.tuned_result, 
          function(result) result$accuracy)
-plot(fit_rf.mtry16.17.20.accuracy)
+
+plot(mtry16.17.20, fit_rf.mtry16.17.20.accuracy)
+
 max.idx <- which.max(fit_rf.mtry16.17.20.accuracy)
 
 max_accuracy <- max(fit_rf.mtry16.17.20.accuracy)
 max_accuracy
 # [1] 0.8804023
 
-best_mtry <- fit_rf.nzv.mtry16.17.20.tuned_result[[max.idx]]$mtry
+best_mtry <- mtry16.17.20[max.idx]
+best_mtry
+# [1] 16
+
+##### Close Log ------------------------------------------------------------------
+log_close()
+### Open log: Optimizing for mtry = c(18, 19) ------------------------------
+open_logfile(".research.x0.1.train.fit_rf.nzv.mtry18,19")
+##### Optimizing for mtry = c(18, 19) & ntree = 200 -------------------------
+cache_file.path <- file.path(models.random_forest.research.path, 
+                             "x0.1.train.fit_rf.nzv.mtry16,17,20.accuracy.RData")
+
+mtry18_19 <- c(18, 19)
+start <- put_start_date()
+fit_rf.mtry18_19.tuned_result <- tune.rf(x0.1.train_nzv, 
+                                                y0.1.train,
+                                                x0.1.test,
+                                                y0.1.test,
+                                                mtry = mtry18_19,
+                                                cache_file = cache_file.path)
+
+put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
+90% data of the `Train Set`:
+%1", capture.output(str(fit_rf.mtry18_19.tuned_result)))
+put_end_date(start)
+
+fit_rf.mtry18_19.accuracy <- 
+  sapply(fit_rf.mtry18_19.tuned_result, 
+         function(result) result$accuracy)
+
+plot(mtry18_19, fit_rf.mtry18_19.accuracy)
+
+max.idx <- which.max(fit_rf.mtry18_19.accuracy)
+
+max_accuracy <- max(fit_rf.mtry18_19.accuracy)
+max_accuracy
+# [1] 0.8804023
+
+best_mtry <- mtry18_19[[max.idx]]
 best_mtry
 # [1] 16
 
