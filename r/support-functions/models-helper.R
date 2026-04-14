@@ -22,87 +22,118 @@ train.kNN_PCA <- function(x,
   train_knn_pca
 }
 
-tune.rf <- function(x, y, mtry, file = NULL){
+tune.rf <- function(x, 
+                    y, 
+                    x.test,
+                    y.test,
+                    mtry, 
+                    n.tree = 200,
+                    cache_file = NULL){
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
   start <- put_start_date()
   
-  if (file.exists(cache_file.path)) {
-    put_log("Loading Model Fit Data from cache file: 
+  if (!is.null(cache_file) && file.exists(cache_file)) {
+    put_log("Function `tune.rf`:
+Loading Model Fit Data from cache file: 
 %1", cache_file.path)
     
     load(cache_file.path)
-    put_log("Train Data list has been loaded from cache.")
+    put_log("Function `tune.rf`:
+Train Data list has been loaded from cache.")
     put_end_date(start)
     
   } else {
     
-    fit_rf.nzv.mtry11_14 = c(11, 12, 13, 14)
-    
-    # Time difference of 56.0386 secs
-    
-    
-    fit_rf.nzv.mtry11_14.tuned_result <- lapply( fit_rf.nzv.mtry11_14, function(mtry.val){
-      put_log("Tuning `RF` model for `mtry = %1`...", mtry.val)
+    mtry.tuned_result <- lapply(mtry, function(mtry.val){
+      put_log("Function `tune.rf`:
+Tuning `RF` model for `mtry = %1`...", mtry.val)
       start <- put_start_date()
       
-      fit <-randomForest(x0.1.train_nzv, 
-                         y0.1.train,  
+      fit <-randomForest(x, 
+                         y,  
                          mtry = mtry.val, 
-                         ntree = 200)
+                         ntree = n.tree)
       
       plot(fit)
       
-      put_log("The `RF` model has been pre-trained on the dataset: `x0.1.train`
-with parameter value: `.mtry = %1`.", mtry.val)
+      put_log("Function `tune.rf`:
+The `RF` model has been trained with parameter value: `.mtry = %1`.", 
+              mtry.val)
       put_end_date(start)
       
-      put_log("Predicting `RF` model on `x0.1.test` for `mtry = %1`...", mtry.val)
+      put_log("Function `tune.rf`:
+Summary of training result for mtry = %1:
+%2", mtry.val, str(fit), cupture_output = 2)
+      
+      
+      put_log("Function `tune.rf`:
+Predicting `RF` model on `x.test` for `mtry = %1`...", mtry.val)
       start <- put_start_date()
       
-      y_hat <- stats::predict(fit, x0.1.test, type = "response")
+      y_hat <- stats::predict(fit, x.test, type = "response")
       
-      put_log("The `RF` Model: Generating predictions task has been completed.")
+      put_log("Function `tune.rf`:
+The `RF` Model: Generating predictions task has been completed.")
+      
+      put_log("Function `tune.rf`:
+Summary of prediction results for mtry = %1:
+%2", mtry.val, str(y_hat), cupture_output = 2)
       
       
-      put_log("Validating accuracy of the `RF.mtry9` Model predictions 
-made for the `x0.1.test` dataset...")
+      put_log("Function `tune.rf`:
+Validating accuracy of the `RF.mtry9` Model predictions 
+made for the `x.test` dataset...")
       
       acc <- mean(y_hat == y0.1.test)
-      put_log("The accuracy value is %1", acc)
+      put_log("Function `tune.rf`:
+The accuracy value is %1", acc)
       put_end_date(start)
       # Time difference of ??? mins
       
-      c(mtry=mtry.val, 
-        predictions = y_hat,
-        err.rate = fit$err.rate,
-        accuracy = acc)
+      list(mtry=mtry.val, 
+           predictions = y_hat,
+           err.rate = fit$err.rate,
+           accuracy = acc)
     }) 
-    
     put_end_date(start)
-    #> Time difference of 44.35714 mins
     
-    put_log("Saving the model tuning result...")
+    accuracy <- sapply(mtry.tuned_result, function(result) result$accuracy)
+    max.acc.idx <- which.max(accuracy)
     
-    save(fit_rf.nzv.mtry11_14.tuned_result,
-         fit_rf.nzv.mtry11_14,
-         file = cache_file.path)
+    best_result <- mtry.tuned_result[[max.acc.idx]]
     
-    put_log("The Pre-train fit result has been saved to the cache file:
+    put_log("Function `tune.rf`:
+Data structure of the best result of the model tuning:
+%1", str(best_result),
+            capture_output = 1)
+    
+    if (!is.null(cache_file)){
+      
+      put_log("Function `tune.rf`:
+Saving the model tuning result...")
+      save(mtry.tuned_result,
+           mtry,
+           file = cache_file)
+      put_log("Function `tune.rf`:
+The Pre-train fit result has been saved to the cache file:
 %1.", cache_file.path)
+    }
   }
   
   stopCluster(cl)
   stopImplicitCluster()
   
-  put_log("Summary of tuned results for the `RF` model:
-%1", summary(fit_rf.nzv.mtry11_14.tuned_result),
+  put_log("Function `tune.rf`:
+Summary of tuned results for the `RF` model:
+%1", summary(mtry.tuned_result),
           capture_output = 1)
   
-  put_log("Data structure of tuned results for the `RF` model:
-%1", str(fit_rf.nzv.mtry11_14.tuned_result),
+  put_log("Function `tune.rf`:
+Data structure of tuned results for the `RF` model:
+%1", str(mtry.tuned_result),
           capture_output = 1)
   
-  
+  mtry.tuned_result
 }
