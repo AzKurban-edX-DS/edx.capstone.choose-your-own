@@ -33,18 +33,26 @@ arg.to_str <- function(arg, .sep = "\n"){
   arg
 }
 
-get_log <- function(msg_template, ..., 
-                    capture_output = NULL,
-                    .sep = "\n"){
-  arg_ls <- list(...)
+get.arg_list <- function(...,
+                         capture_output = NULL){
+  ls <- list(...)
+  # arg.len <- length(...)
   
-  if (!is.null(capture_output)) {
-    for (i in capture_output) {
-      arg_ls[[capture_output]] <-
-        capture.output(arg_ls[[capture_output]])
-    }
+  for (i in seq_len(arg.len)) {
+    
+    
   }
+}
 
+capture.args <- function(...) {
+  capture.output(...)
+}
+
+get_log <- function(msg_template, ..., 
+                    .sep = "\n",
+                    capture_output = NULL){
+  
+  arg_ls <- list(...)
   log <- msg_template
   
   for (i in seq_len(length(arg_ls))) {
