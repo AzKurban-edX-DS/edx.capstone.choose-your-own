@@ -137,3 +137,9 @@ Data structure of tuned results for the `RF` model:
   
   mtry.tuned_result
 }
+
+x.binarize <- function(x) {
+  nzv <- nearZeroVar(x)
+  x.nzv <- x[, -nzv]
+  (x > 0.5)*1
+}

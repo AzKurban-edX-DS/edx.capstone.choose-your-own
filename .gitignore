@@ -39,4 +39,5 @@ data/
 data0/
 r/support-scripts/setup0.R
 log/
-bak/
+bak/.venv/.lock
+bak/.venv/
