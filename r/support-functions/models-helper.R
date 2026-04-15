@@ -35,8 +35,10 @@ tune.rf <- function(x,
   local_cache.path <- NULL
   
   if(!is.null(cache_root)){
-    local_root <- file.path(cache_root, "tune.rf.cache")
+    if(!dir.exists(cache_root))
+      dir.create(cache_root)
     
+    local_root <- file.path(cache_root, "tune.rf.cache")
     cache_file <- file.path(cache_root, cache_file)
     
     if(!dir.exists(local_root))
