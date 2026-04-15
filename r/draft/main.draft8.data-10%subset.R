@@ -659,65 +659,6 @@ log_close()
 # library(randomForest)
 
 #### Research and estimate performance of the `Random Forest` method -----------
-### Open log: Random Forest: Research ------------------------------------------
-open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
-##### Optimizing for mtry = 9 --------------------------------------------------
-cache_file.path <- file.path(models.random_forest.research.path, 
-                             "x0.1.train.fit_rf.nzv.mtry9.RData")
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-start <- put_start_date()
-
-if (file.exists(cache_file.path)) {
-  put_log("Loading Model Fit Data from cache file: 
-%1", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Train Data list has been loaded from cache.")
-  
-} else {
-  
-  nzv <- nearZeroVar(x0.1.train)
-  put_end_date(start)
-  # Time difference of 56.0386 secs
-  
-  x0.1.train_nzv <- x0.1.train[, -nzv]
-  
-  put_log("Pre-training `RF.mtry9` model on a 10% sample from the `Train set`,
-          pre-processed by NZV method (`x0.1.train_nzv`)..." )
-  
-  start <- put_start_date()
-  fit_rf.nzv.mtry9 <- randomForest(x0.1.train_nzv, y0.1.train,  mtry = 9)
-
-  put_log("The `RF` model has been pre-trained on the dataset: `x0.1.train`
-with parameter value: `.mtry = 9`." )
-  put_end_date(start)
-  #> Time difference of 44.35714 mins
-
-  put_log("Saving Pre-train fit result...")
-  
-  save(fit_rf.nzv.mtry9,
-       x0.1.train_nzv,
-       file = cache_file.path)
-
-  put_log("The Pre-train fit result has been saved to the cache file:
-%1.", cache_file.path)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-  
-plot(fit_rf.nzv.mtry9)
-
-put_log("Summary of fitting results obtained during the preliminary training of the `RFs` model:
-%1", summary(fit_rf.nzv.mtry9),
-        capture_output = 1)
-# str(fit_rf.nzv.mtry9)
-mean(fit_rf.nzv.mtry9$err.rate)
-
-##### Close Log ------------------------------------------------------------------
-log_close()
 ##### Open log: Predictions on `RF` Model for `x0.1.test` dataset ----
 open_logfile(".x0.1.test.predict.rf.mtry9")
 ##### Constructing Predictions on `RF.mtry9` Model for `x0.1.test` dataset ----
@@ -800,51 +741,153 @@ if (file.exists(cache_file.path)) {
   
 } else {
   
-put_log("Preprocessing transformation using the `Train Set` (`x0.1.train` object)...")
-start <- put_start_date()
-pp0.1 <- preProcess(x0.1.train, method = c("nzv", "center", "scale")) 
-
-put_log("Preprocessing transformation has been completed")
-put_end_date(start)
-
-start <- put_start_date()
-put_log("Applying preprocess transformation on the datasets...")
-x0.1.train.preprocessed <- stats::predict(pp0.1, x0.1.train)
-put_log("Preprocess transformation has been applied on the `x0.1.train` object:
-%1", capture.output(str(x0.1.train.preprocessed)))
-
-x0.1.test.preprocessed <- stats::predict(pp0.1, x0.1.test)
-put_log("Preprocess transformation has been applied on the `x0.1.test` object:
-%1", capture.output(str(x0.1.test.preprocessed)))
-put_end_date(start)
-
-start <- put_start_date()
-put_log("Binarizing the datasets...")
-x0.1.train.binarized <- x.binarize(x0.1.train)
-put_log("`x0.1.train` object has been binarized:
-%1", capture.output(str(x0.1.train.binarized)))
-
-x0.1.test.binarized <- x.binarize(x0.1.test)
-put_log("Preprocess transformation has been applied on the `x0.1.test` object:
-%1", capture.output(str(x0.1.test.binarized)))
-put_end_date(start)
-
-put_log("Caching Preprocessed Data in the file system...")
-start <- put_start_date()
-save(x0.1.train.preprocessed,
-     x0.1.train.binarized,
-     x0.1.test.preprocessed,
-     x0.1.test.binarized,
-     file = cache_file.path)
-
-put_log("The Preprocessed data has been saved to the cache file:
-%1.", cache_file.path)
-put_end_date(start)
+  nzv <- nearZeroVar(x0.1.train)
+  put_end_date(start)
+  # Time difference of 56.0386 secs
+  
+  x0.1.train_nzv <- x0.1.train[, -nzv]
+  
+  put_log("Pre-training `RF.mtry9` model on a 10% sample from the `Train set`,
+          pre-processed by NZV method (`x0.1.train_nzv`)..." )
+  
+  start <- put_start_date()
+  
+  put_log("Preprocessing transformation using the `Train Set` (`x0.1.train` object)...")
+  start <- put_start_date()
+  pp0.1 <- preProcess(x0.1.train, method = c("nzv", "center", "scale")) 
+  
+  put_log("Preprocessing transformation has been completed")
+  put_end_date(start)
+  
+  start <- put_start_date()
+  put_log("Applying preprocess transformation on the datasets...")
+  x0.1.train.preprocessed <- stats::predict(pp0.1, x0.1.train)
+  put_log("Preprocess transformation has been applied on the `x0.1.train` object:
+  %1", capture.output(str(x0.1.train.preprocessed)))
+  
+  x0.1.test.preprocessed <- stats::predict(pp0.1, x0.1.test)
+  put_log("Preprocess transformation has been applied on the `x0.1.test` object:
+  %1", capture.output(str(x0.1.test.preprocessed)))
+  put_end_date(start)
+  
+  start <- put_start_date()
+  put_log("Binarizing the datasets...")
+  x0.1.train.binarized <- x.binarize(x0.1.train)
+  put_log("`x0.1.train` object has been binarized:
+  %1", capture.output(str(x0.1.train.binarized)))
+  
+  x0.1.test.binarized <- x.binarize(x0.1.test)
+  put_log("Preprocess transformation has been applied on the `x0.1.test` object:
+  %1", capture.output(str(x0.1.test.binarized)))
+  put_end_date(start)
+  
+  put_log("Caching Preprocessed Data in the file system...")
+  start <- put_start_date()
+  save(x0.1.train_nzv,
+       x0.1.train.preprocessed,
+       x0.1.train.binarized,
+       x0.1.test.preprocessed,
+       x0.1.test.binarized,
+       file = cache_file.path)
+  
+  put_log("The Preprocessed data has been saved to the cache file:
+  %1.", cache_file.path)
+  put_end_date(start)
 }
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
 open_logfile(".research.x0.1.train.preprocessed.fit_rf.mtry18")
+### Open log: `NZV` model for the default mtry  (NA) & ntree = 200 -------
+open_logfile("x0.1.train.nzv.fit_rf.mtry_default")
+##### RF: Default value of `mtry (NA)` & ntree = 200 ---------------------------
+cache_file.path <- file.path(models.random_forest.research.path, 
+                             "x0.1.train.fit_rf.nzv.mtry_default.accuracy.RData")
+
+start <- put_start_date()
+fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train_nzv, 
+                                        y0.1.train,
+                                        x0.1.test,
+                                        y0.1.test,
+                                        cache_file = cache_file.path)
+# Time difference of the last iteration 19.8342 mins
+
+put_log("Structure of results of tuning the model for the default value of parameter `mtry (NA)`, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
+90% data of the `Train Set`:
+%1", capture.output(str(fit_rf.mtry_default.tuned_result)))
+put_end_date(start)
+# Time difference of 6.260901 hours
+
+fit_rf.mtry_default.accuracy <- 
+  sapply(fit_rf.mtry_default.tuned_result, 
+         function(result) result$accuracy)
+
+plot(mtry_default, fit_rf.mtry_default.accuracy)
+
+max.idx <- which.max(fit_rf.mtry_default.accuracy)
+
+max_accuracy <- max(fit_rf.mtry_default.accuracy)
+max_accuracy
+# [1] 0.8833952
+
+best_mtry <- mtry_default[[max.idx]]
+best_mtry
+# [1] 25
+
+
+
+##### Close Log ----------------------------------------------------------------
+log_close()
+
+### Open log: Optimizing for mtry = 9 ------------------------------------------
+open_logfile(".research.x0.1.train.fit_rf.nzv.mtry9")
+##### Optimizing for mtry = 9 --------------------------------------------------
+cache_file.path <- file.path(models.random_forest.research.path, 
+                             "x0.1.train.fit_rf.nzv.mtry9.RData")
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+start <- put_start_date()
+
+if (file.exists(cache_file.path)) {
+  put_log("Loading Model Fit Data from cache file: 
+%1", cache_file.path)
+  
+  load(cache_file.path)
+  put_log("Train Data list has been loaded from cache.")
+  
+} else {
+  fit_rf.nzv.mtry9 <- randomForest(x0.1.train_nzv, y0.1.train,  mtry = 9)
+
+  put_log("The `RF` model has been pre-trained on the dataset: `x0.1.train`
+with parameter value: `.mtry = 9`." )
+  put_end_date(start)
+  #> Time difference of 44.35714 mins
+
+  put_log("Saving Pre-train fit result...")
+  
+  save(fit_rf.nzv.mtry9,
+       file = cache_file.path)
+
+  put_log("The Pre-train fit result has been saved to the cache file:
+%1.", cache_file.path)
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+  
+plot(fit_rf.nzv.mtry9)
+
+put_log("Summary of fitting results obtained during the preliminary training of the `RFs` model:
+%1", summary(fit_rf.nzv.mtry9),
+        capture_output = 1)
+# str(fit_rf.nzv.mtry9)
+mean(fit_rf.nzv.mtry9$err.rate)
+
+##### Close Log ------------------------------------------------------------------
+log_close()
 ### Open log: Optimizing pre-processed model for mtry = 18 & ntree = 200 -------
 open_logfile("x0.1.train.preprocessed.fit_rf.mtry18")
 ##### Optimizing pre-processed model for mtry = 18 & ntree = 200 ---------------
