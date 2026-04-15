@@ -26,7 +26,7 @@ tune.rf <- function(x,
                     y, 
                     x.test,
                     y.test,
-                    mtry, 
+                    mtry = NA, 
                     n.tree = 200,
                     cache_file = NULL){
   cl <- makeCluster(N_pcCores)
@@ -51,10 +51,16 @@ Train Data list has been loaded from cache.")
 Tuning `RF` model for `mtry = %1`...", mtry.val)
       start <- put_start_date()
       
-      fit <-randomForest(x, 
-                         y,  
-                         mtry = mtry.val, 
-                         ntree = n.tree)
+      if (is.na(mtry.val)) {
+        fit <-randomForest(x, 
+                           y,  
+                           ntree = n.tree)
+      } else {
+        fit <-randomForest(x, 
+                           y,  
+                           mtry = mtry.val, 
+                           ntree = n.tree)
+      }
       
       plot(fit)
       
