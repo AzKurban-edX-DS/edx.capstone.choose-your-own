@@ -126,11 +126,6 @@ The Pre-train fit result has been saved to the cache file:
   stopImplicitCluster()
   
   put_log("Function `tune.rf`:
-Summary of tuned results for the `RF` model:
-%1", summary(mtry.tuned_result),
-          capture_output = 1)
-  
-  put_log("Function `tune.rf`:
 Data structure of tuned results for the `RF` model:
 %1", str(mtry.tuned_result),
           capture_output = 1)
