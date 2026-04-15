@@ -47,17 +47,13 @@ str.build <- function(str.template, ...,
 }
 
 print_log <- function(msg_template, ...,
-                      capture_output = NULL,
                       .sep = "\n"){
   print(str.build(msg_template, ...,
-                capture_output = capture_output,
                 .sep))
 }
 put_log <- function(msg_template, ...,
-                    capture_output = NULL, 
                     .sep = "\n"){
   put(str.build(msg_template, ..., 
-              capture_output = capture_output,
               .sep))
 }
 
