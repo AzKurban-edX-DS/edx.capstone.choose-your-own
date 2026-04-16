@@ -2,9 +2,9 @@
 
 # Import the Fashion MNIST dataset ---------------------------------------------
 
-library(keras)
+library(keras3)
 
-fashion_mnist <- dataset_fashion_mnist()
+fashion_mnist <- keras3::dataset_fashion_mnist()
 str(fashion_mnist)
 
 c(train_images, train_labels) %<-% fashion_mnist$train
@@ -12,6 +12,7 @@ str(train_images)
 dim(train_images)
 dim(train_labels)
 head(train_labels)
+str(train_labels)
 
 c(test_images, test_labels) %<-% fashion_mnist$test
 str(test_images)
