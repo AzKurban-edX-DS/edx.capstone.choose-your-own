@@ -1355,6 +1355,49 @@ best_mtry
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
+### Open log: Optimizing for mtry = 45,49,53,57,60,64,68,72,76,80,85,90 ---------------
+open_logfile(".research.x0.1.train.fit_rf.nzv.mtry45_60_90.4")
+##### RF: Optimizing for mtry = 45,49,53,57,60,64,68,72,76,80,85,90 & ntree = 200 -----
+cache_root.path <- file.path(models.random_forest.research.path, "x0.1.train_nzv")
+
+mtry45_60_90.4 <- c(45,49,53,57,60,64,68,72,76,80,85,90)
+start <- put_start_date()
+fit_rf.mtry45_60_90.4.tuned_result <- tune.rf(x0.1.train_nzv, 
+                                         y0.1.train,
+                                         x0.1.test,
+                                         y0.1.test,
+                                         mtry = mtry45_60_90.4,
+                                         cache_root = cache_root.path,
+                                         cache_file = "x0.1.train.fit_rf.nzv.mtry45_60_90.4.accuracy.RData")
+
+# Time difference of the last iteration 19.8342 mins
+
+put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
+90% data of the `Train Set`:
+%1", capture.output(str(fit_rf.mtry45_60_90.4.tuned_result)))
+put_end_date(start)
+# Time difference of 6.260901 hours
+
+fit_rf.mtry45_60_90.4.accuracy <- 
+  sapply(fit_rf.mtry45_60_90.4.tuned_result, 
+         function(result) result$accuracy)
+
+plot(mtry45_60_90.4, fit_rf.mtry45_60_90.4.accuracy)
+
+max.idx <- which.max(fit_rf.mtry45_60_90.4.accuracy)
+
+max_accuracy <- max(fit_rf.mtry45_60_90.4.accuracy)
+max_accuracy
+# [1] 0.8833952
+
+best_mtry <- mtry45_60_90.4[[max.idx]]
+best_mtry
+# [1] 25
+
+##### Close Log ------------------------------------------------------------------
+log_close()
 ## Clean Up Environment --------------------------------------------------------
 rm(x4e3)
 rm(x0.1.train)
@@ -1369,6 +1412,88 @@ rm(train_knn_pca)
 rm(fit_rf.nzv.mtry9)
 rm(train_rf)
 
+
+## Deep Learning Methods -------------------------------------------------------
+### Converting labels factor to categorical ------------------------------------
+# Reference: 
+#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
+# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
+
+
+y0.1.train.cat <- to_categorical(y0.1.train)
+colnames(y0.1.train.cat) <- train.labels
+dim(y0.1.train.cat)
+str(y0.1.train.cat)
+head(y0.1.train.cat)
+# max(y0.1.train.cat)
+
+y0.1.test.cat <- to_categorical(y0.1.test)
+colnames(y0.1.test.cat) <- train.labels
+dim(y0.1.test.cat)
+str(y0.1.test.cat)
+head(y0.1.test.cat)
+
+### Model training -------------------------------------------------------------
+
+model <- keras_model_sequential() |>
+  layer_dense(units = 256, activation = "relu", input_shape = c(784)) |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = 128, activation = "relu") |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = 64, activation = "relu") |>
+  layer_dropout(rate = 0.25) |>
+  layer_dense(units = 39, activation = "softmax")
+summary(model)
+
+model %>% compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_adam(),
+  metrics = c("accuracy")
+)
+
+start <- put_start_date()
+
+history <- model %>% 
+  fit(x0.1.train, 
+      y0.1.train.cat, 
+      epochs = 50, 
+      batch_size = 128, 
+      validation_split = 0.15)
+
+put_end_date(start)
+
+
+### Model Evaluation -----------------------------------------------------------
+
+start <- put_start_date()
+model |> evaluate(x0.1.test, y0.1.test.cat)
+# $accuracy
+# [1] 0.781755
+
+put_end_date(start)
+# Time difference of 0.5527549 secs
+
+preds <- model |>
+  predict(x0.1.test) 
+
+colnames(preds) <- train.labels
+head(preds)
+dim(preds)
+
+preds.ts <- as_tensor(preds)
+str(preds.ts)
+
+predictions <- preds.ts |> op_argmax(2)
+predictions
+dim(predictions)
+predictions$numpy()
+
+
+y0.1.test
+as.integer(y0.1.test)
+
+mean(predictions$numpy() == as.integer(y0.1.test))
+# [1] 0.7817551
 
 # ---------------------------
 # Reference:

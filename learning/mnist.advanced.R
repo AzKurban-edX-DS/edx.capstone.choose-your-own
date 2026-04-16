@@ -15,7 +15,7 @@ library(magrittr)
 
 # Load and prepare the MNIST dataset.
 
-c(c(x_train, y_train), c(x_test, y_test)) %<-% keras::dataset_mnist()
+c(c(x_train, y_train), c(x_test, y_test)) %<-% keras3::dataset_mnist()
 head(x_train)
 str(x_train)
 
@@ -70,6 +70,9 @@ model <- my_model()
 
 loss_object <- loss_sparse_categorical_crossentropy(from_logits = TRUE)
 optimizer <- optimizer_adam()
+
+
+
 
 
 
