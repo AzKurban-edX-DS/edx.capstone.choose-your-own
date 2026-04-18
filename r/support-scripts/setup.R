@@ -87,9 +87,10 @@ library(reticulate)
 
 library(pacman)
 
-# detach("package:keras", unload = TRUE)
+detach("package:keras", unload = TRUE)
 library(tensorflow)
 library(keras3)
+library(tfdatasets)
 
 library(imager)
 library(magick)

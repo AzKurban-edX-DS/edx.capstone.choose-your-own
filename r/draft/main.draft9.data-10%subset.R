@@ -83,7 +83,7 @@ if (file.exists(ds.train.list.file_path)) {
   put_end_date(start)
   
   img.train.files <- img.train.dat$img.files
-  train.labels <- img.train.dat$label.list
+  y.labels <- img.train.dat$label.list
   img.train.list <- img.train.dat$img.list
   my_emnist.train <- img.train.dat$my_emnist
   
@@ -92,7 +92,7 @@ if (file.exists(ds.train.list.file_path)) {
 %1", ds.train.list.file_path)
   start <- put_start_date()
   save(img.train.files,
-       train.labels,
+       y.labels,
        img.train.list,
        my_emnist.train, 
        file = ds.train.list.file_path)
@@ -106,7 +106,7 @@ put_log1("Train image file list structure:
 %1", capture.output(str(img.train.files)))
 
 put_log1("Train dataset labels:
-%1", train.labels, .sep = " ")
+%1", y.labels, .sep = " ")
 
 put_log1("`img.train.list` data structure:
 %1", capture.output(str(img.train.list)))
@@ -740,12 +740,19 @@ if (file.exists(cache_file.path)) {
   put_log("Preprocessed Data has been loaded from cache.")
   
 } else {
-  
+  start <- put_start_date()
   nzv <- nearZeroVar(x0.1.train)
+  nzv.test <- nearZeroVar(x0.1.test)
   put_end_date(start)
   # Time difference of 56.0386 secs
   
   x0.1.train_nzv <- x0.1.train[, -nzv]
+  dim(x0.1.train_nzv)
+  # [1] 75032 743
+  
+  x0.1.test_nzv <- x0.1.test[, -nzv]
+  dim(x0.1.test_nzv)
+  # [1] 8353 743
   
   put_log("Pre-training `RF.mtry9` model on a 10% sample from the `Train set`,
           pre-processed by NZV method (`x0.1.train_nzv`)..." )
@@ -1418,65 +1425,111 @@ rm(train_rf)
 # Reference: 
 #> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
 # https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
-
+# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
 
 y0.1.train.cat <- to_categorical(y0.1.train)
-colnames(y0.1.train.cat) <- train.labels
+colnames(y0.1.train.cat) <- y.labels
 dim(y0.1.train.cat)
 str(y0.1.train.cat)
 head(y0.1.train.cat)
 # max(y0.1.train.cat)
 
 y0.1.test.cat <- to_categorical(y0.1.test)
-colnames(y0.1.test.cat) <- train.labels
+colnames(y0.1.test.cat) <- y.labels
 dim(y0.1.test.cat)
 str(y0.1.test.cat)
 head(y0.1.test.cat)
 
-### Model training -------------------------------------------------------------
+### Basic Classifier -----------------------------------------------------------
+# Reference:
+# MNIST Handwritten Digit Recognition in Keras
+# https://nextjournal.com/gkoehler/digit-recognition-with-keras
 
-model <- keras_model_sequential() |>
-  layer_dense(units = 256, activation = "relu", input_shape = c(784)) |>
-  layer_dropout(rate = 0.25) |> 
-  layer_dense(units = 128, activation = "relu") |>
-  layer_dropout(rate = 0.25) |> 
-  layer_dense(units = 64, activation = "relu") |>
-  layer_dropout(rate = 0.25) |>
-  layer_dense(units = 39, activation = "softmax")
-summary(model)
+#### Open log: Building Basic DL Model -----------------------------------------
+open_logfile("basic.dl.x0.1.model")
+#### Basic DL Model building on dataset: `x0.1.train`: `x0.1.dl.model` ---------
+dl.keras3.path <- file.path(models.path, "dl.keras3")
 
-model %>% compile(
-  loss = "categorical_crossentropy",
-  optimizer = optimizer_adam(),
-  metrics = c("accuracy")
-)
+if(!dir.exists(dl.keras3.path))
+  dir.create(dl.keras3.path)
+
+cache_file.path <- file.path(dl.keras3.path, 
+                             "basic.x0.1.dl.model.RData")
+
+if (file.exists(cache_file.path)) {
+  put_log("Loading `DL Keras3` model from cache file: 
+%1", cache_file.path)
+  
+  load(cache_file.path)
+  put_log("`DL Keras3` model has been loaded from cache.")
+  
+} else {
+  n.input_shape <- ncol(x0.1.train)
+  # 784
+  
+  n.output <- length(y.labels)
+  # 39
+  
+  n.hl.units <- ceiling(n.input_shape*2/3+n.output)
+  # 562
+  
+  x0.1.dl.model.basic <- keras_model_sequential() |>
+  layer_dense(units = n.hl.units, activation = "relu", input_shape = c(n.input_shape)) |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = n.hl.units, activation = "relu") |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = n.hl.units, activation = "relu") |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = n.hl.units, activation = "relu") |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = n.hl.units, activation = "relu") |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = n.output, activation = "softmax")
+
+  summary(x0.1.model)
+
+  x0.1.dl.model.basic |> compile(
+    loss = "categorical_crossentropy",
+    optimizer = optimizer_adam(),
+    metrics = c("accuracy")
+  )
+  
+  start <- put_start_date()
+  
+  x0.1.dl.model.basic.history <- x0.1.dl.model.basic |> 
+    fit(x0.1.train, 
+        y0.1.train.cat, 
+        epochs = 100, 
+        batch_size = 512, 
+        validation_split = 0.15)
+  
+  put_log("Saving `DL Keras3` model to the cache file...")
+  save(x0.1.dl.model,
+       x0.1.dl.model.basic.history,
+       file = cache_file.path)
+  
+  put_log("The `DL Keras3` model has been saved to the cache file: 
+%1", cache_file.path)
+  put_end_date(start)
+
+}
+
+plot(x0.1.dl.model.history)
+str(x0.1.dl.model.history)
+#### `x0.1.dl.model` Model Evaluation ----------------------------------------------
 
 start <- put_start_date()
-
-history <- model %>% 
-  fit(x0.1.train, 
-      y0.1.train.cat, 
-      epochs = 50, 
-      batch_size = 128, 
-      validation_split = 0.15)
-
-put_end_date(start)
-
-
-### Model Evaluation -----------------------------------------------------------
-
-start <- put_start_date()
-model |> evaluate(x0.1.test, y0.1.test.cat)
+x0.1.dl.model |> evaluate(x0.1.test, y0.1.test.cat)
 # $accuracy
 # [1] 0.781755
 
 put_end_date(start)
 # Time difference of 0.5527549 secs
 
-preds <- model |>
+preds <- x0.1.dl.model.basic |>
   predict(x0.1.test) 
 
-colnames(preds) <- train.labels
+colnames(preds) <- y.labels
 head(preds)
 dim(preds)
 
@@ -1495,11 +1548,229 @@ as.integer(y0.1.test)
 mean(predictions$numpy() == as.integer(y0.1.test))
 # [1] 0.7817551
 
+##### Close Log ------------------------------------------------------------------
+log_close()
+#### Model building on dataset: `x0.1.train_nzv`: `x0.1.nzv.model` ----------------------
+
+x0.1.nzv.model <- keras_model_sequential() |>
+  layer_dense(units = 256, activation = "relu", input_shape = c(743)) |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = 128, activation = "relu") |>
+  layer_dropout(rate = 0.25) |> 
+  layer_dense(units = 64, activation = "relu") |>
+  layer_dropout(rate = 0.25) |>
+  layer_dense(units = 39, activation = "softmax")
+summary(x0.1.nzv.model)
+
+x0.1.nzv.model |> compile(
+  loss = "categorical_crossentropy",
+  optimizer = optimizer_adam(),
+  metrics = c("accuracy")
+)
+
+start <- put_start_date()
+
+history <- x0.1.nzv.model |> 
+  fit(x0.1.train_nzv, 
+      y0.1.train.cat, 
+      epochs = 50, 
+      batch_size = 128, 
+      validation_split = 0.15)
+
+put_end_date(start)
+
+str(history)
+
+#### `x0.1.nzv.model` Model Evaluation ----------------------------------------------
+
+start <- put_start_date()
+x0.1.nzv.model |> evaluate(x0.1.test_nzv, y0.1.test.cat)
+# $accuracy
+# [1] 0.7865438
+
+put_end_date(start)
+# Time difference of 0.5527549 secs
+
+preds <- x0.1.nzv.model |>
+  predict(x0.1.test) 
+
+colnames(preds) <- y.labels
+head(preds)
+dim(preds)
+
+preds.ts <- as_tensor(preds)
+str(preds.ts)
+
+predictions <- preds.ts |> op_argmax(2)
+predictions
+dim(predictions)
+
+mean(predictions$numpy() == as.integer(y0.1.test))
+# [1] 0.7817551
+
+### Advanced Classifier --------------------------------------------------------
+# Reference:
+# TensorFlow 2 quickstart for experts
+# https://tensorflow.rstudio.com/tutorials/quickstart/advanced
+
+# To use legacy `keras` package uncomment the code snippet below:
+# detach("package:keras3", unload = TRUE)
+# library(keras)
+# py_require_legacy_keras()
+# library(tensorflow)
+
+#### Prepare MNIST Datasets ----------------------------------------------------
+# Load and prepare the MNIST dataset.
+start <- put_start_date()
+
+c(c(x_train, y_train), c(x_test, y_test)) %<-% keras::dataset_mnist()
+x_train %<>% { . / 255 }
+x_test  %<>% { . / 255 }
+# Use TensorFlow Datasets to batch and shuffle the dataset:
+
+train_ds <- list(x_train, y_train) %>%
+  tensor_slices_dataset() %>%
+  dataset_shuffle(10000) %>%
+  dataset_batch(32)
+
+str(train_ds)
+
+test_ds <- list(x_test, y_test) %>%
+  tensor_slices_dataset() %>%
+  dataset_batch(32)
+
+str(test_ds)
+put_end_date(start)
+
+
+#### Prepare X0.1 Datasets ----------------------------------------------------------
+
+# Use TensorFlow Datasets to batch and shuffle the dataset:
+
+# train_ds <- list(x0.1.train, y0.1.train) |>
+#   tensor_slices_dataset() |>
+#   dataset_shuffle(10000) |>
+#   dataset_batch(32)
+# 
+# str(train_ds)
+# 
+# test_ds <- list(x0.1.test, y0.1.test) |>
+#   tensor_slices_dataset() |>
+#   dataset_batch(32)
+# 
+# str(test_ds)
+
+#### Model building ------------------------------------------------------------
+#### Model Class
+
+# Build the a model using the Keras model subclassing API:
+
+my_model <- new_model_class(
+  classname = "MyModel",
+  initialize = function(...) {
+    super$initialize()
+    self$conv1 <- layer_conv_2d(filters = 32, kernel_size = 3,
+                                activation = 'relu')
+    self$flatten <- layer_flatten()
+    self$d1 <- layer_dense(units = 128, activation = 'relu')
+    self$d2 <- layer_dense(units = 10)
+  },
+  call = function(inputs) {
+    inputs |>
+      tf$expand_dims(3L) |>
+      self$conv1() |>
+      self$flatten() |>
+      self$d1() |>
+      self$d2()
+  }
+)
+
+# Create an instance of the model
+model <- my_model()
+
+# Choose an optimizer and loss function for training:
+loss_object <- loss_sparse_categorical_crossentropy(from_logits = TRUE)
+optimizer <- optimizer_adam()
+
+#> Select metrics to measure the loss and the accuracy of the model. 
+#> These metrics accumulate the values over epochs and then print the overall result.
+
+train_loss <- metric_mean(name = "train_loss")
+str(train_loss)
+train_accuracy <- metric_sparse_categorical_accuracy(name = "train_accuracy")
+
+test_loss <- metric_mean(name = "test_loss")
+test_accuracy <- metric_sparse_categorical_accuracy(name = "test_accuracy")
+
+
+# Use tf$GradientTape() to train the model:
+  
+train_step <- function(images, labels) {
+  with(tf$GradientTape() %as% tape, {
+    # training = TRUE is only needed if there are layers with different
+    # behavior during training versus inference (e.g. Dropout).
+    predictions <- model(images, training = TRUE)
+    loss <- loss_object(labels, predictions)
+  })
+  gradients <- tape$gradient(loss, model$trainable_variables)
+  optimizer$apply_gradients(zip_lists(gradients, model$trainable_variables))
+  train_loss(loss)
+  train_accuracy(labels, predictions)
+}
+
+train <- tf_function(function(train_ds) {
+  for (batch in train_ds) {
+    c(images, labels) %<-% batch
+    train_step(images, labels)
+  }
+})
+
+# Test the model:
+
+test_step <- function(images, labels) {
+  # training = FALSE is only needed if there are layers with different
+  # behavior during training versus inference (e.g. Dropout).
+  predictions <- model(images, training = FALSE)
+  t_loss <- loss_object(labels, predictions)
+  test_loss(t_loss)
+  test_accuracy(labels, predictions)
+}
+
+test <- tf_function(function(test_ds) {
+  for (batch in test_ds) {
+    c(images, labels) %<-% batch
+    test_step(images, labels)
+  }
+})
+
+reset_metrics <- function() {
+  for (metric in list(train_loss, train_accuracy,
+                      test_loss, test_accuracy))
+    metric$reset_state()
+}
+
+#### Proceed Classification ----------------------------------------------------
+
+EPOCHS <- 1
+for (epoch in seq_len(EPOCHS)) {
+  # Reset the metrics at the start of the next epoch
+  reset_metrics()
+  train(train_ds)
+  test(test_ds)
+  cat(sprintf('Epoch %d', epoch), "\n")
+  cat(sprintf('Loss: %f', train_loss$result()), "\n")
+  cat(sprintf('Accuracy: %f', train_accuracy$result() * 100), "\n")
+  cat(sprintf('Test Loss: %f', test_loss$result()), "\n")
+  cat(sprintf('Test Accuracy: %f', test_accuracy$result() * 100), "\n")
+}
+
+
+
+
 # ---------------------------
 # Reference:
 #
 # 
-
 start <- put_start_date()
 put_end_date(start)
 
