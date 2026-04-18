@@ -118,8 +118,8 @@ put_log1("My Extended MNIST-like dataset (matrix) dimensions:
 char.image(my_emnist.train[1,])
 
 #### Clean up Environment -----------------------
-rm(img.train.files)
-rm(img.train.list)
+# rm(img.train.files)
+# rm(img.train.list)
 
 #### Init `x` & `y` variables -------------------
 x <- my_emnist.train
@@ -138,7 +138,7 @@ mean(is.na(y))
 max(is.na(y))
 
 ##### Clean up Environment -----------------------
-rm(my_emnist.train)
+# rm(my_emnist.train)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
