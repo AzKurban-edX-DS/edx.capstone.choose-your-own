@@ -54,24 +54,35 @@ Getting file path list from the following char's root folders:
 }
 
 image_load.cimg <- function(file) {
-  img <- image_read(file)
-  # plot(img)
-  im.dim <- dim(image_data(img)) 
+  
 
-  if(im.dim[2] != 28 || im.dim[3] != 28) {
-    img <- img |> 
+  
+  # file <- "data/raw/Vaibs.HW-Chars/Train/A/_1_10.jpg"
+  # im0 <- imager::load.image(file)
+  im0 <- image_read(file)
+  plot(im0)
+  # print(im0)
+
+  im.dat0 <- image_data(im0)
+  im.dim0 <- dim(im.dat0) 
+  im.dim0
+
+    
+  if(im.dim0[2] != 28 || im.dim0[3] != 28) {
+    im1 <- im0 |> 
       image_resize("28x28")
   }
-  # plot(img)
-  #dim(image_data(img))
+  plot(im1)
+  dim(image_data(im1))
   
-  img <- image_convolve(img, 'DoG:0,0,2', scaling = '100, 100%')
-  # plot(img)
+  im2 <- image_convolve(im1, 'DoG:0,0,2', scaling = '100, 100%')
+  plot(im2)
   
-  cimg1 <- magick2cimg(img)
-  # plot(cim1)
-  # dim(cimg1)
-  cimg1
+  cim1 <- magick2cimg(im2)
+  cim1
+  dim(cim1)
+  plot(cim1)
+  cim1
 }
 
 as.vector.cimg <- function(cimg) {

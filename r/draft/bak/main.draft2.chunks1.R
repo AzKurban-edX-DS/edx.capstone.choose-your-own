@@ -33,7 +33,7 @@ img.file_list.probe$A
 img.file_list.probe$B$file_path.list
 
 img_list <- lapply(img.file_list.probe, function(img_f){
-  list(cimg.list = map_il(img_f$file_path.list, load.kaggle_img),
+  list(cimg.list = map_il(img_f$file_path.list, image_load.cimg),
        fpath.list = img_f$file_path.list)
 })
 

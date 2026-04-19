@@ -124,7 +124,7 @@ Extracting 20% of the original index set of `data` used for the test Set.")
     start <- put_start_date()
     put_log("Loading image files...")
     img_list <- lapply(img.file_list, function(img_f){
-      list(cimg.list = map_il(img_f$file_path.list, load.kaggle_img),
+      list(cimg.list = map_il(img_f$file_path.list, image_load.cimg),
            fpath.list = img_f$file_path.list)
     })
     put_end_date(start)

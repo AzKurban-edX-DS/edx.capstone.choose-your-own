@@ -123,7 +123,10 @@ char.image(my_emnist.train[1,])
 
 #### Init `x` & `y` variables -------------------
 x <- my_emnist.train
-rm(my_emnist.train)
+# rm(my_emnist.train)
+dim(x)
+
+boxplot(x)
 
 dim(x)
 class(x)
@@ -131,11 +134,27 @@ str(x)
 mean(rowMeans(x))
 
 y <- as.factor(rownames(x))
+y.int <- as.integer(y)
 str(y)
 length(y)
 mean(y)
 mean(is.na(y))
 max(is.na(y))
+
+y.chars <- data.frame(char = y) |> 
+  group_by(char) |>
+  summarise(n <- n())
+
+str(y.chars)
+# head(y.chars)
+# 1 #          15600
+# 2 $          16199
+# 3 &          13000
+# 4 @          38009
+# 5 0          65504
+# 6 1          43773
+
+print(y.chars, n = length(y.chars$char))
 
 ##### Clean up Environment -----------------------
 # rm(my_emnist.train)
