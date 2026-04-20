@@ -53,25 +53,35 @@ Getting file path list from the following char's root folders:
   path_list
 }
 
-image_load.cimg <- function(file) {
-  img <- image_read(file)
-  # plot(img)
-  im.dim <- dim(image_data(img)) 
+image.load_bin.shape28x28 <- function(file) {
+  img0 <- image_read(file)
+  # plot(img0)
 
-  if(im.dim[2] != 28 || im.dim[3] != 28) {
-    img <- img |> 
-      image_resize("28x28")
-  }
-  # plot(img)
-  #dim(image_data(img))
+  img0.trimmed <- image_trim(img0)
+  plot(img0.trimmed)
   
-  img <- image_convolve(img, 'DoG:0,0,2', scaling = '100, 100%')
-  # plot(img)
+  im0.dim <- dim(image_data(img0.trimmed)) 
+  im0.dim
   
-  cimg1 <- magick2cimg(img)
-  # plot(cim1)
-  # dim(cimg1)
-  cimg1
+  img28x28 <- image_resize(img0.trimmed, '28x28!')
+  dim(image_data(img28x28))
+  plot(img28x28)
+  
+  img.sharpen <- image_convolve(img28x28, 'DoG:0,0,2', scaling = '100, 100%')
+  plot(img.sharpen)
+  
+  img.dat <- image_data(img.sharpen)
+  dim(img.dat)
+  
+  img.mx.bin <- img.dat[1,,]
+  mode(img.mx.bin) <- "numeric"
+  img.mx <- img.mx.bin /255
+  dim(img.mx)
+  image.mx(img.mx)
+  
+  img.bin <- img.mx > 0.5
+  image.mx(img.bin)
+  img.bin
 }
 
 as.vector.cimg <- function(cimg) {
@@ -89,6 +99,10 @@ as.matrix.cimg <- function(cimg.list, label) {
                            1:mx.ncols))
 }
 
+## Data Visualization ---------------------------------
+image.mx <- function(mx) {
+  image(mx[, seq(ncol(mx), 1)])
+}
 char.image <- function(char.vector) {
   image(matrix(char.vector, nrow = 28)[, 28:1])
 }
