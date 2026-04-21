@@ -16,7 +16,8 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 
                                    char_files.max = NA,
-                                   seed = NA) {
+                                   seed = NA,
+                                   random_sample = FALSE) {
   if(is.null(folder.list))
     folder.list <- dir(root_path)
 
@@ -38,8 +39,13 @@ Getting file path list from the following char's root folders:
         set.seed(seed + folder.idx)
       }
       
-      random.idx <- sample(fpath.len, size = char_files.max)
-      fpath.list <- fpath.list[random.idx]
+      if(random_sample) {
+        file.idx <- sample(fpath.len, size = char_files.max)
+      } else {
+        file.idx <- seq_len(char_files.max)
+      }
+      
+      fpath.list <- fpath.list[file.idx]
     }
     
     put_log2("Function: `img.file_path.get_list`:
@@ -51,37 +57,6 @@ Getting file path list from the following char's root folders:
   
   names(path_list) <- folder.list |> substr(1,1)
   path_list
-}
-
-image.load_bin.shape28x28 <- function(file) {
-  img0 <- image_read(file)
-  # plot(img0)
-
-  img0.trimmed <- image_trim(img0)
-  plot(img0.trimmed)
-  
-  im0.dim <- dim(image_data(img0.trimmed)) 
-  im0.dim
-  
-  img28x28 <- image_resize(img0.trimmed, '28x28!')
-  dim(image_data(img28x28))
-  plot(img28x28)
-  
-  img.sharpen <- image_convolve(img28x28, 'DoG:0,0,2', scaling = '100, 100%')
-  plot(img.sharpen)
-  
-  img.dat <- image_data(img.sharpen)
-  dim(img.dat)
-  
-  img.mx.bin <- img.dat[1,,]
-  mode(img.mx.bin) <- "numeric"
-  img.mx <- img.mx.bin /255
-  dim(img.mx)
-  image.mx(img.mx)
-  
-  img.bin <- img.mx > 0.5
-  image.mx(img.bin)
-  img.bin
 }
 
 as.vector.cimg <- function(cimg) {
@@ -99,6 +74,17 @@ as.matrix.cimg <- function(cimg.list, label) {
                            1:mx.ncols))
 }
 
+as.matrix.img28x28.list <- function(img.list, label) {
+  mx.ncols <- 28*28
+  
+  map(img.list, as.vector) |>
+    unlist() |>
+    matrix(ncol = mx.ncols, 
+           byrow = TRUE,
+           dimnames = list(base::rep(label, times = length(img.list)),
+                           1:mx.ncols))
+}
+
 ## Data Visualization ---------------------------------
 image.mx <- function(mx) {
   image(mx[, seq(ncol(mx), 1)])
@@ -108,38 +94,51 @@ char.image <- function(char.vector) {
 }
 
 ## Data processing functions -------------------------------
-hwChar_data.load <- function(root_path, 
-                             folder.list = NULL, 
-                             char_files.max = NA,
-                             char_files.seed = NA,
-                             shuffle.rows = FALSE,
-                             shuffle.seed = NA){
-  start <- put_start_date()
-  put_log("Getting file path lists...")
-  img.file_list <- img.file_path.get_list(root_path, 
-                                          folder.list,
-                                          char_files.max,
-                                          char_files.seed)
-  put_end_date(start)
-  put_log("File path lists have been created")
-  put(str(img.file_list))
+magick_img2matrix <- function(img){
+  img.dat <- image_data(img)
+  mx.bin <- img.dat[1,,]
+  mode(mx.bin) <- "numeric"
+  mx.bin /255
+}
+
+image.load_bin.shape28x28 <- function(file_path) {
+  img0 <- image_read(file_path)
+  # plot(img0)
   
-  start <- put_start_date()
-  put_log("Loading image files...")
-  img_list <- lapply(img.file_list, function(img_f){
-    list(cimg.list = map_il(img_f$file_path.list, image_load.cimg),
-         fpath.list = img_f$file_path.list)
-  })
-  put_end_date(start)
-  put_log("Image files have been loaded.")
-  put(str(img_list))
+  img0.mx <- magick_img2matrix(img0)
   
+  if (max(img0.mx) > 0) {
+    img0.trimmed <- image_trim(img0)
+    # plot(img0.trimmed)
+    
+    im0.dim <- dim(image_data(img0.trimmed)) 
+    im0.dim
+    
+    img28x28 <- image_resize(img0.trimmed, '28x28!')
+    # dim(image_data(img28x28))
+    # plot(img28x28)
+    
+    img.sharpen <- image_convolve(img28x28, 'DoG:0,0,2', scaling = '100, 100%')
+    # plot(img.sharpen)
+    
+    img.mx <- magick_img2matrix(img.sharpen)
+
+    img.bin <- img.mx > 0.5
+    # image.mx(img.bin)
+    img.bin
+  }
+}
+
+img28x28.list2matrix <- function(img_list,
+                                 shuffle.rows = FALSE,
+                                 shuffle.seed = NA){
   start <- put_start_date()
   put_log("Converting image lists to matrices...")
   char_matrix.list <- lapply(names(img_list), function(label){
-    img_list[[label]]$cimg.list |> 
-      as.matrix.cimg(label)
+    img_list[[label]] |> 
+      as.matrix.img28x28.list(label)
   })
+  
   put_end_date(start)
   put_log("Image matrix list has been created.")
   put(str(char_matrix.list))
@@ -151,17 +150,45 @@ hwChar_data.load <- function(root_path,
   put_log("Image dataset matrix has been created.")
   put(dim(img.mx))
   
-  label_list <- as.factor(names(img.file_list))
-  # str(label_list)
-
   if (shuffle.rows) {
     img.mx <- shuffle.mxrows(img.mx, shuffle.seed)
   }
   
+  img.mx
+}
+
+img.load.bin28x28mx.list <- function(root_path, 
+                                     folder.list = NULL, 
+                                     char_files.max = NA,
+                                     char_files.seed = NA,
+                                     random_sample = FALSE) {
+  start <- put_start_date()
+  put_log("Getting file path lists...")
+  img.file_list <- img.file_path.get_list(root_path, 
+                                          folder.list,
+                                          char_files.max,
+                                          char_files.seed,
+                                          random_sample)
+  put_log("File path lists have been created. The output list structure:
+%1", capture.output(str(img.file_list)))
+  put_end_date(start)
+  
+  label_list <- as.factor(names(img.file_list))
+  
+  start <- put_start_date()
+  put_log("Loading image files...")
+  img_list <- lapply(img.file_list, function(char.dir){
+    list(img.list = map(char.dir$file_path.list, 
+                        image.load_bin.shape28x28) |> compact(),
+         fpath.list = char.dir$file_path.list)
+  })
+  put_end_date(start)
+  put_log("Image files have been loaded. The output list structure:
+%1", capture.output(str(img_list)))
+  
   list(img.files = img.file_list,
        label.list = label_list,
-       img.list = char_matrix.list,
-       my_emnist = img.mx) # my Extended MNIST-like dataset.
+       img.list = img_list)
 }
 
 sample_train_test_sets.mx <- function(data, 
