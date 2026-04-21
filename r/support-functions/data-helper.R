@@ -135,7 +135,8 @@ img28x28.list2matrix <- function(img_list,
   start <- put_start_date()
   put_log("Converting image lists to matrices...")
   char_matrix.list <- lapply(names(img_list), function(label){
-    img_list[[label]] |> 
+    put_log("Processing label: `%1`...", label)
+    img_list[[label]]$img.list |> 
       as.matrix.img28x28.list(label)
   })
   

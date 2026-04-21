@@ -91,6 +91,22 @@ if (file.exists(train.img28x28bin.list.file_path)) {
 put_log1("Binary Image 28x28 list structure:
 %1", capture.output(str(img28x28bin.list)))
 
+y.labels <- img28x28bin.list$label.list
+
+start <- put_start_date()
+my_emnist <- img28x28.list2matrix(img28x28bin.list$img.list)
+put_end_date(start)
+
+
+
+
+
+
+
+
+
+
+
 # ---
 ch_A.list <- img28x28bin.list[["A"]]$img.list
 str(ch_A.list)
