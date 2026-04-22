@@ -156,7 +156,7 @@ y.chars$classID[which.min(y.chars$n)]
 print(y.chars, n = length(y.chars$classID))
 #----
 # A tibble: 39 × 2
-# classID   n
+# classID     n
 # <fct> <int>
 # 1 #     15600
 # 2 $     16199
