@@ -62,16 +62,10 @@ open_logfile(".load-train-data")
 train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
 train.img28x28bin.list.file_path
 
-if (file.exists(train.img28x28bin.list.file_path)) {
-  put_log1("LoadingBinary Image 28x28 list from cache file: 
-%1", train.img28x28bin.list.file_path)
-  
-  start <- put_start_date()
-  load(train.img28x28bin.list.file_path)
-  put_log("Binary Image 28x28 list has been loaded from cache.")
-  put_end_date(start)
-} else {
-  
+my_mnist.file_path <- file.path(train.data.path, "my_emnist.RData")
+my_mnist.file_path
+
+if (!file.exists(train.img28x28bin.list.file_path)) {
   put_log1("Creating Binary Image 28x28 list from raw data files from root directory:
 %1", img.train.root_path)
   start <- put_start_date()
@@ -86,142 +80,135 @@ if (file.exists(train.img28x28bin.list.file_path)) {
   put_log("Binary Image 28x28 list has been saved to the cache file:
 %1", train.img28x28bin.list.file_path)
   put_end_date(start)
+  
+} else {
+  start <- put_start_date()
+  put_log("Loading Binary Image 28x28 Matrix list from cache.")
+  load(train.img28x28bin.list.file_path)
+  put_log("The Binary Image 28x28 Matrix list has been loaded from cache.")
+  put_end_date(start)
+} 
+
+if(!file.exists(my_mnist.file_path)){
+  put_log1("LoadingBinary Image 28x28 list from cache file: 
+%1", train.img28x28bin.list.file_path)
+
+  put_log("Building flatten (`EMNIST`-like) dataset...")
+  my_emnist <- img28x28.list2flatten.mx(img28xc28bin.list$img.list)
+  put_log("The flatten dataset have been created.")
+  str(my_emnist)
+
+  put_log1("Saving flatten training dataset to the cache file: 
+%1", my_mnist.file_path)
+  start <- put_start_date()
+  save(my_emnist,
+       file = my_mnist.file_path)
+  put_log("The flatten training dataset has been saved to the cache file:
+%1", my_mnist.file_path)
+  put_end_date(start)
+} else {
+  start <- put_start_date()
+  put_log("Loading flatten training dataset from cache.")
+  load(my_mnist.file_path)
+  put_log("The flatten training dataset has been loaded from cache.")
+  put_end_date(start)
 }
 
-put_log1("Binary Image 28x28 list structure:
+put_log("Binary Image 28x28 list structure:
 %1", capture.output(str(img28x28bin.list)))
 
 y.labels <- img28x28bin.list$label.list
 
-start <- put_start_date()
-my_emnist <- img28x28.list2matrix(img28x28bin.list$img.list)
-put_end_date(start)
-
-
-
-
-
-
-
-
-
-
-
-# ---
-ch_A.list <- img28x28bin.list[["A"]]$img.list
-str(ch_A.list)
-
-ch_A.mx <- as.matrix.img28x28.list(ch_A.list, "A")
-dim(ch_A.mx)
-ch_A.dist <- dist(ch_A.mx)
-str(ch_A.dist)
-# 'dist' num [1:147997410] 9.11 9.85 12.04 10.77 12.08 ...
-# - attr(*, "Size")= int 17205
-# - attr(*, "Labels")= chr [1:17205] "A" "A" "A" "A" ...
-# - attr(*, "Diag")= logi FALSE
-# - attr(*, "Upper")= logi FALSE
-# - attr(*, "method")= chr "euclidean"
-# - attr(*, "call")= language dist(x = ch_A.mx)
-
-ch_A.dist.mx <- as.matrix(ch_A.dist)
-
-image(ch_A.dist.mx)
-
-# ---------------------
-ds.train.list.file_path <- file.path(train.data.path, "train-data-list.RData")
-ds.train.list.file_path
-
-if (file.exists(ds.train.list.file_path)) {
-  put_log1("Loading Train Data from cache file: 
-%1", ds.train.list.file_path)
-  
-  start <- put_start_date()
-  load(ds.train.list.file_path)
-  put_log("Train Data list has been loaded from cache.")
-  put_end_date(start)
-} else {
-  
-  # img.train.dat <- hwChar_data.load(img.train.root_path)
-  put_log("Train Data list has been created from raw data files.")
-  put_end_date(start)
-  
-
-  img.train.files <- img.train.dat$img.files
-  y.labels <- img.train.dat$label.list
-  img.train.list <- img.train.dat$img.list
-  my_emnist.train <- img.train.dat$my_emnist
-  
-  
-  put_log1("Saving Train Data to the cache file: 
-%1", ds.train.list.file_path)
-  start <- put_start_date()
-  save(img.train.files,
-       y.labels,
-       img.train.list,
-       my_emnist.train, 
-       file = ds.train.list.file_path)
-  put_log("Train Data list has been cached to the File System.")
-  put_end_date(start)
-  
-  rm(img.train.dat)
-}
-
-put_log1("Train image file list structure:
-%1", capture.output(str(img.train.files)))
-
-put_log1("Train dataset labels:
+put_log("Train dataset labels:
 %1", y.labels, .sep = " ")
 
-put_log1("`img.train.list` data structure:
-%1", capture.output(str(img.train.list)))
-
-put_log1("My Extended MNIST-like dataset (matrix) dimensions: 
-%1", dim(my_emnist.train), .sep = " ")
-
-# Visualize the first char:
-char.image(my_emnist.train[1,])
-
-#### Clean up Environment -----------------------
-# rm(img.train.files)
-# rm(img.train.list)
 
 #### Init `x` & `y` variables -------------------
-x <- my_emnist.train
-# rm(my_emnist.train)
-dim(x)
-
-boxplot(x)
-
+# Short name for current working dataset
+x <- my_emnist
+str(x)
 dim(x)
 class(x)
-str(x)
-mean(rowMeans(x))
 
+# class identifies
 y <- as.factor(rownames(x))
-y.int <- as.integer(y)
 str(y)
 length(y)
-mean(y)
-mean(is.na(y))
-max(is.na(y))
+# 834032
+
+y.int <- as.integer(y)
 
 y.chars <- data.frame(char = y) |> 
   group_by(char) |>
-  summarise(n <- n())
+  summarise(n = n())
 
 str(y.chars)
-# head(y.chars)
-# 1 #          15600
-# 2 $          16199
-# 3 &          13000
-# 4 @          38009
-# 5 0          65504
-# 6 1          43773
+
+max(y.chars$n)
+# 65504
+y.chars$char[which.max(y.chars$n)]
+# 0
+
+min(y.chars$n)
+# 4261
+y.chars$char[which.min(y.chars$n)]
+# J
 
 print(y.chars, n = length(y.chars$char))
+#----
+# A tibble: 39 × 2
+# char      n
+# <fct> <int>
+# 1 #     15600
+# 2 $     16199
+# 3 &     13000
+# 4 @     38009
+# 5 0     65504 # max(n)
+# 6 1     43773
+# 7 2     39351
+# 8 3     39996
+# 9 4     38112
+# 10 5     32317
+# 11 6     38879
+# 12 7     41080
+# 13 8     38795
+# 14 9     38319
+# 15 A     17205
+# 16 B      8666
+# 17 C     13560
+# 18 D     15509
+# 19 E     32627
+# 20 F     11635
+# 21 G      5443
+# 22 H     12133
+# 23 I     13873
+# 24 J      4261 # min(n)
+# 25 K      4334
+# 26 L     21648
+# 27 M     12089
+# 28 N     21421
+# 29 P     11095
+# 30 Q      4707
+# 31 R     20498
+# 32 S     25910
+# 33 T     30853
+# 34 U     16385
+# 35 V      7246
+# 36 W      7266
+# 37 X      5106
+# 38 Y      6762
+# 39 Z      4866
 
 ##### Clean up Environment -----------------------
 # rm(my_emnist.train)
+
+# Remove intermediate data for free the computer memory 
+rm(my_emnist)
+rm(img28x28bin.list)
+
+  
+##### Clean up Environment -----------------------
+rm(img28x28bin.list)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
@@ -742,6 +729,9 @@ log_close()
 # library(randomForest)
 
 #### Research and estimate performance of the `Random Forest` method -----------
+# nodesize = if (!is.null(y) && !is.factor(y)) 5 else 1,
+# trying increase its value to 20 in this section.
+
 ##### Open log: Predictions on `RF` Model for `x0.1.test` dataset ----
 open_logfile(".x0.1.test.predict.rf.mtry9")
 ##### Constructing Predictions on `RF.mtry9` Model for `x0.1.test` dataset ----

@@ -54,7 +54,7 @@ print_log <- function(msg_template, ...,
 put_log <- function(msg_template, ...,
                     .sep = "\n"){
   put(str.build(msg_template, ..., 
-              .sep))
+              .sep = .sep))
 }
 
 ## Obsolete: TO DELETE SOON, DO NOT USE IN FUTURE FPOJECTS!!! -------------------------------------------------

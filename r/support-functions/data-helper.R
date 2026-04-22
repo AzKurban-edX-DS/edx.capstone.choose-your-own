@@ -129,30 +129,45 @@ image.load_bin.shape28x28 <- function(file_path) {
   }
 }
 
-img28x28.list2matrix <- function(img_list,
-                                 shuffle.rows = FALSE,
-                                 shuffle.seed = NA){
+
+img28x28mx2flatten.list <- function(img_list){
   start <- put_start_date()
-  put_log("Converting image lists to matrices...")
+  put_log("Function `img28x28mx2flatten.list`:
+Converting image lists to matrices...")
   char_matrix.list <- lapply(names(img_list), function(label){
-    put_log("Processing label: `%1`...", label)
+    put_log("Function `img28x28mx2flatten.list`:
+Processing label: `%1`...", label)
     img_list[[label]]$img.list |> 
       as.matrix.img28x28.list(label)
   })
   
+  put_log("Function `img28x28mx2flatten.list`:
+Image matrix list has been created with the following structure:
+%1", capture.output(str(char_matrix.list)))
   put_end_date(start)
-  put_log("Image matrix list has been created.")
-  put(str(char_matrix.list))
+
+  char_matrix.list
+}
+
+img28x28.list2flatten.mx <- function(img_list,
+                                 shuffle.rows = FALSE,
+                                 shuffle.seed = NA){
   
+  char_matrix.list <- img28x28mx2flatten.list(img_list)
+
   start <- put_start_date()
-  put_log("Combining image data to single matrix...")
+  put_log("Function `img28x28.list2matrix`:
+Combining image data to single matrix...")
   img.mx <- do.call(rbind, char_matrix.list)
+  put_log("Function `img28x28.list2matrix`:
+Combined image data matrix has been created with the following structure:
+%1", capture.output(str(img.mx)))
   put_end_date(start)
-  put_log("Image dataset matrix has been created.")
-  put(dim(img.mx))
-  
+
   if (shuffle.rows) {
+    put_log("Shuffling flatten matrix rows...")
     img.mx <- shuffle.mxrows(img.mx, shuffle.seed)
+    put_log("The flatten matrix rows have been shuffled.")
   }
   
   img.mx
@@ -192,16 +207,21 @@ img.load.bin28x28mx.list <- function(root_path,
        img.list = img_list)
 }
 
-sample_train_test_sets.mx <- function(data, 
+split2bagging_sets <- function() {
+  
+}
+sample_train_test_sets.mx <- function(x, 
                                       seed = NA, 
                                       test.ratio = 0.2,
                                       shuffle.test_rows = FALSE,
-                                      shuffle.seed = NA){ 
-  put_log("Function: `sample_train_test_sets.mx`: Sampling 20% of the `data` data...")
+                                      shuffle.seed = NA,
+                                      train.balanced = TRUE) { 
+  put_log("Function: `sample_train_test_sets.mx`: 
+Sampling 20% of the `x` x...")
 
-  idx_group.list <- split(seq_len(nrow(data)), 
-                           as.factor(rownames(data)))
-  #str(idx_group.list)
+  idx_group.list <- split(seq_len(nrow(x)), 
+                           as.factor(rownames(x)))
+  str(idx_group.list)
   
   test.idx <-
     sapply(idx_group.list,
@@ -217,18 +237,18 @@ sample_train_test_sets.mx <- function(data,
   
   #str(test.idx)
   put_log("Function: `sample_train_test_sets.mx`: 
-Extracting 80% of the original index set of `data` not used for the test Set...")
+Extracting 80% of the original index set of `x` not used for the test Set...")
   
-  train.set <- data[-test.idx,]
+  train.set <- x[-test.idx,]
   # str(train.set)
   # dim(train.set)
   
   put_log("Function: `sample_train_test_sets.mx`: Dataset created: `train.set`")
 
   put_log("Function: `sample_train_test_sets.mx`: 
-Extracting 20% of the original index set of `data` used for the test Set.")
+Extracting 20% of the original index set of `x` used for the test Set.")
   
-  test.set <- data[test.idx,]
+  test.set <- x[test.idx,]
   # str(test.set)
   # dim(test.set)
   
