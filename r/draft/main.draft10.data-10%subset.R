@@ -131,33 +131,32 @@ dim(x)
 class(x)
 
 # class identifies
-y <- as.factor(rownames(x))
+y.groups <- ds.get_classIDs.grouped(x)
+y <- y.groups$classIDs
 str(y)
 length(y)
 # 834032
 
 y.int <- as.integer(y)
-
-y.chars <- data.frame(char = y) |> 
-  group_by(char) |>
-  summarise(n = n())
-
+y.chars <- y.groups$groupsByClass
 str(y.chars)
 
 max(y.chars$n)
 # 65504
-y.chars$char[which.max(y.chars$n)]
-# 0
+y.chars$classID[which.max(y.chars$n)]
+#> [1] 0
+#> Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 
 min(y.chars$n)
 # 4261
-y.chars$char[which.min(y.chars$n)]
-# J
+y.chars$classID[which.min(y.chars$n)]
+#> [1] J
+#> Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 
-print(y.chars, n = length(y.chars$char))
+print(y.chars, n = length(y.chars$classID))
 #----
 # A tibble: 39 × 2
-# char      n
+# classID   n
 # <fct> <int>
 # 1 #     15600
 # 2 $     16199

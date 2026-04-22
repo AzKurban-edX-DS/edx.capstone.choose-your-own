@@ -210,10 +210,22 @@ img.load.bin28x28mx.list <- function(root_path,
 split2bagging_sets <- function() {
   
 }
+
+ds.get_classIDs.grouped <- function(x) {
+  y <- as.factor(rownames(x))
+  
+  g <- data.frame(classID = y) |> 
+    group_by(classID) |>
+    summarise(n = n())
+  
+  list(classIDs = y,
+       groupsByClass = g)
+}
+
 sample_train_test_sets.mx <- function(x, 
                                       seed = NA, 
                                       test.ratio = 0.2,
-                                      shuffle.test_rows = FALSE,
+                                      shuffle.test_rows = TRUE,
                                       shuffle.seed = NA,
                                       train.balanced = TRUE) { 
   put_log("Function: `sample_train_test_sets.mx`: 
