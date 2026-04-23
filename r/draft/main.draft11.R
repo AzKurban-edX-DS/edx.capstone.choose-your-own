@@ -214,7 +214,7 @@ log_close()
 
 ### Open log: Split Train Dataset (x) -------------
 open_logfile(".split.train_set-10%train_subset")
-#### Split Train Dataset to extract a train sample of 10% size -----------------
+#### Split Train Dataset  ------------------------------------------------------
 # char_files.max4e3 <- 4e3 
 # char_files.max4e3
 
@@ -224,12 +224,12 @@ dim.x[1]
 dim.x[2]
 
 #test_ratio <- 0.9 
-x0.8.train.sample.seed <- dim.x[1]
-x0.8.train.sample.seed
-test.sample.seed <- as.integer(x0.8.train.sample.seed*test_ratio)
-test.sample.seed
+sample_seed <- dim.x[1]
+sample_seed
+shuffle_seed <- as.integer(sample_seed*test_ratio)
+shuffle_seed
 
-cache_file.path <- file.path(ds.subsets.path, "train-data.80%subset.RData")
+cache_file.path <- file.path(ds.subsets.path, "ds.train.balanced.RData")
 cache_file.path
 
 start <- put_start_date()
@@ -244,15 +244,15 @@ if (file.exists(cache_file.path)) {
   put_log("Train Data list has been loaded from cache.")
 } else {
   split.list <- sample_train_test_sets.mx(x, 
-                                          x0.8.train.sample.seed,
-                                          shuffle.seed = test.sample.seed)
+                                          sample_seed,
+                                          shuffle.seed = shuffle_seed)
   str(split.list)
   
-  x0.8.train <- split.list$train_set
-  y0.8.train <- as.factor(rownames(x0.8.train))
+  x.train.balanced <- split.list$train_set
+  y.train.balanced <- as.factor(rownames(x.train.balanced))
   
-  x0.2.test <- split.list$test_set
-  y0.2.test <- as.factor(rownames(x0.2.test))
+  x.test <- split.list$test_set
+  y.test <- as.factor(rownames(x.test))
   
   
 #   x0.9.test.list <- splitDataset(split.list$test_set, 9)
@@ -262,10 +262,10 @@ if (file.exists(cache_file.path)) {
   put_log1("Caching data in the file
 %1 ...", cache_file.path)
   
-  save(x0.8.train,
-       y0.8.train,
-       x0.2.test,
-       y0.2.test,
+  save(x.train.balanced,
+       y.train.balanced,
+       x.test,
+       y.test,
        file = cache_file.path)
   
   put_log1("The Train Data Subset objects has been cached in file:
@@ -278,59 +278,59 @@ stopCluster(cl)
 stopImplicitCluster()
 put_end_date(start)
 
-dim(x0.8.train)
+dim(x.train.balanced)
 #> [1] 
 
-str(y0.8.train)
-length(y0.8.train)
+str(y.train.balanced)
+length(y.train.balanced)
 
-str(x0.2.test)
-str(y0.2.test)
+str(x.test)
+str(y.test)
 
 
 ##### Clean up Environment -----------------------
-rm(x)
-rm(y)
+# rm(x)
+# rm(y)
 
 ### Close Log ------------------------------------------------------------------
 log_close()
 
 ### Open log: Split Train Data Subset (x0.8.train) -------------
 open_logfile(".split.x0.8.train")
-#### Split Train Data Subset (x0.8.train) -----------------
+#### Split Train Data Subset (x.train.balanced) -----------------
 # char_files.max4e3 <- 4e3 
 # char_files.max4e3
 
-dim.x0.8.train <- dim(x0.8.train)
-dim.x0.8.train
-dim.x0.8.train[1]
-dim.x0.8.train[2]
+dim.x.train.balanced <- dim(x.train.balanced)
+dim.x.train.balanced
+dim.x.train.balanced[1]
+dim.x.train.balanced[2]
 
 test_ratio <- 0.1 
-x0.8.train.sample.seed <- dim.x0.8.train[1]
-x0.8.train.sample.seed
-test.sample.seed <- as.integer(x0.8.train.sample.seed*test_ratio)
-test.sample.seed
+sample_seed <- dim.x.train.balanced[1]
+sample_seed
+test.shuffle.seed <- as.integer(sample_seed*test_ratio)
+test.shuffle.seed
 
-ds.x0.8.train.file_path <- file.path(ds.subsets.path, "split-data.x0.8.train.RData")
-ds.x0.8.train.file_path
+ds.x.train.balanced.file_path <- file.path(ds.subsets.path, "split-data.x.train.balanced.RData")
+ds.x.train.balanced.file_path
 
 start <- put_start_date()
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-if (file.exists(ds.x0.8.train.file_path)) {
+if (file.exists(ds.x.train.balanced.file_path)) {
   put_log1("Loading Split Train Data from cache file: 
-%1", ds.x0.8.train.file_path)
+%1", ds.x.train.balanced.file_path)
   
-  load(ds.x0.8.train.file_path)
+  load(ds.x.train.balanced.file_path)
   put_log("Train Data list has been loaded from cache.")
 } else {
-  train.dataset.list <- sample_train_test_sets.mx(x0.8.train, 
-                                                  x0.8.train.sample.seed,
+  train.dataset.list <- sample_train_test_sets.mx(x.train.balanced, 
+                                                  sample_seed,
                                                   test.ratio = test_ratio,
                                                   shuffle.test_rows = TRUE,
-                                                  shuffle.seed = test.sample.seed)
+                                                  shuffle.seed = test.shuffle.seed)
   str(train.dataset.list)
   
   x0.1.train <- train.dataset.list$train_set
@@ -341,16 +341,16 @@ if (file.exists(ds.x0.8.train.file_path)) {
   
   start <- put_start_date()
   put_log1("Caching data in the file
-%1 ...", ds.x0.8.train.file_path)
+%1 ...", ds.x.train.balanced.file_path)
   
   save(x0.1.train,
        y0.1.train,
        x0.1.test,
        y0.1.test,
-       file = ds.x0.8.train.file_path)
+       file = ds.x.train.balanced.file_path)
   
   put_log1("The Train Data Subset objects have been cached in file:
-`%1`", ds.x0.8.train.file_path)
+`%1`", ds.x.train.balanced.file_path)
   put_end_date(start)
   
   rm(train.dataset.list)

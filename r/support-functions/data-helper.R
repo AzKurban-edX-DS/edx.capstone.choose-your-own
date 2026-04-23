@@ -218,8 +218,8 @@ ds.get_classIDs.grouped <- function(x) {
     group_by(classID) |>
     summarise(n = n())
   
-  list(classIDs = y,
-       groupsByClass = g)
+  list(classID = y,
+       groupByClass = g)
 }
 
 sample_train_test_sets.mx <- function(x, 
@@ -228,21 +228,39 @@ sample_train_test_sets.mx <- function(x,
                                       shuffle.test_rows = TRUE,
                                       shuffle.seed = NA,
                                       train.balanced = TRUE) { 
+
+  y.groups <- ds.get_classIDs.grouped(x)
+  # str(y.groups)
+  y.chars <- y.groups$groupByClass
+  # str(y.chars)
+
+  g_len.min <- min(y.chars$n)
+  # 4261
+  N <- nrow(x)
+  
   put_log("Function: `sample_train_test_sets.mx`: 
 Sampling 20% of the `x` x...")
 
-  idx_group.list <- split(seq_len(nrow(x)), 
-                           as.factor(rownames(x)))
-  str(idx_group.list)
+  idx_group.list <- split(seq_len(N), y)
+  # str(idx_group.list)
+  
+  if(train.balanced) {
+    train.size <- g_len.min * (1 - test.ratio)
+  }
   
   test.idx <-
     sapply(idx_group.list,
            function(idx_group) {
              if (!is.na(seed)) {
-               set.seed(seed + max(idx_group))
+               set.seed(seed + idx_group[1])
              }
+             grp_lenth <- length(idx_group)
+             
+             sample_size <- ifelse(train.balanced, 
+                                   grp_lenth - train.size, 
+                                   ceiling(grp_lenth * test_ratio))
              sample(idx_group, 
-                    ceiling(length(idx_group)*test.ratio))
+                    size = sample_size)
            }) |>
     unlist(use.names = FALSE) |>
     sort()
