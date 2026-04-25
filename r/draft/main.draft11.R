@@ -214,7 +214,7 @@ log_close()
 
 ### Open log: Split Train Dataset (x) -------------
 open_logfile(".split.10%train.balanced_subset")
-#### Split Train Dataset  ------------------------------------------------------
+#### Split Train Dataset  (10% for Train set) ----------------------------------
 # char_files.max4e3 <- 4e3 
 # char_files.max4e3
 
@@ -280,7 +280,8 @@ stopImplicitCluster()
 put_end_date(start)
 
 dim(x.1bl.train)
-#> [1] 
+#> [1] 16653   784
+str(x.1bl.train)
 
 str(y.1bl.train)
 length(y.1bl.train)
@@ -288,101 +289,14 @@ length(y.1bl.train)
 str(x.9.test)
 str(y.9.test)
 length(y.9.test)
+#> [1] 817379
 
-
-##### Clean up Environment -----------------------
-# rm(x)
-# rm(y)
-
-### Close Log ------------------------------------------------------------------
-log_close()
-
-### Open log: Split Train Data Subset (x0.8.train) -------------
-open_logfile(".split.x0.8.train")
-#### Split Train Data Subset (x.train.balanced) -----------------
-# char_files.max4e3 <- 4e3 
-# char_files.max4e3
-
-dim.x.train.balanced <- dim(x.train.balanced)
-dim.x.train.balanced
-dim.x.train.balanced[1]
-dim.x.train.balanced[2]
-
-test_ratio <- 0.1 
-sample_seed <- dim.x.train.balanced[1]
-sample_seed
-test.shuffle.seed <- as.integer(sample_seed*test_ratio)
-test.shuffle.seed
-
-ds.x.train.balanced.file_path <- file.path(ds.subsets.path, "split-data.x.train.balanced.RData")
-ds.x.train.balanced.file_path
-
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-if (file.exists(ds.x.train.balanced.file_path)) {
-  put_log1("Loading Split Train Data from cache file: 
-%1", ds.x.train.balanced.file_path)
-  
-  load(ds.x.train.balanced.file_path)
-  put_log("Train Data list has been loaded from cache.")
-} else {
-  train.dataset.list <- sample_train_test_sets.mx(x.train.balanced, 
-                                                  sample_seed,
-                                                  test.ratio = test_ratio,
-                                                  shuffle.test_rows = TRUE,
-                                                  shuffle.seed = test.shuffle.seed)
-  str(train.dataset.list)
-  
-  x0.1.train <- train.dataset.list$train_set
-  y0.1.train <- as.factor(rownames(x0.1.train))
-  
-  x0.1.test <- train.dataset.list$test_set
-  y0.1.test <- as.factor(rownames(x0.1.test))
-  
-  start <- put_start_date()
-  put_log1("Caching data in the file
-%1 ...", ds.x.train.balanced.file_path)
-  
-  save(x0.1.train,
-       y0.1.train,
-       x0.1.test,
-       y0.1.test,
-       file = ds.x.train.balanced.file_path)
-  
-  put_log1("The Train Data Subset objects have been cached in file:
-`%1`", ds.x.train.balanced.file_path)
-  put_end_date(start)
-  
-  rm(train.dataset.list)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
-
-dim(x0.1.train)
-#> [1] 
-
-str(y0.1.train)
-length(y0.1.train)
-
-dim(x0.1.test)
-#> [1] 166823    784
-
-str(y0.1.test)
-length(y0.1.test)
-
-##### Clean up Environment -----------------------
-rm(x0.8.train)
-rm(y0.8.train)
 
 ### Close Log ------------------------------------------------------------------
 log_close()
 
 ## Model Building --------------------------------------------------------------
-### Training Model using the following methods: kNN, PCA -----------------------
+### Training Model using methods: kNN, PCA -----------------------
 # Reference:
 # Dimension reduction with PCA
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
@@ -394,16 +308,12 @@ if(!dir.exists(knn_pca.path)) {
 }
 
 #### Open log: Pre-training kNN+PCA Model Log ----------------------------------
-open_logfile(".pre-train-model.k1-7.2nn+pca")
-#### Tuning k1_7.2NN+PCA model by *k* parameter ranging from 1 to 7 by step 2 -------
-k.values <- seq(1, 7, 2)
+open_logfile(".pre-train-model.k4nn+pca")
+#### Training k4NN+PCA model by *k* = 4 parameter -------
 
 cache_file.path <-
-  file.path(knn_pca.path, "x0.1.train.k1-7.2nn+pca.RData")
+  file.path(knn_pca.path, "x0.1.train.k4nn+pca.RData")
  
-start <- put_start_date()
-# Thu Apr 9 09:14:47 2026
-
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
@@ -411,6 +321,7 @@ if (file.exists(cache_file.path)) {
   put_log1("Loading Model Fit Data from cache file: 
 %1...", cache_file.path)
   
+  start <- put_start_date()
   load(cache_file.path)
   put_end_date(start)
   # Time difference of 
@@ -419,8 +330,91 @@ if (file.exists(cache_file.path)) {
 } else {
   put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
   
-  train_knn_pca.k1_7.2 <- caret::train(x0.1.train, y0.1.train, method = "knn", 
-                                preProcess = c("nzv", "pca"),
+  start <- put_start_date()
+  train_knn_pca.k4 <- caret::train(x.1bl.train, y.1bl.train, method = "knn", 
+                                preProcess = "pca",
+                                # trControl = trainControl(),
+                                tuneGrid = data.frame(k = 4))
+  put_end_date(start)
+  # Time difference of 40.88067 mins
+  put_log("The Model `kNN+PCA` has been trained on the dataset subset: `x0.1.train`")
+
+  put_log("Saving Model in the cache file: `kNN+PCA`...")
+  start <- put_start_date()
+  save(train_knn_pca.k4, file = cache_file.path)
+  put_end_date(start)
+  # Time difference of 12.37275 secs
+  
+  put_log1("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
+`%1`", cache_file.path)
+
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+
+put_log("kNN+PCA Model trained result:
+%1", capture.output(str(train_knn_pca.k4)))
+
+acc.max.idx <- which.max(train_knn_pca.k4$results$Accuracy)
+acc.max.idx
+
+k4nn.max_accuracy <- train_knn_pca.k4$results$Accuracy[acc.max.idx]
+k4nn.max_accuracy
+
+k4nn.best <- train_knn_pca.k4$results$k[acc.max.idx]
+k4nn.best
+
+# 
+# k-Nearest Neighbors 
+
+# 75032 samples
+# 784 predictor
+# 39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
+# 
+# Pre-processing: principal component signal extraction (743), centered (743), scaled (743), remove (41) 
+# Resampling: Cross-Validated (5 fold) 
+# Summary of sample sizes: 60022, 60023, 60030, 60025, 60028 
+# Resampling results across tuning parameters:
+
+# k  Accuracy   Kappa    
+# 1  0.8520766  0.8461487
+# 3  0.8610591  0.8554102
+# 5  0.8632982  0.8576989
+# 7  0.8625919  0.8569392
+
+# Accuracy was used to select the optimal model using the largest value.
+# The final value used for the model was k = 5.
+
+### Close Log ------------------------------------------------------------------
+log_close()
+#### Open log: Pre-training kNN+PCA Model Log ----------------------------------
+open_logfile(".pre-train-model.k1-7.2nn+pca")
+#### Tuning k1_7.2NN+PCA model by *k* parameter ranging from 1 to 7 by step 2 -------
+k.values <- seq(1, 7, 2)
+
+cache_file.path <-
+  file.path(knn_pca.path, "x0.1.train.k1-7.2nn+pca.RData")
+
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+if (file.exists(cache_file.path)) {
+  put_log1("Loading Model Fit Data from cache file: 
+%1...", cache_file.path)
+  
+  start <- put_start_date()
+  load(cache_file.path)
+  put_end_date(start)
+  # Time difference of 
+  
+  put_log("Model Fit Data have been loaded from cache.")
+} else {
+  put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
+  
+  start <- put_start_date()
+  train_knn_pca.k1_7.2 <- caret::train(x.1bl.train, y.1bl.train, method = "knn", 
+                                preProcess = "pca",
                                 trControl = trainControl("cv", 
                                                          number = 5, 
                                                          p = 0.95,
@@ -445,8 +439,8 @@ stopCluster(cl)
 stopImplicitCluster()
 
 put_log("kNN+PCA Model trained result:
-%1", train_knn_pca.k1_7.2,
-  capture_output = 1)
+%1", capture.output(train_knn_pca.k1_7.2))
+str(train_knn_pca.k1_7.2)
 
 acc.max.idx <- which.max(train_knn_pca.k1_7.2$results$Accuracy)
 acc.max.idx
@@ -533,8 +527,7 @@ stopCluster(cl)
 stopImplicitCluster()
 plot(train_knn_pca.k4_6)
 put_log("kNN+PCA Model trained result:
-%1",train_knn_pca.k4_6,
-         capture_output = 1)
+%1",capture.output(train_knn_pca.k4_6))
 
 str(train_knn_pca.k4_6)
 
@@ -1499,40 +1492,122 @@ rm(train_rf)
 
 
 ## Deep Learning Methods -------------------------------------------------------
+### Open log: Split Train Dataset (x) -------------
+open_logfile(".split.80%train.balanced_subset")
+#### Split Train Dataset  (90% for Train set) ----------------------------------
+# char_files.max4e3 <- 4e3 
+# char_files.max4e3
+
+dim.x <- dim(x)
+dim.x
+dim.x[1]
+dim.x[2]
+
+sample_seed <- dim.x[1]
+sample_seed
+shuffle_seed <- as.integer(sample_seed*test_ratio)
+shuffle_seed
+
+cache_file.path <- file.path(ds.subsets.path, "x.9bl.train(balanced).RData")
+cache_file.path
+
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+if (file.exists(cache_file.path)) {
+  put_log1("Loading Split Train Data from cache file: 
+%1", cache_file.path)
+  
+  load(cache_file.path)
+  put_log("Train Data list has been loaded from cache.")
+} else {
+  split.list <- sample_train_test_sets.mx(x, 
+                                          sample_seed,
+                                          test.ratio = 0.1,
+                                          shuffle.seed = shuffle_seed)
+  str(split.list)
+  
+  x.9bl.train <- split.list$train_set
+  y.9bl.train <- as.factor(rownames(x.9bl.train))
+  
+  x.1.test <- split.list$test_set
+  y.1.test <- as.factor(rownames(x.1.test))
+  
+  
+  #   x0.1.test.list <- splitDataset(split.list$test_set, 9)
+  #   put_log1("Test dataset list structure:
+  # %1", capture.output(str(x0.1.test.list)))
+  
+  put_log1("Caching data in the file
+%1 ...", cache_file.path)
+  
+  save(x.9bl.train,
+       y.9bl.train,
+       x.1.test,
+       y.1.test,
+       file = cache_file.path)
+  
+  put_log1("The Train Data Subset objects has been cached in file:
+`%1`", cache_file.path)
+  
+  rm(split.list)
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+put_end_date(start)
+
+dim(x.9bl.train)
+#> [1] 16653   784
+str(x.9bl.train)
+
+str(y.9bl.train)
+length(y.9bl.train)
+
+str(x.1.test)
+str(y.1.test)
+length(y.1.test)
+#> [1] 817379
+
+
+### Close Log ------------------------------------------------------------------
+log_close()
+
+### Basic DL Classifier -----------------------------------------------------------
+# Reference:
+# MNIST Handwritten Digit Recognition in Keras
+# https://nextjournal.com/gkoehler/digit-recognition-with-keras
+
 ### Converting labels factor to categorical ------------------------------------
 # Reference: 
 #> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
 # https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
 # https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
 
-y0.1.train.cat <- to_categorical(y0.1.train)
-colnames(y0.1.train.cat) <- y.labels
-dim(y0.1.train.cat)
-str(y0.1.train.cat)
-head(y0.1.train.cat)
-# max(y0.1.train.cat)
+y.9bl.train.cat <- to_categorical(y.9bl.train)
+colnames(y.9bl.train.cat) <- y.labels
+dim(y.9bl.train.cat)
+str(y.9bl.train.cat)
+head(y.9bl.train.cat)
+# max(y.9bl.train.cat)
 
-y0.1.test.cat <- to_categorical(y0.1.test)
-colnames(y0.1.test.cat) <- y.labels
-dim(y0.1.test.cat)
-str(y0.1.test.cat)
-head(y0.1.test.cat)
-
-### Basic Classifier -----------------------------------------------------------
-# Reference:
-# MNIST Handwritten Digit Recognition in Keras
-# https://nextjournal.com/gkoehler/digit-recognition-with-keras
+y.1.test.cat <- to_categorical(y.1.test)
+colnames(y.1.test.cat) <- y.labels
+dim(y.1.test.cat)
+str(y.1.test.cat)
+head(y.1.test.cat)
 
 #### Open log: Building Basic DL Model -----------------------------------------
-open_logfile("basic.dl.x0.1.model")
-#### Basic DL Model building on dataset: `x0.1.train`: `x0.1.dl.model` ---------
+open_logfile("dl.basic-model")
+#### Basic DL Model building on dataset: `dl.basic_model`: `x0.1.dl.model` ---------
 dl.keras3.path <- file.path(models.path, "dl.keras3")
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
 
 cache_file.path <- file.path(dl.keras3.path, 
-                             "basic.x0.1.dl.model.RData")
+                             "dl.basic.x.9bl.train.model.RData")
 
 if (file.exists(cache_file.path)) {
   put_log("Loading `DL Keras3` model from cache file: 
@@ -1542,7 +1617,7 @@ if (file.exists(cache_file.path)) {
   put_log("`DL Keras3` model has been loaded from cache.")
   
 } else {
-  n.input_shape <- ncol(x0.1.train)
+  n.input_shape <- ncol(x.9bl.train)
   # 784
   
   n.output <- length(y.labels)
@@ -1551,8 +1626,9 @@ if (file.exists(cache_file.path)) {
   n.hl.units <- ceiling(n.input_shape*2/3+n.output)
   # 562
   
-  x0.1.dl.model.basic <- keras_model_sequential() |>
-  layer_dense(units = n.hl.units, activation = "relu", input_shape = c(n.input_shape)) |>
+  dl.basic_model <- keras_model_sequential() |>
+  layer_dense(units = n.hl.units, activation = "relu", 
+              input_shape = c(n.input_shape)) |>
   layer_dropout(rate = 0.25) |> 
   layer_dense(units = n.hl.units, activation = "relu") |>
   layer_dropout(rate = 0.25) |> 
@@ -1564,9 +1640,9 @@ if (file.exists(cache_file.path)) {
   layer_dropout(rate = 0.25) |> 
   layer_dense(units = n.output, activation = "softmax")
 
-  summary(x0.1.model)
+  summary(dl.basic_model)
 
-  x0.1.dl.model.basic |> compile(
+  dl.basic_model |> compile(
     loss = "categorical_crossentropy",
     optimizer = optimizer_adam(),
     metrics = c("accuracy")
@@ -1574,61 +1650,81 @@ if (file.exists(cache_file.path)) {
   
   start <- put_start_date()
   
-  x0.1.dl.model.basic.history <- x0.1.dl.model.basic |> 
-    fit(x0.1.train, 
-        y0.1.train.cat, 
+  dl.basic.x.9bl.train.history <- dl.basic_model |> 
+    fit(x.9bl.train, 
+        y.9bl.train.cat, 
         epochs = 100, 
         batch_size = 512, 
         validation_split = 0.15)
   
   put_log("Saving `DL Keras3` model to the cache file...")
-  save(x0.1.dl.model,
-       x0.1.dl.model.basic.history,
+  save(dl.basic_model,
+       dl.basic.x.9bl.train.history,
        file = cache_file.path)
   
   put_log("The `DL Keras3` model has been saved to the cache file: 
 %1", cache_file.path)
+  put_log("Training Basic DL Model task has been completed on the Train Set 
+(90% balanced sample of the dataset).")
   put_end_date(start)
-
+# Time difference of 38.48235 mins
 }
 
-plot(x0.1.dl.model.history)
-str(x0.1.dl.model.history)
-#### `x0.1.dl.model` Model Evaluation ----------------------------------------------
+plot(dl.basic.x.9bl.train.history)
+str(dl.basic.x.9bl.train.history)
+#### DL Basic Model Evaluation ----------------------------------------------
 
 start <- put_start_date()
-x0.1.dl.model |> evaluate(x0.1.test, y0.1.test.cat)
+dl.basic_model |> evaluate(x.1.test, y.1.test.cat)
 # $accuracy
-# [1] 0.781755
+# [1] 0.9065974
+# 
+# $loss
+# [1] 1.154121
 
 put_end_date(start)
-# Time difference of 0.5527549 secs
+# Time difference of 1.30212 mins
 
-preds <- x0.1.dl.model.basic |>
-  predict(x0.1.test) 
+start <- put_start_date()
+preds <- dl.basic_model |>
+  predict(x.1.test) 
+put_end_date(start)
+# Time difference of  mins
 
 colnames(preds) <- y.labels
-head(preds)
+head(preds[,1:5])
+#                 #            $            &            @            0
+# [1,] 8.469580e-25 2.824278e-25 1.338040e-31 1.180656e-36 3.503761e-16
+# [2,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
+# [3,] 9.542136e-15 3.782388e-15 1.619873e-16 3.058267e-19 4.522308e-08
+# [4,] 7.770129e-13 1.467184e-19 8.129414e-25 4.881509e-21 9.999547e-01
+# [5,] 4.731567e-38 0.000000e+00 0.000000e+00 0.000000e+00 5.828601e-27
+# [6,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
+
 dim(preds)
+#> [1] 684467     39
 
 preds.ts <- as_tensor(preds)
 str(preds.ts)
+#> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
 
 predictions <- preds.ts |> op_argmax(2)
 predictions
+#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
 dim(predictions)
-predictions$numpy()
+#> [1] 684467
+# predictions$numpy()
 
 
-y0.1.test
-as.integer(y0.1.test)
+# y.1.test
+# as.integer(y.1.test)
 
-mean(predictions$numpy() == as.integer(y0.1.test))
-# [1] 0.7817551
+mean(predictions$numpy() == as.integer(y.1.test))
+# [1] 0.9065974
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
-#### CNN ---------------------------------------------------
+### CNN ---------------------------------------------------
 # Reference:
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
