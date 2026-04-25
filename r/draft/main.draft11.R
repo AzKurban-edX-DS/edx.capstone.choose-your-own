@@ -213,7 +213,7 @@ rm(img28x28bin.list)
 log_close()
 
 ### Open log: Split Train Dataset (x) -------------
-open_logfile(".split.train_set-10%train_subset")
+open_logfile(".split.10%train.balanced_subset")
 #### Split Train Dataset  ------------------------------------------------------
 # char_files.max4e3 <- 4e3 
 # char_files.max4e3
@@ -229,7 +229,7 @@ sample_seed
 shuffle_seed <- as.integer(sample_seed*test_ratio)
 shuffle_seed
 
-cache_file.path <- file.path(ds.subsets.path, "ds.train.balanced.RData")
+cache_file.path <- file.path(ds.subsets.path, "x.1bl.train(balanced).RData")
 cache_file.path
 
 start <- put_start_date()
@@ -245,14 +245,15 @@ if (file.exists(cache_file.path)) {
 } else {
   split.list <- sample_train_test_sets.mx(x, 
                                           sample_seed,
+                                          test.ratio = 0.9,
                                           shuffle.seed = shuffle_seed)
   str(split.list)
   
-  x.train.balanced <- split.list$train_set
-  y.train.balanced <- as.factor(rownames(x.train.balanced))
+  x.1bl.train <- split.list$train_set
+  y.1bl.train <- as.factor(rownames(x.1bl.train))
   
-  x.test <- split.list$test_set
-  y.test <- as.factor(rownames(x.test))
+  x.9.test <- split.list$test_set
+  y.9.test <- as.factor(rownames(x.9.test))
   
   
 #   x0.9.test.list <- splitDataset(split.list$test_set, 9)
@@ -262,10 +263,10 @@ if (file.exists(cache_file.path)) {
   put_log1("Caching data in the file
 %1 ...", cache_file.path)
   
-  save(x.train.balanced,
-       y.train.balanced,
-       x.test,
-       y.test,
+  save(x.1bl.train,
+       y.1bl.train,
+       x.9.test,
+       y.9.test,
        file = cache_file.path)
   
   put_log1("The Train Data Subset objects has been cached in file:
@@ -278,14 +279,15 @@ stopCluster(cl)
 stopImplicitCluster()
 put_end_date(start)
 
-dim(x.train.balanced)
+dim(x.1bl.train)
 #> [1] 
 
-str(y.train.balanced)
-length(y.train.balanced)
+str(y.1bl.train)
+length(y.1bl.train)
 
-str(x.test)
-str(y.test)
+str(x.9.test)
+str(y.9.test)
+length(y.9.test)
 
 
 ##### Clean up Environment -----------------------

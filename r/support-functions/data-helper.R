@@ -227,7 +227,8 @@ sample_train_test_sets.mx <- function(x,
                                       test.ratio = 0.2,
                                       shuffle.test_rows = TRUE,
                                       shuffle.seed = NA,
-                                      train.balanced = TRUE) { 
+                                      train.balanced = TRUE,
+                                      bootstap.sample = FALSE) { 
 
   y.groups <- ds.get_classIDs.grouped(x)
   # str(y.groups)
@@ -260,7 +261,8 @@ Sampling 20% of the `x` x...")
                                    grp_lenth - train.size, 
                                    ceiling(grp_lenth * test_ratio))
              sample(idx_group, 
-                    size = sample_size)
+                    size = sample_size,
+                    replace = bootstap.sample)
            }) |>
     unlist(use.names = FALSE) |>
     sort()
