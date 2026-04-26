@@ -222,26 +222,23 @@ ds.get_classIDs.grouped <- function(x) {
        groupByClass = g)
 }
 
-sample_train_test_sets.mx <- function(x, 
-                                      seed = NA, 
-                                      test.ratio = 0.2,
-                                      shuffle.test_rows = TRUE,
-                                      shuffle.seed = NA,
-                                      train.balanced = TRUE,
-                                      bootstap.sample = FALSE) { 
-
+sample_test.idx <- function(x, 
+                            seed = NA, 
+                            test.ratio = 0.2,
+                            train.balanced = TRUE,
+                            bootstap.sample = FALSE) { 
   y.groups <- ds.get_classIDs.grouped(x)
   # str(y.groups)
   y.chars <- y.groups$groupByClass
   # str(y.chars)
-
+  
   g_len.min <- min(y.chars$n)
   # 4261
   N <- nrow(x)
   
   put_log("Function: `sample_train_test_sets.mx`: 
 Sampling 20% of the `x` x...")
-
+  
   idx_group.list <- split(seq_len(N), y)
   # str(idx_group.list)
   
@@ -267,6 +264,21 @@ Sampling 20% of the `x` x...")
     unlist(use.names = FALSE) |>
     sort()
   
+  test.idx
+} 
+
+sample_train_test_sets.mx <- function(x, 
+                                      seed = NA, 
+                                      test.ratio = 0.2,
+                                      shuffle.test_rows = TRUE,
+                                      shuffle.seed = NA,
+                                      train.balanced = TRUE,
+                                      bootstap.sample = FALSE) { 
+  test.idx <- sample_test.idx(x, 
+                              seed, 
+                              test.ratio, 
+                              train.balanced,
+                              bootstap.sample)
   #str(test.idx)
   put_log("Function: `sample_train_test_sets.mx`: 
 Extracting 80% of the original index set of `x` not used for the test Set...")
@@ -295,12 +307,60 @@ Extracting 20% of the original index set of `x` used for the test Set.")
        test_set = test.set)
 }
 
-shuffle.mxrows <- function(mx, seed = NA) {
+sample_train_test_sets.x3d <- function(x, 
+                                      seed = NA, 
+                                      test.ratio = 0.2,
+                                      shuffle.test_rows = TRUE,
+                                      shuffle.seed = NA,
+                                      train.balanced = TRUE,
+                                      bootstap.sample = FALSE) { 
+  test.idx <- sample_test.idx(x, 
+                              seed, 
+                              test.ratio, 
+                              train.balanced,
+                              bootstap.sample)
+  #str(test.idx)
+  put_log("Function: `sample_train_test_sets.mx`: 
+Extracting 80% of the original index set of `x` not used for the test Set...")
+  
+  train.set <- x[-test.idx,,]
+  # str(train.set)
+  # dim(train.set)
+  
+  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `train.set`")
+
+  put_log("Function: `sample_train_test_sets.mx`: 
+Extracting 20% of the original index set of `x` used for the test Set.")
+  
+  test.set <- x[test.idx,,]
+  # str(test.set)
+  # dim(test.set)
+  
+  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
+
+  if (shuffle.test_rows) {
+    test.set <- shuffle.rows.x3d(test.set, shuffle.seed)
+  }
+  
+  # Return result datasets
+  list(train_set = train.set,
+       test_set = test.set)
+}
+
+shuffle.mxrows <- function(x, seed = NA) {
   if (!is.na(seed)) {
     set.seed(seed)
   }
-  random.idx <- sample(nrow(mx))
-  mx[random.idx,]
+  random.idx <- sample(nrow(x))
+  x[random.idx,]
+}
+
+shuffle.rows.x3d <- function(x, seed = NA) {
+  if (!is.na(seed)) {
+    set.seed(seed)
+  }
+  random.idx <- sample(nrow(x))
+  x[random.idx,,]
 }
 
 splitDataset <- function(x, n.parts){

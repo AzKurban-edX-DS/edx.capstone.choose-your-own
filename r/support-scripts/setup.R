@@ -66,9 +66,11 @@ if(!require(magick))
 if(!require(sqldf))
   install.packages("sqldf")
 
+if(!require(abind))
+  install.packages("abind")
+
 # if(!require())
 #   install.packages("")
-
 
 ## Load Libraries & resolve conflicts ------------------------------------------
 
@@ -94,6 +96,7 @@ library(tfdatasets)
 
 library(imager)
 library(magick)
+library(abind)
 
 library(doParallel)
 
