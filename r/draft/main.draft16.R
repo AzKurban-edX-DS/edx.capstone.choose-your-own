@@ -94,7 +94,7 @@ if(!file.exists(my_mnist.file_path)){
 %1", train.img28x28bin.list.file_path)
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
-  my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  my_emnist <- img28x28.list2flatten.mx(img28xc28bin.list$img.list)
   put_log("The flatten dataset have been created.")
   str(my_emnist)
 
@@ -223,7 +223,7 @@ dim.x
 dim.x[1]
 dim.x[2]
 
-#test_ratio <- 0.9 
+test_ratio <- 0.9 
 sample_seed <- dim.x[1]
 sample_seed
 shuffle_seed <- as.integer(sample_seed*test_ratio)
@@ -245,7 +245,7 @@ if (file.exists(cache_file.path)) {
 } else {
   split.list <- sample_train_test_sets.mx(x, 
                                           sample_seed,
-                                          test.ratio = 0.9,
+                                          test.ratio = test_ratio,
                                           shuffle.seed = shuffle_seed)
   str(split.list)
   
@@ -260,7 +260,7 @@ if (file.exists(cache_file.path)) {
 #   put_log1("Test dataset list structure:
 # %1", capture.output(str(x0.9.test.list)))
 
-  put_log1("Caching data in the file
+  put_log("Caching data in the file
 %1 ...", cache_file.path)
   
   save(x.1bl.train,
@@ -269,7 +269,7 @@ if (file.exists(cache_file.path)) {
        y.9.test,
        file = cache_file.path)
   
-  put_log1("The Train Data Subset objects has been cached in file:
+  put_log("The Train Data Subset objects has been cached in file:
 `%1`", cache_file.path)
   
   rm(split.list)
@@ -1579,7 +1579,7 @@ log_close()
 # MNIST Handwritten Digit Recognition in Keras
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 
-### Converting labels factor to categorical ------------------------------------
+#### Converting labels factor to categorical -----------------------------------
 # Reference: 
 #> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
 # https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
@@ -1600,14 +1600,14 @@ head(y.1.test.cat)
 
 #### Open log: Building Basic DL Model -----------------------------------------
 open_logfile("dl.basic-model")
-#### Basic DL Model building on dataset: `dl.basic_model`: `x0.1.dl.model` ---------
+#### DL Model building on dataset: `dl.model`: `x0.1.dl.model` ---------
 dl.keras3.path <- file.path(models.path, "dl.keras3")
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
 
 cache_file.path <- file.path(dl.keras3.path, 
-                             "dl.basic.x.9bl.train.model.RData")
+                             "dl.x.9bl.train.model.RData")
 
 if (file.exists(cache_file.path)) {
   put_log("Loading `DL Keras3` model from cache file: 
@@ -1626,7 +1626,7 @@ if (file.exists(cache_file.path)) {
   n.hl.units <- ceiling(n.input_shape*2/3+n.output)
   # 562
   
-  dl.basic_model <- keras_model_sequential() |>
+  dl.model <- keras_model_sequential() |>
   layer_dense(units = n.hl.units, activation = "relu", 
               input_shape = c(n.input_shape)) |>
   layer_dropout(rate = 0.25) |> 
@@ -1640,26 +1640,32 @@ if (file.exists(cache_file.path)) {
   layer_dropout(rate = 0.25) |> 
   layer_dense(units = n.output, activation = "softmax")
 
-  summary(dl.basic_model)
+  summary(dl.model)
 
-  dl.basic_model |> compile(
+  dl.model |> compile(
     loss = "categorical_crossentropy",
     optimizer = optimizer_adam(),
     metrics = c("accuracy")
   )
   
+  put_log("Training the Basic DL Model...")
   start <- put_start_date()
   
-  dl.basic.x.9bl.train.history <- dl.basic_model |> 
+  dl.x.9bl.train.history <- dl.model |> 
     fit(x.9bl.train, 
         y.9bl.train.cat, 
         epochs = 100, 
         batch_size = 512, 
         validation_split = 0.15)
   
+  put_log("The Basic DL Model has been trained on `x.9bl.train` dataset.")
+  put_end_date(start)
+  
   put_log("Saving `DL Keras3` model to the cache file...")
-  save(dl.basic_model,
-       dl.basic.x.9bl.train.history,
+  start <- put_start_date()
+  
+  save(dl.model,
+       dl.x.9bl.train.history,
        file = cache_file.path)
   
   put_log("The `DL Keras3` model has been saved to the cache file: 
@@ -1670,29 +1676,28 @@ if (file.exists(cache_file.path)) {
 # Time difference of 38.48235 mins
 }
 
-plot(dl.basic.x.9bl.train.history)
-str(dl.basic.x.9bl.train.history)
+plot(dl.x.9bl.train.history)
+str(dl.x.9bl.train.history)
 #### DL Basic Model Evaluation ----------------------------------------------
-
+put_log("Evaluating DL Model...")
 start <- put_start_date()
-dl.basic_model |> evaluate(x.1.test, y.1.test.cat)
-# $accuracy
-# [1] 0.9065974
-# 
-# $loss
-# [1] 1.154121
+dl.eval.result <- dl.model |> evaluate(x.1.test, y.1.test.cat)
+put_log("DL Model evaluation result:
+%1", capture.output(str(dl.eval.result)))
+# List of 2
+#  $ accuracy: num 0.796
+#  $ loss    : num 1.52
 
 put_end_date(start)
-# Time difference of 1.30212 mins
+# Time difference of 1.668308 mins
 
 start <- put_start_date()
-preds <- dl.basic_model |>
-  predict(x.1.test) 
+dl.preds <- dl.model |> predict(x.1.test) 
 put_end_date(start)
 # Time difference of  mins
 
-colnames(preds) <- y.labels
-head(preds[,1:5])
+colnames(dl.preds) <- y.labels
+head(dl.preds[,1:5])
 #                 #            $            &            @            0
 # [1,] 8.469580e-25 2.824278e-25 1.338040e-31 1.180656e-36 3.503761e-16
 # [2,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
@@ -1701,256 +1706,31 @@ head(preds[,1:5])
 # [5,] 4.731567e-38 0.000000e+00 0.000000e+00 0.000000e+00 5.828601e-27
 # [6,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
 
-dim(preds)
+dim(dl.preds)
 #> [1] 684467     39
 
-preds.ts <- as_tensor(preds)
-str(preds.ts)
+dl.preds.ts <- as_tensor(dl.preds)
+str(dl.preds.ts)
 #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
 
-predictions <- preds.ts |> op_argmax(2)
-predictions
+dl.predictions <- dl.preds.ts |> op_argmax(2)
+dl.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(predictions)
+dim(dl.predictions)
 #> [1] 684467
-# predictions$numpy()
+# dl.predictions$numpy()
 
 
 # y.1.test
 # as.integer(y.1.test)
 
-mean(predictions$numpy() == as.integer(y.1.test))
-# [1] 0.9065974
+dl.model.accuracy <- mean(dl.predictions$numpy() == as.integer(y.1.test))
+put_log("DL Model accuracy: %1",dl.model.accuracy)
+
+# [1] 0.7955373
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
-### CNN ---------------------------------------------------
-# Reference:
-# Deep Learning Using R with keras (CNN)
-# https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-
-# Add channel into the dimension
-x_train <- array_reshape(x_train, c(nrow(x_train), img_rows, img_cols, 1))
-x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 1))
-input_shape <- c(img_rows, img_cols, 1)
-
-
-#### Model building on dataset: `x0.1.train_nzv`: `x0.1.nzv.model` ----------------------
-
-x0.1.nzv.model <- keras_model_sequential() |>
-  layer_dense(units = 256, activation = "relu", input_shape = c(743)) |>
-  layer_dropout(rate = 0.25) |> 
-  layer_dense(units = 128, activation = "relu") |>
-  layer_dropout(rate = 0.25) |> 
-  layer_dense(units = 64, activation = "relu") |>
-  layer_dropout(rate = 0.25) |>
-  layer_dense(units = 39, activation = "softmax")
-summary(x0.1.nzv.model)
-
-x0.1.nzv.model |> compile(
-  loss = "categorical_crossentropy",
-  optimizer = optimizer_adam(),
-  metrics = c("accuracy")
-)
-
-start <- put_start_date()
-
-history <- x0.1.nzv.model |> 
-  fit(x0.1.train_nzv, 
-      y0.1.train.cat, 
-      epochs = 50, 
-      batch_size = 128, 
-      validation_split = 0.15)
-
-put_end_date(start)
-
-str(history)
-
-#### `x0.1.nzv.model` Model Evaluation ----------------------------------------------
-
-start <- put_start_date()
-x0.1.nzv.model |> evaluate(x0.1.test_nzv, y0.1.test.cat)
-# $accuracy
-# [1] 0.7865438
-
-put_end_date(start)
-# Time difference of 0.5527549 secs
-
-preds <- x0.1.nzv.model |>
-  predict(x0.1.test) 
-
-colnames(preds) <- y.labels
-head(preds)
-dim(preds)
-
-preds.ts <- as_tensor(preds)
-str(preds.ts)
-
-predictions <- preds.ts |> op_argmax(2)
-predictions
-dim(predictions)
-
-mean(predictions$numpy() == as.integer(y0.1.test))
-# [1] 0.7817551
-
-### Advanced Classifier --------------------------------------------------------
-# Reference:
-# TensorFlow 2 quickstart for experts
-# https://tensorflow.rstudio.com/tutorials/quickstart/advanced
-
-# To use legacy `keras` package uncomment the code snippet below:
-# detach("package:keras3", unload = TRUE)
-# library(keras)
-# py_require_legacy_keras()
-# library(tensorflow)
-
-#### Prepare MNIST Datasets ----------------------------------------------------
-# Load and prepare the MNIST dataset.
-start <- put_start_date()
-
-c(c(x_train, y_train), c(x_test, y_test)) %<-% keras::dataset_mnist()
-x_train %<>% { . / 255 }
-x_test  %<>% { . / 255 }
-# Use TensorFlow Datasets to batch and shuffle the dataset:
-
-train_ds <- list(x_train, y_train) %>%
-  tensor_slices_dataset() %>%
-  dataset_shuffle(10000) %>%
-  dataset_batch(32)
-
-str(train_ds)
-
-test_ds <- list(x_test, y_test) %>%
-  tensor_slices_dataset() %>%
-  dataset_batch(32)
-
-str(test_ds)
-put_end_date(start)
-
-
-#### Prepare X0.1 Datasets ----------------------------------------------------------
-
-# Use TensorFlow Datasets to batch and shuffle the dataset:
-
-# train_ds <- list(x0.1.train, y0.1.train) |>
-#   tensor_slices_dataset() |>
-#   dataset_shuffle(10000) |>
-#   dataset_batch(32)
-# 
-# str(train_ds)
-# 
-# test_ds <- list(x0.1.test, y0.1.test) |>
-#   tensor_slices_dataset() |>
-#   dataset_batch(32)
-# 
-# str(test_ds)
-
-#### Model building ------------------------------------------------------------
-#### Model Class
-
-# Build the a model using the Keras model subclassing API:
-
-my_model <- new_model_class(
-  classname = "MyModel",
-  initialize = function(...) {
-    super$initialize()
-    self$conv1 <- layer_conv_2d(filters = 32, kernel_size = 3,
-                                activation = 'relu')
-    self$flatten <- layer_flatten()
-    self$d1 <- layer_dense(units = 128, activation = 'relu')
-    self$d2 <- layer_dense(units = 10)
-  },
-  call = function(inputs) {
-    inputs |>
-      tf$expand_dims(3L) |>
-      self$conv1() |>
-      self$flatten() |>
-      self$d1() |>
-      self$d2()
-  }
-)
-
-# Create an instance of the model
-model <- my_model()
-
-# Choose an optimizer and loss function for training:
-loss_object <- loss_sparse_categorical_crossentropy(from_logits = TRUE)
-optimizer <- optimizer_adam()
-
-#> Select metrics to measure the loss and the accuracy of the model. 
-#> These metrics accumulate the values over epochs and then print the overall result.
-
-train_loss <- metric_mean(name = "train_loss")
-str(train_loss)
-train_accuracy <- metric_sparse_categorical_accuracy(name = "train_accuracy")
-
-test_loss <- metric_mean(name = "test_loss")
-test_accuracy <- metric_sparse_categorical_accuracy(name = "test_accuracy")
-
-
-# Use tf$GradientTape() to train the model:
-  
-train_step <- function(images, labels) {
-  with(tf$GradientTape() %as% tape, {
-    # training = TRUE is only needed if there are layers with different
-    # behavior during training versus inference (e.g. Dropout).
-    predictions <- model(images, training = TRUE)
-    loss <- loss_object(labels, predictions)
-  })
-  gradients <- tape$gradient(loss, model$trainable_variables)
-  optimizer$apply_gradients(zip_lists(gradients, model$trainable_variables))
-  train_loss(loss)
-  train_accuracy(labels, predictions)
-}
-
-train <- tf_function(function(train_ds) {
-  for (batch in train_ds) {
-    c(images, labels) %<-% batch
-    train_step(images, labels)
-  }
-})
-
-# Test the model:
-
-test_step <- function(images, labels) {
-  # training = FALSE is only needed if there are layers with different
-  # behavior during training versus inference (e.g. Dropout).
-  predictions <- model(images, training = FALSE)
-  t_loss <- loss_object(labels, predictions)
-  test_loss(t_loss)
-  test_accuracy(labels, predictions)
-}
-
-test <- tf_function(function(test_ds) {
-  for (batch in test_ds) {
-    c(images, labels) %<-% batch
-    test_step(images, labels)
-  }
-})
-
-reset_metrics <- function() {
-  for (metric in list(train_loss, train_accuracy,
-                      test_loss, test_accuracy))
-    metric$reset_state()
-}
-
-#### Proceed Classification ----------------------------------------------------
-
-EPOCHS <- 1
-for (epoch in seq_len(EPOCHS)) {
-  # Reset the metrics at the start of the next epoch
-  reset_metrics()
-  train(train_ds)
-  test(test_ds)
-  cat(sprintf('Epoch %d', epoch), "\n")
-  cat(sprintf('Loss: %f', train_loss$result()), "\n")
-  cat(sprintf('Accuracy: %f', train_accuracy$result() * 100), "\n")
-  cat(sprintf('Test Loss: %f', test_loss$result()), "\n")
-  cat(sprintf('Test Accuracy: %f', test_accuracy$result() * 100), "\n")
-}
-
-
-
 
 # ---------------------------
 # Reference:

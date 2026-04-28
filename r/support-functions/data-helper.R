@@ -74,17 +74,6 @@ as.matrix.cimg <- function(cimg.list, label) {
                            1:mx.ncols))
 }
 
-as.matrix.img28x28.list <- function(img.list, label) {
-  mx.ncols <- 28*28
-  
-  map(img.list, as.vector) |>
-    unlist() |>
-    matrix(ncol = mx.ncols, 
-           byrow = TRUE,
-           dimnames = list(base::rep(label, times = length(img.list)),
-                           1:mx.ncols))
-}
-
 ## Data Visualization ---------------------------------
 image.mx <- function(mx) {
   image(mx[, seq(ncol(mx), 1)])
@@ -130,25 +119,6 @@ image.load_bin.shape28x28 <- function(file_path) {
 }
 
 
-img28x28mx2flatten.list <- function(img_list){
-  start <- put_start_date()
-  put_log("Function `img28x28mx2flatten.list`:
-Converting image lists to matrices...")
-  char_matrix.list <- lapply(names(img_list), function(label){
-    put_log("Function `img28x28mx2flatten.list`:
-Processing label: `%1`...", label)
-    img_list[[label]]$img.list |> 
-      as.matrix.img28x28.list(label)
-  })
-  
-  put_log("Function `img28x28mx2flatten.list`:
-Image matrix list has been created with the following structure:
-%1", capture.output(str(char_matrix.list)))
-  put_end_date(start)
-
-  char_matrix.list
-}
-
 img28x28.list2flatten.mx <- function(img_list,
                                  shuffle.rows = FALSE,
                                  shuffle.seed = NA){
@@ -171,6 +141,36 @@ Combined image data matrix has been created with the following structure:
   }
   
   img.mx
+}
+
+img28x28mx2flatten.list <- function(img_list){
+  start <- put_start_date()
+  put_log("Function `img28x28mx2flatten.list`:
+Converting image lists to matrices...")
+  char_matrix.list <- lapply(names(img_list), function(label){
+    put_log("Function `img28x28mx2flatten.list`:
+Processing label: `%1`...", label)
+    img_list[[label]]$img.list |> 
+      img28x28.list2matrix(label)
+  })
+  
+  put_log("Function `img28x28mx2flatten.list`:
+Image matrix list has been created with the following structure:
+%1", capture.output(str(char_matrix.list)))
+  put_end_date(start)
+
+  char_matrix.list
+}
+
+img28x28.list2matrix <- function(img.list, label) {
+  mx.ncols <- 28*28
+  
+  map(img.list, as.vector) |>
+    unlist() |>
+    matrix(ncol = mx.ncols, 
+           byrow = TRUE,
+           dimnames = list(base::rep(label, times = length(img.list)),
+                           1:mx.ncols))
 }
 
 img.load.bin28x28mx.list <- function(root_path, 
@@ -226,7 +226,8 @@ sample_test.idx <- function(x,
                             seed = NA, 
                             test.ratio = 0.2,
                             train.balanced = TRUE,
-                            bootstap.sample = FALSE) { 
+                            bootstap.sample = FALSE) {
+  y <- as.factor(rownames(x))
   y.groups <- ds.get_classIDs.grouped(x)
   # str(y.groups)
   y.chars <- y.groups$groupByClass

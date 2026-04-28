@@ -2,7 +2,7 @@
 ch_A.list <- img28x28bin.list[["A"]]$img.list
 str(ch_A.list)
 
-ch_A.mx <- as.matrix.img28x28.list(ch_A.list, "A")
+ch_A.mx <- img28x28.list2matrix(ch_A.list, "A")
 dim(ch_A.mx)
 ch_A.dist <- dist(ch_A.mx)
 str(ch_A.dist)

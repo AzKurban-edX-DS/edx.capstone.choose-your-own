@@ -197,3 +197,31 @@ x.binarize <- function(x) {
   x.nzv <- x[, -nzv]
   (x > 0.5)*1
 }
+
+predict.dl_model <- function(model,
+                             x.test,
+                             class.labels) {
+  put_log("Evaluating DL Model...")
+  start <- put_start_date()
+  preds <- model |> predict(x.test) 
+  put_log("DL Model evaluation has been completed.")
+  put_end_date(start)
+  # Time difference of 1.502232 mins
+  # dim(preds)
+  
+  colnames(preds) <- class.labels
+  # head(preds[,1:5])
+  
+  preds.ts <- as_tensor(preds)
+  str(preds.ts)
+  #> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
+  
+  predictions <- preds.ts |> op_argmax(2)
+  
+  put_log("Function `predict.dl_model`:
+Predictions have been constructed:
+%1", capture.output(str(predictions)))
+  put_end_date(start)
+  
+  predictions$numpy()
+}

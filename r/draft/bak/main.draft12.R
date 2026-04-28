@@ -94,7 +94,7 @@ if(!file.exists(my_mnist.file_path)){
 %1", train.img28x28bin.list.file_path)
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
-  my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  my_emnist <- img28x28.list2flatten.mx(img28xc28bin.list$img.list)
   put_log("The flatten dataset have been created.")
   str(my_emnist)
 
@@ -223,7 +223,7 @@ dim.x
 dim.x[1]
 dim.x[2]
 
-#test_ratio <- 0.9 
+test_ratio <- 0.9 
 sample_seed <- dim.x[1]
 sample_seed
 shuffle_seed <- as.integer(sample_seed*test_ratio)
@@ -245,7 +245,7 @@ if (file.exists(cache_file.path)) {
 } else {
   split.list <- sample_train_test_sets.mx(x, 
                                           sample_seed,
-                                          test.ratio = 0.9,
+                                          test.ratio = test_ratio,
                                           shuffle.seed = shuffle_seed)
   str(split.list)
   
@@ -1579,7 +1579,7 @@ log_close()
 # MNIST Handwritten Digit Recognition in Keras
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 
-### Converting labels factor to categorical ------------------------------------
+#### Converting labels factor to categorical -----------------------------------
 # Reference: 
 #> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
 # https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
@@ -1640,7 +1640,6 @@ if (file.exists(cache_file.path)) {
   layer_dropout(rate = 0.25) |> 
   layer_dense(units = n.output, activation = "softmax")
 
-  summary(dl.basic_model)
 
   dl.basic_model |> compile(
     loss = "categorical_crossentropy",
@@ -1648,6 +1647,9 @@ if (file.exists(cache_file.path)) {
     metrics = c("accuracy")
   )
   
+  summary(dl.basic_model)
+  
+  put_log("Training the Basic DL Model...")
   start <- put_start_date()
   
   dl.basic.x.9bl.train.history <- dl.basic_model |> 
@@ -1657,7 +1659,12 @@ if (file.exists(cache_file.path)) {
         batch_size = 512, 
         validation_split = 0.15)
   
+  put_log("The Basic DL Model has been trained on `x.9bl.train` dataset.")
+  put_end_date(start)
+  
   put_log("Saving `DL Keras3` model to the cache file...")
+  start <- put_start_date()
+  
   save(dl.basic_model,
        dl.basic.x.9bl.train.history,
        file = cache_file.path)
@@ -1724,76 +1731,322 @@ mean(predictions$numpy() == as.integer(y.1.test))
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
-### CNN ---------------------------------------------------
+
+### Convolutional Neural Network (CNN) -----------------------------------------
 # Reference:
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-# Add channel into the dimension
-x_train <- array_reshape(x_train, c(nrow(x_train), img_rows, img_cols, 1))
-x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 1))
-input_shape <- c(img_rows, img_cols, 1)
+#### Open log: Prepare CNN Datasets -------------
+open_logfile(".prepare-cnn-datasets")
+
+#### Prepare CNN Datasets ------------------------------------------------------
+start <- put_start_date()
+put_log("Loading Binary Image 28x28 Matrix list from cache.")
+load(train.img28x28bin.list.file_path)
+put_log("The Binary Image 28x28 Matrix list has been loaded from cache.")
+put_end_date(start)
+# Time difference of 6.805764 secs
 
 
-#### Model building on dataset: `x0.1.train_nzv`: `x0.1.nzv.model` ----------------------
+# ----
+put_log("Building flatten (`EMNIST`-like) dataset...")
+x_flat <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+put_log("The flatten dataset have been created.")
+dim(x_flat)
+# ----
 
-x0.1.nzv.model <- keras_model_sequential() |>
-  layer_dense(units = 256, activation = "relu", input_shape = c(743)) |>
-  layer_dropout(rate = 0.25) |> 
-  layer_dense(units = 128, activation = "relu") |>
-  layer_dropout(rate = 0.25) |> 
-  layer_dense(units = 64, activation = "relu") |>
+img.nested_list <- img28x28bin.list$img.list
+str(img.nested_list)
+
+
+
+start <- put_start_date()
+put_log("Combining nested list of images to list of arrays...")
+
+img28x28mx.list <- lapply(img.nested_list, function(item){
+  # char.image(item$img.list[[1]])
+  # img.array <- simplify2array(item$img.list)
+  img.array <- abind(item$img.list, rev.along = 3)
+  # dim(img.array)
+  # str(img.array)
+  # char.image(img.array[1,,])
+})
+
+put_log("Function `img28x28.list2matrix`:
+Combined image data matrix has been created with the following structure:
+%1", capture.output(str(img.mx)))
+put_end_date(start)
+str(img28x28mx.list)
+
+start <- put_start_date()
+put_log("Combining image list to array...")
+x <- abind(img28x28mx.list, along = 1)
+
+put_log("Function `img28x28.list2matrix`:
+Combined image matrix array has been created with the following dimentions:
+%1", capture.output(dim(x)))
+# char.image(x[2,,])
+put_end_date(start)
+
+dim(x)
+dim.x <- dim(x)
+dim.x
+#> [1] 834032     28     28
+nrow(x)
+#> [1] 834032
+
+# Input image dimensions
+img_rows <- dim.x[2]
+img_rows
+img_cols <- dim.x[3]
+img_cols
+
+first_G.idx <- which(y == "G")[1]
+#> [1] 598137
+
+char.image(x[first_G.idx,,])
+char.image(x[first_G.idx - 1,,])
+
+# # Add channel into the dimension
+# x3d <- array_reshape(x, c(dim.x[1], dim.x[2], dim.x[3], 1))
+# dim(x3d)
+
+rownames(x3d) <- as.character(y)
+str(x3d)
+
+input_shape <- c(dim.x[2], dim.x[3], 1)
+input_shape
+#> [1] 28 28  1
+#### Close Log ------------------------------------------------------------------
+log_close()
+
+#### Open log: Split Train Dataset (x3d) -------------
+open_logfile(".split3d.10%train.balanced_subset")
+#### Split Train Dataset  (10% for Train set) ----------------------------------
+# char_files.max4e3 <- 4e3 
+# char_files.max4e3
+
+sample_seed <- 1
+shuffle_seed <- 2
+
+cache_file.path <- file.path(ds.subsets.path, "cnn1-datasets.RData")
+cache_file.path
+
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+if (file.exists(cache_file.path)) {
+  put_log("Loading Split Train Data from cache file: 
+%1", cache_file.path)
+  
+  load(cache_file.path)
+  put_log("Train Data list has been loaded from cache.")
+} else {
+  # ----
+    x_flat.split.list <- sample_train_test_sets.mx(x_flat, 
+                                                  sample_seed,
+                                                  test.ratio = 0.9,
+                                                  shuffle.seed = shuffle_seed)
+    
+    x_flat.1bl.train <- x_flat.split.list$train_set
+    dim(x_flat.1bl.train)
+    y_flat.1bl.train <- as.factor(rownames(x_flat.1bl.train))
+    sum(y_flat.1bl.train != y_cnn.1bl.train)
+  # --------------
+
+  split.list <- sample_train_test_sets.x3d(x, 
+                                          sample_seed,
+                                          test.ratio = 0.9,
+                                          shuffle.seed = shuffle_seed)
+  str(split.list)
+  
+  x_train <- split.list$train_set
+  dim(x_train)
+  #> [1] 16653    28    28
+  nrow(x_train)
+  #> [1] 16653
+  
+  y_cnn.1bl.train <- as.factor(rownames(x_train))
+  
+  y_cnn.1bl.train.cat <- to_categorical(y_cnn.1bl.train)
+  colnames(y_cnn.1bl.train.cat) <- y.labels
+  
+  
+  # Add channel into the dimension
+  x_cnn.1bl.train <- array_reshape(x_train, 
+                                   c(nrow(x_train), 
+                                     img_rows, 
+                                     img_cols, 
+                                     1))
+  x_test <- split.list$test_set
+  dim(x_test)
+  #> [1] 817379     28     28
+  nrow(x_test)
+  #> [1] 817379
+  
+  y_cnn.9.test <- as.factor(rownames(x_test))
+
+  y_cnn.9.test.cat <- to_categorical(y_cnn.9.test)
+  colnames(y_cnn.9.test.cat) <- y.labels
+  
+  # Add channel into the dimension
+  x_cnn.9.test <- array_reshape(x_test, 
+                                c(nrow(x_test), 
+                                  img_rows, 
+                                  img_cols, 
+                                  1))
+  start <- put_start_date()
+  put_log("Caching data in the file
+%1 ...", cache_file.path)
+  
+  save(x_cnn.1bl.train,
+       y_cnn.1bl.train,
+       y_cnn.1bl.train.cat,
+       x_cnn.9.test,
+       y_cnn.9.test,
+       y_cnn.9.test.cat,
+       file = cache_file.path)
+  
+  put_log("The Train Data Subset objects has been cached in file:
+`%1`", cache_file.path)
+  put_end_date(start)
+  
+  rm(split.list)
+  rm(x_train)
+  rm(x_test)
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+put_end_date(start)
+
+dim(x_cnn.1bl.train)
+#> [1] 16653    28    28     1
+
+# str(y_cnn.1bl.train)
+length(y_cnn.1bl.train)
+#> [1] 16653
+
+dim(y_cnn.1bl.train.cat)
+#> [1] 16653    39
+str(y_cnn.1bl.train.cat)
+head(y_cnn.1bl.train.cat[,1:30])
+
+dim(x_cnn.9.test)
+#> [1] 817379     28     28      1
+
+# str(y_cnn.9.test)
+length(y_cnn.9.test)
+#> [1] [1] 817379
+
+dim(y_cnn.9.test.cat)
+#> [1] 817379     39
+str(y_cnn.9.test.cat)
+head(y_cnn.9.test.cat[,1:30])
+
+### Close Log ------------------------------------------------------------------
+log_close()
+
+#### Open log: Build CNN Model -------------------------------------------------
+open_logfile(".build-cnn-model")
+#### Model building ------------------------------------------------------------
+
+# Define a CNN model structure:
+#> Now we define a CNN model with two 2D convolutional layers with max pooling, 
+#> and the 2nd layer with additonal dropout to prevent overfitting. 
+#> Then flatten the output and use two dense layers to connect to the categoires 
+#> of the image. [*]
+
+cnn_model <- keras_model_sequential() |>
+  layer_conv_2d(filters = 32, kernel_size = c(3,3), activation = 'relu', 
+                input_shape = input_shape) |>
+  layer_max_pooling_2d(pool_size = c(2, 2)) |>
+  layer_conv_2d(filters = 64, kernel_size = c(3,3), activation = 'relu') |>
+  layer_max_pooling_2d(pool_size = c(2, 2)) |>
   layer_dropout(rate = 0.25) |>
-  layer_dense(units = 39, activation = "softmax")
-summary(x0.1.nzv.model)
+  layer_flatten() |>
+  layer_dense(units = 128, activation = 'relu') |>
+  layer_dropout(rate = 0.5) |>
+  layer_dense(units = num_classes, activation = 'softmax')
 
-x0.1.nzv.model |> compile(
-  loss = "categorical_crossentropy",
-  optimizer = optimizer_adam(),
-  metrics = c("accuracy")
+summary(cnn_model)
+
+# Similar to DNN model, we need to compile the defined CNN model. [*]
+
+# Compile model
+cnn_model |> compile(
+  loss = loss_categorical_crossentropy,
+  optimizer = optimizer_adadelta(),
+  metrics = c('accuracy')
 )
 
+#> Now, we can train the model with our processed data. 
+#> Each epochs's history can be saved to track the progress. 
+#> Please note, as we are not using GPU, it takes a few minutes to finish. 
+#> Please be patient while waiting for the results. 
+#> The training time can be significantly reduced if running on GPU. [*]
+
+# Define a few parameters to be used in the CNN model
+batch_size <- 128
+num_classes <- 39
+epochs <- 10
+vld_split <- 0.2
+
+x_train <- x_flat.1bl.train
+y_train <- y_flat.1bl.train
+y_train.cat <- y_cnn.1bl.train.cat
+
+
+put_log("Training the CNN Model...")
 start <- put_start_date()
 
-history <- x0.1.nzv.model |> 
-  fit(x0.1.train_nzv, 
-      y0.1.train.cat, 
-      epochs = 50, 
-      batch_size = 128, 
-      validation_split = 0.15)
+# Train model
+cnn.1bl.train_history <- cnn_model |> 
+  fit(x_cnn.1bl.train, y_train.cat,
+  batch_size = batch_size,
+  epochs = epochs,
+  validation_split = vld_split
+)
 
+put_log("The CNN Model has been trained on `x_cnn.1bl.train` dataset.")
 put_end_date(start)
 
-str(history)
+# ------------
 
-#### `x0.1.nzv.model` Model Evaluation ----------------------------------------------
-
+put_log("Training the Basic DL Model...")
 start <- put_start_date()
-x0.1.nzv.model |> evaluate(x0.1.test_nzv, y0.1.test.cat)
-# $accuracy
-# [1] 0.7865438
 
+dl_history.test <- dl.basic_model |> 
+  fit(x_train, 
+      y_train.cat, 
+      epochs = epochs, 
+      batch_size = batch_size, 
+      validation_split = vld_split)
+
+put_log("The Basic DL Model has been trained on `x.9bl.train` dataset.")
 put_end_date(start)
-# Time difference of 0.5527549 secs
 
-preds <- x0.1.nzv.model |>
-  predict(x0.1.test) 
+# ----
 
-colnames(preds) <- y.labels
-head(preds)
-dim(preds)
 
-preds.ts <- as_tensor(preds)
-str(preds.ts)
 
-predictions <- preds.ts |> op_argmax(2)
-predictions
-dim(predictions)
 
-mean(predictions$numpy() == as.integer(y0.1.test))
-# [1] 0.7817551
 
-### Advanced Classifier --------------------------------------------------------
+
+
+
+
+
+
+
+
+#> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
+### Close Log ------------------------------------------------------------------
+log_close()
+
+### Advanced CNN Model ---------------------------------------------------------
 # Reference:
 # TensorFlow 2 quickstart for experts
 # https://tensorflow.rstudio.com/tutorials/quickstart/advanced
@@ -1804,50 +2057,7 @@ mean(predictions$numpy() == as.integer(y0.1.test))
 # py_require_legacy_keras()
 # library(tensorflow)
 
-#### Prepare MNIST Datasets ----------------------------------------------------
-# Load and prepare the MNIST dataset.
-start <- put_start_date()
-
-c(c(x_train, y_train), c(x_test, y_test)) %<-% keras::dataset_mnist()
-x_train %<>% { . / 255 }
-x_test  %<>% { . / 255 }
-# Use TensorFlow Datasets to batch and shuffle the dataset:
-
-train_ds <- list(x_train, y_train) %>%
-  tensor_slices_dataset() %>%
-  dataset_shuffle(10000) %>%
-  dataset_batch(32)
-
-str(train_ds)
-
-test_ds <- list(x_test, y_test) %>%
-  tensor_slices_dataset() %>%
-  dataset_batch(32)
-
-str(test_ds)
-put_end_date(start)
-
-
-#### Prepare X0.1 Datasets ----------------------------------------------------------
-
-# Use TensorFlow Datasets to batch and shuffle the dataset:
-
-# train_ds <- list(x0.1.train, y0.1.train) |>
-#   tensor_slices_dataset() |>
-#   dataset_shuffle(10000) |>
-#   dataset_batch(32)
-# 
-# str(train_ds)
-# 
-# test_ds <- list(x0.1.test, y0.1.test) |>
-#   tensor_slices_dataset() |>
-#   dataset_batch(32)
-# 
-# str(test_ds)
-
-#### Model building ------------------------------------------------------------
 #### Model Class
-
 # Build the a model using the Keras model subclassing API:
 
 my_model <- new_model_class(
