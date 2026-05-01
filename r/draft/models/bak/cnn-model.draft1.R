@@ -381,6 +381,7 @@ open_logfile(".build-cnn-model")
 #### Model building ------------------------------------------------------------
 ##### Define a CNN model structure -------------------------------------
 # Define a few parameters to be used in the CNN model
+n.output <- 39
 batch_size <- 128
 num_classes <- 39
 epochs <- 100
@@ -392,7 +393,7 @@ vld_split <- 0.2
 #> of the image. [*]
 
 cnn_model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
-  layer_conv_2d(filters = 16L,
+  layer_conv_2d(filters = 8L,
                 kernel_size = c(2L, 2L), activation = "relu") |>
   layer_max_pooling_2d() |>
   layer_conv_2d(filters = 16L, kernel_size = c(3L, 3L),
@@ -400,10 +401,10 @@ cnn_model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
   layer_max_pooling_2d() |>
   layer_dropout(rate = 0.25) |>
   layer_flatten() |>
-  layer_dense(units = n.hl.units, activation = "relu") |>
-  layer_dropout(rate = 0.25) |>
+  layer_dense(units = 128, activation = "relu") |>
+  layer_dropout(rate = 0.3) |>
   layer_dense(100L, activation = "relu") |>
-  layer_dropout(rate = 0.25) |>
+  layer_dropout(rate = 0.3) |>
   layer_dense(units = n.output, activation = "softmax")
 
 summary(cnn_model)
@@ -415,7 +416,7 @@ summary(cnn_model)
 cnn_model |> compile(
   loss = loss_categorical_crossentropy,
   # optimizer = optimizer_adadelta(),
-  optimizer = keras3::optimizer_adamax(0.01),
+  optimizer = keras3::optimizer_adamax(0.001),
   metrics = c('accuracy')
 )
 summary(cnn_model)
