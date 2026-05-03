@@ -225,3 +225,76 @@ Predictions have been constructed:
   
   predictions$numpy()
 }
+
+cnn.create_model.binary_classifier <- function(img.width = 28L,
+                                               img.height = 28L,
+                                               filters1 = 8L,
+                                               filters2 = 16L,
+                                               kernal1.size = c(2.2),
+                                               kernal2.size = 5,
+                                               conv_2d.strides1 = 1,
+                                               conv_2d.strides2 = 2,
+                                               max_pooling_2d.strides1 = c(2, 2),
+                                               max_pooling_2d.strides2 = c(2,2),
+                                               pooling_2d.dropout.rate = 0.25,
+                                               dense.dropout.rate = 0.3,
+                                               dense.units = 128,
+                                               output.classes = 1,
+                                               output.activation = "sigmoid") {
+  cnn.create_model(img.width,
+                   img.height,
+                   filters1,
+                   filters2,
+                   kernal1.size,
+                   kernal2.size,
+                   conv_2d.strides1,
+                   conv_2d.strides2,
+                   max_pooling_2d.strides1,
+                   max_pooling_2d.strides2,
+                   pooling_2d.dropout.rate,
+                   dense.dropout.rate,
+                   dense.units,
+                   output.classes,
+                   output.activation)
+}
+
+cnn.create_model <- function(img.width,
+                             img.height,
+                             filters1,
+                             filters2,
+                             kernal1.size,
+                             kernal2.size,
+                             conv_2d.strides1,
+                             conv_2d.strides2,
+                             max_pooling_2d.strides1,
+                             max_pooling_2d.strides2,
+                             pooling_2d.dropout.rate,
+                             dense.dropout.rate,
+                             dense.units,
+                             output.classes,
+                             output.activation) {
+  
+  keras_model_sequential(shape(img.width, img.height, 1L)) |>
+    layer_conv_2d(filters = filters1,
+                  kernel_size = kernal1.size, 
+                  strides = conv_2d.strides1,
+                  activation = "relu") |>
+    layer_max_pooling_2d(strides = max_pooling_2d.strides1) |>
+    layer_dropout(rate = pooling_2d.dropout.rate) |>
+    layer_conv_2d(filters = filters2, 
+                  kernel_size = kernal2.size,
+                  strides = conv_2d.strides2,
+                  activation = "relu") |>
+    layer_max_pooling_2d(strides = max_pooling_2d.strides2) |>
+    layer_flatten() |>
+    layer_dense(units = dense.units, activation = "relu") |>
+    layer_dropout(rate = dense.dropout.rate) |>
+    layer_dense(units = output.classes, activation = output.activation)
+}
+
+
+
+cnn.binclass.get_prediction_values <- function(preds) {
+  # (as.vector(preds) > 0.5) |> as.integer()
+  preds %>% `>` (0.5) |> as.integer()
+}

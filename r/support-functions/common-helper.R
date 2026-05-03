@@ -475,3 +475,15 @@ n.to_ordinal <- function(n) {
   
   paste0(as.character(n), suffix)
 }
+
+# Unused ----------
+str.combine <- function(x, sep = "_") {
+  l <- length(str.v)
+  if(l < 2)
+    stop("The length of the first argument must be at least 2.")
+  
+  for (i in 2:length(x)) {
+    str <- str_c(x[i-1], x[i], sep = sep)
+  }
+  
+}

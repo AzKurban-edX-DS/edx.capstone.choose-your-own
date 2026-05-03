@@ -9,7 +9,8 @@ open_logfile(".prepare-cnn-datasets")
 # train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
 # train.img28x28bin.list.file_path
 
-cnn.train.data.path <- file.path(train.data.path, "cnn")
+
+cnn.train.data.path <- file.path(dl.keras3.path, "cnn")
 
 if(!dir.exists(cnn.train.data.path))
   dir.create(cnn.train.data.path)
@@ -18,7 +19,7 @@ cache_file.path <- file.path(cnn.train.data.path, "xy_cnn.data_cache.RData")
 cache_file.path
 
 if (file.exists(cache_file.path)) {
-  put_log1("Loading CNN Train Data from cache file: 
+  put_log("Loading CNN Train Data from cache file: 
 %1", cache_file.path)
   
   load(cache_file.path)
