@@ -68,11 +68,11 @@ other_labels <- "OL"
 
 #### Open log: Build CNN Model -------------------------------------------------
 open_logfile(".build-cnn-model")
-#### Model building ------------------------------------------------------------
+#### CNN Model building ------------------------------------------------------------
 
 ##### Define a CNN model structure ***
 
-cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-model.lislbl.RData") 
+cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.RData") 
                              
 if (file.exists(cache_file.path)) {
   put_log("CNN: loading trained model list data from cache file: 
@@ -83,11 +83,16 @@ if (file.exists(cache_file.path)) {
 } else {
   cnn.model_cache.base_name <- "cnn.lbl-model"
   
+  put_log("Building a set of CNN Binary Classifier Models for the following labels:
+%1", capture.output(as.character(y.labels))) 
+
   cnn.hw_char.models <- lapply(y.labels, function(label) {
     #> Now we define a CNN model with two 2D convolutional layers with max pooling, 
     #> and the 2nd layer with additonal dropout to prevent overfitting. 
     #> Then flatten the output and use two dense layers to connect to the categoires 
     #> of the image. [*]
+    
+    put_log("Building model for label `%1` (%2)...", as.character(label), label)
     
     cache_file.path <- file.path(cnn.lbl_models.cache.path, 
                                  str_flatten(c(cnn.model_cache.base_name,
@@ -103,36 +108,20 @@ if (file.exists(cache_file.path)) {
                                                "keras"),
                                              collapse = "."))
     
-    lbl.callback_model_checkpoint.filepath <- 
-      file.path(cnn.lbl_models.cache.path,
-                str_flatten(c(label,
-                              as.character(label),
-                              "{epoch:02d}-{val_loss:.2f}.weights.h5"),
-                            collapse = "."))
-    
-      
-    
-    cnn.lbl.callbacks <- list(
-      # callback_early_stopping(patience = 3, monitor = 'val_loss'),
-      callback_model_checkpoint(filepath = lbl.callback_model_checkpoint.filepath,
-                                monitor = "val_accuracy",
-                                mode = max,
-                                save_best_only = TRUE,
-                                verbose = 1)
-      # callback_tensorboard(write_images = TRUE,
-      #                      log_dir = cnn.callbacks.tb_logs.path)
-    )
-    
-    if (file.exists(cache_file.path)) {
+    if (file.exists(lbl.model.file_path)) {
       put_log("CNN: loading (trained) labeled model data from cache file: 
-%1", cache_file.path)
-      load(cache_file.path)
+%1", lbl.model.file_path)
+      # load(cache_file.path)
+      
       put_log("CNN: the (trained) labeled model data has been loaded from the cache file:
-%1", cache_file.path)
+%1", lbl.model.file_path)
     } else {
       lbl.cnn_model <- cnn.create_model.binary_classifier()
       summary(lbl.cnn_model)
-
+      
+      put_log("CNN binary classifier model for label `%1` (%2) has been created.", 
+              as.character(label), label)
+      
       # Similar to DNN model, we need to compile the defined CNN model. [*]
       
       # Compile model
@@ -142,7 +131,18 @@ if (file.exists(cache_file.path)) {
         metrics = c('accuracy')
       )
       
-      summary(lbl.cnn_model)
+      put_log("CNN binary classifier model for label `%1` (%2) has been compiled.
+Summary of the model:", 
+              as.character(label), 
+              label,
+              capture.output(summary(lbl.cnn_model)))
+      
+      model_checkpoint.filepath <- 
+        file.path(cnn.lbl_models.cache.path,
+                  str_flatten(c(label,
+                                as.character(label),
+                                "{epoch:02d}-{val_loss:.2f}.weights.h5"),
+                              collapse = "."))
       
       #### Training CNN Model ***
       
@@ -160,8 +160,26 @@ if (file.exists(cache_file.path)) {
       put_log("Training the CNN Model...")
       start <- put_start_date()
       
-      str(x_train)
+      #str(x_train)
       # Train model
+      
+      
+      
+      cnn.lbl.callbacks <- list(
+        # callback_early_stopping(patience = 3, monitor = 'val_loss'),
+        callback_model_checkpoint(filepath = model_checkpoint.filepath,
+                                  monitor = "val_accuracy",
+                                  mode = max,
+                                  save_best_only = TRUE,
+                                  verbose = 1)
+        # callback_tensorboard(write_images = TRUE,
+        #                      log_dir = cnn.callbacks.tb_logs.path)
+      )
+      
+      
+      put_log("Training the (CNN) Binary Classifier Model for label `%1` (%2)...", 
+              as.character(label), label)
+      
       cnn.1bl.train_history <- lbl.cnn_model |> 
         fit(x_train, 
             y,
@@ -172,29 +190,51 @@ if (file.exists(cache_file.path)) {
         )
       # acc: 0.8741
       
-      put_log("The CNN Model has been trained on `x_train` dataselbl.")
-      put_end_date(start)
+      put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been trained.", 
+              as.character(label), 
+              label)
       
+      put_end_date(start)
       plot(cnn.1bl.train_history)
       
-      save(lbl.cnn_model,
+      put_log("Caching the (CNN) Binary Classifier Model for label `%1` (%2)...", 
+              as.character(label), 
+              label)
+
+      save(lbl.model.file_path,
            cnn.1bl.train_history,
            file = cache_file.path)
+      
+      put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
+%3",as.character(label), label,cache_file.path)
+    
+      put_log("Saving the (CNN) Binary Classifier Model for label `%1`to file...", 
+              label)
+      
+      save_model(lbl.cnn_model,
+                 filepath = lbl.model.file_path,
+                 overwrite = FALSE)
+      
+      put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
+%3",as.character(label), label, lbl.model.file_path)
+      
     }
     
-    save_model(lbl.cnn_model,
-               filepath = lbl.model.file_path,
-               overwrite = TRUE)
-
     list(model = lbl.cnn_model,
+         saved_model.filepath = lbl.model.file_path,
          train_history = cnn.1bl.train_history,
          label = label)
   })
 
   names(cnn.hw_char.models) = as.character(y.labels)
   
+  put_log("Saving the set of trained (CNN) Binary Classifier Models to file...") 
+
   save(cnn.hw_char.models,
        file = cache_file.path)
+
+  put_log("The set of trained (CNN) Binary Classifier Models have been saved to file:
+%1", cache_file.path)
 }
 
 ### Close Log ------------------------------------------------------------------
@@ -226,7 +266,7 @@ if (file.exists(cache_file.path)) {
     sum(y)
 
     cache_file.path <- file.path(cnn.eval.cache.path, 
-                                 str_flatten(c(cnn.model_cache.base_name,
+                                 str_flatten(c(cnn.eval_cache.base_name,
                                                label,
                                                as.character(label),
                                                "RData"),
@@ -240,6 +280,7 @@ if (file.exists(cache_file.path)) {
       put_log("CNN: the model evaluation data for label `%1` have been loaded from the cache file:
 %2", label, cache_file.path)
     } else {
+      
       lbl.cnn_model.ls <- cnn.hw_char.models[[label]] 
       
       put_log("Current model's object structure:
@@ -318,10 +359,15 @@ log_close()
 
 
 #### Ensemble Classifier for all labels ----------------------------------------
+open_logfile(".cnn-model.ensemble-classifier")
+
+cnn.ensemble <- lapply(y.labels, function(label) {
+  eval.resut <- evaluation.results[[label]]$preds
+})
 
 
-
-
+#### Close Log ------------------------------------------------------------------
+log_close()
 #----------------------------------
 err.idx <- which(cnn.prediction.values != as.integer(y_cnn.test))
 length(err.idx)
