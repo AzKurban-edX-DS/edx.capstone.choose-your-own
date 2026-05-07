@@ -1,8 +1,3 @@
-###########################
-# Data Helper Functions 
-###########################
-
-## Dataset downloading k--------------------------------------------------------
 kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   if (system("kaggle --version", ignore.stdout = TRUE, ignore.stderr = TRUE) != 0) {
     stop("Kaggle CLI is not installed or not in the PATH.")
@@ -18,7 +13,6 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   }
 }
 
-## Image Processing ------------------------------------------------------------
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 
                                    char_files.max = NA,
@@ -261,268 +255,69 @@ ds.get_classIDs.grouped <- function(x) {
        groupByClass = g)
 }
 
-get_sample.idx <- function(x, 
-                           seed = NA, 
-                           test.ratio = 0.2,
-                           shuffle_rows = TRUE,
-                           balanced = TRUE,
-                           bootstap.sample = FALSE) {
+sample_test.idx <- function(x, 
+                            seed = NA, 
+                            test.ratio = 0.2,
+                            train.balanced = TRUE,
+                            bootstap.sample = FALSE) {
   y <- as.factor(rownames(x))
   y.groups <- ds.get_classIDs.grouped(x)
   # str(y.groups)
   y.chars <- y.groups$groupByClass
   # str(y.chars)
   
-  grp_len.min <- min(y.chars$n)
+  g_len.min <- min(y.chars$n)
   # 4261
   N <- nrow(x)
   
-  put_log("Function: `get_sample.idx`: 
-Sampling %1% of the dataset indices for a Test Set...", test.ratio)
+  put_log("Function: `sample_train_test_sets.mx`: 
+Sampling 20% of the `x` x...")
   
-  y.idx <- seq_len(N)
-  idx_group.list <- split(y.idx, y)
+  idx_group.list <- split(seq_len(N), y)
   # str(idx_group.list)
   
+  if(train.balanced) {
+    train.size <- g_len.min * (1 - test.ratio)
+  }
   
-  test.size.balanced <- ceiling(grp_len.min * test.ratio)
-  train.size.balanced <- grp_len.min - test.size.balanced
-  set_seed(seed)
-
-  test.idx.groups <-
-    lapply(idx_group.list,
+  test.idx <-
+    sapply(idx_group.list,
            function(idx_group) {
+             if (!is.na(seed)) {
+               set.seed(seed + idx_group[1])
+             }
+             grp_lenth <- length(idx_group)
+             
+             sample_size <- ifelse(train.balanced, 
+                                   grp_lenth - train.size, 
+                                   ceiling(grp_lenth * test_ratio))
              sample(idx_group, 
-                    size = ifelse(balanced, 
-                                  test.size.balanced,
-                                  ceiling(length(idx_group) * test.ratio)),
+                    size = sample_size,
                     replace = bootstap.sample)
-           })
-  
-  test.idx <- test.idx.groups |>
+           }) |>
     unlist(use.names = FALSE) |>
     sort()
-
-  if(balanced) {
-    train.idx <-
-      sapply(test.idx.groups,
-             function(idx_group) {
-               sample(idx_group, 
-                      size = train.size.balanced,
-                      replace = bootstap.sample)
-             }) |>
-      unlist(use.names = FALSE) |>
-      sort()
-  } else {
-    train.idx <- y.idx[-test.idx]
-  }
   
-  if(shuffle_rows) {
-    train.idx <- sample(train.idx)
-    test.idx <- sample(test.idx)
-  }
-  
-  c(train = train.idx,
-    test = test.idx)
+  test.idx
 } 
-
-binclass.get_sample.idx <- function(x,
-                                    label,
-                                    seed = NA, 
-                                    test.ratio = 0.2,
-                                    bootstap.sample = FALSE) {
-  y <- as.factor(rownames(x))
-  N <- length(y)
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
-  
-  y.idx <- seq_len(N)
-  idx_group.list <- split(y.idx, y)
-  # str(idx_group.list)
-  y_lbl.idx <- y.idx[y == label]
-  N.lbl <- length(y_lbl.idx) 
-  set_seed(seed)
-
-  y_other.idx <- sample(y.idx[-y_lbl.idx])
-  N.no_lbl <- length(y_other.idx)
-
-  lbl.test.size <- ceiling(N.lbl * test.ratio)
-  lbl.train.size <- N.lbl - lbl.test.size
-
-  t.idx <- sample(seq_len(N.lbl), 
-                  size = lbl.test.size,
-                  replace = bootstap.sample)
-  
-  lbl.test.idx = y_lbl.idx[t.idx]
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Size of labeled part of Test Set is %1", length(lbl.test.idx))
-  
-  no_lbl.t.idx <- sample(seq_len(N.no_lbl),
-                         size = lbl.test.size,
-                         replace = bootstap.sample)
-  
-   other.test.idx <- y_other.idx[no_lbl.t.idx]
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Size of other part of Test Set is %1", length(other.test.idx))
-
-  test.idx <- list(lbl.test.idx, other.test.idx) |>
-    unlist() |>
-    sample()
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Total size of Test Set  is %1", length(test.idx))
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-The size of the labeled part of the Test Set is equal to the size of the remaining part: 
-%1", sum(y[test.idx] == label) == sum(y[test.idx] != label))
-  
-  lbl.train.idx <- y_lbl.idx[-t.idx]
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Size of labeled part of Train Set is %1", length(lbl.train.idx))
-  
-  other.train.idx <- sample(y_other.idx[-no_lbl.t.idx],
-                            size = lbl.train.size,
-                            replace = bootstap.sample)
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Size of other part of Train Set is %1", length(other.train.idx))
-
-  train.idx <- list(lbl.train.idx, other.train.idx) |>
-    unlist() |>
-    sample()
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-Total size of Train Set  is %1", length(train.idx))
-  
-  put_log("Function: `binclass.get_sample.idx`: 
-The size of the labeled part of the Train Set is equal to the size of the remaining part: 
-%1", sum(y[train.idx] == label) == sum(y[train.idx] != label))
-
-  list(train = train.idx,
-       test = test.idx)
-} 
-
-cnn.binclass.sample_sets <- function(x, 
-                                 label,
-                                 seed = NA, 
-                                 test.ratio = 0.2,
-                                 bootstap.sample = FALSE) { 
-  dim.x <- dim(x)
-  dim.x
-  stopifnot(length(dim.x) == 3)
-
-  sample.idx <- binclass.get_sample.idx(x,
-                                        label,
-                                        seed, 
-                                        test.ratio,
-                                        bootstap.sample)
-  
-  put_log("Function: `binclass.sample_sets`: 
-Extracting %1% of the original index set of `x` not used for the test Set...",
-          (1 - test.ratio)*100)
-  
-  x_train <- x[sample.idx$train,,]
-  # browser()
-  put_log("Function: `binclass.sample_sets`: 
-`x_train` object structure is as follows:
-%1", capture.output(str(x_train)))
-
-  put_log("Function: `binclass.sample_sets`: 
-`x_train` object dimentions are as follows:
-%1", capture.output(dim(x_train)))
-
-  y_train <- (rownames(x_train))
-  y.train <- (y_train  == label) |> as.integer() 
-  
-  str(y.train)
-  sum(y.train)
-  length(y.train)
-    
-  # Add channel into the dimension
-  x.train <- array_reshape(x_train, 
-                           c(nrow(x_train), 
-                             dim.x[2], 
-                             dim.x[3], 
-                             1))
-  
-  rownames(x.train) <- y_train
-  
-  put_log("Function: `binclass.sample_sets`:
-`x.train` dataset object created with the following structure:
-%1", capture.output(str(x.train)))
-
-  put_log("Function: `binclass.sample_sets`: 
-`x.train` object dimentions are as follows:
-%1", capture.output(dim(x.train)))
-  
-  put_log("Function: `binclass.sample_sets`: 
-Extracting 20% of the original index set of `x` used for the test Set.")
-  
-  x_test <- x[sample.idx$test,,]
-  # browser()
-  put_log("Function: `binclass.sample_sets`: 
-`x_test` object structure is as follows:
-%1", capture.output(str(x_test)))
-  
-  put_log("Function: `binclass.sample_sets`: 
-`x_test` object dimentions are as follows:
-%1", capture.output(dim(x_test)))
-  # browser()
-
-  y_test <- (rownames(x_test))
-  y.test <- (y_test  == label) |> as.integer() 
-  
-  str(y.test)
-  sum(y.test)
-  length(y.test)
-  
-  
-  # Add channel into the dimension
-  x.test <- array_reshape(x_test, 
-                          c(nrow(x_test), 
-                            dim.x[2], 
-                            dim.x[3], 
-                            1))
-
-  rownames(x.test) <- y_test
-  
-  put_log("Function: `binclass.sample_sets`:
-`x.test` dataset object created with the following structure:
-%1", capture.output(str(x.test)))
-  
-  put_log("Function: `binclass.sample_sets`: 
-`x.test` object dimentions are as follows:
-%1", capture.output(dim(x.test)))
-  
-  put_log("Function: `binclass.sample_sets`: Dataset created: `test.set`")
-  
-  # Return result datasets
-  list(x.train = x.train,
-       y.train = y.train,
-       x.test = x.test,
-       y.test = y.test)
-}
 
 sample_train_test_sets.mx <- function(x, 
                                       seed = NA, 
                                       test.ratio = 0.2,
-                                      shuffle_rows = TRUE,
-                                      balanced = TRUE,
+                                      shuffle.test_rows = TRUE,
+                                      shuffle.seed = NA,
+                                      train.balanced = TRUE,
                                       bootstap.sample = FALSE) { 
-  sample.idx <- get_sample.idx(x, 
+  test.idx <- sample_test.idx(x, 
                               seed, 
-                              test.ratio,
-                              shuffle_rows,
-                              balanced,
+                              test.ratio, 
+                              train.balanced,
                               bootstap.sample)
+  #str(test.idx)
   put_log("Function: `sample_train_test_sets.mx`: 
 Extracting 80% of the original index set of `x` not used for the test Set...")
   
-  train.set <- x[sample.idx["train"],]
+  train.set <- x[-test.idx,]
   # str(train.set)
   # dim(train.set)
   
@@ -531,12 +326,16 @@ Extracting 80% of the original index set of `x` not used for the test Set...")
   put_log("Function: `sample_train_test_sets.mx`: 
 Extracting 20% of the original index set of `x` used for the test Set.")
   
-  test.set <- x[sample.idx["test"],]
+  test.set <- x[test.idx,]
   # str(test.set)
   # dim(test.set)
   
   put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
 
+  if (shuffle.test_rows) {
+    test.set <- shuffle.mxrows(test.set, shuffle.seed)
+  }
+  
   # Return result datassets
   list(train_set = train.set,
        test_set = test.set)
@@ -545,33 +344,38 @@ Extracting 20% of the original index set of `x` used for the test Set.")
 sample_train_test_sets.x3d <- function(x, 
                                       seed = NA, 
                                       test.ratio = 0.2,
-                                      shuffle_rows = TRUE,
-                                      balanced = TRUE,
+                                      shuffle.test_rows = TRUE,
+                                      shuffle.seed = NA,
+                                      train.balanced = TRUE,
                                       bootstap.sample = FALSE) { 
-  sample.idx <- get_sample.idx(x, 
-                               seed, 
-                               test.ratio, 
-                               shuffle_rows,
-                               balanced,
-                               bootstap.sample)
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  test.idx <- sample_test.idx(x, 
+                              seed, 
+                              test.ratio, 
+                              train.balanced,
+                              bootstap.sample)
+  #str(test.idx)
+  put_log("Function: `sample_train_test_sets.mx`: 
 Extracting 80% of the original index set of `x` not used for the test Set...")
   
-  train.set <- x[sample.idx["train"],,]
+  train.set <- x[-test.idx,,]
   # str(train.set)
   # dim(train.set)
   
-  put_log("Function: `sample_train_test_sets.x3d`: Dataset created: `train.set`")
+  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `train.set`")
 
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `sample_train_test_sets.mx`: 
 Extracting 20% of the original index set of `x` used for the test Set.")
   
-  test.set <- x[sample.idx["test"],,]
+  test.set <- x[test.idx,,]
   # str(test.set)
   # dim(test.set)
   
-  put_log("Function: `sample_train_test_sets.x3d`: Dataset created: `test.set`")
+  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
 
+  if (shuffle.test_rows) {
+    test.set <- shuffle.rows.x3d(test.set, shuffle.seed)
+  }
+  
   # Return result datasets
   list(train_set = train.set,
        test_set = test.set)
@@ -617,19 +421,4 @@ splitDataset <- function(x, n.parts){
     end.idx <- start.idx + part.size - 1
   }
   part.list
-}
-
-## Utility Functions -----------------------------------------------------------
-
-set_seed <- function(seed = NA) {
-  if (!is.na(seed)) {
-    set.seed(seed)
-  }
-}
-set_seed.increment <- function(seed = NA) {
-  if (!is.na(seed)) {
-    set.seed(seed)
-    seed <- seed + 1
-  }
-  seed
 }

@@ -56,73 +56,59 @@ source(model_helper.funcs.file_path,
        keep.source = TRUE)
 
 
-### Open log: Load Train Data --------------------------------------------------
-open_logfile(".load-train-data")
-### Load Train Data ------------------------------------------------------------
-train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
-train.img28x28bin.list.file_path
-
+### Open log: Load Input Dataset -----------------------------------------------
+open_logfile(".load-input-dataset")
+### Load Input Dataset ---------------------------------------------------------
 my_emnist.file_path <- file.path(train.data.path, "my_emnist.RData")
 my_emnist.file_path
 
-if (!file.exists(train.img28x28bin.list.file_path)) {
-  put_log1("Creating Binary Image 28x28 list from raw data files from root directory:
-%1", img.train.root_path)
-  start <- put_start_date()
-  #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  img28x28bin.list <- img.load.bin28x28mx.list(img.train.root_path)
-
-  put_log1("Saving Binary Image 28x28 list to the cache file: 
-%1", train.img28x28bin.list.file_path)
-  start <- put_start_date()
-  save(img28x28bin.list,
-       file = train.img28x28bin.list.file_path)
-  put_log("Binary Image 28x28 list has been saved to the cache file:
-%1", train.img28x28bin.list.file_path)
-  put_end_date(start)
-  
-} else {
-  start <- put_start_date()
-  put_log("Loading Binary Image 28x28 Matrix list from cache.")
-  load(train.img28x28bin.list.file_path)
-  put_log("The Binary Image 28x28 Matrix list has been loaded from cache.")
-  put_end_date(start)
-} 
-
 if(!file.exists(my_emnist.file_path)){
-  put_log1("LoadingBinary Image 28x28 list from cache file: 
+  if(!exists("img28x28bin.list")) {
+    start <- put_start_date()
+    put_log("Loading Binary Image 28x28 Matrix list from the backup file...")
+    load(train.img28x28bin.list.file_path)
+    put_log("The Binary Image 28x28 Matrix list has been loaded from the following file:
 %1", train.img28x28bin.list.file_path)
-
+    put_end_date(start)
+  }
+  put_log("The Binary Image 28x28 Matrix list object summary:
+%1", capture.output(summary(img28x28bin.list)))
+  
   put_log("Building flatten (`EMNIST`-like) dataset...")
-  my_emnist <- img28x28.list2flatten.mx(img28xc28bin.list$img.list)
-  put_log("The flatten dataset have been created.")
-  str(my_emnist)
+  my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  put_log("The flatten dataset have been created with the following structure:
+  %1", capture.output(str(my_emnist)))
 
-  put_log1("Saving flatten training dataset to the cache file: 
+  y.labels <- img28x28bin.list$label.list
+  
+  put_log("Train dataset labels:
+%1", y.labels, .sep = " ")
+  
+  rm(img28x28bin.list)
+  
+  put_log("Saving flatten training dataset to the backup file: 
 %1", my_emnist.file_path)
   start <- put_start_date()
   save(my_emnist,
+       y.labels,
        file = my_emnist.file_path)
-  put_log("The flatten training dataset has been saved to the cache file:
+  put_log("The flatten training dataset has been saved to the backup file:
 %1", my_emnist.file_path)
   put_end_date(start)
 } else {
   start <- put_start_date()
-  put_log("Loading flatten training dataset from cache.")
+  put_log("Loading flatten training dataset from the backup file...")
   load(my_emnist.file_path)
-  put_log("The flatten training dataset has been loaded from cache.")
+  put_log("The flatten training dataset has been loaded from the following file:
+%1", )
   put_end_date(start)
 }
 
-put_log("Binary Image 28x28 list structure:
-%1", capture.output(str(img28x28bin.list)))
+### Close Log ------------------------------------------------------------------
+log_close()
 
-y.labels <- img28x28bin.list$label.list
-
-put_log("Train dataset labels:
-%1", y.labels, .sep = " ")
-
-
+### Open log: Init `x` & `y` variables -----------------------------------------
+open_logfile(".init-x&y-vars")
 #### Init `x` & `y` variables -------------------
 # Short name for current working dataset
 x <- my_emnist
@@ -209,7 +195,7 @@ rm(img28x28bin.list)
 ##### Clean up Environment -----------------------
 rm(img28x28bin.list)
 
-### Close Log ---------------------------------------------------------------
+### Close Log ------------------------------------------------------------------
 log_close()
 
 ### Open log: Split Train Dataset (x) -------------
@@ -260,7 +246,7 @@ if (file.exists(cache_file.path)) {
 #   put_log1("Test dataset list structure:
 # %1", capture.output(str(x0.9.test.list)))
 
-  put_log1("Caching data in the file
+  put_log("Caching data in the file
 %1 ...", cache_file.path)
   
   save(x.1bl.train,
@@ -269,7 +255,7 @@ if (file.exists(cache_file.path)) {
        y.9.test,
        file = cache_file.path)
   
-  put_log1("The Train Data Subset objects has been cached in file:
+  put_log("The Train Data Subset objects has been cached in file:
 `%1`", cache_file.path)
   
   rm(split.list)
@@ -1730,457 +1716,6 @@ put_log("DL Model accuracy: %1",dl.model.accuracy)
 # [1] 0.7955373
 
 ##### Close Log ------------------------------------------------------------------
-log_close()
-
-### Convolutional Neural Network (CNN) -----------------------------------------
-# Reference:
-# Deep Learning Using R with keras (CNN)
-# https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-
-#### Open log: Prepare CNN Datasets -------------
-open_logfile(".prepare-cnn-datasets")
-
-#### Prepare CNN Datasets ------------------------------------------------------
-start <- put_start_date()
-put_log("Loading Binary Image 28x28 Matrix list from cache.")
-load(train.img28x28bin.list.file_path)
-put_log("The Binary Image 28x28 Matrix list has been loaded from cache.")
-put_end_date(start)
-# Time difference of 6.805764 secs
-
-img.nested_list <- img28x28bin.list$img.list
-str(img.nested_list)
-
-start <- put_start_date()
-put_log("Combining nested list of images to list of arrays...")
-
-img28x28mx.list <- lapply(img.nested_list, function(item){
-  img.array <- abind(item$img.list, rev.along = 3)
-})
-
-put_log("Function `img28x28.list2matrix`:
-Combined image data matrix has been created with the following structure:
-%1", capture.output(str(img.mx)))
-put_end_date(start)
-str(img28x28mx.list)
-
-start <- put_start_date()
-put_log("Combining image list to array...")
-x <- abind(img28x28mx.list, along = 1)
-
-put_log("Function `img28x28.list2matrix`:
-Combined image matrix array has been created with the following dimentions:
-%1", capture.output(dim(x)))
-# char.image(x[2,,])
-put_end_date(start)
-
-dim(x)
-dim.x <- dim(x)
-dim.x
-#> [1] 834032     28     28
-nrow(x)
-#> [1] 834032
-
-# Input image dimensions
-img_rows <- dim.x[2]
-img_rows
-img_cols <- dim.x[3]
-img_cols
-
-first_G.idx <- which(y == "G")[1]
-#> [1] 598137
-
-char.image(x[first_G.idx,,])
-char.image(x[first_G.idx - 1,,])
-
-# # Add channel into the dimension
-# x3d <- array_reshape(x, c(dim.x[1], dim.x[2], dim.x[3], 1))
-# dim(x3d)
-
-rownames(x3d) <- as.character(y)
-str(x3d)
-
-input_shape <- c(dim.x[2], dim.x[3], 1)
-input_shape
-#> [1] 28 28  1
-#### Close Log ------------------------------------------------------------------
-log_close()
-
-#### Open log: Split Train Dataset (x3d) -------------
-open_logfile(".split3d.10%train.balanced_subset")
-#### Split (x3d) (10% for Train) Dataset  (10% for Train set) -----------------------------
-# char_files.max4e3 <- 4e3 
-# char_files.max4e3
-
-sample_seed <- 1
-shuffle_seed <- 2
-
-cache_file.path <- file.path(ds.subsets.path, "cnn(.1train)-datasets.RData")
-cache_file.path
-
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-if (file.exists(cache_file.path)) {
-  put_log("Loading Split Train Data from cache file: 
-%1", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Train Data list has been loaded from cache.")
-} else {
-
-  split3d.list <- sample_train_test_sets.x3d(x, 
-                                          sample_seed,
-                                          test.ratio = 0.9,
-                                          shuffle.seed = shuffle_seed)
-  str(split3d.list)
-  
-  x_train <- split3d.list$train_set
-  dim(x_train)
-  #> [1] 16653    28    28
-  nrow(x_train)
-  #> [1] 16653
-  
-  y_cnn.1bl.train <- as.factor(rownames(x_train))
-  
-  y_cnn.1bl.train.cat <- to_categorical(y_cnn.1bl.train)
-  colnames(y_cnn.1bl.train.cat) <- y.labels
-  
-  
-  # Add channel into the dimension
-  x_cnn.1bl.train <- array_reshape(x_train, 
-                                   c(nrow(x_train), 
-                                     img_rows, 
-                                     img_cols, 
-                                     1))
-  x_test <- split3d.list$test_set
-  dim(x_test)
-  #> [1] 817379     28     28
-  nrow(x_test)
-  #> [1] 817379
-  
-  y_cnn.9.test <- as.factor(rownames(x_test))
-
-  y_cnn.9.test.cat <- to_categorical(y_cnn.9.test)
-  colnames(y_cnn.9.test.cat) <- y.labels
-  
-  # Add channel into the dimension
-  x_cnn.9.test <- array_reshape(x_test, 
-                                c(nrow(x_test), 
-                                  img_rows, 
-                                  img_cols, 
-                                  1))
-  start <- put_start_date()
-  put_log("Caching data in the file
-%1 ...", cache_file.path)
-  
-  save(x_cnn.1bl.train,
-       y_cnn.1bl.train,
-       y_cnn.1bl.train.cat,
-       x_cnn.9.test,
-       y_cnn.9.test,
-       y_cnn.9.test.cat,
-       file = cache_file.path)
-  
-  put_log("The Train Data Subset objects has been cached in file:
-`%1`", cache_file.path)
-  put_end_date(start)
-  
-  rm(split3d.list)
-  rm(x_train)
-  rm(x_test)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
-
-dim(x_cnn.1bl.train)
-#> [1] 16653    28    28     1
-
-# str(y_cnn.1bl.train)
-length(y_cnn.1bl.train)
-#> [1] 16653
-
-dim(y_cnn.1bl.train.cat)
-#> [1] 16653    39
-str(y_cnn.1bl.train.cat)
-head(y_cnn.1bl.train.cat[,1:30])
-
-dim(x_cnn.9.test)
-#> [1] 817379     28     28      1
-
-# str(y_cnn.9.test)
-length(y_cnn.9.test)
-#> [1] [1] 817379
-
-dim(y_cnn.9.test.cat)
-#> [1] 817379     39
-str(y_cnn.9.test.cat)
-head(y_cnn.9.test.cat[,1:30])
-
-### Close Log ------------------------------------------------------------------
-log_close()
-
-#### Open log: Split (90% for Train) Dataset (x3d) -------------
-open_logfile(".split3d.90%train.balanced_subset")
-#### Split (x3d) Train Dataset  (90% for Train set) -----------------------------
-# char_files.max4e3 <- 4e3 
-# char_files.max4e3
-
-sample_seed <- 9
-shuffle_seed <- 1
-
-cache_file.path <- file.path(ds.subsets.path, "cnn(.9train)-datasets.RData")
-cache_file.path
-
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-if (file.exists(cache_file.path)) {
-  put_log("Loading Split Train Data from cache file: 
-%1", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Train Data list has been loaded from cache.")
-} else {
-
-  split3d.list <- sample_train_test_sets.x3d(x, 
-                                          sample_seed,
-                                          test.ratio = 0.1,
-                                          shuffle.seed = shuffle_seed)
-  str(split3d.list)
-  
-  x_train <- split3d.list$train_set
-  dim(x_train)
-  #> [1] 16653    28    28
-  nrow(x_train)
-  #> [1] 16653
-  
-  y_cnn.9bl.train <- as.factor(rownames(x_train))
-  
-  y_cnn.9bl.train.cat <- to_categorical(y_cnn.9bl.train)
-  colnames(y_cnn.9bl.train.cat) <- y.labels
-  
-  
-  # Add channel into the dimension
-  x_cnn.9bl.train <- array_reshape(x_train, 
-                                   c(nrow(x_train), 
-                                     img_rows, 
-                                     img_cols, 
-                                     1))
-  x_test <- split3d.list$test_set
-  dim(x_test)
-  #> [1] 817379     28     28
-  nrow(x_test)
-  #> [1] 817379
-  
-  y_cnn.1.test <- as.factor(rownames(x_test))
-
-  y_cnn.1.test.cat <- to_categorical(y_cnn.1.test)
-  colnames(y_cnn.1.test.cat) <- y.labels
-  
-  # Add channel into the dimension
-  x_cnn.1.test <- array_reshape(x_test, 
-                                c(nrow(x_test), 
-                                  img_rows, 
-                                  img_cols, 
-                                  1))
-  start <- put_start_date()
-  put_log("Caching data in the file
-%1 ...", cache_file.path)
-  
-  save(x_cnn.9bl.train,
-       y_cnn.9bl.train,
-       y_cnn.9bl.train.cat,
-       x_cnn.1.test,
-       y_cnn.1.test,
-       y_cnn.1.test.cat,
-       file = cache_file.path)
-  
-  put_log("The Train Data Subset objects has been cached in file:
-`%1`", cache_file.path)
-  put_end_date(start)
-  
-  rm(split3d.list)
-  rm(x_train)
-  rm(x_test)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
-
-dim(x_cnn.9bl.train)
-#> [1] 16653    28    28     1
-
-# str(y_cnn.9bl.train)
-length(y_cnn.9bl.train)
-#> [1] 16653
-
-dim(y_cnn.9bl.train.cat)
-#> [1] 16653    39
-str(y_cnn.9bl.train.cat)
-head(y_cnn.9bl.train.cat[,1:30])
-
-dim(x_cnn.1.test)
-#> [1] 817379     28     28      1
-
-# str(y_cnn.1.test)
-length(y_cnn.1.test)
-#> [1] [1] 817379
-
-dim(y_cnn.1.test.cat)
-#> [1] 817379     39
-str(y_cnn.1.test.cat)
-head(y_cnn.1.test.cat[,1:30])
-
-### Close Log ------------------------------------------------------------------
-log_close()
-
-#### Open log: Build CNN Model -------------------------------------------------
-open_logfile(".build-cnn-model")
-#### Model building ------------------------------------------------------------
-##### Define a CNN model structure -------------------------------------
-# Define a few parameters to be used in the CNN model
-batch_size <- 128
-num_classes <- 39
-epochs <- 100
-vld_split <- 0.2
-
-#> Now we define a CNN model with two 2D convolutional layers with max pooling, 
-#> and the 2nd layer with additonal dropout to prevent overfitting. 
-#> Then flatten the output and use two dense layers to connect to the categoires 
-#> of the image. [*]
-
-cnn_model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
-  layer_conv_2d(filters = 16L,
-               kernel_size = c(2L, 2L), activation = "relu") |>
-  layer_max_pooling_2d() |>
-  layer_conv_2d(filters = 16L, kernel_size = c(3L, 3L),
-               activation = "relu") |>
-  layer_max_pooling_2d() |>
-  layer_dropout(rate = 0.25) |>
-  layer_flatten() |>
-  layer_dense(units = n.hl.units, activation = "relu") |>
-  layer_dropout(rate = 0.25) |>
-  layer_dense(100L, activation = "relu") |>
-  layer_dropout(rate = 0.25) |>
-  layer_dense(units = n.output, activation = "softmax")
-
-summary(cnn_model)
-# plot(cnn_model)
-
-# Similar to DNN model, we need to compile the defined CNN model. [*]
-
-# Compile model
-cnn_model |> compile(
-  loss = loss_categorical_crossentropy,
-  # optimizer = optimizer_adadelta(),
-  optimizer = keras3::optimizer_adamax(0.01),
-  metrics = c('accuracy')
-)
-summary(cnn_model)
-
-#### Training CNN Model --------------------------------------------------------
-
-#> Now, we can train the model with our processed data. 
-#> Each epochs's history can be saved to track the progress. 
-#> Please note, as we are not using GPU, it takes a few minutes to finish. 
-#> Please be patient while waiting for the results. 
-#> The training time can be significantly reduced if running on GPU. [*]
-
-# x_cnn.train <- x_cnn.train.probe
-x_cnn.train <- x_cnn.9bl.train
-dim(x_cnn.train)
-
-y_cnn.train.cat <- y_cnn.9bl.train.cat
-dim(y_cnn.train.cat)
-
-x_cnn.test <- x_cnn.1.test
-dim(x_cnn.test)
-
-y_cnn.test <- y_cnn.1.test
-str(y_cnn.test)
-length(y_cnn.test)
-
-y_cnn.test.cat <- y_cnn.1.test.cat
-dim(y_cnn.test.cat)
-#> [1] 684467     39
-
-put_log("Training the CNN Model...")
-start <- put_start_date()
-
-str(x_cnn.train)
-# Train model
-cnn.1bl.train_history <- cnn_model |> 
-  fit(x_cnn.train, 
-      y_cnn.train.cat,
-      epochs = epochs,
-      batch_size = batch_size,
-      validation_split = vld_split
-)
-# acc: 0.8741
-
-put_log("The CNN Model has been trained on `x_cnn.1bl.train` dataset.")
-put_end_date(start)
-
-#### Evaluating CNN Model ----------------------------------------------
-
-put_log("Evaluating CNN Model...")
-start <- put_start_date()
-cnn.eval.result <- cnn_model |> evaluate(x_cnn.test, y_cnn.test.cat)
-put_log("CNN Model evaluation result:
-%1", capture.output(str(cnn.eval.result)))
-# List of 2
-#  $ accuracy: num 0.861
-#  $ loss    : num 2.83
-
-put_end_date(start)
-
-# model prediction
-put_log("CNN Model: constructing predictions...")
-start <- put_start_date()
-cnn_preds <- cnn_model |> predict(x_cnn.test) 
-put_log("CNN Model: predictions have been constructed.")
-put_end_date(start)
-# Time difference of 1.502232 mins
-
-dim(cnn_preds)
-
-colnames(cnn_preds) <- y.labels
-head(cnn_preds[,1:5])
-
-cnn_preds.ts <- as_tensor(cnn_preds)
-str(cnn_preds.ts)
-#> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
-
-cnn.predictionns <- cnn_preds.ts |> op_argmax(2)
-str(cnn.predictionns)
-cnn.predictionns
-#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(cnn.predictionns)
-#> [1] 684467
-cnn.prediction.values <- cnn.predictionns$numpy()
-head(cnn.prediction.values)
-
-cnn.model.accuracy <- mean(cnn.prediction.values == as.integer(y_cnn.test))
-put_log("DL Model accuracy: %1", cnn.model.accuracy)
-# DL Model accuracy: 0.861277461148602
-
-err.idx <- which(cnn.prediction.values != as.integer(y_cnn.test))
-length(err.idx)
-# 94951
-
-err.head.idx <- head(err.idx)
-err.img <- x_cnn.test[err.head.idx,,1]
-dim(err.img)
-
-char.image()
-
-
-#> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-### Close Log ------------------------------------------------------------------
 log_close()
 
 # ---------------------------

@@ -62,8 +62,8 @@ open_logfile(".load-train-data")
 train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
 train.img28x28bin.list.file_path
 
-my_mnist.file_path <- file.path(train.data.path, "my_emnist.RData")
-my_mnist.file_path
+my_emnist.file_path <- file.path(train.data.path, "my_emnist.RData")
+my_emnist.file_path
 
 if (!file.exists(train.img28x28bin.list.file_path)) {
   put_log1("Creating Binary Image 28x28 list from raw data files from root directory:
@@ -89,7 +89,7 @@ if (!file.exists(train.img28x28bin.list.file_path)) {
   put_end_date(start)
 } 
 
-if(!file.exists(my_mnist.file_path)){
+if(!file.exists(my_emnist.file_path)){
   put_log1("LoadingBinary Image 28x28 list from cache file: 
 %1", train.img28x28bin.list.file_path)
 
@@ -99,17 +99,17 @@ if(!file.exists(my_mnist.file_path)){
   str(my_emnist)
 
   put_log1("Saving flatten training dataset to the cache file: 
-%1", my_mnist.file_path)
+%1", my_emnist.file_path)
   start <- put_start_date()
   save(my_emnist,
-       file = my_mnist.file_path)
+       file = my_emnist.file_path)
   put_log("The flatten training dataset has been saved to the cache file:
-%1", my_mnist.file_path)
+%1", my_emnist.file_path)
   put_end_date(start)
 } else {
   start <- put_start_date()
   put_log("Loading flatten training dataset from cache.")
-  load(my_mnist.file_path)
+  load(my_emnist.file_path)
   put_log("The flatten training dataset has been loaded from cache.")
   put_end_date(start)
 }

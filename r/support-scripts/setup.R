@@ -178,5 +178,13 @@ if(!dir.exists(knn_pca.path)) {
   dir.create(knn_pca.path)
 }
 
+## Load Input Data -------------------------------------------------------------
+load_input_data.file_path <- file.path(support_scripts.path, "load-input-data.R")
 
+source(load_input_data.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 

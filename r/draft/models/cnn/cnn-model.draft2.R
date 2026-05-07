@@ -15,31 +15,23 @@ cnn.train.data.path <- file.path(dl.keras3.path, "cnn")
 if(!dir.exists(cnn.train.data.path))
   dir.create(cnn.train.data.path)
 
-cache_file.path <- file.path(cnn.train.data.path, "xy_cnn.data_cache.RData")
-cache_file.path
+cnn.train.data.cache.file_path <- file.path(cnn.train.data.path, "xy_cnn.data_cache.RData")
+cnn.train.data.cache.file_path
 
-if (file.exists(cache_file.path)) {
-  put_log("Loading CNN Train Data from cache file: 
-%1", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Train Data list has been loaded from cache.")
-} else {
-  if(!file.exists()) {
-    stop("Cache file for Binary Image 28x28 Matrix list DOES NOT EXIST!")
+if(!file.exists(cnn.train.data.cache.file_path)){
+  if(!exists("img28x28bin.list")) {
+    if(!file.exists(train.img28x28bin.list.file_path)) {
+      stop("Cache file for Binary Image 28x28 Matrix list DOES NOT EXIST!")
+    }
+    start <- put_start_date()
+    put_log("Loading Binary Image 28x28 Matrix list from the backup file...")
+    load(train.img28x28bin.list.file_path)
+    put_log("The Binary Image 28x28 Matrix list has been loaded from the following file:
+%1", train.img28x28bin.list.file_path)
+    put_end_date(start)
   }
-  
-  start <- put_start_date()
-  put_log("Loading Binary Image 28x28 Matrix list from cache...")
-  # Loading object: `img28x28bin.list`
-  load(train.img28x28bin.list.file_path)
-  put_log("The Binary Image 28x28 Matrix list has been loaded from cache file:
-  %1.", train.img28x28bin.list.file_path)
-  
-  put_log("The Binary Image 28x28 Matrix list summary:
-  %1", capture.output(summary(img28x28bin.list)))
-  put_end_date(start)
-  # Time difference of 6.805764 secs
+  put_log("The Binary Image 28x28 Matrix list object summary:
+%1", capture.output(summary(img28x28bin.list)))
   
   y.labels <- img28x28bin.list$label.list
   y.labels
@@ -82,17 +74,25 @@ if (file.exists(cache_file.path)) {
   rm(img28x28mx.list)
   
   put_log("Caching data in the file
-%1 ...", cache_file.path)
+%1 ...", cnn.train.data.cache.file_path)
   start <- put_start_date()
   save(x_cnn,
        y_cnn,
        y.labels,
-       file = cache_file.path)
+       file = cnn.train.data.cache.file_path)
   
   put_log("The Train Data Subset objects has been cached in file:
-`%1`", cache_file.path)
+`%1`", cnn.train.data.cache.file_path)
   put_end_date(start)
   # Time difference of 1.813179 mins
+  
+  
+} else {
+  put_log("Loading CNN Train Data from cache file: 
+%1", cnn.train.data.cache.file_path)
+  
+  load(cnn.train.data.cache.file_path)
+  put_log("Train Data list has been loaded from cache.")
 }
 
 str(x_cnn)
