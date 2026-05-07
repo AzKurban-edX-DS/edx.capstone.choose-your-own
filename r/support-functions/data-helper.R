@@ -2,7 +2,7 @@
 # Data Helper Functions 
 ###########################
 
-## Dataset downloading k--------------------------------------------------------
+## Data loading ----------------------------------------------------------------
 kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   if (system("kaggle --version", ignore.stdout = TRUE, ignore.stderr = TRUE) != 0) {
     stop("Kaggle CLI is not installed or not in the PATH.")
@@ -18,6 +18,65 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   }
 }
 
+load.img28x28bin.list <- function(file) {
+  if(!file.exists(file)) {
+    stop("Function `load.img28x28bin.list`:
+File for Binary Image 28x28 Matrix list DOES NOT EXIST:", file)
+  }
+  start <- put_start_date()
+  put_log("Function `load.img28x28bin.list`:
+Loading Binary Image 28x28 Matrix list from the backup file...")
+  load(file, envir = .GlobalEnv)
+
+  if(!exists("img28x28bin.list"))
+    stop("Function `load.img28x28bin.list`:
+File `", file, 
+         "` does not contain the object `img28x28bin.list`.")
+  
+  put_log("Function `load.img28x28bin.list`:
+The Binary Image 28x28 Matrix list has been loaded from the following file:
+%1", file)
+  put_log("Function `load.img28x28bin.list`:
+The Binary Image 28x28 Matrix list Summary:
+%1", capture.output(summary(img28x28bin.list)))
+  put_end_date(start)
+}
+
+
+load.img_data.train.flatten <- function(file_path) {
+  start <- put_start_date()
+  put_log("Loading flatten training dataset from the backup file...")
+  load.data( "my_emnist", file = file_path)
+  put_log("The flatten training dataset has been loaded from the following file:
+%1", file_path)
+  
+  x <- my_emnist
+  # class identifies
+  y.groups <- ds.get_classIDs.grouped(x)
+  put_end_date(start)
+  
+  list(x = x,
+       y_grouped = y.groups)
+}
+
+load.data.global <- function (..., file) {
+  load.data(..., file = file, envir = .GlobalEnv)
+}
+
+load.data <- function(..., file, envir = parent.frame()) {
+  stopifnot(file.exists(file))
+  load(file, envir = envir)
+  
+  arg_ls <- list(...)
+  
+  for (object.name in arg_ls) {
+    put_log("Function `load.data`:
+Checking for object existence: `%1`", object.name)
+    stopifnot(exists(object.name, envir = envir))
+    put_log("Function `load.data`:
+The `%1` object exists.", object.name)
+  }
+}
 ## Image Processing ------------------------------------------------------------
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 

@@ -1,6 +1,6 @@
-##########################
-# Load Input Data Script 
-##########################
+##############################
+# Input Data Preparing Script 
+##############################
 
 ## Open log: Download Kaggle Dataset -------------------------------------------
 open_logfile(".download-kaggle-dataset")
@@ -36,9 +36,9 @@ if (dir.exists(dir.to_remove)) {
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-### Open log: Load Train Data --------------------------------------------------
+### Open log: Prepare Train Data --------------------------------------------------
 open_logfile(".load-train-data")
-### Load Train Data ------------------------------------------------------------
+### Prepare Train Data ------------------------------------------------------------
 train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
 train.img28x28bin.list.file_path
 
@@ -60,7 +60,7 @@ if (!file.exists(train.img28x28bin.list.file_path)) {
 put_log("Binary Image 28x28 list summary:
 %1", capture.output(summary(img28x28bin.list)))
 
-rm(img28x28bin.list)
+# rm(img28x28bin.list)
 } else {
     put_log("The Binary Image 28x28 Matrix list has already been constructed 
 and backed up to the following file:
@@ -74,6 +74,48 @@ and backed up to the following file:
 # %1", train.img28x28bin.list.file_path)
 #   put_end_date(start)
 } 
+
+if(!file.exists(my_emnist.file_path)){
+  if(!exists("img28x28bin.list")) {
+    load.img28x28bin.list(train.img28x28bin.list.file_path)
+  }
+  
+  put_log("Building flatten (`EMNIST`-like) dataset...")
+  my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  put_log("The flatten dataset have been created with the following structure:
+  %1", capture.output(str(my_emnist)))
+  
+  y.labels <- img28x28bin.list$label.list
+  
+  put_log("Train dataset labels:
+%1", y.labels, .sep = " ")
+  
+  rm(img28x28bin.list)
+  
+  put_log("Saving flatten training dataset to the backup file: 
+%1", my_emnist.file_path)
+  start <- put_start_date()
+  save(my_emnist,
+       y.labels,
+       file = my_emnist.file_path)
+  put_log("The flatten training dataset has been saved to the backup file:
+%1", my_emnist.file_path)
+  put_end_date(start)
+
+} else {
+  
+  put_log("The flatten training dataset has already been constructed 
+and backed up to the following file:
+%1", my_emnist.file_path)
+  
+  
+  # start <- put_start_date()
+  # put_log("Loading flatten training dataset from cache.")
+  # load(my_emnist.file_path)
+  # put_log("The flatten training dataset has been loaded from cache.")
+  # put_end_date(start)
+}
+
 
 
 ### Close Log ---------------------------------------------------------------

@@ -123,11 +123,30 @@ N_pcCores
 ## Initial Paths ---------------------------------------------------------------
 r.path <- "r"
 
+draft_scripts.path <- file.path(r.path, "draft")
+stopifnot(dir.exists(draft_scripts.path))
+draft_scripts.path
+
+scripts.path <- draft_scripts.path
+stopifnot(dir.exists(scripts.path))
+scripts.path
+
+models_script.path <- file.path(scripts.path, "models")
+stopifnot(dir.exists(models_script.path))
+models_script.path
+
+models.cnn_script.path <- file.path(models_script.path, "cnn")
+stopifnot(dir.exists(models_script.path))
+models.cnn_script.path
+
 support_functions.folder <- "support-functions"
 support_scripts.folder <- "support-scripts"
 
 support_scripts.path <- file.path(r.path, support_scripts.folder)
+stopifnot(dir.exists(support_scripts.path))
 support_functions.path <- file.path(r.path, support_functions.folder)
+stopifnot(dir.existssupport_functions.path())
+#stopifnot(dir.exists())
 
 setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 
@@ -178,13 +197,4 @@ if(!dir.exists(knn_pca.path)) {
   dir.create(knn_pca.path)
 }
 
-## Load Input Data -------------------------------------------------------------
-load_input_data.file_path <- file.path(support_scripts.path, "load-input-data.R")
-
-source(load_input_data.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
 

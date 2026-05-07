@@ -20,15 +20,7 @@ cnn.train.data.cache.file_path
 
 if(!file.exists(cnn.train.data.cache.file_path)){
   if(!exists("img28x28bin.list")) {
-    if(!file.exists(train.img28x28bin.list.file_path)) {
-      stop("Cache file for Binary Image 28x28 Matrix list DOES NOT EXIST!")
-    }
-    start <- put_start_date()
-    put_log("Loading Binary Image 28x28 Matrix list from the backup file...")
-    load(train.img28x28bin.list.file_path)
-    put_log("The Binary Image 28x28 Matrix list has been loaded from the following file:
-%1", train.img28x28bin.list.file_path)
-    put_end_date(start)
+    load.img28x28bin.list(cnn.train.data.cache.file_path)
   }
   put_log("The Binary Image 28x28 Matrix list object summary:
 %1", capture.output(summary(img28x28bin.list)))
