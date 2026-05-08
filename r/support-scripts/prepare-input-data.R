@@ -37,10 +37,19 @@ if (dir.exists(dir.to_remove)) {
 log_close()
 
 ### Open log: Prepare Train Data --------------------------------------------------
-open_logfile(".load-train-data")
+open_logfile(".prepare-train-data")
 ### Prepare Train Data ------------------------------------------------------------
-train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
+train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.rds")
 train.img28x28bin.list.file_path
+
+train.img28x28mx.list.file_path <- file.path(train.data.path, "train.img28x28mx.list.rds")
+train.img28x28mx.list.file_path
+
+train.img28x28mx.array.file_path <- file.path(train.data.path, "train.img28x28mx.array.rds")
+train.img28x28mx.array.file_path
+
+classifier.label_list.file_path <- file.path(train.data.path, "classifier.label-list.rds")
+classifier.label_list.file_path
 
 if (!file.exists(train.img28x28bin.list.file_path)) {
   put_log("Creating Binary Image 28x28 list from raw data files from root directory:
@@ -50,34 +59,111 @@ if (!file.exists(train.img28x28bin.list.file_path)) {
   img28x28bin.list <- img.load.bin28x28mx.list(img.train.root_path)
 
   put_log("Saving Binary Image 28x28 list to the backup file...")
-  start <- put_start_date()
-  save(img28x28bin.list,
+  saveRDS(img28x28bin.list,
        file = train.img28x28bin.list.file_path)
   put_log("Binary Image 28x28 list has been saved to the following file:
 %1", train.img28x28bin.list.file_path)
-  put_end_date(start)
-  
-put_log("Binary Image 28x28 list summary:
-%1", capture.output(summary(img28x28bin.list)))
 
-# rm(img28x28bin.list)
+  put_log("Binary Image 28x28 list summary:
+%1", capture.output(summary(img28x28bin.list)))
+  
 } else {
     put_log("The Binary Image 28x28 Matrix list has already been constructed 
 and backed up to the following file:
 %1", train.img28x28bin.list.file_path)
+}
+
+if(!file.exists(classifier.label_list.file_path)){
+  if(!exists("img28x28bin.list")) {
+    img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
+  }
+ 
+  y.labels <- img28x28bin.list$label.list
+  
+  put_log("Saving Classifier Label List to the backup file...")
+  saveRDS(y.labels,
+          file = classifier.label_list.file_path)
+  put_log("The Classifier Label List has been saved to the following file:
+%1", classifier.label_list.file_path)
+  put_end_date(start)
+  
+  put_log("The Classifier Label List contains the following labels:
+%1", capture.output(y.labels))
+  
+} else {
+  put_log("The Classifier Label List has already been constructed 
+and backed up to the following file:
+%1", classifier.label_list.file_path)
+}
+
+if(!file.exists(train.img28x28mx.list.file_path)){
+  if(!exists("img28x28bin.list")) {
+    img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
+  }
+
+  put_log("Combining nested list of images to list of arrays...")
+  
+  img.nested_list <- img28x28bin.list$img.list
+  length(img.nested_list)
+  names(img.nested_list)
   
   
-#   start <- put_start_date()
-#   put_log("Loading Binary Image 28x28 Matrix list from the backup file...")
-#   load(train.img28x28bin.list.file_path)
-#   put_log("The Binary Image 28x28 Matrix list has been loaded from the following file:
-# %1", train.img28x28bin.list.file_path)
-#   put_end_date(start)
-} 
+  img28x28mx.list <- lapply(names(img.nested_list), function(label){
+    item <- img.nested_list[[label]]
+    img.array <- abind(item$img.list, rev.along = 3)
+    dimnames(img.array) <- list(base::rep(label, 
+                                          times = length(item$img.list)),
+                                NULL,
+                                NULL)
+    img.array
+  })
+  names(img28x28mx.list) <- as.character(y.labels)
+  
+  put_log("Combined image data matrix has been created with the following structure:
+  %1", capture.output(str(img28x28mx.list)))
+  put_end_date(start)
+  
+  put_log("Saving Binary Image 28x28 Matrix list to the backup file...")
+  saveRDS(img28x28mx.list,
+          file = train.img28x28mx.list.file_path)
+  put_log("Binary Image 28x28 Matrix list has been saved to the following file:
+%1", train.img28x28mx.list.file_path)
+
+} else {
+  put_log("The Binary Image 28x28 Matrix list has already been constructed 
+and backed up to the following file:
+%1", train.img28x28mx.list.file_path)
+}
+
+if(!file.exists(train.img28x28mx.array.file_path)){
+  if(!exists("img28x28mx.list")) {
+    img28x28bin.list <- readRDS(train.img28x28mx.list.file_path)
+  }
+  
+  put_log("Combining Binary image 28x28x matrix list to array...")
+  
+  img28x28mx.array <- abind(img28x28mx.list, along = 1)
+  
+  put_log("Combined Binary image matrix 28x28 array has been created with the following dimentions:
+  %1", capture.output(dim(x_cnn)))
+  
+  put_log("Saving Binary Image 28x28 array to the backup file...")
+  saveRDS(img28x28mx.array,
+          file = train.img28x28mx.array.file_path)
+  put_log("The Binary Image 28x28 array has been saved to the following file:
+%1", train.img28x28mx.array.file_path)
+  put_end_date(start)
+  
+  rm(img28x28mx.array)
+} else {
+  put_log("The Binary Image 28x28 array has already been constructed 
+and backed up to the following file:
+%1", train.img28x28mx.array.file_path)
+}
 
 if(!file.exists(my_emnist.file_path)){
   if(!exists("img28x28bin.list")) {
-    load.img28x28bin.list(train.img28x28bin.list.file_path)
+    img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
   }
   
   put_log("Building flatten (`EMNIST`-like) dataset...")
@@ -108,15 +194,9 @@ if(!file.exists(my_emnist.file_path)){
 and backed up to the following file:
 %1", my_emnist.file_path)
   
-  
-  # start <- put_start_date()
-  # put_log("Loading flatten training dataset from cache.")
-  # load(my_emnist.file_path)
-  # put_log("The flatten training dataset has been loaded from cache.")
-  # put_end_date(start)
 }
 
-
+rm(img28x28bin.list)
 
 ### Close Log ---------------------------------------------------------------
 log_close()
