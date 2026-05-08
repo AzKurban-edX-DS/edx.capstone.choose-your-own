@@ -251,6 +251,7 @@ Processing label: `%1`...", label)
     img_list[[label]]$img.list |> 
       img28x28.list2matrix(label)
   })
+  names(char_matrix.list) <- names(img_list)
   
   put_log("Function `img28x28mx2flatten.list`:
 Image matrix list has been created with the following structure:
