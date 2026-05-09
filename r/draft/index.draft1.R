@@ -103,9 +103,18 @@ source(dl_basic.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+#### Load Dataset for CNN-Based Models -----------------------------------------
+load.cnn_dataset.script_path <- file.path(support_scripts.path, "load-cnn-dataset.R")
+stopifnot(file.exists(load.cnn_dataset.script_path))
+
+source(load.cnn_dataset.script_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 ## CNN-based Multi-class Classifier Model ---------------------------------------
-load.cnn_dataset <- file.path(support_scripts.path, "load-cnn-dataset.R")
-stopifnot(file.exists(load.cnn_dataset))
 
 ### Init CNN-Based Multi-class Model Directories -------------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks

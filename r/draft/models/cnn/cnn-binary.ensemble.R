@@ -1,6 +1,80 @@
-#### Ensemble Classifier for all labels ----------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# CNN-Based Ensemble Classifier for all labels 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 ##### Open Log for Ensemble Classifier -----------------------------------------
 open_logfile(".cnn-model.ensemble-classifier")
+# Create Balanced Test Set----------------------------------------------------- 
+
+set.seed(length(y.labels)) # 39
+x_cnn.samples_set <- sample_train_test_sets.x3d(x_cnn, test.ratio = 1)
+
+x_test <- x_cnn.samples_set$test_set
+put_log("A Test Set created with the following structure:
+%1", capture.output(str(x_test)))
+
+y_test.groups <- ds.get_classIDs.grouped(x_test)
+y_test <- y_test.groups$classID
+str(y_test)
+length(y_test)
+
+y_test.int <- as.integer(y_test)
+y_test.chars <- y_test.groups$groupByClass
+str(y_test.chars)
+# tibble [39 × 2] (S3: tbl_df/tbl/data.frame)
+#  $ classID: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
+#  $ n      : int [1:39] 4261 4261 4261 4261 4261 4261 4261 4261 4261 4261 ...
+
+print(y_test.chars, n = nrow(y_test.chars))
+#-----
+#    classID     n
+#    <fct>   <int>
+#  1 #        4261
+#  2 $        4261
+#  3 &        4261
+#  4 @        4261
+#  5 0        4261
+#  6 1        4261
+#  7 2        4261
+#  8 3        4261
+#  9 4        4261
+# 10 5        4261
+# 11 6        4261
+# 12 7        4261
+# 13 8        4261
+# 14 9        4261
+# 15 A        4261
+# 16 B        4261
+# 17 C        4261
+# 18 D        4261
+# 19 E        4261
+# 20 F        4261
+# 21 G        4261
+# 22 H        4261
+# 23 I        4261
+# 24 J        4261
+# 25 K        4261
+# 26 L        4261
+# 27 M        4261
+# 28 N        4261
+# 29 P        4261
+# 30 Q        4261
+# 31 R        4261
+# 32 S        4261
+# 33 T        4261
+# 34 U        4261
+# 35 V        4261
+# 36 W        4261
+# 37 X        4261
+# 38 Y        4261
+# 39 Z        4261
+# -----------------
+max(y_test.chars$n) == min(y_test.chars$n)
+#> [1] TRUE
+
+max(y_test.chars$n)
+#> [1] 4261
+
 ##### Build Ensemble Classifier ------------------------------------------------
 
 if (file.exists(cnn_models.ensemble.cache_file.path)) {

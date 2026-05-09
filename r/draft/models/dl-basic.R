@@ -2,36 +2,6 @@
 # Basic Deep Learning Model
 #%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Load Flatten Dataset --------------------------------------------------------
-if(!exists("x") || shape(x) != shape(834032, 784)) {
-  stopifnot(file.exists(load_flatten_dataset.script.path))
-  
-  source(load_flatten_dataset.script.path, 
-         catch.aborts = TRUE,
-         echo = TRUE,
-         spaced = TRUE,
-         verbose = TRUE,
-         keep.source = TRUE)
-} else {
-  put_log("The flatten dataset has the following structure:
-  %1", capture.output(str(x)))
-  
-  y.groups <- ds.get_classIDs.grouped(x)
-  y <- y.groups$classID
-  str(y)
-  length(y)
-  
-  y.int <- as.integer(y)
-  y.chars <- y.groups$groupByClass
-  str(y.chars)
-  
-  if(!exists("y.labels"))   
-    y.labels <- readRDS(classifier.label_list.file_path)
-  
-  put_log("The Classifier Handwritten Character List contains the following labels:
-%1", y.labels, .sep = " ")
-  
-}
 ### Open log: Split Train Dataset (x) -------------
 open_logfile(".split.80%train.balanced_subset")
 #### Split Train Dataset  (90% for Train set) ----------------------------------

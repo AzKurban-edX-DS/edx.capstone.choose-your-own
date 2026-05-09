@@ -337,7 +337,7 @@ get_sample.idx <- function(x,
   N <- nrow(x)
   
   put_log("Function: `get_sample.idx`: 
-Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
+Sampling %1% of the dataset indices for a Test Set...", test.ratio)
   
   y.idx <- seq_len(N)
   idx_group.list <- split(y.idx, y)
@@ -346,9 +346,7 @@ Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
   
   test.size.balanced <- ceiling(grp_len.min * test.ratio)
   train.size.balanced <- grp_len.min - test.size.balanced
-  
-  if(!is.na(seed))
-    set.seed(seed)
+  set_seed(seed)
 
   test.idx.groups <-
     lapply(idx_group.list,
@@ -383,8 +381,8 @@ Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
     test.idx <- sample(test.idx)
   }
   
-  list(train.index = train.idx,
-       test.index = test.idx)
+  c(train = train.idx,
+    test = test.idx)
 } 
 
 binclass.get_sample.idx <- function(x,
@@ -615,19 +613,25 @@ sample_train_test_sets.x3d <- function(x,
                                shuffle_rows,
                                balanced,
                                bootstap.sample)
-
-  train.set <- x[sample.idx$train.index,,]
   put_log("Function: `sample_train_test_sets.x3d`: 
-A sample made from the original dataset: `train.set`.
-Structure of the `train.set`:
-%1", capture.output(str(train.set)))
-
-  test.set <- x[sample.idx$test.index,,]
-  put_log("Function: `sample_train_test_sets.x3d`: 
-A sample made from the original dataset: `test.set`,
-Structure of the `test.set`:
-%1", capture.output(str(test.set)))
+Extracting 80% of the original index set of `x` not used for the test Set...")
   
+  train.set <- x[sample.idx["train"],,]
+  # str(train.set)
+  # dim(train.set)
+  
+  put_log("Function: `sample_train_test_sets.x3d`: Dataset created: `train.set`")
+
+  put_log("Function: `sample_train_test_sets.x3d`: 
+Extracting 20% of the original index set of `x` used for the test Set.")
+  
+  test.set <- x[sample.idx["test"],,]
+  # str(test.set)
+  # dim(test.set)
+  
+  put_log("Function: `sample_train_test_sets.x3d`: Dataset created: `test.set`")
+
+  # Return result datasets
   list(train_set = train.set,
        test_set = test.set)
 }

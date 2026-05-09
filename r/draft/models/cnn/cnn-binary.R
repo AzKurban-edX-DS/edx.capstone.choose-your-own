@@ -2,34 +2,6 @@
 # CNN-Based Binary Models
 #%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#### Load CNN Dataset ------------------------------------------------------
-if(!exists("x_cnn") || shape(x_cnn) != shape(834032, 28, 28)) {
-  stopifnot(file.exists(load.cnn_dataset))
-  
-  source(load.cnn_dataset, 
-         catch.aborts = TRUE,
-         echo = TRUE,
-         spaced = TRUE,
-         verbose = TRUE,
-         keep.source = TRUE)
-} else {
-  if(!exists("y.labels"))   
-    y.labels <- readRDS(classifier.label_list.file_path)
-  
-  put_log("The Classifier Handwritten Character List contains the following labels:
-%1", y.labels, .sep = " ")
-  
-  y_cnn <- as.factor(rownames(x_cnn))
-  str(y_cnn)
-  length(y_cnn)
-  
-  if(!dir.exists(cnn.train.data.path))
-    dir.create(cnn.train.data.path)
-  
-  input_shape <- c(dim.x_cnn[2], dim.x_cnn[3], 1)
-  input_shape
-}
-
 #### Define a few parameters to be used in the CNN model --------------------------
 # n.output <- 39
 batch_size <- 128

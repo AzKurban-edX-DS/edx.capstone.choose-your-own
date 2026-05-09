@@ -7,16 +7,6 @@
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-#### Load CNN Dataset ------------------------------------------------------
-stopifnot(file.exists(load.cnn_dataset))
-
-source(load.cnn_dataset, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
 #### Open log: Split Train Dataset (x3d) -------------
 open_logfile(".split3d.10%train.balanced_subset")
 #### Split (x3d) (10% for Train) Dataset  (10% for Train set) -----------------------------
