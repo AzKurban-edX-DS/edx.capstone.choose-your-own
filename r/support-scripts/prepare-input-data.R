@@ -44,12 +44,14 @@ It has already been deleted or moved.",
 
 put_end_date(start.download)
 
-### Close Log ------------------------------------------------------------------
+## Close Log ------------------------------------------------------------------
 log_close()
 
-### Open log: Prepare Train Data --------------------------------------------------
-open_logfile(".prepare-train-data")
-### Prepare Train Data ------------------------------------------------------------
+## Init Classifier Labels Backup File Path -------------------------------------
+classifier.label_list.file_path <- file.path(dataset.path, "classifier.label-list.rds")
+classifier.label_list.file_path
+
+#### Init Train Backup File Paths ----------------------------------------------
 train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.rds")
 train.img28x28bin.list.file_path
 
@@ -59,12 +61,22 @@ train.img28x28mx.list.file_path
 train.img28x28mx.array.file_path <- file.path(train.data.path, "train.img28x28mx.array.rds")
 train.img28x28mx.array.file_path
 
-classifier.label_list.file_path <- file.path(train.data.path, "classifier.label-list.rds")
-classifier.label_list.file_path
-
 my_emnist.file_path <- file.path(train.data.path, "my_emnist.rds")
 my_emnist.file_path
 
+#### Init Final Test Backup File Paths -----------------------------------------
+final_test.img28x28bin.list.file_path <- file.path(final_test.data.path, "final_test.img28x28bin.list.rds")
+final_test.img28x28bin.list.file_path
+
+final_test.img28x28mx.list.file_path <- file.path(final_test.data.path, "final_test.img28x28mx.list.rds")
+final_test.img28x28mx.list.file_path
+
+final_test.img28x28mx.array.file_path <- file.path(final_test.data.path, "final_test.img28x28mx.array.rds")
+final_test.img28x28mx.array.file_path
+
+### Open log: Prepare Train Data --------------------------------------------------
+open_logfile(".prepare-train-data")
+### Prepare Train Data ------------------------------------------------------------
 start <- put_start_date()
 
 if (!file.exists(train.img28x28bin.list.file_path)) {
@@ -83,7 +95,7 @@ if (!file.exists(train.img28x28bin.list.file_path)) {
 %1", capture.output(summary(img28x28bin.list)))
   
 } else {
-    put_log("The Binary Image 28x28 Matrix list has already been constructed 
+    put_log("The Binary Image 28x28 list has already been constructed 
 and backed up to the following file:
 %1", train.img28x28bin.list.file_path)
 }
@@ -156,24 +168,30 @@ and backed up to the following file:
 
 if(!file.exists(train.img28x28mx.array.file_path)){
   if(!exists("img28x28mx.list")) {
-    img28x28bin.list <- readRDS(train.img28x28mx.list.file_path)
+    img28x28mx.list <- readRDS(train.img28x28mx.list.file_path)
   }
   
   put_log("Combining Binary image 28x28x matrix list to array...")
   
   img28x28mx.array <- abind(img28x28mx.list, along = 1)
+  rm(img28x28mx.list)
   
-  put_log("Combined Binary image matrix 28x28 array has been created with the following dimentions:
-  %1", capture.output(dim(x_cnn)))
+  put_log("Combined Binary image matrix 28x28 array has the following structure:
+  %1", capture.output(str(ft.img28x28mx.array)))
+  
+  put_log("Combined Binary image matrix 28x28 array has the following dimentions:
+  %1", capture.output(dim(img28x28mx.array)))
   
   put_log("Saving Binary Image 28x28 array to the backup file...")
   saveRDS(img28x28mx.array,
           file = train.img28x28mx.array.file_path)
+  
+  rm(img28x28mx.array)
+  
   put_log("The Binary Image 28x28 array has been saved to the following file:
 %1", train.img28x28mx.array.file_path)
   put_end_date(start)
   
-  rm(img28x28mx.array)
 } else {
   put_log("The Binary Image 28x28 array has already been constructed 
 and backed up to the following file:
@@ -190,11 +208,11 @@ if(!file.exists(my_emnist.file_path)){
   put_log("Building flatten (`EMNIST`-like) dataset...")
   
   my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  rm(img28x28bin.list)
 
   put_log("The flatten dataset have been created with the following structure:
   %1", capture.output(str(my_emnist)))
 
-  # rm(img28x28bin.list)
   
   put_log("Saving flatten training dataset to the backup file: 
 %1", my_emnist.file_path)
@@ -210,8 +228,108 @@ if(!file.exists(my_emnist.file_path)){
 and backed up to the following file:
 %1", my_emnist.file_path)
 }
+put_end_date(start)
 
-rm(img28x28bin.list)
+### Close Log ---------------------------------------------------------------
+log_close()
+
+### Clear Train Data Objects in Global Environment -------------------------
+
+## Open log: Prepare Final Test Data --------------------------------------------------
+open_logfile(".prepare-final_test-data")
+### Prepare Final Test Data ----------------------------------------------------
+start <- put_start_date()
+if (!file.exists(final_test.img28x28bin.list.file_path)) {
+  put_log("Creating Binary Image 28x28 list from raw data files from root directory:
+%1", img.validation.root_path)
+  #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
+  ft.img28x28bin.list <- img.load.bin28x28mx.list(img.validation.root_path)
+  put_end_date(start)
+
+  put_log("Saving Binary Image 28x28 list to the backup file...")
+  saveRDS(ft.img28x28bin.list,
+       file = final_test.img28x28bin.list.file_path)
+  put_log("Binary Image 28x28 list has been saved to the following file:
+%1", final_test.img28x28bin.list.file_path)
+
+  put_log("Binary Image 28x28 list summary:
+%1", capture.output(summary(ft.img28x28bin.list)))
+  
+} else {
+    put_log("The Binary Image 28x28 list has already been constructed 
+and backed up to the following file:
+%1", final_test.img28x28bin.list.file_path)
+}
+put_end_date(start)
+
+if(!file.exists(final_test.img28x28mx.list.file_path)){
+  if(!exists("ft.img28x28bin.list")) {
+    ft.img28x28bin.list <- readRDS(final_test.img28x28bin.list.file_path)
+  }
+
+  put_log("Combining nested list of images to list of arrays...")
+  
+  img.nested_list <- ft.img28x28bin.list$img.list
+  rm(ft.img28x28bin.list)
+  
+  length(img.nested_list)
+  names(img.nested_list)
+  
+  
+  ft.img28x28mx.list <- lapply(names(img.nested_list), function(label){
+    item <- img.nested_list[[label]]
+    img.array <- abind(item$img.list, rev.along = 3)
+    dimnames(img.array) <- list(base::rep(label, 
+                                          times = length(item$img.list)),
+                                NULL,
+                                NULL)
+    img.array
+  })
+  names(ft.img28x28mx.list) <- as.character(y.labels)
+  rm(img.nested_list)
+  
+  put_log("Combined image data matrix has been created with the following structure:
+  %1", capture.output(str(ft.img28x28mx.list)))
+  put_end_date(start)
+  
+  put_log("Saving Binary Image 28x28 Matrix list to the backup file...")
+  saveRDS(ft.img28x28mx.list,
+          file = final_test.img28x28mx.list.file_path)
+  put_log("Binary Image 28x28 Matrix list has been saved to the following file:
+%1", final_test.img28x28mx.list.file_path)
+
+} else {
+  put_log("The Binary Image 28x28 Matrix list has already been constructed 
+and backed up to the following file:
+%1", final_test.img28x28mx.list.file_path)
+}
+put_end_date(start)
+
+if(!file.exists(final_test.img28x28mx.array.file_path)){
+  put_log("Combining Binary image 28x28x matrix list to array...")
+  
+  ft.img28x28mx.array <- abind(ft.img28x28mx.list, along = 1)
+  rm(ft.img28x28mx.list)
+  
+  put_log("Combined Binary image matrix 28x28 array has the following structure:
+  %1", capture.output(str(ft.img28x28mx.array)))
+  
+  put_log("Combined Binary image matrix 28x28 array has the following dimentions:
+  %1", capture.output(dim(ft.img28x28mx.array)))
+  
+  put_log("Saving Binary Image 28x28 array to the backup file...")
+  saveRDS(ft.img28x28mx.array,
+          file = final_test.img28x28mx.array.file_path)
+  
+  rm(ft.img28x28mx.array)
+
+  put_log("The Binary Image 28x28 array has been saved to the following file:
+%1", final_test.img28x28mx.array.file_path)
+} else {
+  put_log("The Binary Image 28x28 array has already been constructed 
+and backed up to the following file:
+%1", final_test.img28x28mx.array.file_path)
+}
 put_end_date(start)
 
 ### Close Log ---------------------------------------------------------------
