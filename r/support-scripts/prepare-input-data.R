@@ -199,8 +199,7 @@ if(!file.exists(my_emnist.file_path)){
   put_log("Saving flatten training dataset to the backup file: 
 %1", my_emnist.file_path)
   # start <- put_start_date()
-  save(my_emnist,
-       y.labels,
+  saveRDS(my_emnist,
        file = my_emnist.file_path)
   put_log("The flatten training dataset has been saved to the backup file:
 %1", my_emnist.file_path)

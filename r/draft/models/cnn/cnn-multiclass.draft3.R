@@ -1,65 +1,21 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%
+# CNN-Based Binary Models
+#%%%%%%%%%%%%%%%%%%%%%%%%%
+
 ### Convolutional Neural Network (CNN) -----------------------------------------
 # Reference:
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-#### Open log: Prepare CNN Datasets -------------
-open_logfile(".prepare-cnn-datasets")
-#### Prepare CNN Datasets ------------------------------------------------------
-# train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.RData")
-# train.img28x28bin.list.file_path
+#### Load CNN Dataset ------------------------------------------------------
+stopifnot(file.exists(load.cnn_dataset))
 
-
-x_cnn <- readRDS(train.img28x28mx.array.file_path)
-put_log("The CNN-based models input dataset structure:
-%1", capture.output(str(x_cnn)))
-
-y.labels <- readRDS(classifier.label_list.file_path)
-put_log("The Classifier Label List contains the following labels:
-%1", capture.output(y.labels))
-  
-cnn.train.data.path <- file.path(dl.keras3.path, "cnn")
-
-if(!dir.exists(cnn.train.data.path))
-  dir.create(cnn.train.data.path)
-
-dim.x_cnn <- dim(x_cnn)
-dim.x_cnn
-#> [1] 834032     28     28
-nrow(x_cnn)
-#> [1] 834032
-
-# Input image dimensions
-img_rows <- dim.x_cnn[2]
-img_rows
-img_cols <- dim.x_cnn[3]
-img_cols
-
-y_cnn <- as.factor(rownames(x_cnn))
-str(y_cnn)
-length(y_cnn)
-
-first_G.idx <- which(y_cnn == "G")[1]
-first_G.idx
-#> [1] 598137
-
-char.image(x_cnn[first_G.idx,,])
-char.image(x_cnn[first_G.idx - 1,,])
-
-# # Add channel into the dimension
-# x3d <- array_reshape(x_cnn, c(dim.x_cnn[1], dim.x_cnn[2], dim.x_cnn[3], 1))
-# dim(x3d)
-
-# rownames(x3d) <- as.character(y)
-# str(x3d)
-
-
-
-input_shape <- c(dim.x_cnn[2], dim.x_cnn[3], 1)
-input_shape
-#> [1] 28 28  1
-#### Close Log ------------------------------------------------------------------
-log_close()
+source(load.cnn_dataset, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 #### Open log: Split Train Dataset (x3d) -------------
 open_logfile(".split3d.10%train.balanced_subset")

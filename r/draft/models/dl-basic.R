@@ -1,43 +1,37 @@
-############################
+#%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Basic Deep Learning Model
-############################
+#%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Open log: Load Input Dataset -----------------------------------------------
-open_logfile(".load-input-dataset")
-### Load Input Dataset ---------------------------------------------------------
-my_emnist.file_path <- file.path(train.data.path, "my_emnist.RData")
-my_emnist.file_path
-
-start <- put_start_date()
-put_log("Loading flatten training dataset from the backup file...")
-
-ds <- load.img_data.train.flatten(my_emnist.file_path)
-
-put_log("The flatten training dataset has been loaded from the following file:
-%1", my_emnist.file_path)
-
-put_log("The flatten training dataset structure: 
-%1", capture.output(str(ds)))
-put_end_date(start)
-
-# Short names for current working dataset
-x <- ds$x
-dim(x)
-
-y.groups <- ds$y_grouped
-str(y.groups)
-
-y <- y.groups$classID
-str(y)
-length(y)
-
-y.int <- as.integer(y)
-y.chars <- y.groups$groupByClass
-str(y.chars)
-
-### Close Log ------------------------------------------------------------------
-log_close()
-
+## Load Flatten Dataset --------------------------------------------------------
+if(!exists("x") || shape(x) != shape(834032, 784)) {
+  stopifnot(file.exists(load_flatten_dataset.script.path))
+  
+  source(load_flatten_dataset.script.path, 
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
+} else {
+  put_log("The flatten dataset has the following structure:
+  %1", capture.output(str(x)))
+  
+  y.groups <- ds.get_classIDs.grouped(x)
+  y <- y.groups$classID
+  str(y)
+  length(y)
+  
+  y.int <- as.integer(y)
+  y.chars <- y.groups$groupByClass
+  str(y.chars)
+  
+  if(!exists("y.labels"))   
+    y.labels <- readRDS(classifier.label_list.file_path)
+  
+  put_log("The Classifier Handwritten Character List contains the following labels:
+%1", y.labels, .sep = " ")
+  
+}
 ### Open log: Split Train Dataset (x) -------------
 open_logfile(".split.80%train.balanced_subset")
 #### Split Train Dataset  (90% for Train set) ----------------------------------

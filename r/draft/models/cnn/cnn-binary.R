@@ -1,51 +1,34 @@
-## Explore imput datasets ------------------------------------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%
+# CNN-Based Binary Models
+#%%%%%%%%%%%%%%%%%%%%%%%%%
 
-str(img28x28bin.list$img.list$T$img.list)
-
-lbl.img.list <- img28x28bin.list$img.list$T$img.list
-str(lbl.img.list)
-
-lbl.img.flat_ls <- lbl.img.list |> img28x28.list2matrix(label)
-str(lbl.img.flat_ls)
-
-image(lbl.img.flat_ls[1:400,])
-
-#### Init CNN Directories -------------------------------------------
-# Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
-
-cnn.lbl_models.cache.path <- file.path(cnn.train.data.path, "lbl-models")
-
-if(!dir.exists(cnn.lbl_models.cache.path))
-  dir.create(cnn.lbl_models.cache.path)
-
-cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
-
-if(!dir.exists(cnn.eval.cache.path))
-  dir.create(cnn.eval.cache.path)
-
-cnn.callbacks.path <- file.path(cnn.train.data.path, "callbacks")
-
-if(!dir.exists(cnn.callbacks.path))
-  dir.create(cnn.callbacks.path)
-
-cnn.callbacks.tensorboard.path <- file.path(cnn.callbacks.path, "tensorboard")
-
-if(!dir.exists(cnn.callbacks.tensorboard.path))
-  dir.create(cnn.callbacks.tensorboard.path)
-
-cnn.callbacks.tb_logs.path <- file.path(cnn.callbacks.tensorboard.path, "logs")
-
-if(!dir.exists(cnn.callbacks.tb_logs.path))
-  dir.create(cnn.callbacks.tb_logs.path)
-
-
-cnn.callbacks.checkpoints.path <- file.path(cnn.callbacks.path, "checkpoints")
-
-if(!dir.exists(cnn.callbacks.checkpoints.path))
-  dir.create(cnn.callbacks.checkpoints.path)
-
-cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-models.ensemble.RData")
-cnn_models.ensemble.cache_file.path
+#### Load CNN Dataset ------------------------------------------------------
+if(!exists("x_cnn") || shape(x_cnn) != shape(834032, 28, 28)) {
+  stopifnot(file.exists(load.cnn_dataset))
+  
+  source(load.cnn_dataset, 
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
+} else {
+  if(!exists("y.labels"))   
+    y.labels <- readRDS(classifier.label_list.file_path)
+  
+  put_log("The Classifier Handwritten Character List contains the following labels:
+%1", y.labels, .sep = " ")
+  
+  y_cnn <- as.factor(rownames(x_cnn))
+  str(y_cnn)
+  length(y_cnn)
+  
+  if(!dir.exists(cnn.train.data.path))
+    dir.create(cnn.train.data.path)
+  
+  input_shape <- c(dim.x_cnn[2], dim.x_cnn[3], 1)
+  input_shape
+}
 
 #### Define a few parameters to be used in the CNN model --------------------------
 # n.output <- 39

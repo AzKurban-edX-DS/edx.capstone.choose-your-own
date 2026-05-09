@@ -1,45 +1,8 @@
-#################################
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # kNN+PCA & Random Forest Models
-#################################
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Open log: Load Input Dataset -----------------------------------------------
-open_logfile(".load-input-dataset")
-### Load Input Dataset ---------------------------------------------------------
-my_emnist.file_path <- file.path(train.data.path, "my_emnist.RData")
-my_emnist.file_path
-
-start <- put_start_date()
-put_log("Loading flatten training dataset from the backup file...")
-
-ds <- load.img_data.train.flatten(my_emnist.file_path)
-
-put_log("The flatten training dataset has been loaded from the following file:
-%1", my_emnist.file_path)
-
-put_log("The flatten training dataset structure: 
-%1", capture.output(str(ds)))
-put_end_date(start)
-
-# Short names for current working dataset
-x <- ds$x
-dim(x)
-
-y.groups <- ds$y_grouped
-str(y.groups)
-
-y <- y.groups$classID
-str(y)
-length(y)
-
-y.int <- as.integer(y)
-y.chars <- y.groups$groupByClass
-str(y.chars)
-
-
-### Close Log ------------------------------------------------------------------
-log_close()
-
-#### Quick data analysis -------------------
+#### Quick data analysis -------------------------------------------------------
 
 max(y.chars$n)
 # 65504

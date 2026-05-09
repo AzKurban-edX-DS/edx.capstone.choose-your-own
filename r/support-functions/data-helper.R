@@ -46,11 +46,10 @@ The Binary Image 28x28 Matrix list Summary:
 load.img_data.train.flatten <- function(file_path) {
   start <- put_start_date()
   put_log("Loading flatten training dataset from the backup file...")
-  load.data( "my_emnist", file = file_path)
+  x <- readRDS(file_path)
   put_log("The flatten training dataset has been loaded from the following file:
 %1", file_path)
   
-  x <- my_emnist
   # class identifies
   y.groups <- ds.get_classIDs.grouped(x)
   put_end_date(start)
