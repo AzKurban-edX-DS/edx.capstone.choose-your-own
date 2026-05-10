@@ -17,8 +17,8 @@ open_logfile(".build-cnn-model")
 
 ##### Define a CNN model structure ***
 
-cnn_models.cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.rds") 
-cnn_models.cache_file.path
+hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.rds") 
+hwChar.CNN.binCls.models.backup.path
 
 cnn.lbl_model_file.base_name <- "cnn.lbl-model"
 
@@ -195,10 +195,10 @@ names(cnn.hw_char.models) = as.character(y.labels)
 put_log("Saving the set of trained (CNN) Binary Classifier Models info to file...") 
 
 saveRDS(cnn.hw_char.models,
-     file = cnn_models.cache_file.path)
+     file = hwChar.CNN.binCls.models.backup.path)
 
 put_log("The set of trained (CNN) Binary Classifier Models have been saved to file:
-%1", cnn_models.cache_file.path)
+%1", hwChar.CNN.binCls.models.backup.path)
 
 stopCluster(cl)
 stopImplicitCluster()
@@ -228,11 +228,11 @@ have been loaded from the cache file:
   cnn.eval_cache.base_name <- "cnn.lbl-model.eval"
   
   if(!exists("cnn.hw_char.models")) {
-    if(!file.exists(cnn_models.cache_file.path))
+    if(!file.exists(hwChar.CNN.binCls.models.backup.path))
       stop(str.build("Cache file does not exist: 
-%1", cnn_models.cache_file.path))
+%1", hwChar.CNN.binCls.models.backup.path))
     
-    cnn.hw_char.models <- readRDS(cnn_models.cache_file.path)
+    cnn.hw_char.models <- readRDS(hwChar.CNN.binCls.models.backup.path)
   }
   
   str(cnn.hw_char.models)
@@ -272,14 +272,11 @@ have been loaded from the cache file:
       x_test <- lbl.trained_model.list$x_test
       y_test <- lbl.trained_model.list$y_test
 
-      put_log("Current model's object structure:
-%1", capture.output(str(lbl.trained_model.list)))
-      
       #exists("lbl.trained_model.list$train_history")
       plot(lbl.trained_model.list$train_history)
 
-      put_log("Current model's object summary:
-%1", capture.output(summary(lbl.trained_model.list)))
+      put_log("Summary of the model for handwritten character `%1`:
+%2", label, capture.output(summary(lbl.trained_model.list)))
       
       lbl.cnn_model <- lbl.trained_model.list$model
       str(lbl.cnn_model)

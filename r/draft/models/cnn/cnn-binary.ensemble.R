@@ -3,29 +3,96 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ##### Open Log for Ensemble Classifier -----------------------------------------
-open_logfile(".cnn-model.ensemble-classifier")
+open_logfile(".cnn.ensemble.load-final-test-data")
+## Load Final Test Data --------------------------------------------------------
+if(!exists("x_ftest")) {
+  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+  x.final_test <- readRDS(final_test.img28x28mx.array.file_path)
+  put_log("The Final Test Data has been loaded from the following backup file:
+%1", final_test.img28x28mx.array.file_path)
+}
+
+put_log("The Final Test Data has the following structure:
+%1", capture.output(str(x.final_test)))
+
+y.final_test.groups <- ds.get_classIDs.grouped(x.final_test)
+y.final_test <- y.final_test.groups$classID
+str(y.final_test)
+length(y.final_test)
+
+y.final_test.int <- as.integer(y.final_test)
+y.final_test.chars <- y.final_test.groups$groupByClass
+str(y.final_test.chars)
+
+print(y.final_test.chars, n = nrow(y.final_test.chars))
+#--------
+# A tibble: 39 × 2
+#    classID     n
+#    <fct>   <int>
+#  1 #        1300
+#  2 $        1350
+#  3 &         520
+#  4 @        1250
+#  5 0         368
+#  6 1        1675
+#  7 2        1267
+#  8 3        1301
+#  9 4        1277
+# 10 5        1388
+# 11 6        1594
+# 12 7         190
+# 13 8        1198
+# 14 9        1195
+# 15 A         392
+# 16 B         385
+# 17 C         168
+# 18 D         322
+# 19 E         308
+# 20 F         324
+# 21 G         363
+# 22 H         343
+# 23 I         381
+# 24 J         126
+# 25 K         240
+# 26 L         210
+# 27 M         251
+# 28 N         235
+# 29 P         175
+# 30 Q         405
+# 31 R         366
+# 32 S         168
+# 33 T         384
+# 34 U         210
+# 35 V         224
+# 36 W         182
+# 37 X         119
+# 38 Y         189
+# 39 Z         181
+
 # Create Balanced Test Set----------------------------------------------------- 
 
 set.seed(length(y.labels)) # 39
-x_cnn.samples_set <- sample_train_test_sets.x3d(x_cnn, test.ratio = 1)
+sample_set <- sample_train_test_sets.x3d(x.final_test, test.ratio = 1)
 
-x_test <- x_cnn.samples_set$test_set
+x_ftest <- sample_set$test_set
+rm(sample_set)
+
 put_log("A Test Set created with the following structure:
-%1", capture.output(str(x_test)))
+%1", capture.output(str(x_ftest)))
 
-y_test.groups <- ds.get_classIDs.grouped(x_test)
-y_test <- y_test.groups$classID
-str(y_test)
-length(y_test)
+y_ftest.groups <- ds.get_classIDs.grouped(x_ftest)
+y_ftest <- y_ftest.groups$classID
+str(y_ftest)
+length(y_ftest)
 
-y_test.int <- as.integer(y_test)
-y_test.chars <- y_test.groups$groupByClass
-str(y_test.chars)
+y_ftest.int <- as.integer(y_ftest)
+y_ftest.chars <- y_ftest.groups$groupByClass
+str(y_ftest.chars)
 # tibble [39 × 2] (S3: tbl_df/tbl/data.frame)
 #  $ classID: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
 #  $ n      : int [1:39] 4261 4261 4261 4261 4261 4261 4261 4261 4261 4261 ...
 
-print(y_test.chars, n = nrow(y_test.chars))
+print(y_ftest.chars, n = nrow(y_ftest.chars))
 #-----
 #    classID     n
 #    <fct>   <int>
@@ -69,12 +136,17 @@ print(y_test.chars, n = nrow(y_test.chars))
 # 38 Y        4261
 # 39 Z        4261
 # -----------------
-max(y_test.chars$n) == min(y_test.chars$n)
+max(y_ftest.chars$n) == min(y_ftest.chars$n)
 #> [1] TRUE
 
-max(y_test.chars$n)
+max(y_ftest.chars$n)
 #> [1] 4261
 
+### Close Log ---------------------------------------------------------------
+log_close()
+
+##### Open Log for Ensemble Classifier -----------------------------------------
+open_logfile(".cnn-model.ensemble-classifier")
 ##### Build Ensemble Classifier ------------------------------------------------
 
 if (file.exists(cnn_models.ensemble.cache_file.path)) {
@@ -84,24 +156,36 @@ if (file.exists(cnn_models.ensemble.cache_file.path)) {
   put_log("CNN: the Ensemble Classifier Results have been loaded from the cache file:
 %1", cnn_models.ensemble.cache_file.path)
 } else {
+  stopifnot(file.exists(hwChar.CNN.binCls.models.backup.path))
+  hwChar.CNN.binCls.models <- readRDS(hwChar.CNN.binCls.models.backup.path)
   
-  if(!exists("evaluation.results")) {
-    stopifnot(!file.exists(cnn_models.eval.cache_file.path))
-    
-    put_log("CNN: Loading the Labeled Binary Classifier Models evalution results from cache...") 
-    load(cnn_models.eval.cache_file.path)
-    put_log("CNN: the Labeled Binary Classifier Models evalution results 
-have been loaded from the cache file:
-%1", cnn_models.eval.cache_file.path)
-    
-  }
+  put_log("CNN: the pre-trained CNN-based Binary Classifier model list 
+has been loaded from the backup file:
+%1", hwChar.CNN.binCls.models.backup.path)
+  
+  put_log("CNN: the pre-trained CNN-based Binary Classifier model list 
+object structure:
+%1", str(hwChar.CNN.binCls.models))
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  start <- put_start_date()
   
   preds.mx <- sapply(y.labels, function(label) {
-    #p <- 
-    evaluation.results[[label]]$preds[,1]
-    #str(p)
+    plot(hwChar.CNN.binCls.models[[label]]$train_history)
+    lbl.saved_model.path <- hwChar.CNN.binCls.models[[label]]$saved_model.filepath 
+    stopifnot(file.exists(lbl.saved_model.path))
+
+    lbl.pretrained_model <- load_model(lbl.saved_model.path)  
+    
+    put_log("Summary of the model for handwritten character `%1`:
+%2",label, capture.output(summary(lbl.pretrained_model)))
+    
+    put_log("Making predictions for handwritten character '%1'...", 
+            label)
+    lbl.pretrained_model |> predict(x_ftest)    
   })
-  
+  put_end_date()
   
   class(preds.mx)
   dim(preds.mx)
@@ -109,35 +193,169 @@ have been loaded from the cache file:
   colnames(preds.mx) <- as.character(y.labels)
   str(preds.mx)
   head(preds.mx)
-  #               #            $            &            @            0            1
-  # [1,] 1.369949e-12 2.396904e-11 4.014774e-10 3.622346e-09 1.100269e-06 3.533862e-05
-  # [2,] 2.899649e-13 4.355252e-11 4.055812e-14 1.342694e-10 8.238061e-07 1.023313e-06
-  # [3,] 1.046244e-07 6.048190e-11 2.396136e-08 9.999999e-01 3.843675e-13 2.751844e-09
-  # [4,] 9.592652e-08 1.500224e-05 9.999545e-01 1.799757e-07 2.254854e-12 2.517688e-09
-  # [5,] 6.245161e-10 4.554279e-12 1.529452e-06 4.037680e-11 2.591312e-10 1.986288e-03
-  # [6,] 6.703245e-15 7.939808e-09 7.806473e-10 9.999957e-01 1.411460e-13 2.716332e-08
-  #               2            3            4            5            6            7
-  # [1,] 1.274050e-07 1.976297e-08 2.871119e-07 9.117506e-01 8.310264e-01 1.663653e-12
-  # [2,] 1.036329e-04 5.842682e-08 7.924597e-06 2.290502e-03 9.897284e-01 2.419553e-16
-  # [3,] 2.698742e-09 4.878437e-09 2.208877e-07 1.066727e-06 1.853692e-09 9.732599e-10
-  # [4,] 2.360041e-07 3.376738e-05 4.101317e-08 6.470874e-04 5.833106e-08 2.433209e-13
-  # [5,] 1.783007e-03 6.626777e-07 7.431519e-07 2.365470e-05 1.260650e-07 8.708229e-05
-  # [6,] 3.107357e-10 2.704447e-08 7.753220e-05 3.603433e-06 3.583733e-05 1.783171e-09
-  #               8            9            A            B            C            D
-  # [1,] 5.372741e-05 1.092196e-07 5.041434e-05 2.950370e-04 4.660272e-07 1.776997e-05
-  # [2,] 6.252207e-04 3.709382e-07 8.188316e-03 7.029655e-04 2.369297e-05 2.283386e-05
-  # [3,] 7.717297e-07 1.682601e-07 5.947574e-06 2.228543e-05 2.070900e-07 2.059591e-08
-  # [4,] 1.309585e-06 2.195027e-03 1.557932e-05 4.677896e-06 7.163868e-07 7.496845e-08
-  # [5,] 4.989845e-03 3.979222e-07 8.075874e-02 5.097317e-04 9.486013e-08 3.500879e-03
-  # [6,] 1.676496e-08 6.705029e-05 2.840243e-05 3.444430e-05 5.380749e-07 1.841350e-10
-  #               E            F            G            H            I            J
-  # [1,] 8.316667e-03 3.006915e-04 1.442758e-01 1.378821e-04 3.178597e-07 4.436253e-06
-  # [2,] 1.033750e-02 8.659600e-03 1.065786e-01 3.527990e-05 9.302857e-08 2.817498e-10
-  # [3,] 4.010222e-09 9.375635e-05 5.761859e-03 1.861690e-03 1.403905e-09 7.124655e-09
-  # [4,] 1.788994e-08 1.207731e-06 1.175228e-03 5.415139e-06 4.145133e-10 2.589490e-09
-  # [5,] 4.289760e-10 1.531458e-03 6.374015e-05 5.685989e-02 8.214690e-05 1.906513e-04
-  # [6,] 1.403405e-08 3.572582e-05 5.061809e-03 6.416230e-03 4.529754e-08 2.157732e-12
+# --------------------------  
+#                 #            $            &            @            0            1            2            3
+# [1,] 4.641171e-20 1.548882e-10 1.557235e-10 6.024950e-13 5.237010e-05 3.076157e-01 8.249410e-04 4.708885e-09
+# [2,] 2.551753e-08 2.539963e-12 8.521654e-19 2.655758e-12 8.219911e-01 1.346034e-07 8.461294e-04 2.707075e-03
+# [3,] 1.468435e-02 9.997920e-01 2.706961e-07 1.955358e-06 3.854533e-05 9.779275e-08 1.342094e-09 1.146960e-07
+# [4,] 2.497534e-12 3.828882e-12 9.587651e-10 1.020366e-09 1.756670e-10 2.131516e-06 4.937184e-04 2.147722e-03
+# [5,] 4.718320e-15 2.655487e-14 2.435475e-20 3.687264e-14 7.323680e-06 1.367646e-08 1.141905e-03 9.948028e-06
+# [6,] 1.695516e-18 1.427704e-15 1.662214e-14 2.688509e-12 2.733296e-08 3.461286e-11 5.689621e-04 5.423213e-09
+#                 4            5            6            7            8            9            A            B
+# [1,] 9.430872e-05 1.554916e-04 1.024598e-01 1.113366e-10 1.715523e-04 3.078325e-08 0.0005775922 7.518265e-02
+# [2,] 5.910299e-09 8.495885e-11 1.828520e-07 5.197902e-05 5.125588e-02 4.233158e-05 0.4537974894 9.761820e-01
+# [3,] 2.866311e-03 1.564778e-08 4.831781e-06 2.522276e-06 1.620789e-05 6.913731e-07 0.0211899877 9.354964e-04
+# [4,] 7.939283e-01 6.362331e-05 9.217733e-10 2.179653e-06 4.392010e-06 8.255338e-06 0.0002773236 9.637148e-05
+# [5,] 6.183688e-11 2.417175e-10 1.293381e-11 9.999998e-01 8.656563e-03 3.998992e-03 0.0000156950 6.781822e-05
+# [6,] 6.300766e-03 1.245115e-02 4.462381e-03 3.377349e-14 2.023772e-05 3.438555e-09 0.0023563516 1.587958e-01
+#                 C            D            E            F          G            H            I            J
+# [1,] 1.515672e-01 9.152557e-04 9.505384e-04 0.0001272728 0.00102315 1.256792e-02 9.183752e-01 1.508095e-02
+# [2,] 3.107886e-07 7.114547e-01 1.059276e-05 0.0005078831 0.09680843 2.406922e-04 1.938796e-03 3.132850e-02
+# [3,] 7.272462e-03 2.748886e-03 4.795025e-02 0.0284309424 0.04930085 8.568558e-05 4.165435e-04 8.908035e-03
+# [4,] 3.017192e-04 2.984889e-03 6.788269e-07 0.3488173485 0.03528162 1.904747e-02 2.114991e-02 9.848953e-02
+# [5,] 6.195524e-06 6.621844e-06 1.277975e-08 0.0003612466 0.05059635 1.671403e-06 2.578446e-04 7.945859e-05
+# [6,] 8.429906e-02 1.103552e-05 2.585334e-01 0.0367332138 0.01111498 3.461441e-02 3.595663e-05 2.638722e-05
+#                 K            L            M            N            P           Q            R            S
+# [1,] 0.2105598599 9.980495e-01 7.018268e-08 1.162049e-06 7.599045e-04 0.001935191 5.529792e-03 1.136623e-02
+# [2,] 0.0028187719 2.188025e-04 2.312052e-03 2.650113e-01 9.275764e-01 0.795970917 4.644250e-02 7.596704e-05
+# [3,] 0.0021762187 1.655143e-04 2.518801e-04 4.863248e-03 8.451994e-03 0.151361778 4.604540e-03 1.289139e-04
+# [4,] 0.0620683692 2.131083e-03 7.248587e-06 1.330861e-06 1.310114e-05 0.002629695 3.479059e-04 3.430053e-02
+# [5,] 0.0000395591 2.966547e-05 9.786534e-08 4.992985e-07 2.557669e-03 0.114322193 9.231791e-05 1.025346e-07
+# [6,] 0.9995679855 1.704450e-03 3.790588e-03 1.385469e-03 3.670332e-03 0.002063679 9.653007e-01 7.165396e-06
+#                 T            U            V            W            X            Y           Z
+# [1,] 0.0043690787 5.504408e-03 2.206398e-04 8.326172e-04 0.0074910680 0.0006272868 0.013624570
+# [2,] 0.0007396784 8.388584e-03 7.606152e-04 1.002794e-04 0.0012490270 0.0049288166 0.993805408
+# [3,] 0.0192838795 2.243590e-04 2.582811e-05 8.478419e-04 0.0001511377 0.0013147829 0.113081537
+# [4,] 0.9999873638 2.970505e-07 4.609880e-03 7.111942e-05 0.0201902632 0.0326905102 0.000461001
+# [5,] 0.0014585953 2.985363e-05 8.863709e-05 1.281543e-05 0.0037410462 0.0012273150 0.032307394
+# [6,] 0.0001354754 4.628201e-05 2.487600e-03 2.403874e-03 0.3637407124 0.0177062247 0.018065078  
+# -------------------  
   
+  
+  length(y_ftest)
+  # 4641
+  
+  preds.combined <- apply(preds.mx, 1, function(r) {
+    r.max <- max(r)
+    c(label = y.labels[which.max(r)], 
+      P = r.max,
+      Predicted = cnn.binclass.get_prediction_values(r.max))
+  }) |> t()
+  
+  str(preds.combined)
+ # num [1:4641, 1:3] 26 39 2 33 12 25 28 5 15 34 ...
+ # - attr(*, "dimnames")=List of 2
+ #  ..$ : NULL
+ #  ..$ : chr [1:3] "label" "P" "Predicted"
+
+  dim(preds.combined)
+  # [1] 4641    3
+  head(preds.combined)
+#      label         P Predicted
+# [1,]    26 0.9980495         1
+# [2,]    39 0.9938054         1
+# [3,]     2 0.9997920         1
+# [4,]    33 0.9999874         1
+# [5,]    12 0.9999998         1
+# [6,]    25 0.9995680         1
+
+  sum(preds.combined[, "Predicted"])
+  # [1] 4640  
+  
+
+  unrecognized.idx <- which(preds.combined[, "Predicted"] == 0)  
+# 3406
+
+  unrecognized <- preds.combined[unrecognized.idx,]
+#     label          P  Predicted 
+# 24.0000000  0.3319259  0.0000000 
+  
+  y.predicted_optimistic <- y.labels[unrecognized["label"]]
+# [1] J
+# Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+  
+    
+  y.unrecognized <- y_ftest[unrecognized.idx]  
+# [1] J
+# Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+
+  y_ftest[unrecognized.idx] == y.predicted_optimistic 
+  # TRUE
+  
+  
+  dim(x_ftest)
+  
+  x.unrecognized <- x_ftest[unrecognized.idx,,]  
+  dim(x.unrecognized)
+  
+  char.image(x.unrecognized)
+  
+  
+  
+  preds.combined <- apply(preds.mx, 1, function(r) {
+    r.max <- max(r)
+    c(label = as.character(y.labels)[which.max(r)], 
+      P = r.max,
+      Predicted = cnn.binclass.get_prediction_values(r.max))
+  }) |> t()
+  
+  
+  dim(preds.combined)
+# [1] 4641    3
+  
+predictions <- preds.combined[, "label"]
+
+head(predictions) 
+# [1] 26 39  2 33 12 25
+
+head(y_ftest)
+
+head(predictions == as.integer(y_ftest))
+#> [1]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+
+accuracy <- mean(predictions == as.integer(y_ftest))  
+# 0.8547727  
+
+wrong.idx <- seq_len(length(y_ftest))[predictions != as.integer(y_ftest) ]
+head(wrong.idx)
+length(wrong.idx)
+# [1] 674
+
+ preds.wrong <- sapply(wrong.idx, function(i) {
+   c(true_val = y_ftest[i], pred = predictioins[i], index = i)
+ }) |> t()
+ 
+ str(preds.wrong)
+ dim(preds.wrong)
+ 
+ head(preds.wrong)
+ 
+ df.preds.wrong <- data.frame(true_val = y.labels[preds.wrong[,"true_val"]],
+                              pred = y.labels[preds.wrong[,"pred"]],
+                              index = preds.wrong[,"index"])
+ head(df.preds.wrong)
+#    true_val pred index
+# 1        B    Z     2
+# 2        W    N     7
+# 3        H    A     9
+# 4        N    U    16
+# 5        F    P    22
+# 6        Z    2    28
+
+char.image(x_ftest[2,,]) 
+char.image(x_ftest[7,,]) 
+char.image(x_ftest[9,,]) 
+char.image(x_ftest[16,,]) 
+char.image(x_ftest[22,,]) 
+char.image(x_ftest[28,,]) 
+
+ 
+ 
+ 
+ 
+ 
+     
+# ------------------------------  
   bin_preds.mx <- (preds.mx > 0.5) |> 
     as.integer() |> 
     matrix(nrow = nrow(preds.mx))
@@ -173,7 +391,7 @@ have been loaded from the cache file:
   lbl_T.acc
   # 0.9627761
   
-  y.T_test <- (y_test == "T") |> as.integer()
+  y.T_test <- (y_ftest == "T") |> as.integer()
   str(y.T_test)
   # int [1:817379] 0 0 0 0 0 0 0 0 0 0 ...
   
@@ -270,14 +488,14 @@ have been loaded from the cache file:
   # [5,] "A"   "0.0807587429881096"
   # [6,] "@"   "0.999995708465576" 
   
-  length(y_test)
+  length(y_ftest)
   # 817379
   
-  head(y_test)
+  head(y_ftest)
   # [1] 5 6 @ & X @
   # 39 Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T ... Z
   
-  acc.optimistic <- mean(y_test == preds.optimistic[,1]) 
+  acc.optimistic <- mean(y_ftest == preds.optimistic[,1]) 
   acc.optimistic
   #> 0.7836793
   
@@ -311,7 +529,7 @@ have been loaded from the cache file:
   # [5,] "NA"  "0.0807587429881096"
   # [6,] "@"   "0.999995708465576" 
   
-  acc.norm <- mean(y_test == preds.norm[,1]) 
+  acc.norm <- mean(y_ftest == preds.norm[,1]) 
   acc.norm
   # [1] 0.7429589
   
@@ -341,7 +559,7 @@ have been loaded from the cache file:
   # [5,] "NA"  "0.0807587429881096"
   # [6,] "@"   "0.999995708465576" 
   
-  acc.pessimistic <- mean(y_test == preds.pessimistic[,1]) 
+  acc.pessimistic <- mean(y_ftest == preds.pessimistic[,1]) 
   acc.pessimistic
   # [1] 0.6619133
   
@@ -350,7 +568,7 @@ have been loaded from the cache file:
   
   put_log("CNN: Caching the Ensemble Classifier Results...")
   save(cnn.ensemble,
-       y_test,
+       y_ftest,
        file = cnn_models.ensemble.cache_file.path)
   put_log("CNN: the Ensemble Classifier Results have been saved to the cache file:
 %1", cnn_models.ensemble.cache_file.path)
@@ -374,12 +592,12 @@ head(err.pred.values)
 err.teslbl.values <- y_cnn.test[err.idx]
 head(err.teslbl.values)
 
-err.head.img <- x_test[err.head.idx,,,1]
+err.head.img <- x_ftest[err.head.idx,,,1]
 dim(err.head.img)
 
 par(mfrow = c(6, 1))
 for(i in err.head.idx) {
-  char.image(x_test[i,,,1])
+  char.image(x_ftest[i,,,1])
 }
 par(mfrow = c(1,1))
 
