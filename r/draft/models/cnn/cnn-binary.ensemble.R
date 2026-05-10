@@ -5,7 +5,7 @@
 ##### Open Log for Ensemble Classifier -----------------------------------------
 open_logfile(".cnn.ensemble.load-final-test-data")
 ## Load Final Test Data --------------------------------------------------------
-if(!exists("x_ftest")) {
+if(!exists("x.final_test")) {
   stopifnot(file.exists(final_test.img28x28mx.array.file_path))
   x.final_test <- readRDS(final_test.img28x28mx.array.file_path)
   put_log("The Final Test Data has been loaded from the following backup file:
@@ -187,6 +187,10 @@ object structure:
   })
   put_end_date()
   
+  stopCluster(cl)
+  stopImplicitCluster()
+  put_end_date(start)
+
   class(preds.mx)
   dim(preds.mx)
   

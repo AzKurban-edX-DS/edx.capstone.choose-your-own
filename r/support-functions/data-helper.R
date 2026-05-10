@@ -366,12 +366,16 @@ Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
 
   if(balanced) {
     train.idx <-
-      sapply(test.idx.groups,
-             function(idx_group) {
-               sample(idx_group, 
-                      size = train.size.balanced,
-                      replace = bootstap.sample)
-             }) |>
+      sapply(y.chars$classID,
+               function(label) {
+                 idx_grp <- idx_group.list[[label]]
+                 test.idx_grp <- test.idx.groups[[label]]
+                 # train.idx_grp <- setdiff(idx_grp, test.idx_grp)
+                 setdiff(idx_grp, test.idx_grp) |>
+                   sample(, 
+                          size = train.size.balanced,
+                          replace = bootstap.sample)
+               }) |>
       unlist(use.names = FALSE) |>
       sort()
   } else {

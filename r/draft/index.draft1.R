@@ -69,15 +69,15 @@ source(prepare_ds.script.path,
        keep.source = TRUE)
 
 ## Load Flatten Dataset --------------------------------------------------------
-load_flatten_dataset.script.path <- file.path(support_scripts.path, "load-flatten-dataset.R")
-stopifnot(file.exists(load_flatten_dataset.script.path))
-
-source(load_flatten_dataset.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+# load_flatten_dataset.script.path <- file.path(support_scripts.path, "load-flatten-dataset.R")
+# stopifnot(file.exists(load_flatten_dataset.script.path))
+# 
+# source(load_flatten_dataset.script.path, 
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 ## Build kNN+PCA & Random Forest Models ----------------------------------------
 
@@ -104,15 +104,15 @@ source(dl_basic.scripts.path,
        keep.source = TRUE)
 
 #### Load Dataset for CNN-Based Models -----------------------------------------
-load.cnn_dataset.script_path <- file.path(support_scripts.path, "load-cnn-dataset.R")
-stopifnot(file.exists(load.cnn_dataset.script_path))
-
-source(load.cnn_dataset.script_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+# load.cnn_dataset.script_path <- file.path(support_scripts.path, "load-cnn-dataset.R")
+# stopifnot(file.exists(load.cnn_dataset.script_path))
+# 
+# source(load.cnn_dataset.script_path, 
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 ## CNN-based Multi-class Classifier Model ---------------------------------------
 
@@ -156,6 +156,9 @@ input_shape <- c(dim.x_cnn[2], dim.x_cnn[3], 1)
 input_shape
 
 ### Build CNN-Based Multi-class Model ------------------------------------------
+cnn.multiclass.model.file_path <- file.path(cnn.train.data.path, 
+                                            "cnn.pre-trained.multiclass.model.keras")
+
 source(cnn_multiclass.scripts.path, 
        catch.aborts = TRUE,
        echo = TRUE,
