@@ -133,7 +133,7 @@ log_close()
 #### Open log: Build CNN Model -------------------------------------------------
 open_logfile(".build-cnn-model")
 #### Model building ------------------------------------------------------------
-##### Define a CNN model structure -------------------------------------
+##### Define a CNN-Based Multiclass Classification model structure -------------------------------------
 # Define a few parameters to be used in the CNN model
 n.output <- 39
 batch_size <- 128
@@ -146,7 +146,7 @@ vld_split <- 0.2
 #> Then flatten the output and use two dense layers to connect to the categoires 
 #> of the image. [*]
 
-cnn_model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
+cnn.multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
   layer_conv_2d(filters = 8L,
                 kernel_size = 5, 
                 strides = 1,
@@ -163,19 +163,19 @@ cnn_model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
   layer_dropout(rate = 0.3) |>
   layer_dense(units = n.output, activation = "softmax")
 
-summary(cnn_model)
-# plot(cnn_model)
+summary(cnn.multiclass.model)
+# plot(cnn.multiclass.model)
 
 # Similar to DNN model, we need to compile the defined CNN model. [*]
 
 # Compile model
-cnn_model |> compile(
+cnn.multiclass.model |> compile(
   loss = loss_categorical_crossentropy,
   # optimizer = optimizer_adadelta(),
   optimizer = keras3::optimizer_adamax(0.001),
   metrics = c('accuracy')
 )
-summary(cnn_model)
+summary(cnn.multiclass.model)
 
 #### Training CNN Model --------------------------------------------------------
 
@@ -199,7 +199,7 @@ start <- put_start_date()
 
 str(x_cnn.train)
 # Train model
-cnn.multiclass.train_history <- cnn_model |> 
+cnn.multiclass.train_history <- cnn.multiclass.model |> 
   fit(x_cnn.train, 
       y_cnn.train.cat,
       epochs = epochs,
@@ -210,7 +210,7 @@ cnn.multiclass.train_history <- cnn_model |>
 plot(cnn.multiclass.train_history)
 
 put_log("Saving pre-trained model...")
-save_model(cnn_model,
+save_model(cnn.multiclass.model,
            filepath = cnn.multiclass.model.file_path,
            overwrite = TRUE)
 
@@ -227,7 +227,7 @@ open_logfile(".evaluate-cnn-model")
 
 put_log("Evaluating CNN Model...")
 start <- put_start_date()
-cnn.eval.result <- cnn_model |> evaluate(x_cnn.test, y_cnn.test.cat)
+cnn.eval.result <- cnn.multiclass.model |> evaluate(x_cnn.test, y_cnn.test.cat)
 put_log("CNN Model evaluation result:
 %1", capture.output(str(cnn.eval.result)))
 # List of 2
@@ -239,7 +239,7 @@ put_end_date(start)
 # model prediction
 put_log("CNN Model: constructing predictions...")
 
-cnn_preds <- cnn_model |> predict(x_cnn.test) 
+cnn_preds <- cnn.multiclass.model |> predict(x_cnn.test) 
 put_log("CNN Model: predictions have been constructed.")
 put_end_date(start)
 # Time difference of 1.502232 mins

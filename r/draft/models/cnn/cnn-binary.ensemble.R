@@ -2,152 +2,112 @@
 # CNN-Based Ensemble Classifier for all labels 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-##### Open Log for Ensemble Classifier -----------------------------------------
+## Open Log for Preparing Final Test Set -----------------------------------------
 open_logfile(".cnn.ensemble.load-final-test-data")
-## Load Final Test Data --------------------------------------------------------
-if(!exists("x.final_test")) {
-  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
-  x.final_test <- readRDS(final_test.img28x28mx.array.file_path)
-  put_log("The Final Test Data has been loaded from the following backup file:
-%1", final_test.img28x28mx.array.file_path)
-}
+put_log("Evaluating the pre-trained CNN-based Binary Classifier Models...")
 
-put_log("The Final Test Data has the following structure:
-%1", capture.output(str(x.final_test)))
+## Preparing Validation Set ----------------------------------------------------
+put_log("Preparing a Test Set...")
+start <- put_start_date()
 
-y.final_test.groups <- ds.get_classIDs.grouped(x.final_test)
-y.final_test <- y.final_test.groups$classID
-str(y.final_test)
-length(y.final_test)
+stopifnot(exists("x3d.test"))
 
-y.final_test.int <- as.integer(y.final_test)
-y.final_test.chars <- y.final_test.groups$groupByClass
-str(y.final_test.chars)
+lbl.groups <- ds.get_classIDs.grouped(x3d.test)
+#y_cnn.test <- as.factor(rownames(x3d.test))
+y_cnn.test <- lbl.groups$classID
+length(y_cnn.test)
+#> [1] 33267
 
-print(y.final_test.chars, n = nrow(y.final_test.chars))
-#--------
+y_cnn.test.cat <- to_categorical(y_cnn.test)
+colnames(y_cnn.test.cat) <- y.labels
+
+put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
+%1", capture.output(dim(y_cnn.test.cat)))
+#> [1] 33267    39
+
+# str(y_cnn.test.cat)
+head(y_cnn.test.cat)
+#      # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+# [1,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [2,] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [3,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [4,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+# [5,] 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [6,] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+put_log("Reshaping the Test Set to make it compatible with the Convolutional Neural Network (CNN)...")
+# Add channel into the dimension
+x_cnn.test <- array_reshape(x3d.test, 
+                            c(nrow(x3d.test), 
+                              img_rows, 
+                              img_cols, 
+                              1))
+
+put_log("The Test Set has been reshaped as follows:
+%1", capture.output(shape(x3d.test)))
+# shape(33267, 28, 28)
+
+# class Identifies: Quick Analysis ---------------------------------------------
+
+y_cnn.test.chars <- lbl.groups$groupByClass
+#str(y_cnn.test.chars)
+
+char_n.max <- max(y_cnn.test.chars$n)
+# 853
+char_n.max == min(y_cnn.test.chars$n)
+# TRUE
+
+put_log("The number of rows for each *Character Class* to be recognized in the Test Set is as follows:
+%1", capture.output(print(y_cnn.test.chars, n = nrow(y_cnn.test.chars))))
 # A tibble: 39 × 2
 #    classID     n
 #    <fct>   <int>
-#  1 #        1300
-#  2 $        1350
-#  3 &         520
-#  4 @        1250
-#  5 0         368
-#  6 1        1675
-#  7 2        1267
-#  8 3        1301
-#  9 4        1277
-# 10 5        1388
-# 11 6        1594
-# 12 7         190
-# 13 8        1198
-# 14 9        1195
-# 15 A         392
-# 16 B         385
-# 17 C         168
-# 18 D         322
-# 19 E         308
-# 20 F         324
-# 21 G         363
-# 22 H         343
-# 23 I         381
-# 24 J         126
-# 25 K         240
-# 26 L         210
-# 27 M         251
-# 28 N         235
-# 29 P         175
-# 30 Q         405
-# 31 R         366
-# 32 S         168
-# 33 T         384
-# 34 U         210
-# 35 V         224
-# 36 W         182
-# 37 X         119
-# 38 Y         189
-# 39 Z         181
-
-# Create Balanced Test Set----------------------------------------------------- 
-
-set.seed(length(y.labels)) # 39
-sample_set <- sample_train_test_sets.x3d(x.final_test, test.ratio = 1)
-
-x_ftest <- sample_set$test_set
-rm(sample_set)
-
-put_log("A Test Set created with the following structure:
-%1", capture.output(str(x_ftest)))
-
-y_ftest.groups <- ds.get_classIDs.grouped(x_ftest)
-y_ftest <- y_ftest.groups$classID
-str(y_ftest)
-length(y_ftest)
-
-y_ftest.int <- as.integer(y_ftest)
-y_ftest.chars <- y_ftest.groups$groupByClass
-str(y_ftest.chars)
-# tibble [39 × 2] (S3: tbl_df/tbl/data.frame)
-#  $ classID: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
-#  $ n      : int [1:39] 4261 4261 4261 4261 4261 4261 4261 4261 4261 4261 ...
-
-print(y_ftest.chars, n = nrow(y_ftest.chars))
-#-----
-#    classID     n
-#    <fct>   <int>
-#  1 #        4261
-#  2 $        4261
-#  3 &        4261
-#  4 @        4261
-#  5 0        4261
-#  6 1        4261
-#  7 2        4261
-#  8 3        4261
-#  9 4        4261
-# 10 5        4261
-# 11 6        4261
-# 12 7        4261
-# 13 8        4261
-# 14 9        4261
-# 15 A        4261
-# 16 B        4261
-# 17 C        4261
-# 18 D        4261
-# 19 E        4261
-# 20 F        4261
-# 21 G        4261
-# 22 H        4261
-# 23 I        4261
-# 24 J        4261
-# 25 K        4261
-# 26 L        4261
-# 27 M        4261
-# 28 N        4261
-# 29 P        4261
-# 30 Q        4261
-# 31 R        4261
-# 32 S        4261
-# 33 T        4261
-# 34 U        4261
-# 35 V        4261
-# 36 W        4261
-# 37 X        4261
-# 38 Y        4261
-# 39 Z        4261
-# -----------------
-max(y_ftest.chars$n) == min(y_ftest.chars$n)
-#> [1] TRUE
-
-max(y_ftest.chars$n)
-#> [1] 4261
+#  1 #         853
+#  2 $         853
+#  3 &         853
+#  4 @         853
+#  5 0         853
+#  6 1         853
+#  7 2         853
+#  8 3         853
+#  9 4         853
+# 10 5         853
+# 11 6         853
+# 12 7         853
+# 13 8         853
+# 14 9         853
+# 15 A         853
+# 16 B         853
+# 17 C         853
+# 18 D         853
+# 19 E         853
+# 20 F         853
+# 21 G         853
+# 22 H         853
+# 23 I         853
+# 24 J         853
+# 25 K         853
+# 26 L         853
+# 27 M         853
+# 28 N         853
+# 29 P         853
+# 30 Q         853
+# 31 R         853
+# 32 S         853
+# 33 T         853
+# 34 U         853
+# 35 V         853
+# 36 W         853
+# 37 X         853
+# 38 Y         853
+# 39 Z         853
 
 ### Close Log ---------------------------------------------------------------
 log_close()
 
 ##### Open Log for Ensemble Classifier -----------------------------------------
 open_logfile(".cnn-model.ensemble-classifier")
-##### Build Ensemble Classifier ------------------------------------------------
+##### Build & Test Ensemble Classifier ------------------------------------------------
 
 if (file.exists(cnn_models.ensemble.cache_file.path)) {
   put_log("CNN: loading the Ensemble Classifier Results from cache file: 
@@ -176,17 +136,21 @@ object structure:
     lbl.saved_model.path <- hwChar.CNN.binCls.models[[label]]$saved_model.filepath 
     stopifnot(file.exists(lbl.saved_model.path))
 
+    put_log("Loading the pre-trained CNN-based Binary Classifier model for `%1` label from the backup file...",
+            label)
     lbl.pretrained_model <- load_model(lbl.saved_model.path)  
+    put_log("The pre-trained CNN-based Binary Classifier model for `%1` label
+has been loaded from the following backup file:
+%2", label, lbl.saved_model.path)
     
     put_log("Summary of the model for handwritten character `%1`:
 %2",label, capture.output(summary(lbl.pretrained_model)))
     
     put_log("Making predictions for handwritten character '%1'...", 
             label)
-    lbl.pretrained_model |> predict(x_ftest)    
+    lbl.pretrained_model |> predict(x_cnn.test)    
   })
-  put_end_date()
-  
+
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
@@ -236,7 +200,7 @@ object structure:
 # -------------------  
   
   
-  length(y_ftest)
+  length(y_cnn.test)
   # 4641
   
   preds.combined <- apply(preds.mx, 1, function(r) {
@@ -265,10 +229,9 @@ object structure:
 
   sum(preds.combined[, "Predicted"])
   # [1] 4640  
-  
 
   unrecognized.idx <- which(preds.combined[, "Predicted"] == 0)  
-# 3406
+# 3961
 
   unrecognized <- preds.combined[unrecognized.idx,]
 #     label          P  Predicted 
@@ -279,54 +242,47 @@ object structure:
 # Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
   
     
-  y.unrecognized <- y_ftest[unrecognized.idx]  
+  y.unrecognized <- y_cnn.test[unrecognized.idx]  
 # [1] J
 # Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 
-  y_ftest[unrecognized.idx] == y.predicted_optimistic 
+  y_cnn.test[unrecognized.idx] == y.predicted_optimistic 
   # TRUE
   
   
-  dim(x_ftest)
+  dim(x_cnn.test)
   
-  x.unrecognized <- x_ftest[unrecognized.idx,,]  
+  x.unrecognized <- x_cnn.test[unrecognized.idx,,,1]  
   dim(x.unrecognized)
   
   char.image(x.unrecognized)
   
   
   
-  preds.combined <- apply(preds.mx, 1, function(r) {
-    r.max <- max(r)
-    c(label = as.character(y.labels)[which.max(r)], 
-      P = r.max,
-      Predicted = cnn.binclass.get_prediction_values(r.max))
-  }) |> t()
-  
-  
-  dim(preds.combined)
-# [1] 4641    3
-  
 predictions <- preds.combined[, "label"]
 
 head(predictions) 
 # [1] 26 39  2 33 12 25
 
-head(y_ftest)
+head(y_cnn.test)
 
-head(predictions == as.integer(y_ftest))
-#> [1]  TRUE FALSE  TRUE  TRUE  TRUE  TRUE
+head(predictions == as.integer(y_cnn.test))
+#> [1]  FALSE  TRUE FALSE  TRUE  TRUE  TRUE
 
-accuracy <- mean(predictions == as.integer(y_ftest))  
-# 0.8547727  
+cnn.bin.accuracy <- mean(predictions == as.integer(y_cnn.test)) 
+put_log("CNN-based Binary Classifier Models Ensemble accuracy: %1", cnn.bin.accuracy)
 
-wrong.idx <- seq_len(length(y_ftest))[predictions != as.integer(y_ftest) ]
+# 0.8547727 
+
+head(predictions)
+
+wrong.idx <- seq_len(length(y_cnn.test))[predictions != as.integer(y_cnn.test) ]
 head(wrong.idx)
 length(wrong.idx)
 # [1] 674
 
  preds.wrong <- sapply(wrong.idx, function(i) {
-   c(true_val = y_ftest[i], pred = predictioins[i], index = i)
+   c(true_val = y_cnn.test[i], pred = predictioins[i], index = i)
  }) |> t()
  
  str(preds.wrong)
@@ -337,7 +293,9 @@ length(wrong.idx)
  df.preds.wrong <- data.frame(true_val = y.labels[preds.wrong[,"true_val"]],
                               pred = y.labels[preds.wrong[,"pred"]],
                               index = preds.wrong[,"index"])
- head(df.preds.wrong)
+length(df.preds.wrong$true_val)
+ 
+head(df.preds.wrong)
 #    true_val pred index
 # 1        B    Z     2
 # 2        W    N     7
@@ -346,240 +304,16 @@ length(wrong.idx)
 # 5        F    P    22
 # 6        Z    2    28
 
-char.image(x_ftest[2,,]) 
-char.image(x_ftest[7,,]) 
-char.image(x_ftest[9,,]) 
-char.image(x_ftest[16,,]) 
-char.image(x_ftest[22,,]) 
-char.image(x_ftest[28,,]) 
+# char.image(x_cnn.test[2,,,1]) 
+# char.image(x_cnn.test[7,,,1]) 
+# char.image(x_cnn.test[9,,,1]) 
+# char.image(x_cnn.test[16,,,1]) 
+# char.image(x_cnn.test[22,,,1]) 
+# char.image(x_cnn.test[28,,,1]) 
 
- 
- 
- 
- 
- 
-     
-# ------------------------------  
-  bin_preds.mx <- (preds.mx > 0.5) |> 
-    as.integer() |> 
-    matrix(nrow = nrow(preds.mx))
-  
-  colnames(bin_preds.mx) <- as.character(y.labels)
-  
-  class(bin_preds.mx)
-  dim(bin_preds.mx)
-  #> [1] 817379     39
-  
-  head(bin_preds.mx)
-  #      # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
-  # [1,] 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  # [2,] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  # [3,] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  # [4,] 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  # [5,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  # [6,] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
-  
-  
-  df.model.acc_ordered <- df.models.acc |> arrange(accuracy)
-  head(df.model.acc_ordered)
-  # label  accuracy
-  # T     T 0.9627761
-  # 1     1 0.9708605
-  # L     L 0.9711284
-  # 5     5 0.9797157
-  # I     I 0.9804546
-  # U     U 0.9804766 
-  
-  lbl_T.idx <- df.model.acc_ordered$label == "T"
-  lbl_T.acc <- df.model.acc_ordered[lbl_T.idx,]$accuracy
-  lbl_T.acc
-  # 0.9627761
-  
-  y.T_test <- (y_ftest == "T") |> as.integer()
-  str(y.T_test)
-  # int [1:817379] 0 0 0 0 0 0 0 0 0 0 ...
-  
-  bin.T_pred.mx <- bin_preds.mx[,"T"]
-  str(bin.T_pred.mx)
-  #  int [1:817379] 0 0 0 0 0 0 0 0 0 0 ..
-  
-  sum(bin.T_pred.mx)
-  # 0
-  
-  sum(y.T_test)
-  # Accuracy for binary classifier:
-  sum(bin.T_pred.mx == y.T_test)
-  # 786953
-  
-  mean(bin.T_pred.mx == y.T_test)
-  #> [1] 0.9627761
-  
-  y.T_test.factor <- as.factor(y.T_test)
-  str(y.T_test.factor)
-  
-  bin.T_pred.mx.factor <- factor(bin.T_pred.mx, levels = levels(y.T_test.factor))
-  str(bin.T_pred.mx.factor)
-  
-  conf.mx <- confusionMatrix(y.T_test.factor, bin.T_pred.mx.factor)
-  conf.mx
-  # Confusion Matrix and Statistics
-  # 
-  #     Reference
-  # Prediction      0      1
-  # 0          786953      0
-  # 1          30426      0
-  # 
-  # Accuracy : 0.9628          
-  # 95% CI : (0.9624, 0.9632)
-  # No Information Rate : 1               
-  # P-Value [Acc > NIR] : 1               
-  # 
-  # Kappa : 0               
-  # 
-  # Mcnemar's Test P-Value : <2e-16          
-  #                                         
-  #           Sensitivity : 0.9628          
-  #           Specificity :     NA          
-  #        Pos Pred Value :     NA          
-  #        Neg Pred Value :     NA          
-  #            Prevalence : 1.0000          
-  #        Detection Rate : 0.9628          
-  #  Detection Prevalence : 0.9628          
-  #     Balanced Accuracy :     NA          
-  #                                         
-  #      'Positive' Class : 0             
-  
-  lbl_1.idx <- df.model.acc_ordered$label == "1"
-  lbl_1.acc <- df.model.acc_ordered[lbl_1.idx,]$accuracy
-  lbl_1.acc
-  # 0.9708605
-  
-  lbl_L.idx <- df.model.acc_ordered$label == "L"
-  lbl_L.acc <- df.model.acc_ordered[lbl_L.idx,]$accuracy
-  lbl_L.acc
-  # 0.9711284
-  
-  names(evaluation.results) <- as.character(y.labels)
-  
-  avg.accuracy = mean(lbl_models.accuracies)
-  avg.accuracy
-  # 0.9888955
-  
-  head(preds.mx[,"T"])
-  
-  
-  # rMaxs <- rowMaxs(preds.mx)
-  # str(rMaxs)
-  # head(rMaxs, 50)
-  
-  preds.optimistic <- apply(preds.mx, 1, function(r) {
-    c(label = as.character(y.labels)[which.max(r)], 
-      P = max(r))
-  }) |> t()
-  
-  class(preds.optimistic)
-  # "matrix" "array"
-  dim(preds.optimistic)
-  # 817379      2
-  str(preds.optimistic)
-  
-  head(preds.optimistic)
-  #       label P                   
-  # [1,] "5"   "0.911750555038452" 
-  # [2,] "6"   "0.989728391170502" 
-  # [3,] "@"   "0.99999988079071"  
-  # [4,] "&"   "0.999954521656036" 
-  # [5,] "A"   "0.0807587429881096"
-  # [6,] "@"   "0.999995708465576" 
-  
-  length(y_ftest)
-  # 817379
-  
-  head(y_ftest)
-  # [1] 5 6 @ & X @
-  # 39 Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T ... Z
-  
-  acc.optimistic <- mean(y_ftest == preds.optimistic[,1]) 
-  acc.optimistic
-  #> 0.7836793
-  
-  y.labels.ext <- y.labels
-  levels(y.labels.ext) <- c(levels(y.labels), "NA")
-  y.labels.ext[40] <- "NA"
-  y.labels.ext
-  
-  
-  preds.norm <- apply(preds.mx, 1, function(r) {
-    
-    r.max = max(r)
-    label <- as.character(y.labels)[which(r == r.max)]
-    
-    c(label = ifelse(r.max > 0.5, label, "NA"), 
-      P = r.max)
-  }) |> t()
-  
-  class(preds.norm)
-  # "matrix" "array"
-  dim(preds.norm)
-  # 817379      2
-  str(preds.norm)
-  
-  head(preds.norm)
-  #        label P                   
-  # [1,] "5"   "0.911750555038452" 
-  # [2,] "6"   "0.989728391170502" 
-  # [3,] "@"   "0.99999988079071"  
-  # [4,] "&"   "0.999954521656036" 
-  # [5,] "NA"  "0.0807587429881096"
-  # [6,] "@"   "0.999995708465576" 
-  
-  acc.norm <- mean(y_ftest == preds.norm[,1]) 
-  acc.norm
-  # [1] 0.7429589
-  
-  
-  
-  preds.pessimistic <- apply(preds.mx, 1, function(r) {
-    
-    r.max = max(r)
-    label <- as.character(y.labels)[which(r == r.max)]
-    
-    c(label = ifelse(r.max > 0.75, label, "NA"), 
-      P = r.max)
-  }) |> t()
-  
-  class(preds.pessimistic)
-  # "matrix" "array"
-  dim(preds.pessimistic)
-  # 817379      2
-  str(preds.pessimistic)
-  
-  head(preds.pessimistic)
-  #        label P                   
-  # [1,] "5"   "0.911750555038452" 
-  # [2,] "6"   "0.989728391170502" 
-  # [3,] "@"   "0.99999988079071"  
-  # [4,] "&"   "0.999954521656036" 
-  # [5,] "NA"  "0.0807587429881096"
-  # [6,] "@"   "0.999995708465576" 
-  
-  acc.pessimistic <- mean(y_ftest == preds.pessimistic[,1]) 
-  acc.pessimistic
-  # [1] 0.6619133
-  
-  
-  
-  
-  put_log("CNN: Caching the Ensemble Classifier Results...")
-  save(cnn.ensemble,
-       y_ftest,
-       file = cnn_models.ensemble.cache_file.path)
-  put_log("CNN: the Ensemble Classifier Results have been saved to the cache file:
-%1", cnn_models.ensemble.cache_file.path)
-  
-  
 }
 
+put_end_date(start)
 #### Close Log -----------------------------------------------------------------
 log_close()
 #----------------------------------
@@ -596,13 +330,13 @@ head(err.pred.values)
 err.teslbl.values <- y_cnn.test[err.idx]
 head(err.teslbl.values)
 
-err.head.img <- x_ftest[err.head.idx,,,1]
+err.head.img <- x_cnn.test[err.head.idx,,,1]
 dim(err.head.img)
 
-par(mfrow = c(6, 1))
-for(i in err.head.idx) {
-  char.image(x_ftest[i,,,1])
-}
-par(mfrow = c(1,1))
+# par(mfrow = c(6, 1))
+# for(i in err.head.idx) {
+#   char.image(x_cnn.test[i,,,1])
+# }
+# par(mfrow = c(1,1))
 
 #> [*] Reference: https://databricks-prod-cloudfronlbl.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/lateslbl.html

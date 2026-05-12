@@ -114,23 +114,60 @@ source(dl_basic.scripts.path,
 #        verbose = TRUE,
 #        keep.source = TRUE)
 
-## CNN-based Multi-class Classifier Model ---------------------------------------
+## CNN-based Multiclass Classifier Model ---------------------------------------
+open_logfile(".ds.prepare.train&test.balanced_sets")
+## Prepare Train+Test Data -----------------------------------------------------
+put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
+start <- put_start_date()
 
-### Init CNN-Based Multi-class Model Directories -------------------------------
+if(!exists("img28x28mx.array")) {
+  stopifnot(file.exists(train.img28x28mx.array.file_path))
+  put_log("Loading the Train 28x28 Image Data Array from the backup file...")
+  img28x28mx.array <- readRDS(train.img28x28mx.array.file_path)
+  put_log("The Train 28x28 Image Data Array has been loaded from the following backup file:
+%1", train.img28x28mx.array.file_path)
+}
+
+put_log("The Train Test Data has the following structure:
+%1", capture.output(str(img28x28mx.array)))
+
+#### Split Dataset -------------------------------------------------------------
+sample_seed <- length(y.labels) # 39
+
+put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+
+set.seed(sample_seed)
+split3d.list <- sample_train_test_sets.x3d(img28x28mx.array)
+
+put_log("The Train 28x28 Image Data Array has been split into a Train and Test Sets,
+which are returned in a list object with the following structure:
+%1", capture.output(str(split3d.list)))
+put_end_date(start)
+
+x3d.train <- split3d.list$train_set
+put_log("The Train Set has been saved in the object `x3d.train` with the following shape:
+%1", capture.output(shape(x3d.train)))
+# shape(132912, 28, 28)
+
+x3d.test <- split3d.list$test_set
+put_log("The Test Set has been saved in the object `x3d.test` with the following shape:
+%1", capture.output(shape(x3d.test)))
+# shape(33267, 28, 28)
+
+rm(split3d.list)
+### Close Log ------------------------------------------------------------------
+log_close()
+
+### Init CNN-Based Multiclass Classifier Model Directories ---------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
-cnn_multiclass.scripts.path <- file.path(models.cnn_script.path, 
-                                         "cnn-multiclass.draft3.R")
-stopifnot(file.exists(cnn_multiclass.scripts.path))
+cnn_multiclass.script.path <- file.path(models.cnn_script.path, 
+                                         "cnn-multiclass.R")
+stopifnot(file.exists(cnn_multiclass.script.path))
 
 cnn.train.data.path <- file.path(dl.keras3.path, "cnn")
 
 if(!dir.exists(cnn.train.data.path))
   dir.create(cnn.train.data.path)
-
-cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
-
-if(!dir.exists(cnn.eval.cache.path))
-  dir.create(cnn.eval.cache.path)
 
 cnn.callbacks.path <- file.path(cnn.train.data.path, "callbacks")
 
@@ -155,11 +192,35 @@ if(!dir.exists(cnn.callbacks.tb_logs.path))
 input_shape <- c(dim.x_cnn[2], dim.x_cnn[3], 1)
 input_shape
 
-### Build CNN-Based Multi-class Model ------------------------------------------
+### Build CNN-Based Multiclass Classifier Model --------------------------------
 cnn.multiclass.model.file_path <- file.path(cnn.train.data.path, 
                                             "cnn.pre-trained.multiclass.model.keras")
+cnn.multiclass.train_history.file_path <- file.path(cnn.train.data.path,
+                                                      "cnn.multiclass.train_history.backup.rds")
 
-source(cnn_multiclass.scripts.path, 
+
+source(cnn_multiclass.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+### Init CNN-Based Multiclass Classifier Model Evaluation Directories ----------
+
+cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
+                                                   "cnn-multiclass.evaluation.R")
+stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
+
+cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
+
+if(!dir.exists(cnn.eval.cache.path))
+  dir.create(cnn.eval.cache.path)
+
+
+### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
+
+source(cnn_multiclass.evaluation.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -176,7 +237,7 @@ cnn.lbl_models.cache.path <- file.path(cnn.train.data.path, "lbl-models")
 if(!dir.exists(cnn.lbl_models.cache.path))
   dir.create(cnn.lbl_models.cache.path)
 
-## Build CNN-based Binary Classifier Models ------------------------------------
+## Build & Train a CNN-based Binary Classifier Models --------------------------
 source(cnn_binary.scripts.path, 
        catch.aborts = TRUE,
        echo = TRUE,
@@ -184,8 +245,62 @@ source(cnn_binary.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+## Final Test for the CNN-Based Classifier Models ------------------------------
+open_logfile(".ds.prepare.final-test.balanced_sets")
+### Preparing the Final Test Data -------------------------------------------
+put_log("Preparing a Final Test Set for validating the CNN-based Models...")
+start <- put_start_date()
+
+if(!exists("ft.img28x28mx.array")) {
+  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+  ft.img28x28mx.array <- readRDS(final_test.img28x28mx.array.file_path)
+  put_log("The Final Test Data has been loaded from the following backup file:
+%1", final_test.img28x28mx.array.file_path)
+}
+
+put_log("The Final Test Data has the following structure:
+%1", capture.output(str(ft.img28x28mx.array)))
+
+#### Creating Final Test Dataset -----------------------------------------------
+final_sample_seed <- length(y.labels) + 1 # 40
+
+put_log("Making a balanced sample from the Validation 28x28 Image Data Array...")
+
+set.seed(final_sample_seed)
+#ft.sample_set <- sample_train_test_sets.x3d(img28x28mx.array)
+ft.sample_set <- sample_train_test_sets.x3d(ft.img28x28mx.array, test.ratio = 1)
+
+put_log("The Final Test Set sample has been made from the Validation 28x28 Image Data Array,
+which is returned in an object with the following structure:
+%1", capture.output(str(ft.sample_set)))
+put_end_date(start)
+
+# x3d.train <- ft.sample_set$train_set
+# put_log("The Train Set has been saved in the object `x3d.train` with the following shape:
+# %1", capture.output(shape(x3d.train)))
+# # shape(132912, 28, 28)
+
+x3d.test <- ft.sample_set$test_set
+put_log("The Test Set has been saved in the object `x3d.test` with the following shape:
+%1", capture.output(shape(x3d.test)))
+# shape(33267, 28, 28)
+
+rm(ft.sample_set)
+### Close Log ------------------------------------------------------------------
+log_close()
+
+### Final Test for pre-trained CNN-Based Multiclass Classifier Model -----------
+
+source(cnn_multiclass.evaluation.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
 ## Ensemble based on CNN-based Binary Classifier Models ------------------------
-### Init CNN-Based Ensemble Model Directories -------------------------------------------
+### Init CNN-Based Ensemble Model Directories ----------------------------------
 cnn_binary.ensemble.scripts.path <- file.path(models.cnn_script.path, 
                                               "cnn-binary.ensemble.R")
 stopifnot(file.exists(cnn_binary.ensemble.scripts.path))
@@ -195,7 +310,7 @@ cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,
                                                  "cnn.lbl-models.ensemble.RData")
 cnn_models.ensemble.cache_file.path
 
-### Build CNN-Based Ensemble Model ---------------------------------------------
+### Final Test for CNN-Based Ensemble Model ------------------------------------
 source(cnn_binary.ensemble.scripts.path, 
        catch.aborts = TRUE,
        echo = TRUE,

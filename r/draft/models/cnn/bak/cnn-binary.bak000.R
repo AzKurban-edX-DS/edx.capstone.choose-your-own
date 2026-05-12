@@ -13,19 +13,8 @@ other_labels <- "OL"
 
 #### Open log: Build CNN Model -------------------------------------------------
 open_logfile(".build-cnn-model")
-
 #### CNN Model building ------------------------------------------------------------
-put_log("Building a set of CNN Binary Classifier Models for the following labels:
-%1", capture.output(as.character(y.labels)))
-start <- put_start_date()
 
-if(!exists("img28x28mx.array")) {
-  stopifnot(file.exists(train.img28x28mx.array.file_path))
-  put_log("Loading the Train 28x28 Image Data Array from the backup file...")
-  img28x28mx.array <- readRDS(train.img28x28mx.array.file_path)
-  put_log("The Train 28x28 Image Data Array has been loaded from the following backup file:
-%1", train.img28x28mx.array.file_path)
-}
 ##### Define a CNN model structure ***
 
 hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.rds") 
@@ -33,6 +22,8 @@ hwChar.CNN.binCls.models.backup.path
 
 cnn.lbl_model_file.base_name <- "cnn.lbl-model"
 
+put_log("Building a set of CNN Binary Classifier Models for the following labels:
+%1", capture.output(as.character(y.labels))) 
 
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
@@ -62,118 +53,131 @@ cnn.hw_char.models <- lapply(y.labels, function(label) {
                                                  "keras"),
                                                collapse = "."))
   
-  lbl.cnn_model <- cnn.create_model.binary_classifier()
-  summary(lbl.cnn_model)
-  
-  put_log("CNN binary classifier model for label `%1` (%2) has been created.", 
-          as.character(label), label)
-  
-  # Similar to DNN model, we need to compile the defined CNN model. [*]
-  
-  # Compile model
-  lbl.cnn_model |> compile(
-    loss = 'binary_crossentropy',
-    optimizer = optimizer_rmsprop(learning_rate = 0.0001),
-    metrics = c('accuracy')
-  )
-  
-  put_log("CNN binary classifier model for label `%1` (%2) has been compiled.
-Summary of the model:", 
-          as.character(label), 
-          label,
-          capture.output(summary(lbl.cnn_model)))
-  
-  model_checkpoint.filepath <- 
-    file.path(cnn.lbl_models.cache.path,
-              str_flatten(c(label,
-                            as.character(label),
-                            "{epoch:02d}-{val_loss:.2f}.weights.h5"),
-                          collapse = "."))
-  
-  #### Training CNN Model ***
-  
-  #> Now, we can train the model with our processed data. 
-  #> Each epochs's history can be saved to track the progress. 
-  #> Please note, as we are not using GPU, it takes a few minutes to finish. 
-  #> Please be patient while waiting for the results. 
-  #> The training time can be significantly reduced if running on GPU. [*]
-  
-  set.seed(as.integer(y.labels[y.labels == label]))
-  
-  lbl.ds.sample.set <- 
-    cnn.binclass.sample_sets(img28x28mx.array,
-                             label)
-  str(lbl.ds.sample.set)
-  
-  x.cnn_bin.train <- lbl.ds.sample.set$x.train
-  str(x.cnn_bin.train)
-  
-  y.cnn_bin.train <- lbl.ds.sample.set$y.train
-  str(y.cnn_bin.train)
-  length(y.cnn_bin.train)
-  sum(y.cnn_bin.train)
-  
-  x.cnn_bin.test <- lbl.ds.sample.set$x.test
-  y.cnn_bin.test <- lbl.ds.sample.set$y.test
-  
-  put_log("Training the CNN Model...")
-  start <- put_start_date()
-  
-  #str(x.cnn_bin.train)
-  # Train model
-  
-  cnn.lbl.callbacks <- list(
-    # callback_early_stopping(patience = 3, monitor = 'val_loss'),
-    callback_model_checkpoint(filepath = model_checkpoint.filepath,
-                              monitor = "val_accuracy",
-                              mode = max,
-                              save_best_only = TRUE,
-                              verbose = 1)
-    # callback_tensorboard(write_images = TRUE,
-    #                      log_dir = cnn.callbacks.tb_logs.path)
-  )
-  
-  
-  put_log("Training the (CNN) Binary Classifier Model for label `%1` (%2)...", 
-          as.character(label), label)
-  
-  cnn.1bl.train_history <- lbl.cnn_model |> 
-    fit(x.cnn_bin.train, 
-        y.cnn_bin.train,
-        epochs = epochs,
-        batch_size = 50,
-        validation_split = vld_split,
-        callbacks = cnn.lbl.callbacks
+  if (file.exists(lbl.model.file_path)) {
+    put_log("CNN: loading (trained) labeled model data from cache file: 
+%1", lbl.model.file_path)
+    
+    lbl.cnn_model <- load_model(lbl.model.file_path)
+    str(lbl.cnn_model)
+    load(lbl.model_cache.file_path)
+    
+    put_log("CNN: the (trained) labeled model data has been loaded from the cache file:
+%1", lbl.model.file_path)
+  } else {
+    lbl.cnn_model <- cnn.create_model.binary_classifier()
+    summary(lbl.cnn_model)
+    
+    put_log("CNN binary classifier model for label `%1` (%2) has been created.", 
+            as.character(label), label)
+    
+    # Similar to DNN model, we need to compile the defined CNN model. [*]
+    
+    # Compile model
+    lbl.cnn_model |> compile(
+      loss = 'binary_crossentropy',
+      optimizer = optimizer_rmsprop(learning_rate = 0.0001),
+      metrics = c('accuracy')
     )
-  # acc: 0.8741
-  
-  put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been trained.", 
-          as.character(label), 
-          label)
-  
-  put_end_date(start)
-  
-  put_log("Caching the (CNN) Binary Classifier Model for label `%1` (%2)...", 
-          as.character(label), 
-          label)
-  
-  save(lbl.model.file_path,
-       cnn.1bl.train_history,
-       lbl.ds.sample.set,
-       file = lbl.model_cache.file_path)
-  
-  put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
+    
+    put_log("CNN binary classifier model for label `%1` (%2) has been compiled.
+Summary of the model:", 
+            as.character(label), 
+            label,
+            capture.output(summary(lbl.cnn_model)))
+    
+    model_checkpoint.filepath <- 
+      file.path(cnn.lbl_models.cache.path,
+                str_flatten(c(label,
+                              as.character(label),
+                              "{epoch:02d}-{val_loss:.2f}.weights.h5"),
+                            collapse = "."))
+    
+    #### Training CNN Model ***
+    
+    #> Now, we can train the model with our processed data. 
+    #> Each epochs's history can be saved to track the progress. 
+    #> Please note, as we are not using GPU, it takes a few minutes to finish. 
+    #> Please be patient while waiting for the results. 
+    #> The training time can be significantly reduced if running on GPU. [*]
+    
+    set.seed(as.integer(y.labels[y.labels == label]))
+    
+    lbl.ds.sample.set <- 
+      cnn.binclass.sample_sets(x_cnn,
+                               label)
+    str(lbl.ds.sample.set)
+    
+    x_train <- lbl.ds.sample.set$x.train
+    str(x_train)
+    
+    y_train <- lbl.ds.sample.set$y.train
+    str(y_train)
+    length(y_train)
+    sum(y_train)
+    
+    x_test <- lbl.ds.sample.set$x.test
+    y_test <- lbl.ds.sample.set$y.test
+    
+    put_log("Training the CNN Model...")
+    start <- put_start_date()
+    
+    #str(x_train)
+    # Train model
+
+    cnn.lbl.callbacks <- list(
+      # callback_early_stopping(patience = 3, monitor = 'val_loss'),
+      callback_model_checkpoint(filepath = model_checkpoint.filepath,
+                                monitor = "val_accuracy",
+                                mode = max,
+                                save_best_only = TRUE,
+                                verbose = 1)
+      # callback_tensorboard(write_images = TRUE,
+      #                      log_dir = cnn.callbacks.tb_logs.path)
+    )
+    
+    
+    put_log("Training the (CNN) Binary Classifier Model for label `%1` (%2)...", 
+            as.character(label), label)
+    
+    cnn.1bl.train_history <- lbl.cnn_model |> 
+      fit(x_train, 
+          y_train,
+          epochs = epochs,
+          batch_size = 50,
+          validation_split = vld_split,
+          callbacks = cnn.lbl.callbacks
+      )
+    # acc: 0.8741
+    
+    put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been trained.", 
+            as.character(label), 
+            label)
+    
+    put_end_date(start)
+    
+    put_log("Caching the (CNN) Binary Classifier Model for label `%1` (%2)...", 
+            as.character(label), 
+            label)
+    
+    save(lbl.model.file_path,
+         cnn.1bl.train_history,
+         lbl.ds.sample.set,
+         file = lbl.model_cache.file_path)
+    
+    put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
 %3",as.character(label), label,lbl.model_cache.file_path)
-  
-  put_log("Saving the (CNN) Binary Classifier Model for label `%1`to file...", 
-          label)
-  
-  save_model(lbl.cnn_model,
-             filepath = lbl.model.file_path,
-             overwrite = TRUE)
-  
-  put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
+    
+    put_log("Saving the (CNN) Binary Classifier Model for label `%1`to file...", 
+            label)
+    
+    save_model(lbl.cnn_model,
+               filepath = lbl.model.file_path,
+               overwrite = TRUE)
+    
+    put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
 %3",as.character(label), label, lbl.model.file_path)
+    
+  }
   
   str(lbl.cnn_model)
   plot(cnn.1bl.train_history)
@@ -182,8 +186,8 @@ Summary of the model:",
        saved_model.filepath = lbl.model.file_path,
        lbl.data.cache.path = lbl.model_cache.file_path,
        train_history = cnn.1bl.train_history,
-       x.cnn_bin.test = lbl.ds.sample.set$x.test,
-       y.cnn_bin.test = lbl.ds.sample.set$y.test,
+       x_test = lbl.ds.sample.set$x.test,
+       y_test = lbl.ds.sample.set$y.test,
        label = label)
 })
 names(cnn.hw_char.models) = as.character(y.labels)
@@ -261,12 +265,12 @@ have been loaded from the cache file:
       #        saved_model.filepath = lbl.model.file_path,
       #        lbl.data.cache.path  = lbl.model_cache.file_path,
       #        train_history        = cnn.1bl.train_history,
-      #        x.cnn_bin.test               = lbl.ds.sample.set$x.test,
-      #        y.cnn_bin.test               = lbl.ds.sample.set$y.test,
+      #        x_test               = lbl.ds.sample.set$x.test,
+      #        y_test               = lbl.ds.sample.set$y.test,
       #        label                = label)
       
-      x.cnn_bin.test <- lbl.trained_model.list$x.cnn_bin.test
-      y.cnn_bin.test <- lbl.trained_model.list$y.cnn_bin.test
+      x_test <- lbl.trained_model.list$x_test
+      y_test <- lbl.trained_model.list$y_test
 
       #exists("lbl.trained_model.list$train_history")
       plot(lbl.trained_model.list$train_history)
@@ -288,7 +292,7 @@ have been loaded from the cache file:
       
       put_log("Evaluating the CNN-based Binary  Classifier model for '%1' character...", 
               label)
-      lbl.eval.result <- lbl.cnn_model |> evaluate(x.cnn_bin.test, y.cnn_bin.test)
+      lbl.eval.result <- lbl.cnn_model |> evaluate(x_test, y_test)
       put_log("Evaluation of the CNN-based Binary  Classifier model for '%1' character has been completed.",
               label)
       
@@ -298,7 +302,7 @@ have been loaded from the cache file:
       put_log("Making predictions using the CNN-based Binary classifier model for the character '%1'...", 
               label)
       start <- put_start_date()
-      preds <- lbl.cnn_model |> predict(x.cnn_bin.test) 
+      preds <- lbl.cnn_model |> predict(x_test) 
       put_log("Prediction generation using the CNN-based Binary classifier model 
 for the character '%1' has been completed.",
               label)
@@ -334,17 +338,17 @@ have been saved the the cache file:
     str(predictions)
     sum(predictions)
     
-    accuracy <- mean(predictions == y.cnn_bin.test)
+    accuracy <- mean(predictions == y_test)
     put_log("CNN Model accuracy for label `%1`: %2", label, accuracy)
     # CNN Model accuracy for label `R`: 0.986499530817405
     
-    y.cnn_bin.test.factor <- as.factor(y.cnn_bin.test)
-    str(y.cnn_bin.test.factor)
+    y_test.factor <- as.factor(y_test)
+    str(y_test.factor)
     
-    predictions.factor <- factor(predictions, levels = levels(y.cnn_bin.test.factor))
+    predictions.factor <- factor(predictions, levels = levels(y_test.factor))
     str(predictions.factor)
     
-    conf.mx <- confusionMatrix(y.cnn_bin.test.factor, predictions.factor)
+    conf.mx <- confusionMatrix(y_test.factor, predictions.factor)
     conf.mx
     
     put_log("The confusion matrix for the binary model for recognizing 
