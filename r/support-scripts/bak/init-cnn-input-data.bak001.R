@@ -28,10 +28,10 @@ str(y_cnn)
 length(y_cnn)
 
 # Input image dimensions
-img_rows <- dim.x_cnn[2]
-img_rows
-img_cols <- dim.x_cnn[3]
-img_cols
+n.img_rows <- dim.x_cnn[2]
+n.img_rows
+n.img_cols <- dim.x_cnn[3]
+n.img_cols
 
 first_G.idx <- which(y_cnn == "G")[1]
 first_G.idx

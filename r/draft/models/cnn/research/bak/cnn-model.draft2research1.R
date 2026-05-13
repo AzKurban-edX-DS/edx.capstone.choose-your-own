@@ -69,8 +69,8 @@ x_cnn.train <- x_cnn.1bl.train # [is_t.class,,,]
 # x_cnn.train <- x_cnn.9bl.train
 # x_cnn.train <- array_reshape(x_cnn.train, 
 #                              c(nrow(x_cnn.train), 
-#                                img_rows, 
-#                                img_cols, 
+#                                n.img_rows, 
+#                                n.img_cols, 
 #                                1))
 dim(x_cnn.train)
 str(x_cnn.train)

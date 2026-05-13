@@ -108,114 +108,81 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 # 38 Y         853
 # 39 Z         853
 
-## Init Evaluation Results File Path -------------------------------------------------------------
-cnn_multiclass.model.eval.file_path <- file.path(cnn_multiclass.data.path, 
-                                            "cnn.multiclass.model.eval.RData")
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
-put_log("Evaluating the pre-trained Multiclass Classifier model...")
-start <- put_stsl
-
-if(file.exists(cnn_multiclass.model.eval.file_path)) {
-  put_log("Loading the Multiclass Classifier model Evaluation Results...")
-  load(cnn_multiclass.model.eval.file_path)
-  put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
-have been loaded from the following backup file:
-%1", cnn_multiclass.model.eval.file_path)
-  put_end_date(start)
-} else {
-  put_log("Evaluating CNN Model...")
-  start <- put_start_date()
-  cnn.eval.result <- cnn_multiclass.model |> evaluate(x_cnn.test, y_cnn.test.cat)
-  put_log("CNN Model evaluation result:
+put_log("Evaluating CNN Model...")
+start <- put_start_date()
+cnn.eval.result <- cnn_multiclass.model |> evaluate(x_cnn.test, y_cnn.test.cat)
+put_log("CNN Model evaluation result:
 %1", capture.output(str(cnn.eval.result)))
-  # List of 2
-  #  $ accuracy: num 0.861
-  #  $ loss    : num 2.83
+# List of 2
+#  $ accuracy: num 0.861
+#  $ loss    : num 2.83
+
+put_end_date(start)
+
+# model prediction
+put_log("CNN Model: constructing predictions...")
+
+cnn_multiclass.preds <- cnn_multiclass.model |> predict(x_cnn.test) 
+put_log("CNN Model: predictions have been constructed.")
+put_end_date(start)
+# Time difference of 1.502232 mins
+
+dim(cnn_multiclass.preds)
+
+colnames(cnn_multiclass.preds) <- y.labels
+head(cnn_multiclass.preds[,1:5])
+
+cnn_preds.ts <- as_tensor(cnn_multiclass.preds)
+str(cnn_preds.ts)
+#> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
+
+cnn_multiclass.predictions <- cnn_preds.ts |> op_argmax(2)
+str(cnn_multiclass.predictions)
+cnn_multiclass.predictions
+#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
+dim(cnn_multiclass.predictions)
+#> [1] 684467
+cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
+head(cnn.prediction.values.idx)
+cnn.prediction.values <- y.labels[cnn.prediction.values.idx]
+head(cnn.prediction.values)
+
+cnn_multiclass.accuracy <- mean(cnn.prediction.values == y_cnn.test)
+put_log("CNN Model accuracy: %1", cnn_multiclass.accuracy)
+# CNN Model accuracy: 0.920281359906213
+#> For final test (expected value):
+#> CNN Model accuracy: 0.910364145658263
+
+cnn_multiclass.conf.mx <- confusionMatrix(y_cnn.test, cnn.prediction.values)
+cnn_multiclass.conf.mx
+
+
+### Accuracy by Class ---------------------------------------------------------- 
+y_cnn.test.idx <- seq_len(length(y_cnn.test))
+head(y_cnn.test.idx)
+
+cnn_multiclass.accuracy_by_class <- sapply(y.labels, function(label) {
+  idx <- y_cnn.test.idx[y_cnn.test == label]
+  n <- length(idx)
+  # put_log("Class of character `%1` has %2 items.",
+  #         label, n)
   
-  put_end_date(start)
+  accuracy <- mean(cnn.prediction.values[idx] == label)
   
-  # model prediction
-  put_log("CNN Model: constructing predictions...")
-  
-  cnn_multiclass.preds <- cnn_multiclass.model |> predict(x_cnn.test) 
-  put_log("CNN Model: predictions have been constructed.")
-  put_end_date(start)
-  # Time difference of 1.502232 mins
-  
-  dim(cnn_multiclass.preds)
-  
-  colnames(cnn_multiclass.preds) <- y.labels
-  head(cnn_multiclass.preds[,1:5])
-  
-  cnn_preds.ts <- as_tensor(cnn_multiclass.preds)
-  str(cnn_preds.ts)
-  #> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
-  
-  cnn_multiclass.predictions <- cnn_preds.ts |> op_argmax(2)
-  str(cnn_multiclass.predictions)
-  cnn_multiclass.predictions
-  #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-  dim(cnn_multiclass.predictions)
-  #> [1] 684467
-  cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
-  head(cnn.prediction.values.idx)
-  cnn.prediction.values <- y.labels[cnn.prediction.values.idx]
-  head(cnn.prediction.values)
-  
-  cnn_multiclass.accuracy <- mean(cnn.prediction.values == y_cnn.test)
-  put_log("CNN Model accuracy: %1", cnn_multiclass.accuracy)
-  # CNN Model accuracy: 0.920281359906213
-  #> For final test (expected value):
-  #> CNN Model accuracy: 0.910364145658263
-  
-  cnn_multiclass.conf.mx <- confusionMatrix(y_cnn.test, cnn.prediction.values)
-  cnn_multiclass.conf.mx
-  
-  
-  #### Accuracy by Class ---
-  y_cnn.test.idx <- seq_len(length(y_cnn.test))
-  head(y_cnn.test.idx)
-  
-  cnn_multiclass.accuracy_by_class <- sapply(y.labels, function(label) {
-    idx <- y_cnn.test.idx[y_cnn.test == label]
-    n <- length(idx)
-    # put_log("Class of character `%1` has %2 items.",
-    #         label, n)
-    
-    accuracy <- mean(cnn.prediction.values[idx] == label)
-    
-    put_log("Accuracy for the class `%1` (of size %2) is %3.",
-            label, n, accuracy) 
-    accuracy
-  }) |> matrix(ncol = 1, dimnames = list(class = y.labels, "accuracy")) 
-  
-  dim(cnn_multiclass.accuracy_by_class)
-  
-  df.cnn_multiclass.accuracy_by_class <- 
-    data.frame(class = y.labels,
-               accuracy = cnn_multiclass.accuracy_by_class[, 1])
-  
-  put_log("Saving the Multiclass Classifier model Evaluation Results...")
-  load(cnn_multiclass.model.eval.file_path)
-  save(cnn.eval.result,
-       cnn_multiclass.preds,
-       cnn.prediction.values,
-       cnn_multiclass.conf.mx,
-       df.cnn_multiclass.accuracy_by_class,
-       file = cnn_multiclass.model.eval.file_path)
-  
-  put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
-have been backed up to the following file:
-%1", cnn_multiclass.model.eval.file_path)
-  
-}
+  put_log("Accuracy for the class `%1` (of size %2) is %3.",
+          label, n, accuracy) 
+  accuracy
+}) |> matrix(ncol = 1, dimnames = list(label = y.labels, "accuracy")) 
+
+dim(cnn_multiclass.accuracy_by_class)
 
 ### Logging Accuracies by class -------------------------------------------------
 
 put_log("The total set of accuracies by class is as follows:
-%1", capture.output(df.cnn_multiclass.accuracy_by_class))
+%1", capture.output(cnn_multiclass.accuracy_by_class))
 
-# class  accuracy
+# label  accuracy
     #' # 1.0000000
     #' $ 1.0000000
     #' & 1.0000000
@@ -257,18 +224,8 @@ put_log("The total set of accuracies by class is as follows:
     #' Z 0.9261430
 
 ### Visualization --------------------------------------------------------------
-df.cnn_multiclass.accuracy_by_class |>
-  ggplot(mapping = aes(x = class,
-                       y = accuracy)) +
-  geom_col(fill = "steelblue",
-           color = "black") +
-  labs(x = "Handwritten Character Classl",
-       y = "Accuracy",
-       title = "CNN-based Multiclass Classifier Model: Class-wise Evaluation Results") +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                     expand = c(0, 0, 0.005, 0))
 
-
+cnn_multiclass.accuracy_by_class 
 ### Review Some Errors --------------------------------------------------------- 
 head(cnn.prediction.values)
 # [1] H 0 Y K 0 D

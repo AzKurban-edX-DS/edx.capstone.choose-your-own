@@ -41,3 +41,4 @@ r/support-scripts/setup0.R
 log/
 bak/.venv/.lock
 bak/.venv/
+.positai

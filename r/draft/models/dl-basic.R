@@ -111,7 +111,6 @@ head(y.1.test.cat)
 #### Open log: Building Basic DL Model -----------------------------------------
 open_logfile("dl.basic-model")
 #### DL Model building on dataset: `dl.model`: `x0.1.dl.model` ---------
-dl.keras3.path <- file.path(models.path, "dl.keras3")
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)

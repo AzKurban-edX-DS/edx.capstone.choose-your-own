@@ -1796,10 +1796,10 @@ nrow(x)
 #> [1] 834032
 
 # Input image dimensions
-img_rows <- dim.x[2]
-img_rows
-img_cols <- dim.x[3]
-img_cols
+n.img_rows <- dim.x[2]
+n.img_rows
+n.img_cols <- dim.x[3]
+n.img_cols
 
 first_G.idx <- which(y == "G")[1]
 #> [1] 598137
@@ -1877,8 +1877,8 @@ if (file.exists(cache_file.path)) {
   # Add channel into the dimension
   x_cnn.1bl.train <- array_reshape(x_train, 
                                    c(nrow(x_train), 
-                                     img_rows, 
-                                     img_cols, 
+                                     n.img_rows, 
+                                     n.img_cols, 
                                      1))
   x_test <- split3d.list$test_set
   dim(x_test)
@@ -1894,8 +1894,8 @@ if (file.exists(cache_file.path)) {
   # Add channel into the dimension
   x_cnn.9.test <- array_reshape(x_test, 
                                 c(nrow(x_test), 
-                                  img_rows, 
-                                  img_cols, 
+                                  n.img_rows, 
+                                  n.img_cols, 
                                   1))
   start <- put_start_date()
   put_log("Caching data in the file
@@ -1965,7 +1965,7 @@ x_train.list <- asplit(x_flat.1bl.train, 1)
 str(x_train.list)
 
 x_cnn.train.list <- lapply(x_train.list, function(v) {
-  matrix(v, nrow = img_rows)
+  matrix(v, nrow = n.img_rows)
 })
 
 str(x_cnn.train.list)
@@ -1976,8 +1976,8 @@ char.image(x_cnn.train.array[2,,])
 
 x_cnn.train.probe <- array_reshape(x_cnn.train.array, 
                              c(nrow(x_cnn.train.array), 
-                               img_rows, 
-                               img_cols, 
+                               n.img_rows, 
+                               n.img_cols, 
                                1))
 
 # ----

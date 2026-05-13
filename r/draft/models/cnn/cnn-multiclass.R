@@ -2,14 +2,29 @@
 # CNN-Based Multiclass Classifier Model
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Convolutional Neural Network (CNN) -----------------------------------------
+## Reference: Convolution Neural Network (CNN) --------------------------------
 # Reference:
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-#### Open log: Build CNN Model -------------------------------------------------
-open_logfile(".train.cnn.multiclass-classifier.model")
+## Open Log --------------------------------------------------------------------
+open_logfile(".train.cnn_multiclass-classifier.model")
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
+
+## Init File Paths -------------------------------------------------------------
+cnn_multiclass.model.file_path <- file.path(cnn_multiclass.data.path, 
+                                            "cnn.pre-trained.multiclass.model.keras")
+cnn_multiclass.train_history.file_path <- file.path(cnn_multiclass.data.path,
+                                                    "cnn_multiclass.train_history.backup.rds")
+
+cnn_multiclass.checkpoints.dir_path <- file.path(cnn_multiclass.data.path, "checkpoints")
+
+if(!dir.exists(cnn_multiclass.checkpoints.dir_path))
+  dir.create(cnn_multiclass.checkpoints.dir_path)
+
+cnn_multiclass.checkpoint.file_path <- 
+  file.path(cnn_multiclass.checkpoints.dir_path, 
+            "{epoch:02d}-{val_loss:.2f}.weights.h5")
 
 ## Preparing Train Set ---------------------------------------------------------
 put_log("Preparing a Train Set...")
@@ -44,8 +59,8 @@ put_log("Reshaping the Train Set to make it compatible with the Convolutional Ne
 # Add channel into the dimension
 x_cnn.train <- array_reshape(x3d.train, 
                              c(nrow(x3d.train), 
-                               img_rows, 
-                               img_cols, 
+                               n.img_rows, 
+                               n.img_cols, 
                                1))
 
 put_log("The Train Set has been reshaped as follows:
@@ -121,7 +136,7 @@ vld_split <- 0.2
 #> Then flatten the output and use two dense layers to connect to the categoires 
 #> of the image. [*]
 
-cnn.multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
+cnn_multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
   layer_conv_2d(filters = 8L,
                 kernel_size = 5, 
                 strides = 1,
@@ -138,19 +153,19 @@ cnn.multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
   layer_dropout(rate = 0.3) |>
   layer_dense(units = n.output, activation = "softmax")
 
-summary(cnn.multiclass.model)
-# plot(cnn.multiclass.model)
+summary(cnn_multiclass.model)
+# plot(cnn_multiclass.model)
 
 # Similar to DNN model, we need to compile the defined CNN model. [*]
 
 # Compile model
-cnn.multiclass.model |> compile(
+cnn_multiclass.model |> compile(
   loss = loss_categorical_crossentropy,
   optimizer = keras3::optimizer_adamax(0.001),
   metrics = c('accuracy')
 )
 
-summary(cnn.multiclass.model)
+summary(cnn_multiclass.model)
 
 #### Training CNN-Based Muliclass Classifier Model -----------------------------
 
@@ -162,38 +177,46 @@ summary(cnn.multiclass.model)
 dim(x_cnn.train)
 dim(y_cnn.train.cat)
 
+cnn_multiclass.callbacks <- list(
+  callback_model_checkpoint(filepath = cnn_multiclass.checkpoint.file_path,
+                            monitor = "val_accuracy",
+                            mode = max,
+                            save_best_only = TRUE,
+                            verbose = 1)
+)
 
 put_log("Training the CNN-based Multiclass Classifier Model...")
 start <- put_start_date()
 
 str(x_cnn.train)
 # Train model
-cnn.multiclass.train_history <- cnn.multiclass.model |> 
+cnn_multiclass.train_history <- cnn_multiclass.model |> 
   fit(x_cnn.train, 
       y_cnn.train.cat,
       epochs = epochs,
       batch_size = batch_size,
-      validation_split = vld_split
+      validation_split = vld_split,
+      callbacks = cnn_multiclass.callbacks
   )
 # acc: 0.8741
-plot(cnn.multiclass.train_history)
+
+plot(cnn_multiclass.train_history)
 
 put_log("Saving the CNN-based Multiclass Classifier Model...")
-saveRDS(cnn.multiclass.train_history,
-        file = cnn.multiclass.train_history.file_path)
+saveRDS(cnn_multiclass.train_history,
+        file = cnn_multiclass.train_history.file_path)
 put_log("Saving the CNN-based Multiclass Classifier Model...")
 
 put_log("Saving pre-trained model...")
-save_model(cnn.multiclass.model,
-           filepath = cnn.multiclass.model.file_path,
+save_model(cnn_multiclass.model,
+           filepath = cnn_multiclass.model.file_path,
            overwrite = TRUE)
 
 put_log("The CNN Model has been trained and saved in the following file:
-%1", cnn.multiclass.model.file_path)
+%1", cnn_multiclass.model.file_path)
 put_end_date(start)
 
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-#### Evaluating CNN Model ----------------------------------------------
 

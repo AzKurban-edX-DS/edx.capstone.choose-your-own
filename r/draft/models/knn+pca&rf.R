@@ -2,6 +2,21 @@
 # kNN+PCA & Random Forest Models
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+## Initial Paths ---------------------------------------------------------------
+
+models.random_forest.path <- file.path(models.path, "random-forest")
+dir.create(models.random_forest.path)
+models.random_forest.path
+
+models.random_forest.research.path <- file.path(models.random_forest.path, "research")
+dir.create(models.random_forest.research.path)
+models.random_forest.research.path
+
+knn_pca.path = file.path(models.path, "knn-pca")
+if(!dir.exists(knn_pca.path)) {
+  dir.create(knn_pca.path)
+}
+
 #### Quick data analysis -------------------------------------------------------
 
 max(y.chars$n)

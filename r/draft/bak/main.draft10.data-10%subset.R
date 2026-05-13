@@ -1632,9 +1632,9 @@ log_close()
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
 # Add channel into the dimension
-x_train <- array_reshape(x_train, c(nrow(x_train), img_rows, img_cols, 1))
-x_test <- array_reshape(x_test, c(nrow(x_test), img_rows, img_cols, 1))
-input_shape <- c(img_rows, img_cols, 1)
+x_train <- array_reshape(x_train, c(nrow(x_train), n.img_rows, n.img_cols, 1))
+x_test <- array_reshape(x_test, c(nrow(x_test), n.img_rows, n.img_cols, 1))
+input_shape <- c(n.img_rows, n.img_cols, 1)
 
 
 #### Model building on dataset: `x0.1.train_nzv`: `x0.1.nzv.model` ----------------------

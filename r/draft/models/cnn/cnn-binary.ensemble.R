@@ -39,8 +39,8 @@ put_log("Reshaping the Test Set to make it compatible with the Convolutional Neu
 # Add channel into the dimension
 x_cnn.test <- array_reshape(x3d.test, 
                             c(nrow(x3d.test), 
-                              img_rows, 
-                              img_cols, 
+                              n.img_rows, 
+                              n.img_cols, 
                               1))
 
 put_log("The Test Set has been reshaped as follows:

@@ -49,8 +49,8 @@ colnames(y_cnn.train.cat) <- y.labels
 # Add channel into the dimension
 x_cnn.train <- array_reshape(x_train, 
                              c(nrow(x_train), 
-                               img_rows, 
-                               img_cols, 
+                               n.img_rows, 
+                               n.img_cols, 
                                1))
 x_test <- split3d.list$test_set
 dim(x_test)
@@ -66,8 +66,8 @@ colnames(y_cnn.test.cat) <- y.labels
 # Add channel into the dimension
 x_cnn.test <- array_reshape(x_test, 
                             c(nrow(x_test), 
-                              img_rows, 
-                              img_cols, 
+                              n.img_rows, 
+                              n.img_cols, 
                               1))
 rm(split3d.list)
 rm(x_train)
