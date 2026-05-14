@@ -44,7 +44,6 @@ if(!require(reticulate))
 
 if(!require(keras3)) {
   install.packages("keras3")
-  install_keras()
 }
 
 
@@ -68,6 +67,12 @@ if(!require(sqldf))
 
 if(!require(abind))
   install.packages("abind")
+
+if(!require(pROC))
+  install.packages("pROC")
+
+if(!require(cvms))
+  install.packages("cvms")
 
 # if(!require())
 #   install.packages("")
@@ -97,6 +102,9 @@ library(tfdatasets)
 library(imager)
 library(magick)
 library(abind)
+library(pROC)
+library(cvms)
+
 
 library(doParallel)
 
@@ -107,6 +115,8 @@ p_load(conflicted)
 
 conflict_prefer("shape", "keras3", quiet = TRUE)
 conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
+
+install_keras()
 
 # reticulate::virtualenv_remove("r-tensorflow")
 # install_tensorflow(extra_packages="pillow")
