@@ -42,12 +42,14 @@ if(!require(doParallel))
 if(!require(reticulate))
   install.packages("reticulate")
 
+if(!require(tfdatasets))
+  install.packages("tfdatasets")
+
 if(!require(keras3)) {
   install.packages("keras3")
   library(keras3)
   install_keras()
 }
-
 
 # if(!require(tensorflow))
 #   remotes::install_github("rstudio/tensorflow")
@@ -98,8 +100,8 @@ library(pacman)
 
 # detach("package:keras", unload = TRUE)
 library(tensorflow)
-library(keras3)
 library(tfdatasets)
+library(keras3)
 
 library(imager)
 library(magick)
