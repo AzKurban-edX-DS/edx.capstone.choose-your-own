@@ -14,7 +14,7 @@ other_labels <- "OL"
 #### Open log: Build CNN Model -------------------------------------------------
 open_logfile(".build-cnn-model")
 
-#### CNN Model building ------------------------------------------------------------
+#### CNN Binary Models building ------------------------------------------------------------
 put_log("Building a set of CNN Binary Classifier Models for the following labels:
 %1", capture.output(as.character(y.labels)))
 start <- put_start_date()
@@ -27,8 +27,7 @@ if(!exists("img28x28mx.array")) {
 %1", train.img28x28mx.array.file_path)
 }
 ##### Define a CNN model structure ***
-
-hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.rds") 
+hwChar.CNN.binCls.models.backup.path <- file.path(data.cnn.binary.dir,"cnn.lbl-model.list.rds") 
 hwChar.CNN.binCls.models.backup.path
 
 cnn.lbl_model_file.base_name <- "cnn.lbl-model"
@@ -44,18 +43,16 @@ cnn.hw_char.models <- lapply(y.labels, function(label) {
   #> of the image. [*]
   
   #label <- y.labels[which(y.labels == "Z")]
-  label
-  
   put_log("Building model for label `%1` (%2)...", as.character(label), label)
   
-  lbl.model_cache.file_path <- file.path(cnn.binary.models, 
+  lbl.model_cache.file_path <- file.path(data.cnn.binary.models.dir, 
                                str_flatten(c(cnn.lbl_model_file.base_name,
                                              label,
                                              as.character(label),
                                              "RData"),
                                            collapse = "."))
   
-  lbl.model.file_path <- file.path(cnn.binary.models, 
+  lbl.model.file_path <- file.path(data.cnn.binary.models.dir, 
                                    str_flatten(c(cnn.lbl_model_file.base_name,
                                                  label,
                                                  as.character(label),
@@ -84,7 +81,7 @@ Summary of the model:",
           capture.output(summary(lbl.cnn_model)))
   
   model_checkpoint.filepath <- 
-    file.path(cnn.binary.models,
+    file.path(data.cnn.binary.models.checkpoints.dir,
               str_flatten(c(label,
                             as.character(label),
                             "{epoch:02d}-{val_loss:.2f}.weights.h5"),
@@ -204,9 +201,9 @@ put_end_date(start)
 log_close()
 #### Open log: Evaluate CNN Model -------------------------------------------------
 open_logfile(".evaluate-cnn-model")
-#### Evaluating CNN Model ----------------------------------------------
+#### CNN Binary Models Evaluation ----------------------------------------------
 
-cnn_models.eval.cache_file.path <- file.path(cnn.train.data.path,
+cnn_models.eval.cache_file.path <- file.path(data.cnn.binary.models.evaluation.dir,
                                              "cnn.lbl-models.evaluation.RData")
 cnn_models.eval.cache_file.path
 
@@ -240,20 +237,20 @@ have been loaded from the cache file:
     put_log("Processing model evaluation for label `%1`...",label)
     start <- put_start_date()
 
-    lbl.model_eval.cache_file.path <- file.path(cnn.eval.cache.path, 
+    lbl.model_eval.backup.path <- file.path(data.cnn.binary.models.evaluation.dir, 
                                  str_flatten(c(cnn.eval_cache.base_name,
                                                label,
                                                as.character(label),
                                                "RData"),
                                              collapse = "."))
     
-    put_log("Cache file path: %1", lbl.model_eval.cache_file.path)
+    put_log("Cache file path: %1", lbl.model_eval.backup.path)
     
-    if (file.exists(lbl.model_eval.cache_file.path)) {
+    if (file.exists(lbl.model_eval.backup.path)) {
       put_log("CNN: loading model evaluation data for label `%1` from cache...", label)
-      load(lbl.model_eval.cache_file.path)
+      load(lbl.model_eval.backup.path)
       put_log("CNN: the model evaluation data for label `%1` have been loaded from the cache file:
-%2", label, lbl.model_eval.cache_file.path)
+%2", label, lbl.model_eval.backup.path)
     } else {
       
       lbl.trained_model.list <- cnn.hw_char.models[[label]] 
@@ -308,10 +305,10 @@ for the character '%1' has been completed.",
            lbl.eval.result,
            preds,
            label,
-           file = lbl.model_eval.cache_file.path)
+           file = lbl.model_eval.backup.path)
       put_log("CNN: the model evaluation data for label `%1` 
 have been saved the the cache file:
-%2", label, lbl.model_eval.cache_file.path)
+%2", label, lbl.model_eval.backup.path)
     }
     
     plot(lbl.trained_model.list$train_history)

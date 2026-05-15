@@ -11,10 +11,10 @@ image(lbl.img.flat_ls[1:400,])
 #### Init CNN Directories -------------------------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
-cnn.binary.models <- file.path(cnn.train.data.path, "lbl-models")
+data.cnn.binary.models.dir <- file.path(cnn.train.data.path, "lbl-models")
 
-if(!dir.exists(cnn.binary.models))
-  dir.create(cnn.binary.models)
+if(!dir.exists(data.cnn.binary.models.dir))
+  dir.create(data.cnn.binary.models.dir)
 
 cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
 
@@ -94,14 +94,14 @@ if (file.exists(cache_file.path)) {
     
     put_log("Building model for label `%1` (%2)...", as.character(label), label)
     
-    cache_file.path <- file.path(cnn.binary.models, 
+    cache_file.path <- file.path(data.cnn.binary.models.dir, 
                                  str_flatten(c(cnn.model_cache.base_name,
                                                label,
                                                as.character(label),
                                                "RData"),
                                              collapse = "."))
     
-    lbl.model.file_path <- file.path(cnn.binary.models, 
+    lbl.model.file_path <- file.path(data.cnn.binary.models.dir, 
                                  str_flatten(c(cnn.model_cache.base_name,
                                                label,
                                                as.character(label),
@@ -138,7 +138,7 @@ Summary of the model:",
               capture.output(summary(lbl.cnn_model)))
       
       model_checkpoint.filepath <- 
-        file.path(cnn.binary.models,
+        file.path(data.cnn.binary.models.dir,
                   str_flatten(c(label,
                                 as.character(label),
                                 "{epoch:02d}-{val_loss:.2f}.weights.h5"),

@@ -39,14 +39,14 @@ cnn.hw_char.models <- lapply(y.labels, function(label) {
   
   put_log("Building model for label `%1` (%2)...", as.character(label), label)
   
-  lbl.model_cache.file_path <- file.path(cnn.binary.models, 
+  lbl.model_cache.file_path <- file.path(data.cnn.binary.models.dir, 
                                str_flatten(c(cnn.lbl_model_file.base_name,
                                              label,
                                              as.character(label),
                                              "RData"),
                                            collapse = "."))
   
-  lbl.model.file_path <- file.path(cnn.binary.models, 
+  lbl.model.file_path <- file.path(data.cnn.binary.models.dir, 
                                    str_flatten(c(cnn.lbl_model_file.base_name,
                                                  label,
                                                  as.character(label),
@@ -86,7 +86,7 @@ Summary of the model:",
             capture.output(summary(lbl.cnn_model)))
     
     model_checkpoint.filepath <- 
-      file.path(cnn.binary.models,
+      file.path(data.cnn.binary.models.dir,
                 str_flatten(c(label,
                               as.character(label),
                               "{epoch:02d}-{val_loss:.2f}.weights.h5"),

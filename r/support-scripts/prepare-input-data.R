@@ -84,6 +84,7 @@ if (!file.exists(train.img28x28bin.list.file_path)) {
 %1", img.train.root_path)
   #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
   img28x28bin.list <- img.load.bin28x28mx.list(img.train.root_path)
+  put_end_date(start)
 
   put_log("Saving Binary Image 28x28 list to the backup file...")
   saveRDS(img28x28bin.list,
@@ -122,6 +123,9 @@ and backed up to the following file:
     y.labels <- readRDS(classifier.label_list.file_path)
 }
 
+N.classes <- length(y.labels)
+
+
 # put_log("The Classifier Label List contains the following labels:
 # %1", capture.output(y.labels))
 put_log("The Classifier Handwritten Character List contains the following labels:
@@ -135,18 +139,27 @@ if(!file.exists(train.img28x28mx.list.file_path)){
   put_log("Combining nested list of images to list of arrays...")
   
   img.nested_list <- img28x28bin.list$img.list
-  length(img.nested_list)
-  names(img.nested_list)
+  # names(img.nested_list)
   
   
   img28x28mx.list <- lapply(names(img.nested_list), function(label){
+    put_log("Creating array of images of character `%1`", label)
     item <- img.nested_list[[label]]
+    fpath_list.size = length(item$fpath.list)
+    
+    stopifnot(length(item$img.list) == fpath_list.size)
+    
     img.array <- abind(item$img.list, rev.along = 3)
     dimnames(img.array) <- list(base::rep(label, 
                                           times = length(item$img.list)),
                                 NULL,
                                 NULL)
-    img.array
+    
+    stopifnot(dim(img.array)[1] == fpath_list.size)
+    put_log("The array of images of character `%1` has been created.", label)
+    
+    list(img.array = img.array,
+         file.path = item$fpath.list)
   })
   names(img28x28mx.list) <- as.character(y.labels)
   
@@ -173,20 +186,34 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   
   put_log("Combining Binary image 28x28x matrix list to array...")
   
-  img28x28mx.array <- abind(img28x28mx.list, along = 1)
-  rm(img28x28mx.list)
+  img28x28mx.array.list <- lapply(img28x28mx.list, function(item) {
+    item$img.array
+  })
+  img28x28mx.file.list <- lapply(img28x28mx.list, function(item) {
+    item$file.path
+  })
+  
+  img28x28mx.array <- abind(img28x28mx.array.list, along = 1)
+  img28x28mx.fpath <- abind(img28x28mx.file.list)
+# rm(img28x28mx.list)
+  
+  stopifnot(length(img28x28mx.fpath) == nrow(img28x28mx.array))
+  
+  put_log("images File Path list has the following structure:
+  %1", capture.output(str(img28x28mx.fpath)))
   
   put_log("Combined Binary image matrix 28x28 array has the following structure:
-  %1", capture.output(str(ft.img28x28mx.array)))
+  %1", capture.output(str(img28x28mx.array)))
   
   put_log("Combined Binary image matrix 28x28 array has the following dimentions:
   %1", capture.output(dim(img28x28mx.array)))
   
   put_log("Saving Binary Image 28x28 array to the backup file...")
-  saveRDS(img28x28mx.array,
+  saveRDS(list(img28x28mx.array = img28x28mx.array,
+          img28x28mx.fpath = img28x28mx.fpath),
           file = train.img28x28mx.array.file_path)
   
-  rm(img28x28mx.array)
+#  rm(img28x28mx.array)
   
   put_log("The Binary Image 28x28 array has been saved to the following file:
 %1", train.img28x28mx.array.file_path)

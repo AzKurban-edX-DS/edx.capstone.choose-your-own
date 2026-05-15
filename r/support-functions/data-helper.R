@@ -1,6 +1,6 @@
-###########################
+#%%%%%%%%%%%%%%%%%%%%%%%
 # Data Helper Functions 
-###########################
+#%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Data loading ----------------------------------------------------------------
 kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
@@ -291,17 +291,39 @@ img.load.bin28x28mx.list <- function(root_path,
   
   start <- put_start_date()
   put_log("Loading image files...")
+  
   img_list <- lapply(img.file_list, function(char.dir){
-    list(img.list = map(char.dir$file_path.list, 
-                        image.load_bin.shape28x28) |> compact(),
-         fpath.list = char.dir$file_path.list)
+    put_log("Loading files from root directory:
+%1...",char.dir$root_path)
+
+    img_ls <- map(char.dir$file_path.list, 
+                        image.load_bin.shape28x28) # |> compact(),
+    
+    valid.idx <- sapply(img_ls, function(img){
+      sum(img) > 0
+    })
+    
+    # sum(ivalid.idx)
+    # bad_img <- img_ls[!ivalid.idx]
+    # length(bad_img)
+    # 
+    # char.image(bad_img[[1]])
+
+    ls <- list(img.list = img_ls[valid.idx], 
+               fpath.list = char.dir$file_path.list[valid.idx])
+    
+    stopifnot(length(ls$img.list) == length(ls$fpath.list))
+
+    put_log("Completed Loading files from directory:
+%1.",char.dir$root_path)
+    put_end_date(start)
+    ls
   })
-  put_end_date(start)
+  
   put_log("Image files have been loaded. The output list structure:
 %1", capture.output(str(img_list)))
   
-  list(img.files = img.file_list,
-       label.list = label_list,
+  list(label.list = label_list,
        img.list = img_list)
 }
 

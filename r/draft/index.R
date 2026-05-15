@@ -58,9 +58,9 @@ final_test.data.path <- file.path(dataset.path, "final_test")
 dir.create(final_test.data.path)
 final_test.data.path
 
-ds.subsets.path <- file.path(train.data.path, "subsets")
-dir.create(ds.subsets.path)
-ds.subsets.path
+# ds.subsets.path <- file.path(train.data.path, "subsets")
+# dir.create(ds.subsets.path)
+# ds.subsets.path
 
 models.path <- file.path(data.path, "models")
 dir.create(models.path)
@@ -69,99 +69,62 @@ models.path
 ### Deep Learning Models-related paths ----------------------------------------
 dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
+dir.create(dl.keras3.path)
+
+#### CNN-Based Directories Paths -----------------------------------------------
+
+data.dl.cnn.dir <- file.path(dl.keras3.path, "cnn")
+
+if(!dir.exists(data.dl.cnn.dir))
+  dir.create(data.dl.cnn.dir)
 
 
-### CNN-Based Multiclass Classifier Model Directories --------------------------
+##### CNN-Based Multiclass Classifier Model Directories ------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
 cnn_multiclass.script.path <- file.path(models.cnn_script.path, 
                                          "cnn-multiclass.R")
 stopifnot(file.exists(cnn_multiclass.script.path))
 
-cnn.data.path <- file.path(dl.keras3.path, "cnn")
+cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
+                                                   "cnn-multiclass.evaluation.R")
+stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
 
-if(!dir.exists(cnn.data.path))
-  dir.create(cnn.data.path)
+data.dl.cnn.multiclass.dir <- file.path(data.dl.cnn.dir, "multiclass")
 
-cnn_multiclass.data.path <- file.path(cnn.data.path, "multiclass")
+if(!dir.exists(data.dl.cnn.multiclass.dir))
+  dir.create(data.dl.cnn.multiclass.dir)
 
-if(!dir.exists(cnn_multiclass.data.path))
-  dir.create(cnn_multiclass.data.path)
+data.dl.cnn.multiclass.checkpoints.dir <- file.path(data.dl.cnn.multiclass.dir, "checkpoints")
 
-# cnn_multiclass.train.data.path <- file.path(cnn_multiclass.data.path, "train")
-# 
-# if(!dir.exists(cnn_multiclass.train.data.path))
-#   dir.create(cnn_multiclass.train.data.path)
-
-# cnn.data.path <- file.path(cnn.data.path, "")
-# 
-# if(!dir.exists(cnn.data.path))
-#   dir.create(cnn.data.path)
-# 
-# cnn.data.path <- file.path(cnn.data.path, "")
-# 
-# if(!dir.exists(cnn.data.path))
-#   dir.create(cnn.data.path)
-# 
-# cnn.data.path <- file.path(cnn.data.path, "")
-# 
-# if(!dir.exists(cnn.data.path))
-#   dir.create(cnn.data.path)
-# 
-# cnn.data.path <- file.path(cnn.data.path, "")
-# 
-# if(!dir.exists(cnn.data.path))
-#   dir.create(cnn.data.path)
-# 
-# cnn.data.path <- file.path(cnn.data.path, "")
-# 
-# if(!dir.exists(cnn.data.path))
-#   dir.create(cnn.data.path)
+if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
+  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
 
 
-# cnn.callbacks.path <- file.path(cnn.train.data.path, "callbacks")
-# 
-# if(!dir.exists(cnn.callbacks.path))
-#   dir.create(cnn.callbacks.path)
-# 
-# cnn.callbacks.checkpoints.path <- file.path(cnn.callbacks.path, "checkpoints")
-# 
-# if(!dir.exists(cnn.callbacks.checkpoints.path))
-#   dir.create(cnn.callbacks.checkpoints.path)
-# 
-# cnn.callbacks.tensorboard.path <- file.path(cnn.callbacks.path, "tensorboard")
-# 
-# if(!dir.exists(cnn.callbacks.tensorboard.path))
-#   dir.create(cnn.callbacks.tensorboard.path)
-
-cnn.callbacks.tb_logs.path <- file.path(cnn.callbacks.tensorboard.path, "logs")
-
-if(!dir.exists(cnn.callbacks.tb_logs.path))
-  dir.create(cnn.callbacks.tb_logs.path)
-
-### CNN-Based Binary Models Directories -----------------------------------
+##### CNN-Based Binary Models Directories -----------------------------------
 cnn_binary.scripts.path <- file.path(models.cnn_script.path, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.scripts.path))
 
-cnn.data.path <- file.path(dl.keras3.path, "")
+data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
 
-if(!dir.exists(cnn.data.path))
-  dir.create(cnn.data.path)
+if(!dir.exists(data.cnn.binary.dir))
+  dir.create(data.cnn.binary.dir)
 
-cnn.data.path <- file.path(dl.keras3.path, "")
 
-if(!dir.exists(cnn.data.path))
-  dir.create(cnn.data.path)
+data.cnn.binary.models.dir <- file.path(data.cnn.binary.dir, "models")
 
-cnn.data.path <- file.path(dl.keras3.path, "")
+if(!dir.exists(data.cnn.binary.models.dir))
+  dir.create(data.cnn.binary.models.dir)
 
-if(!dir.exists(cnn.data.path))
-  dir.create(cnn.data.path)
+data.cnn.binary.models.checkpoints.dir <- file.path(data.cnn.binary.models.dir, 
+                                                    "checkpoints")
+if(!dir.exists(data.cnn.binary.models.checkpoints.dir))
+  dir.create(data.cnn.binary.models.checkpoints.dir)
 
-cnn.binary.models <- file.path(cnn.train.data.path, "lbl-models")
-
-if(!dir.exists(cnn.binary.models))
-  dir.create(cnn.binary.models)
+data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir, 
+                                                   "evaluation")
+if(!dir.exists(data.cnn.binary.models.evaluation.dir))
+  dir.create(data.cnn.binary.models.evaluation.dir)
 
 ## Setup -----------------------------------------------------------------------
 source(setup_script.file_path, 
@@ -326,17 +289,6 @@ source(cnn_multiclass.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
-
-### Init CNN-Based Multiclass Classifier Model Evaluation Script Path ----------
-
-cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
-                                                   "cnn-multiclass.evaluation.R")
-stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
-
-# cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
-# 
-# if(!dir.exists(cnn.eval.cache.path))
-#   dir.create(cnn.eval.cache.path)
 
 ### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
 
