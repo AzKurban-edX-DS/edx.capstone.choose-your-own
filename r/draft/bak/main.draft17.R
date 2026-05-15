@@ -70,7 +70,7 @@ if(!file.exists(my_emnist.file_path)){
 %1", capture.output(summary(img28x28bin.list)))
   
   put_log("Building flatten (`EMNIST`-like) dataset...")
-  my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  my_emnist <- img.list2flatten_matrix(img28x28bin.list$img.list)
   put_log("The flatten dataset have been created with the following structure:
   %1", capture.output(str(my_emnist)))
 

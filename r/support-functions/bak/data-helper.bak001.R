@@ -152,17 +152,17 @@ image.load_bin.shape28x28 <- function(file_path) {
 }
 
 
-img28x28.list2flatten.mx <- function(img_list,
+img.list2flatten_matrix <- function(img_list,
                                  shuffle.rows = FALSE,
                                  shuffle.seed = NA){
   
-  char_matrix.list <- img28x28mx2flatten.list(img_list)
+  char_matrix.list <- img.list2flatten_matrix.list(img_list)
 
   start <- put_start_date()
-  put_log("Function `img_mx.list2flatten_matrix`:
+  put_log("Function `class_img.list2flatten_matrix`:
 Combining image data to single matrix...")
   img.mx <- do.call(rbind, char_matrix.list)
-  put_log("Function `img_mx.list2flatten_matrix`:
+  put_log("Function `class_img.list2flatten_matrix`:
 Combined image data matrix has been created with the following structure:
 %1", capture.output(str(img.mx)))
   put_end_date(start)
@@ -176,18 +176,18 @@ Combined image data matrix has been created with the following structure:
   img.mx
 }
 
-img28x28mx2flatten.list <- function(img_list){
+img.list2flatten_matrix.list <- function(img_list){
   start <- put_start_date()
-  put_log("Function `img28x28mx2flatten.list`:
+  put_log("Function `img.list2flatten_matrix.list`:
 Converting image lists to matrices...")
   char_matrix.list <- lapply(names(img_list), function(label){
-    put_log("Function `img28x28mx2flatten.list`:
+    put_log("Function `img.list2flatten_matrix.list`:
 Processing label: `%1`...", label)
     img_list[[label]]$img.list |> 
-      img_mx.list2flatten_matrix(label)
+      class_img.list2flatten_matrix(label)
   })
   
-  put_log("Function `img28x28mx2flatten.list`:
+  put_log("Function `img.list2flatten_matrix.list`:
 Image matrix list has been created with the following structure:
 %1", capture.output(str(char_matrix.list)))
   put_end_date(start)
@@ -195,7 +195,7 @@ Image matrix list has been created with the following structure:
   char_matrix.list
 }
 
-img_mx.list2flatten_matrix <- function(img.list, label) {
+class_img.list2flatten_matrix <- function(img.list, label) {
   mx.ncols <- 28*28
   
   map(img.list, as.vector) |>

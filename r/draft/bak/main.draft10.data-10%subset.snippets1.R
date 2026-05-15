@@ -2,7 +2,7 @@
 ch_A.list <- img28x28bin.list[["A"]]$img.list
 str(ch_A.list)
 
-ch_A.mx <- img_mx.list2flatten_matrix(ch_A.list, "A")
+ch_A.mx <- class_img.list2flatten_matrix(ch_A.list, "A")
 dim(ch_A.mx)
 ch_A.dist <- dist(ch_A.mx)
 str(ch_A.dist)
@@ -61,11 +61,11 @@ if (file.exists(ds.train.list.file_path)) {
 
 #start <- put_start_date()
 put_log("Building flatten training dataset (`my_emnist`)...")
-my_emnist <- img_mx.list2flatten_matrix(img28x28bin.list$img.list)
+my_emnist <- class_img.list2flatten_matrix(img28x28bin.list$img.list)
 put_end_date(start)
 str(my_emnist)
 
 # Converting image lists to char matrix list
-flatten_mx.list <- img28x28mx2flatten.list(img28x28bin.list$img.list)
+flatten_mx.list <- img.list2flatten_matrix.list(img28x28bin.list$img.list)
 # str(flatten_mx.list)
 

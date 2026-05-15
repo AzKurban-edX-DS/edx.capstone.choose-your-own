@@ -195,6 +195,8 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   
   img28x28mx.array <- abind(img28x28mx.array.list, along = 1)
   img28x28mx.fpath <- abind(img28x28mx.file.list)
+  names(img28x28mx.fpath) <- rownames(img28x28mx.array)
+  
 # rm(img28x28mx.list)
   
   stopifnot(length(img28x28mx.fpath) == nrow(img28x28mx.array))
@@ -208,14 +210,14 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   put_log("Combined Binary image matrix 28x28 array has the following dimentions:
   %1", capture.output(dim(img28x28mx.array)))
   
-  put_log("Saving Binary Image 28x28 array to the backup file...")
+  put_log("Saving Binary Image 28x28 array set to the backup file...")
   saveRDS(list(img28x28mx.array = img28x28mx.array,
           img28x28mx.fpath = img28x28mx.fpath),
           file = train.img28x28mx.array.file_path)
   
 #  rm(img28x28mx.array)
   
-  put_log("The Binary Image 28x28 array has been saved to the following file:
+  put_log("The Binary Image 28x28 array set has been saved to the following file:
 %1", train.img28x28mx.array.file_path)
   put_end_date(start)
   
@@ -234,7 +236,7 @@ if(!file.exists(my_emnist.file_path)){
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
   
-  my_emnist <- img28x28.list2flatten.mx(img28x28bin.list$img.list)
+  my_emnist <- img.list2flatten_matrix(img28x28bin.list$img.list)
   rm(img28x28bin.list)
 
   put_log("The flatten dataset have been created with the following structure:

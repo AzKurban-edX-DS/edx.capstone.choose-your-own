@@ -3,7 +3,7 @@ str(img28x28bin.list$img.list$T$img.list)
 t.img.list <- img28x28bin.list$img.list$T$img.list
 str(t.img.list)
 
-t.img.flat_ls <- t.img.list |> img_mx.list2flatten_matrix("T")
+t.img.flat_ls <- t.img.list |> class_img.list2flatten_matrix("T")
 str(t.img.flat_ls)
 
 image(t.img.flat_ls[1:400,])

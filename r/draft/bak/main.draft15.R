@@ -94,7 +94,7 @@ if(!file.exists(my_emnist.file_path)){
 %1", train.img28x28bin.list.file_path)
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
-  my_emnist <- img28x28.list2flatten.mx(img28xc28bin.list$img.list)
+  my_emnist <- img.list2flatten_matrix(img28xc28bin.list$img.list)
   put_log("The flatten dataset have been created.")
   str(my_emnist)
 
@@ -1758,7 +1758,7 @@ img28x28mx.list <- lapply(img.nested_list, function(item){
   img.array <- abind(item$img.list, rev.along = 3)
 })
 
-put_log("Function `img_mx.list2flatten_matrix`:
+put_log("Function `class_img.list2flatten_matrix`:
 Combined image data matrix has been created with the following structure:
 %1", capture.output(str(img.mx)))
 put_end_date(start)
@@ -1768,7 +1768,7 @@ start <- put_start_date()
 put_log("Combining image list to array...")
 x <- abind(img28x28mx.list, along = 1)
 
-put_log("Function `img_mx.list2flatten_matrix`:
+put_log("Function `class_img.list2flatten_matrix`:
 Combined image matrix array has been created with the following dimentions:
 %1", capture.output(dim(x)))
 # char.image(x[2,,])
