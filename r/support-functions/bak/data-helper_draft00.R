@@ -145,7 +145,7 @@ as.matrix.cimg <- function(cimg.list, label) {
                            1:mx.ncols))
 }
 
-img28x28.list2matrix <- function(img.list, label) {
+img_mx.list2flatten_matrix <- function(img.list, label) {
   mx.ncols <- 28*28
   
   map(img.list, as.vector) |>
@@ -199,7 +199,7 @@ img28x28.list2flatten.mx <- function(img_list,
   put_log("Converting image lists to matrices...")
   char_matrix.list <- lapply(names(img_list), function(label){
     img_list[[label]] |> 
-      img28x28.list2matrix(label)
+      img_mx.list2flatten_matrix(label)
   })
   
   put_end_date(start)

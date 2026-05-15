@@ -66,6 +66,15 @@ models.path <- file.path(data.path, "models")
 dir.create(models.path)
 models.path
 
+## Setup -----------------------------------------------------------------------
+source(setup_script.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
 ### Deep Learning Models-related paths ----------------------------------------
 dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
@@ -125,61 +134,6 @@ data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir,
                                                    "evaluation")
 if(!dir.exists(data.cnn.binary.models.evaluation.dir))
   dir.create(data.cnn.binary.models.evaluation.dir)
-
-## Setup -----------------------------------------------------------------------
-source(setup_script.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-
-## Load Logging Helper Functions ---------------------------------------------------
-log_func_script.file_path <- file.path(support_functions.path, "logging-helper.R")
-
-source(log_func_script.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-## Load Common Helper Functions --------------------------------------------------
-common_helper.funcs.file_path <- file.path(support_functions.path, "common-helper.R")
-
-
-source(common_helper.funcs.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-
-
-## Load Data Helper Functions --------------------------------------------------
-data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.R")
-
-
-source(data_helper.funcs.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-
-## Load Model Helper Functions --------------------------------------------------
-model_helper.funcs.file_path <- file.path(support_functions.path, "models-helper.R")
-
-
-source(model_helper.funcs.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
 
 ## Prepare Input Datasets ------------------------------------------------------
 prepare_ds.script.path <- file.path(support_scripts.path, "prepare-input-data.R")

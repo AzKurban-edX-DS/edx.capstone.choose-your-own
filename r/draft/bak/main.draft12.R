@@ -1773,7 +1773,7 @@ img28x28mx.list <- lapply(img.nested_list, function(item){
   # char.image(img.array[1,,])
 })
 
-put_log("Function `img28x28.list2matrix`:
+put_log("Function `img_mx.list2flatten_matrix`:
 Combined image data matrix has been created with the following structure:
 %1", capture.output(str(img.mx)))
 put_end_date(start)
@@ -1783,7 +1783,7 @@ start <- put_start_date()
 put_log("Combining image list to array...")
 x <- abind(img28x28mx.list, along = 1)
 
-put_log("Function `img28x28.list2matrix`:
+put_log("Function `img_mx.list2flatten_matrix`:
 Combined image matrix array has been created with the following dimentions:
 %1", capture.output(dim(x)))
 # char.image(x[2,,])

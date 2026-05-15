@@ -165,10 +165,10 @@ img28x28.list2flatten.mx <- function(img_list,
   char_matrix.list <- img28x28mx2flatten.list(img_list)
 
   start <- put_start_date()
-  put_log("Function `img28x28.list2matrix`:
+  put_log("Function `img_mx.list2flatten_matrix`:
 Combining image data to single matrix...")
   img.mx <- do.call(rbind, char_matrix.list)
-  put_log("Function `img28x28.list2matrix`:
+  put_log("Function `img_mx.list2flatten_matrix`:
 Combined image data matrix has been created with the following structure:
 %1", capture.output(str(img.mx)))
   put_end_date(start)
@@ -190,7 +190,7 @@ Converting image lists to matrices...")
     put_log("Function `img28x28mx2flatten.list`:
 Processing label: `%1`...", label)
     img_list[[label]]$img.list |> 
-      img28x28.list2matrix(label)
+      img_mx.list2flatten_matrix(label)
   })
   
   put_log("Function `img28x28mx2flatten.list`:
@@ -201,7 +201,7 @@ Image matrix list has been created with the following structure:
   char_matrix.list
 }
 
-img28x28.list2matrix <- function(img.list, label) {
+img_mx.list2flatten_matrix <- function(img.list, label) {
   mx.ncols <- 28*28
   
   map(img.list, as.vector) |>

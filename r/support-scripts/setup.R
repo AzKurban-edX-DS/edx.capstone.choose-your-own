@@ -135,3 +135,50 @@ N_pcCores
 ## Init Global Variables -------------------------------------------------------
 n.img_rows <- 28
 n.img_cols <- 28
+
+## Load Logging Helper Functions ---------------------------------------------------
+log_func_script.file_path <- file.path(support_functions.path, "logging-helper.R")
+
+source(log_func_script.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+## Load Common Helper Functions --------------------------------------------------
+common_helper.funcs.file_path <- file.path(support_functions.path, "common-helper.R")
+
+
+source(common_helper.funcs.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+
+## Load Data Helper Functions --------------------------------------------------
+data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.R")
+
+
+source(data_helper.funcs.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+## Load Model Helper Functions --------------------------------------------------
+model_helper.funcs.file_path <- file.path(support_functions.path, "models-helper.R")
+
+
+source(model_helper.funcs.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
