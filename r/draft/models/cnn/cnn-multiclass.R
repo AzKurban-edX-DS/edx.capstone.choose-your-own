@@ -11,6 +11,8 @@
 open_logfile(".train.cnn_multiclass-classifier.model")
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 
+stopifnot(exists("x3d.train_set"))
+
 ## Init File Paths -------------------------------------------------------------
 cnn_multiclass.model.file_path <- file.path(data.dl.cnn.multiclass.dir, 
                                             "cnn.pre-trained.multiclass.model.keras")
@@ -19,32 +21,32 @@ cnn_multiclass.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
 
 cnn_multiclass.checkpoint.file_path <- 
   file.path(data.dl.cnn.multiclass.checkpoints.dir, 
-            "{epoch:02d}-{val_loss:.2f}.weights.h5")
+            "{epoch:02d}-{val_loss:.2f}.keras")
 
 if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
   dir.create(data.dl.cnn.multiclass.checkpoints.dir)
 
-## Preparing Train Set ---------------------------------------------------------
-put_log("Preparing a Train Set...")
+## Preparing Training Data ---------------------------------------------------------
+put_log("Preparing Training Data...")
 start <- put_start_date()
 
-stopifnot(exists("x3d.train"))
+put_log("The Train Set object (`x3d.train_set`) hase the following structure:
+%1", capture.output(str(x3d.train_set)))
 
-lbl.groups <- ds.get_classIDs.grouped(x3d.train)
-#y_cnn.train <- as.factor(rownames(x3d.train))
-y_cnn.train <- lbl.groups$classID
-length(y_cnn.train)
+class.groups <- ds.get_classIDs.grouped(x3d.train_set$x.train)
+y.train <- class.groups$classID
+length(y.train)
 #> [1] 132912
 
-y_cnn.train.cat <- to_categorical(y_cnn.train)
-colnames(y_cnn.train.cat) <- y.labels
+y.train.cat <- to_categorical(y.train)
+colnames(y.train.cat) <- y.labels
 
 put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
-%1", capture.output(dim(y_cnn.train.cat)))
+%1", capture.output(dim(y.train.cat)))
 # [1] 132912     39
 
-# str(y_cnn.train.cat)
-head(y_cnn.train.cat)
+# str(y.train.cat)
+head(y.train.cat)
 #      # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 # [1,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # [2,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -55,28 +57,28 @@ head(y_cnn.train.cat)
 
 put_log("Reshaping the Train Set to make it compatible with the Convolutional Neural Network (CNN)...")
 # Add channel into the dimension
-x_cnn.train <- array_reshape(x3d.train, 
-                             c(nrow(x3d.train), 
+x.train <- array_reshape(x3d.train_set$x.train, 
+                             c(nrow(x3d.train_set$x.train), 
                                n.img_rows, 
                                n.img_cols, 
                                1))
 
 put_log("The Train Set has been reshaped as follows:
-%1", capture.output(shape(x3d.train)))
+%1", capture.output(shape(x.train)))
 # shape(132912, 28, 28)
 
-# class Identifies: Quick Analysis ---------------------------------------------
+### class Identifies: Quick Analysis -------------------------------------------
 
-y_cnn.train.chars <- lbl.groups$groupByClass
-#str(y_cnn.train.chars)
+y.train.chars <- class.groups$groupByClass
+#str(y.train.chars)
 
-char_n.max <- max(y_cnn.train.chars$n)
+char_n.max <- max(y.train.chars$n)
 # 3408
-char_n.max == min(y_cnn.train.chars$n)
+char_n.max == min(y.train.chars$n)
 # TRUE
 
 put_log("The number of rows for each *Character Class* to be recognized in the Train Set is as follows:
-%1", capture.output(print(y_cnn.train.chars, n = nrow(y_cnn.train.chars))))
+%1", capture.output(print(y.train.chars, n = nrow(y.train.chars))))
 # A tibble: 39 × 2
 #    classID     n
 #    <fct>   <int>
@@ -119,7 +121,7 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 # 37 X        3408
 # 38 Y        3408
 # 39 Z        3408
-#### Model building ------------------------------------------------------------
+## Model building --------------------------------------------------------------
 
 n.output <- N.classes
 batch_size <- 128
@@ -192,25 +194,24 @@ if(file.exists(cnn_multiclass.model.file_path)) {
     #> Please note, as we are not using GPU, it takes a few minutes to finish. 
     #> Please be patient while waiting for the results. 
     #> The training time can be significantly reduced if running on GPU. [*]
-    dim(x_cnn.train)
-    dim(y_cnn.train.cat)
+    dim(x.train)
+    dim(y.train.cat)
     
     cnn_multiclass.callbacks <- list(
       callback_model_checkpoint(filepath = cnn_multiclass.checkpoint.file_path,
                                 monitor = "val_accuracy",
                                 mode = max,
-                                save_best_only = TRUE,
+                                # save_best_only = TRUE,
                                 verbose = 1)
     )
     
     put_log("Training the CNN-based Multiclass Classifier Model...")
     start <- put_start_date()
     
-    str(x_cnn.train)
     # Train model
     cnn_multiclass.train_history <- cnn_multiclass.model |> 
-      fit(x_cnn.train, 
-          y_cnn.train.cat,
+      fit(x.train, 
+          y.train.cat,
           epochs = epochs,
           batch_size = batch_size,
           validation_split = vld_split,
@@ -218,6 +219,11 @@ if(file.exists(cnn_multiclass.model.file_path)) {
       )
     # acc: 0.8741
     
+    
+    put_log("Saving pre-trained model...")
+    save_model(cnn_multiclass.model,
+               filepath = cnn_multiclass.model.file_path,
+               overwrite = TRUE)
     
     put_log("Saving the CNN-based Multiclass Classifier Model...")
     saveRDS(cnn_multiclass.train_history,
@@ -229,7 +235,8 @@ if(file.exists(cnn_multiclass.model.file_path)) {
                filepath = cnn_multiclass.model.file_path,
                overwrite = TRUE)
     
-    put_log("The CNN Model has been trained and saved in the following file:
+    put_log("The CNN-Based Multiclass Classifier Model has been trained 
+and saved in the following file:
   %1", cnn_multiclass.model.file_path)
   }
 }

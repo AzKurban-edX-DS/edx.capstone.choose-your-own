@@ -212,7 +212,7 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   
   put_log("Saving Binary Image 28x28 array set to the backup file...")
   saveRDS(list(img28x28mx.array = img28x28mx.array,
-          img28x28mx.fpath = img28x28mx.fpath),
+               img28x28mx.fpath = img28x28mx.fpath),
           file = train.img28x28mx.array.file_path)
   
 #  rm(img28x28mx.array)
@@ -236,22 +236,22 @@ if(!file.exists(my_emnist.file_path)){
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
   
-  my_emnist <- img.list2flatten_matrix(img28x28bin.list$img.list)
+  my_emnist.set <- img.list2flatten_matrix(img28x28bin.list$img.list)
   rm(img28x28bin.list)
 
   put_log("The flatten dataset have been created with the following structure:
-  %1", capture.output(str(my_emnist)))
+  %1", capture.output(str(my_emnist.set)))
 
   
   put_log("Saving flatten training dataset to the backup file: 
 %1", my_emnist.file_path)
   # start <- put_start_date()
-  saveRDS(my_emnist,
+  saveRDS(my_emnist.set,
        file = my_emnist.file_path)
   put_log("The flatten training dataset has been saved to the backup file:
 %1", my_emnist.file_path)
   put_end_date(start)
-
+  
 } else {
   put_log("The flatten training dataset has already been constructed 
 and backed up to the following file:

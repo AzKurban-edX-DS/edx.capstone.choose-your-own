@@ -58,10 +58,6 @@ final_test.data.path <- file.path(dataset.path, "final_test")
 dir.create(final_test.data.path)
 final_test.data.path
 
-# ds.subsets.path <- file.path(train.data.path, "subsets")
-# dir.create(ds.subsets.path)
-# ds.subsets.path
-
 models.path <- file.path(data.path, "models")
 dir.create(models.path)
 models.path
@@ -146,17 +142,6 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Load Flatten Dataset --------------------------------------------------------
-# load_flatten_dataset.script.path <- file.path(support_scripts.path, "load-flatten-dataset.R")
-# stopifnot(file.exists(load_flatten_dataset.script.path))
-# 
-# source(load_flatten_dataset.script.path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
-
 ## Build kNN+PCA & Random Forest Models ----------------------------------------
 
 knn_pca.rf.script.path <- file.path(models_script.path, "knn+pca&rf.R")
@@ -180,58 +165,41 @@ source(dl_basic.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-#### Load Dataset for CNN-Based Models -----------------------------------------
-# load.cnn_dataset.script_path <- file.path(support_scripts.path, "load-cnn-dataset.R")
-# stopifnot(file.exists(load.cnn_dataset.script_path))
-# 
-# source(load.cnn_dataset.script_path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
-
 ## CNN-based Multiclass Classifier Model ---------------------------------------
 open_logfile(".ds.prepare.train&test.balanced_sets")
-## Prepare Train+Test Data -----------------------------------------------------
+## Prepare Training & Testing Sets -----------------------------------------------------
 put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
+
 start <- put_start_date()
-
-if(!exists("img28x28mx.array")) {
-  stopifnot(file.exists(train.img28x28mx.array.file_path))
-  put_log("Loading the Train 28x28 Image Data Array from the backup file...")
-  img28x28mx.array <- readRDS(train.img28x28mx.array.file_path)
-  put_log("The Train 28x28 Image Data Array has been loaded from the following backup file:
+stopifnot(file.exists(train.img28x28mx.array.file_path))
+put_log("Loading the Train 28x28 Image Data Array Set from the backup file...")
+img_mx.set <- readRDS(train.img28x28mx.array.file_path)
+put_log("The Train 28x28 Image Data Array Set has been loading from the following file:
 %1", train.img28x28mx.array.file_path)
-}
-
-put_log("The Train Test Data has the following structure:
-%1", capture.output(str(img28x28mx.array)))
-
-#### Split Dataset -------------------------------------------------------------
-sample_seed <- length(y.labels) # 39
+put_log("The Train 28x28 Image Data Array Set structure:
+%1", capture.output(str(img_mx.set)))
 
 put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
 
-set.seed(sample_seed)
-split3d.list <- sample_train_test_sets.x3d(img28x28mx.array)
 
-put_log("The Train 28x28 Image Data Array has been split into a Train and Test Sets,
-which are returned in a list object with the following structure:
-%1", capture.output(str(split3d.list)))
-put_end_date(start)
+set.seed(N.classes)
+split3d.list <- sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
+                                           img_mx.set$img28x28mx.fpath)
+str(split3d.list)
 
-x3d.train <- split3d.list$train_set
-put_log("The Train Set has been saved in the object `x3d.train` with the following shape:
-%1", capture.output(shape(x3d.train)))
+x3d.train_set <- split3d.list$train_set
+put_log("The Train Set has been saved in the object `x3d.train_set`, 
+which contains a training sample stored in the `x.train` variable having the following shape:
+%1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
 
-x3d.test <- split3d.list$test_set
-put_log("The Test Set has been saved in the object `x3d.test` with the following shape:
-%1", capture.output(shape(x3d.test)))
+x3d.test_set <- split3d.list$test_set
+put_log("The Test Set has been saved in the object `x3d.test`, 
+which contains a testing sample stored in the `x.test` variable having the following shape:
+%1", capture.output(shape(x3d.test_set$x.test)))
 # shape(33267, 28, 28)
 
-rm(split3d.list)
+# rm(split3d.list)
 ### Close Log ------------------------------------------------------------------
 log_close()
 
@@ -284,18 +252,12 @@ final_sample_seed <- length(y.labels) + 1 # 40
 put_log("Making a balanced sample from the Validation 28x28 Image Data Array...")
 
 set.seed(final_sample_seed)
-#ft.sample_set <- sample_train_test_sets.x3d(img28x28mx.array)
 ft.sample_set <- sample_train_test_sets.x3d(ft.img28x28mx.array, test.ratio = 1)
 
 put_log("The Final Test Set sample has been made from the Validation 28x28 Image Data Array,
 which is returned in an object with the following structure:
 %1", capture.output(str(ft.sample_set)))
 put_end_date(start)
-
-# x3d.train <- ft.sample_set$train_set
-# put_log("The Train Set has been saved in the object `x3d.train` with the following shape:
-# %1", capture.output(shape(x3d.train)))
-# # shape(132912, 28, 28)
 
 x3d.test <- ft.sample_set$test_set
 put_log("The Test Set has been saved in the object `x3d.test` with the following shape:

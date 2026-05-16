@@ -287,14 +287,22 @@ Combining image data to single matrix...")
 Combined image data matrix has been created with the following structure:
 %1", capture.output(str(img.mx)))
   put_end_date(start)
+  
+  file_path.ls <- lapply(img_list, function(item){
+    item$fpath.list
+  })
+  
+  img.file_path <- abind(file_path.ls)
+  names(img.file_path) <- rownames(img.mx)
 
   if (shuffle.rows) {
     put_log("Shuffling flatten matrix rows...")
-    img.mx <- shuffle.mxrows(img.mx, shuffle.seed)
+    img.mx <- shuffle.rows(img.mx, img.file_path, shuffle.seed)
     put_log("The flatten matrix rows have been shuffled.")
   }
-  
-  img.mx
+
+  list(img.mx = img.mx,
+       img.file_path = img.file_path)
 }
 
 img.list2flatten_matrix.list <- function(img_list){
@@ -595,7 +603,8 @@ Extracting 20% of the original index set of `x` used for the test Set.")
        y.test = y.test)
 }
 
-sample_train_test_sets.mx <- function(x, 
+sample_train_test_sets.mx <- function(x,
+                                      x.files = NULL,
                                       seed = NA, 
                                       test.ratio = 0.2,
                                       shuffle_rows = TRUE,
@@ -607,64 +616,109 @@ sample_train_test_sets.mx <- function(x,
                               shuffle_rows,
                               balanced,
                               bootstap.sample)
+  
+  if(!is.null(x.files)) {
+    train.files <- x.files[sample.idx$train.index]
+    test.files <- x.files[sample.idx$test.index]
+  } else {
+    train.files <- NULL
+    test.files <- NULL
+  }
+  
+  train.size <- (1 - test.ratio) * 100
+  test.size <- test.ratio * 100
+  
   put_log("Function: `sample_train_test_sets.mx`: 
-Extracting 80% of the original index set of `x` not used for the test Set...")
+Generating a training sample of size %1% from the original dataset...",
+          train.size)
   
-  train.set <- x[sample.idx["train"],]
-  # str(train.set)
-  # dim(train.set)
-  
-  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `train.set`")
+  train.set <- list(x.train = x[sample.idx$train.index,],
+                    x.files = train.files)
 
   put_log("Function: `sample_train_test_sets.mx`: 
-Extracting 20% of the original index set of `x` used for the test Set.")
+A training sample of size %1% has been made with the following structure:
+%2", train.size, capture.output(str(train.set)))
   
-  test.set <- x[sample.idx["test"],]
-  # str(test.set)
-  # dim(test.set)
+  put_log("Function: `sample_train_test_sets.mx`: 
+Generating a testing sample of size %1% from the original dataset...",
+          test.size)
   
-  put_log("Function: `sample_train_test_sets.mx`: Dataset created: `test.set`")
-
-  # Return result datassets
+  test.set <- list(x.test = x[sample.idx$test.index,],
+                   x.files = test.files)
+  
+  put_log("Function: `sample_train_test_sets.x3d`: 
+A testing sample of size %1% has been made with the following structure:
+%2", test.size, capture.output(str(test.set)))
+  
+  
   list(train_set = train.set,
        test_set = test.set)
 }
 
-sample_train_test_sets.x3d <- function(x, 
-                                      seed = NA, 
-                                      test.ratio = 0.2,
-                                      shuffle_rows = TRUE,
-                                      balanced = TRUE,
-                                      bootstap.sample = FALSE) { 
-  sample.idx <- get_sample.idx(x, 
+sample_train_test_sets.x3d <- function(x,
+                                       x.files = NULL,
+                                       seed = NA, 
+                                       test.ratio = 0.2,
+                                       shuffle_rows = TRUE,
+                                       balanced = TRUE,
+                                       bootstap.sample = FALSE) { 
+  sample.idx <- get_sample.idx(x,
                                seed, 
                                test.ratio, 
                                shuffle_rows,
                                balanced,
                                bootstap.sample)
 
-  train.set <- x[sample.idx$train.index,,]
-  put_log("Function: `sample_train_test_sets.x3d`: 
-A sample made from the original dataset: `train.set`.
-Structure of the `train.set`:
-%1", capture.output(str(train.set)))
+  if(!is.null(x.files)) {
+    train.files <- x.files[sample.idx$train.index]
+    test.files <- x.files[sample.idx$test.index]
+  } else {
+    train.files <- NULL
+    test.files <- NULL
+  }
 
-  test.set <- x[sample.idx$test.index,,]
+  train.size <- (1 - test.ratio) * 100
+  test.size <- test.ratio * 100
+
   put_log("Function: `sample_train_test_sets.x3d`: 
-A sample made from the original dataset: `test.set`,
-Structure of the `test.set`:
-%1", capture.output(str(test.set)))
+Generating a training sample of size %1% from the original dataset...",
+          train.size)
+
+  train.set <- list(x.train = x[sample.idx$train.index,,],
+                    x.files = train.files)
+  
+  put_log("Function: `sample_train_test_sets.x3d`: 
+A training sample of size %1% has been made with the following structure:
+%2", train.size, capture.output(str(train.set)))
+  
+  put_log("Function: `sample_train_test_sets.mx`: 
+Generating a testing sample of size %1% from the original dataset...",
+          test.size)
+
+  test.set <- list(x.test = x[sample.idx$test.index,,],
+                    x.files = test.files)
+  
+  put_log("Function: `sample_train_test_sets.x3d`: 
+A testing sample of size %1% has been made with the following structure:
+%2", test.size, capture.output(str(test.set)))
+  
   
   list(train_set = train.set,
        test_set = test.set)
 }
 
-shuffle.mxrows <- function(x, seed = NA) {
+shuffle.rows <- function(x,
+                         x.files = NULL,
+                         seed = NA) {
   if (!is.na(seed)) {
     set.seed(seed)
   }
   random.idx <- sample(nrow(x))
-  x[random.idx,]
+  
+  random.files <- ifelse(!is.null(x.files),
+                         x.files[random.idx])
+  list(x = x[random.idx,],
+       x.files = random.files)
 }
 
 shuffle.rows.x3d <- function(x, seed = NA) {

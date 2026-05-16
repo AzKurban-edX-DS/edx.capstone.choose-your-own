@@ -376,11 +376,140 @@ img_grid <- lapply(1:12, function(i) {
     )
 }) |> 
   image_join() |>
-  image_montage(tile = "3x4", geometry = "x250+5+5")
+  image_montage(tile = "3x4", geometry = "x300+5+5")
 
 image_info(img_grid)
 print(img_grid)
 
+imgs <- image_read(df.pred.err$file[1:16]) |>
+  image_scale("200")
+# image_resize(imgs, "400")
+
+image_info(imgs)
+img_vector <- lapply(df.pred.err[1:3,], function(r) {
+  str(r)
+})
+
+img_grid <- lapply(1:12, function(j) {
+  img_row <- lapply(j:j+2, function(i) {
+    image_read(df.pred.err$file[i]) |>
+      image_scale("200") |>
+      image_annotate(str_flatten(c(as.character(df.pred.err$predicted[i]),
+                                   " vs ",
+                                   as.character(df.pred.err$actual[i]),
+                                   " (actual)")),
+                     size = 20, color = "red4",
+                     boxcolor = "yellow",
+                     # location = "+1+2",
+                     #gravity = "southwest"
+      )
+  }) |> 
+    image_join() |>
+    image_append()
+  
+  img_row
+}) |>
+  image_join() |>
+  image_append(stack = TRUE)
+
+image_info(img_grid)
+print(img_grid)
+
+img_row1 <- lapply(1:3, function(i) {
+  image_read(df.pred.err$file[i]) |>
+    image_scale("200") |>
+    image_annotate(str_flatten(c(as.character(df.pred.err$predicted[i]),
+                                 " vs ",
+                                 as.character(df.pred.err$actual[i]),
+                                 " (actual)")),
+                   size = 20, color = "red4",
+                   boxcolor = "yellow",
+                   # location = "+1+2",
+                   #gravity = "southwest"
+                   )
+}) |> 
+  image_join() |>
+  image_append()
+
+
+image_info(img_row1)
+
+
+img_row2 <- lapply(4:6, function(i) {
+  image_read(df.pred.err$file[i]) |>
+    image_scale("200") |>
+    image_annotate(str_flatten(c(as.character(df.pred.err$predicted[i]),
+                                 " vs ",
+                                 as.character(df.pred.err$actual[i])),
+                               " (actual)"),
+                   size = 20, color = "red4",
+                   boxcolor = "yellow",
+                   # location = "+1+2",
+                   #gravity = "southwest"
+                   )
+}) |> 
+  image_join() |>
+  image_append()
+
+image_info(img_row2)
+image_append(c(img_row1, img_row2), stack = TRUE)
+
+
+
+for (i in 1:16) {
+  image_annotate(imgs[i], 
+                 str_flatten(c(as.character(df.pred.err$predicted),
+                               " vs ",
+                               as.character(df.pred.err$actual))),
+                 size = 20, color = "red",
+                 #boxcolor = "blue",
+                 # location = "+1+2",
+                 gravity = "southwest") |>
+    image_append(stack = TRUE)
+}
+
+
+image_info(imgs)
+# image_mosaic(imgs)
+image_append(imgs, stack = TRUE)
+
+grid_img <- image_montage(imgs, tile = "4x4")#, geometry = "x200+5+5")
+image_info(grid_img)
+print(grid_img)
+
+# Create rows (stack = FALSE appends horizontally)
+# row1 <- image_append(imgs[1:3], stack = FALSE)
+# row2 <- image_append(imgs[4:6], stack = FALSE)
+# 
+# # Combine rows (stack = TRUE appends vertically)
+# final_grid <- image_append(c(row1, row2), stack = TRUE)
+# 
+# print(final_grid)
+
+# img_path <- sapply(df.pred.err$file[1:16], function(file_path) {
+#   #image_read(file_path)
+#   file_path
+# }) #|> unlist() |> as.vector()
+# str(img_path)
+
+# img_vector <- df.pred.err$file[1:16]
+# str(img_vector)
+# 
+
+# err.pred.values <- cnn.prediction.values[err.idx]
+# head(err.pred.values)
+# 
+# err.test.values <- y.test[err.idx]
+# head(err.test.values)
+# 
+# err.head.img <- x.test[err.head.idx,,,1]
+# dim(err.head.img)
+
+# par(mfrow = c(6, 1))
+# for(i in err.head.idx) {
+#   char.image(x.test[i,,,1])
+# }
+# par(mfrow = c(1,1))
 
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 ## Close Log ------------------------------------------------------------------
