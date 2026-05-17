@@ -271,6 +271,50 @@ data.plot <- function(data,
     geom_line(color=line_col)
 }
 
+recognition_err.table <- function(predicted.values, 
+                                  actual.values, 
+                                  img.file_paths) {
+  
+  err.idx <- which(predicted.values != actual.values)
+  
+  data.frame(predicted = predicted.values[err.idx],
+             actual = actual.values[err.idx],
+             file = img.file_paths[err.idx])
+}
+
+print.image_grid <- function(err.table,
+                             err_index.range = 1:30,
+                             image.scale ="100",
+                             font.size = 10,
+                             font.color = "red4",
+                             box.color = colors()[492], #"#F5F5DC",
+                             tile = "5x6",
+                             geometry = "x160+5+5"
+                             ) {
+  
+  img_grid <- lapply(err_index.range, function(i) {
+    image_read(err.table$file[i]) |>
+      image_scale(image.scale) |>
+      image_annotate(str_flatten(c(as.character(err.table$predicted[i]),
+                                   " vs ",
+                                   as.character(err.table$actual[i]),
+                                   " (actual)")),
+                     size = font.size, color = font.color,
+                     boxcolor = box.color,
+                     # location = "+1+2",
+                     #gravity = "southwest"
+      )
+  }) |> 
+    image_join() |>
+    image_montage(tile = tile, geometry = geometry)
+  
+  image_info(img_grid)
+  print(img_grid)
+  
+  list(err.table = err.table[err_index.range,],
+       image.grid = img_grid)
+}
+
 ## Data processing -------------------------------------------------------------
 
 img.list2flatten_matrix <- function(img_list,

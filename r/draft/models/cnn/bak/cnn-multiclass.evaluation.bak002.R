@@ -327,44 +327,60 @@ data.frame(class = y.labels,
 
 ### Review Some Errors --------------------------------------------------------- 
 
-recg.err.info <- recognition_err.table(cnn.prediction.values,
-                                        y.test,
-                                        x.test.files) |>
-  print.image_grid()
+err.idx <- which(cnn.prediction.values != y.test)
+length(err.idx)
+#  2679
 
-put_log("First 30 prediction errors:
-%1", capture.output(recg.err.info$err.table))
-#    predicted actual                                         file
-# 1          9      G  data/raw/Vaibs.HW-Chars/Train/G/_1_2079.jpg
-# 2          L      1    data/raw/Vaibs.HW-Chars/Train/1/21673.jpg
-# 3          U      V      data/raw/Vaibs.HW-Chars/Train/V/610.jpg
-# 4          S      5    data/raw/Vaibs.HW-Chars/Train/5/29573.jpg
-# 5          S      5    data/raw/Vaibs.HW-Chars/Train/5/21880.jpg
-# 6          U      4    data/raw/Vaibs.HW-Chars/Train/4/31650.jpg
-# 7          1      L     data/raw/Vaibs.HW-Chars/Train/L/5851.jpg
-# 8          V      Y       data/raw/Vaibs.HW-Chars/Train/Y/83.jpg
-# 9          0      D     data/raw/Vaibs.HW-Chars/Train/D/2412.jpg
-# 10         Q      G  data/raw/Vaibs.HW-Chars/Train/G/_1_3172.jpg
-# 11         1      I     data/raw/Vaibs.HW-Chars/Train/I/9487.jpg
-# 12         9      Q  data/raw/Vaibs.HW-Chars/Train/Q/_1_1842.jpg
-# 13         C      E data/raw/Vaibs.HW-Chars/Train/E/_1_14130.jpg
-# 14         1      I    data/raw/Vaibs.HW-Chars/Train/I/12125.jpg
-# 15         L      I    data/raw/Vaibs.HW-Chars/Train/I/12325.jpg
-# 16         N      H      data/raw/Vaibs.HW-Chars/Train/H/682.jpg
-# 17         I      L    data/raw/Vaibs.HW-Chars/Train/L/11802.jpg
-# 18         Q      A data/raw/Vaibs.HW-Chars/Train/A/_1_10481.jpg
-# 19         1      L    data/raw/Vaibs.HW-Chars/Train/L/16686.jpg
-# 20         I      L     data/raw/Vaibs.HW-Chars/Train/L/6876.jpg
-# 21         I      L     data/raw/Vaibs.HW-Chars/Train/L/8059.jpg
-# 22         L      1    data/raw/Vaibs.HW-Chars/Train/1/34280.jpg
-# 23         B      6    data/raw/Vaibs.HW-Chars/Train/6/18502.jpg
-# 24         3      2    data/raw/Vaibs.HW-Chars/Train/2/35718.jpg
-# 25         8      G   data/raw/Vaibs.HW-Chars/Train/G/_1_272.jpg
-# 26         I      1    data/raw/Vaibs.HW-Chars/Train/1/24956.jpg
-# 27         R      T      data/raw/Vaibs.HW-Chars/Train/T/789.jpg
-# 28         G      5     data/raw/Vaibs.HW-Chars/Train/5/3938.jpg
-# 29         6      B  data/raw/Vaibs.HW-Chars/Train/B/_1_4978.jpg
-# 30         V      U    data/raw/Vaibs.HW-Chars/Train/U/15093.jpg
+df.pred.err <- data.frame(predicted = cnn.prediction.values[err.idx],
+                     actual = y.test[err.idx],
+                     file = x.test.files[err.idx])
+
+put_log("First 16 prediction errors:
+%1", capture.output(head(df.pred.err, n = 16)))
+# First 16 prediction errors:
+#    predicted actual                                      file
+# 1          9      G data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 2          L      1 data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 3          U      V data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 4          S      5 data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 5          S      5 data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 6          U      4 data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 7          1      L data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 8          V      Y data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 9          0      D data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 10         Q      G data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 11         1      I data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 12         9      Q data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 13         C      E data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 14         1      I data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 15         L      I data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+# 16         N      H data/raw/Vaibs.HW-Chars/Train/9/24278.jpg
+
+# Reference:
+# https://cran.r-project.org/web/packages/magick/vignettes/intro.html
+# G.err.img <- image_read(df.pred.err$file, width = 350)
+# print(G.err.img)
+
+
+img_grid <- lapply(1:30, function(i) {
+  image_read(df.pred.err$file[i]) |>
+    image_scale("100") |>
+    image_annotate(str_flatten(c(as.character(df.pred.err$predicted[i]),
+                                 " vs ",
+                                 as.character(df.pred.err$actual[i]),
+                                 " (actual)")),
+                   size = 10, color = "red4",
+                   boxcolor = "yellow",
+                   # location = "+1+2",
+                   #gravity = "southwest"
+    )
+}) |> 
+  image_join() |>
+  image_montage(tile = "5x6", geometry = "x160+5+5")
+
+image_info(img_grid)
+print(img_grid)
+
 
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 ## Close Log ------------------------------------------------------------------
