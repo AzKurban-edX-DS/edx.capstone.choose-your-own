@@ -37,10 +37,7 @@ cnn_bin.model.file.base_name <- "cnn.binary-class.model"
 cnn_bin.eval.backup.file_path <- file.path(data.cnn.binary.dir,
                                            "cnn.lbl-models.evaluation.RData")
 
-cnn_bin.eval_cache.base_name <- "cnn-binary.model.eval"
-
-
-put_log("CNN Models Evaluation started for entire set of Classes...")
+put_log("CNN Models Evaluation started for entire set of labels...")
 start_eval_time <- put_start_date()
 
 
@@ -52,37 +49,6 @@ registerDoParallel(cl)
 
 cnn_bin.models.dat <- lapply(y.labels, function(label) {
 
-  ##### Init Backup File Paths *********************************************
-  {
-    label.idx <- as.integer(label)
-    label.char <- as.character(label)
-    
-    put_log("Building model for class `%1` (%2)...", label.char, label.idx)
-    
-    cnn_bin.model.supporting_data.file_path <- file.path(data.cnn.binary.models.dir, 
-                                                         str_flatten(c(cnn_bin.model.file.base_name,
-                                                                       label.idx,
-                                                                       label.char,
-                                                                       "RData"),
-                                                                     collapse = "."))
-    
-    bin_model.file_path <- file.path(data.cnn.binary.models.dir, 
-                                     str_flatten(c(cnn_bin.model.file.base_name,
-                                                   label.idx,
-                                                   label.char,
-                                                   "keras"),
-                                                 collapse = "."))
-    
-    bin_model_eval.backup.path <- file.path(data.cnn.binary.models.evaluation.dir, 
-                                            str_flatten(c(cnn_bin.eval_cache.base_name,
-                                                          label,
-                                                          as.character(label),
-                                                          "RData"),
-                                                        collapse = "."))
-    
-    
-  }
-  
   ##### Preparing a Train & Test Sets for the Class Model  
   {
     set.seed(as.integer(y.labels[y.labels == label]))
@@ -138,6 +104,26 @@ for training & testing the Binary Classifier Model for Class `%1` (%2):
     #> of the image. [*]
     
     
+    label.idx <- as.integer(label)
+    label.char <- as.character(label)
+    
+    put_log("Building model for class `%1` (%2)...", label.char, label.idx)
+    
+    cnn_bin.model.supporting_data.file_path <- file.path(data.cnn.binary.models.dir, 
+                                                         str_flatten(c(cnn_bin.model.file.base_name,
+                                                                       label.idx,
+                                                                       label.char,
+                                                                       "RData"),
+                                                                     collapse = "."))
+    
+    bin_model.file_path <- file.path(data.cnn.binary.models.dir, 
+                                     str_flatten(c(cnn_bin.model.file.base_name,
+                                                   label.idx,
+                                                   label.char,
+                                                   "keras"),
+                                                 collapse = "."))
+    
+    # bin_model <- cnn.create_model.binary_classifier()
     bin_model <-   keras_model_sequential(shape(28L, 28L, 1L)) |>
       layer_conv_2d(filters = 8L,
                     kernel_size = 2,
@@ -255,7 +241,7 @@ Summary of the model:
   {
     put_log("Evaluating the CNN-based Binary  Classifier model for '%1' character...", 
             label)
-    eval.result <- bin_model |> evaluate(x.test, y.test)
+    lbl.eval.result <- bin_model |> evaluate(x.test, y.test)
     put_log("Evaluation of the CNN-based Binary  Classifier model for '%1' character has been completed.",
             label)
     
@@ -271,20 +257,21 @@ for the character '%1' has been completed.",
             label)
     
     put_log("CNN: Saving model evaluation data for label `%1` to cache...", label)
-    save(eval.result,
+    save(lbl.trained_model.list,
+         lbl.eval.result,
          preds,
          label,
-         file = bin_model_eval.backup.path)
+         file = lbl.model_eval.backup.path)
     put_log("CNN: the model evaluation data for label `%1` 
 have been saved the the cache file:
-%2", label.char, bin_model_eval.backup.path)
+%2", label, lbl.model_eval.backup.path)
   }    
   
   ### Make Predictions & Analyse Results *********************************
   {    
     
     put_log("The current CNN Model evaluation result:
-%1", capture.output(str(eval.result)))
+%1", capture.output(str(lbl.eval.result)))
     # CNN Model evaluation result:
     #   List of 2
     # $ accuracy: num 0.963
@@ -323,17 +310,21 @@ the handwritten character '%1' is as follows:
     put_log("The CNN-based Binary  Classifier model evaluation task for '%1' character has been completed.",
             label)
   }
-  
   put_end_date(start)
+  
+  list(lbl.trained_model.list,
+       preds = preds,
+       label = label,
+       accuracy = accuracy,
+       conf.mx)
+  
+  
   
   list(saved_model.filepath = bin_model.file_path,
        lbl.data.cache.path = cnn_bin.model.supporting_data.file_path,
        train_history = cnn.1bl.train_history,
-       preds = preds,
-       accuracy = accuracy,
-       conf.mx,
-       # x.test = x.test,
-       # y.test = y.test,
+       x.test = x.test,
+       y.test = y.test,
        label = label)
 })
 
@@ -351,42 +342,177 @@ stopCluster(cl)
 stopImplicitCluster()
 put_end_date(start)
 
-put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
+### Close Log ------------------------------------------------------------------
+log_close()
+#### Open log: Evaluate CNN Model ----------------------------------------------
+open_logfile(".evaluate-cnn-model")
+#### CNN Binary Models Evaluation ----------------------------------------------
+
+if (file.exists(cnn_bin.eval.backup.file_path)) {
+  put_log("CNN: Loading the Labeled Binary Classifier Models evalution results from cache...") 
+  load(cnn_bin.eval.backup.file_path)
+  put_log("CNN: the Labeled Binary Classifier Models evalution results 
+have been loaded from the cache file:
+%1", cnn_bin.eval.backup.file_path)
+} else {
+  cnn.eval_cache.base_name <- "cnn.lbl-model.eval"
+  
+  if(!exists("cnn_bin.models.dat")) {
+    if(!file.exists(cnn_bin.models.dat.backup.path))
+      stop(str.build("Cache file does not exist: 
+%1", cnn_bin.models.dat.backup.path))
+    
+    cnn_bin.models.dat <- readRDS(cnn_bin.models.dat.backup.path)
+  }
+  
+  str(cnn_bin.models.dat)
+  
+  # cl <- makeCluster(N_pcCores)
+  # registerDoParallel(cl)
+
+  evaluation.results <- lapply(y.labels, function(label) {
+    
+#### Evaluate Pre-trained Model ************************************    
+    
+    put_log("Processing model evaluation for label `%1`...",label)
+    start <- put_start_date()
+
+    lbl.model_eval.backup.path <- file.path(data.cnn.binary.models.evaluation.dir, 
+                                 str_flatten(c(cnn.eval_cache.base_name,
+                                               label,
+                                               as.character(label),
+                                               "RData"),
+                                             collapse = "."))
+    
+    put_log("Cache file path: %1", lbl.model_eval.backup.path)
+    
+    if (file.exists(lbl.model_eval.backup.path)) {
+      put_log("CNN: loading model evaluation data for label `%1` from cache...", label)
+      load(lbl.model_eval.backup.path)
+      put_log("CNN: the model evaluation data for label `%1` have been loaded from the cache file:
+%2", label, lbl.model_eval.backup.path)
+    } else {
+      # Load pre-trained model data
+      
+      lbl.trained_model.list <- cnn_bin.models.dat[[label]] 
+      #   list(model                = bin_model,
+      #        saved_model.filepath = bin_model.file_path,
+      #        lbl.data.cache.path  = cnn_bin.model.supporting_data.file_path,
+      #        train_history        = cnn.1bl.train_history,
+      #        x.test               = cnn_bin.ds_sample.set$x.test,
+      #        y.test               = cnn_bin.ds_sample.set$y.test,
+      #        label                = label)
+      
+      x.test <- lbl.trained_model.list$x.test
+      y.test <- lbl.trained_model.list$y.test
+
+      #exists("lbl.trained_model.list$train_history")
+      plot(lbl.trained_model.list$train_history)
+
+      put_log("Summary of the model for handwritten character `%1`:
+%2", label, capture.output(summary(lbl.trained_model.list)))
+      
+      bin_model <- lbl.trained_model.list$model
+      str(bin_model)
+
+      if(length(bin_model) == 0) {
+        stopifnot(file.exists(lbl.trained_model.list$saved_model.filepath))
+        bin_model <- load_model(lbl.trained_model.list$saved_model.filepath)
+        stopifnot(length(bin_model) > 0)
+      }
+
+      str(bin_model)
+      length(bin_model)
+      
+    }
+    
+    plot(lbl.trained_model.list$train_history)
+
+  })
+  names(evaluation.results) <- as.character(y.labels)
+  
+  put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 for each of the following handwritten characters:
 %1", capture.output(as.character(y.labels)))
-
-# stopCluster(cl)
-# stopImplicitCluster()
-# put_end_date(start)
-
-bin_models.accuracies <- sapply(cnn_bin.models.dat, function(result){
+  
+  # stopCluster(cl)
+  # stopImplicitCluster()
+  # put_end_date(start)
+  
+lbl_models.accuracies <- sapply(evaluation.results, function(result){
   result$accuracy
 })
 
-# names(bin_models.accuracies) <- as.character(y.labels)
-cnn.bin_models.accuracy <- data.frame(label = y.labels, accuracy = bin_models.accuracies) 
+# names(lbl_models.accuracies) <- as.character(y.labels)
+cnn.bin_models.accuracy <- data.frame(label = y.labels, accuracy = lbl_models.accuracies) 
 cnn.bin_models.accuracy
 
-# put_log("Saving the CNN-based Binary Classifier Model evaluation results...")
-# save(evaluation.results,
-#      cnn.bin_models.accuracy,
-#      file = cnn_bin.eval.backup.file_path)
-# put_log("The CNN-based Binary Classifier model evaluation results have been saved to the following file:
-# %1", cnn_bin.eval.backup.file_path)
-
+  put_log("Saving the CNN-based Binary Classifier Model evaluation results...")
+  save(evaluation.results,
+       cnn.bin_models.accuracy,
+       file = cnn_bin.eval.backup.file_path)
+  put_log("The CNN-based Binary Classifier model evaluation results have been saved to the following file:
+%1", cnn_bin.eval.backup.file_path)
+}
 
 put_log("The evaluation of the CNN-based Binary Classifier models results in the following accuracies:
 %1", capture.output(cnn.bin_models.accuracy))
+#    label  accuracy
+# 1      # 0.4897910
+# 2      $ 0.4902771
+# 3      & 0.4913304
+# 4      @ 0.4743964
+# 5      0 0.4530060
+# 6      1 0.4588397
+# 7      2 0.4716415
+# 8      3 0.4718036
+# 9      4 0.4897910
+# 10     5 0.4737482
+# 11     6 0.4738292
+# 12     7 0.4944904
+# 13     8 0.4642684
+# 14     9 0.4728569
+# 15     A 0.4605412
+# 16     B 0.4795009
+# 17     C 0.4856587
+# 18     D 0.4894669
+# 19     E 0.4969211
+# 20     F 0.5390536
+# 21     G 0.4188138
+# 22     H 0.4901961
+# 23     I 0.4839572
+# 24     J 0.5614973
+# 25     K 0.5064819
+# 26     L 0.4550316
+# 27     M 0.4889807
+# 28     N 0.4806352
+# 29     P 0.4935991
+# 30     Q 0.4543834
+# 31     R 0.5139362
+# 32     S 0.4739102
+# 33     T 0.9866310
+# 34     U 0.4777994
+# 35     V 0.4862259
+# 36     W 0.4906822
+# 37     X 0.4985416
+# 38     Y 0.5098849
+# 39     Z 0.4943283
 
+# df.models.acc |>
+#   ggplot(aes(x, y)) +
+#   geom_line(color = "blue") +
+#   geom_point(size = 3)
 
 cnn.bin_models.accuracy |>
   data.plot("Average Accuracy", 
             xname = "label", 
             yname = "accuracy")
 
-# put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
-# for all the handwritten characters with the following results:
-# %1", capture.output(str(evaluation.results)))
+put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
+for all the handwritten characters with the following results:
+%1", capture.output(str(evaluation.results)))
 
+put_end_date(start_eval_time)
 ### Close Log ------------------------------------------------------------------
 log_close()
+
