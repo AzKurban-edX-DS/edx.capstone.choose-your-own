@@ -7,6 +7,7 @@ stopifnot(exists("x3d.test_set"))
 ## Loading the Pre-trained CNN-based Multiclass Classifier Model ----------------------------------------------
 if (!exists("cnn_multiclass.model")) {
   stopifnot(file.exists(cnn_multiclass.model.file_path))
+  
   put_log("Loading the pre-trained CNN-based Multiclass Classifier model from the backup file...")
   cnn_multiclass.model <- load_model(cnn_multiclass.model.file_path)
   put_log("The pre-trained CNN-based Multiclass Classifier model 
@@ -37,7 +38,7 @@ put_log("Preparing a Test Set...")
 start <- put_start_date()
 
 class.groups <- ds.get_classIDs.grouped(x3d.test_set$x.test)
-#y.test <- as.factor(rownames(x3d.test))
+
 y.test <- class.groups$classID
 length(y.test)
 #> [1] 33267

@@ -3,156 +3,160 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Initial Paths ---------------------------------------------------------------
-stopifnot(dir.exists(models.path))
-models.random_forest.path <- file.path(models.path, "random-forest")
 
-if(!dir.exists(models.random_forest.path))
-  dir.create(models.random_forest.path)
+models.random_forest.path <- file.path(models.path, "random-forest")
+dir.create(models.random_forest.path)
+models.random_forest.path
+
+models.random_forest.research.path <- file.path(models.random_forest.path, "research")
+dir.create(models.random_forest.research.path)
+models.random_forest.research.path
 
 knn_pca.path = file.path(models.path, "knn-pca")
-
-if(!dir.exists(knn_pca.path))
+if(!dir.exists(knn_pca.path)) {
   dir.create(knn_pca.path)
+}
 
-### Open log: Load Split Dataset -------------
+#### Quick data analysis -------------------------------------------------------
+
+max(y.chars$n)
+# 65504
+y.chars$classID[which.max(y.chars$n)]
+#> [1] 0
+#> Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+
+min(y.chars$n)
+# 4261
+y.chars$classID[which.min(y.chars$n)]
+#> [1] J
+#> Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+
+print(y.chars, n = length(y.chars$classID))
+# A tibble: 39 × 2
+# classID     n
+# <fct> <int>
+# 1 #     15600
+# 2 $     16199
+# 3 &     13000
+# 4 @     38009
+# 5 0     65504 # max(n)
+# 6 1     43773
+# 7 2     39351
+# 8 3     39996
+# 9 4     38112
+# 10 5     32317
+# 11 6     38879
+# 12 7     41080
+# 13 8     38795
+# 14 9     38319
+# 15 A     17205
+# 16 B      8666
+# 17 C     13560
+# 18 D     15509
+# 19 E     32627
+# 20 F     11635
+# 21 G      5443
+# 22 H     12133
+# 23 I     13873
+# 24 J      4261 # min(n)
+# 25 K      4334
+# 26 L     21648
+# 27 M     12089
+# 28 N     21421
+# 29 P     11095
+# 30 Q      4707
+# 31 R     20498
+# 32 S     25910
+# 33 T     30853
+# 34 U     16385
+# 35 V      7246
+# 36 W      7266
+# 37 X      5106
+# 38 Y      6762
+# 39 Z      4866
+
+# clean up Environment
+rm(ds)
+
+### Open log: Split Train Dataset (x) -------------
 open_logfile(".split.10%train.balanced_subset")
 #### Split Train Dataset  (10% for Train set) ----------------------------------
+# char_files.max4e3 <- 4e3 
+# char_files.max4e3
+
+dim.x <- dim(x)
+dim.x
+dim.x[1]
+dim.x[2]
+
+test_ratio <- 0.9 
+sample_seed <- dim.x[1]
+sample_seed
+shuffle_seed <- as.integer(sample_seed*test_ratio)
+shuffle_seed
+
+cache_file.path <- file.path(ds.subsets.path, "x.1bl.train(balanced).RData")
+cache_file.path
 
 start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
 
-if (!exists("ds_flatten.split_list")) {
-  stopifnot(file.exists(my_emnist.split.file_path))
-
-  put_log1("Loading the Split Flattened Dataset from the backup file...")
+if (file.exists(cache_file.path)) {
+  put_log1("Loading Split Train Data from cache file: 
+%1", cache_file.path)
   
-  ds_flatten.split_list <- readRDS(my_emnist.split.file_path)
+  load(cache_file.path)
+  put_log("Train Data list has been loaded from cache.")
+} else {
+  split.list <- sample_train_test_sets.mx(x, 
+                                          sample_seed,
+                                          test.ratio = test_ratio,
+                                          shuffle.seed = shuffle_seed)
+  str(split.list)
   
-  put_log("The Split Flattened Dataset has been loaded from the following backup file:
-%1", my_emnist.split.file_path)
-} 
+  x.1bl.train <- split.list$train_set
+  y.1bl.train <- as.factor(rownames(x.1bl.train))
+  
+  x.9.test <- split.list$test_set
+  y.9.test <- as.factor(rownames(x.9.test))
+  
+  
+#   x0.9.test.list <- splitDataset(split.list$test_set, 9)
+#   put_log1("Test dataset list structure:
+# %1", capture.output(str(x0.9.test.list)))
 
-
-x.train <- ds_flatten.split_list$train_set$x.train
-x.test <- ds_flatten.split_list$test_set$x.test
-x.test.files <- ds_flatten.split_list$test_set$x.files
-
-
-
-y.train.groups <- ds.get_classIDs.grouped(x.train)
-y.train <- y.train.groups$classID
-
-stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
-{
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-#  1 #        3407
-#  2 $        3407
-#  3 &        3407
-#  4 @        3407
-#  5 0        3407
-#  6 1        3407
-#  7 2        3407
-#  8 3        3407
-#  9 4        3407
-# 10 5        3407
-# 11 6        3407
-# 12 7        3407
-# 13 8        3407
-# 14 9        3407
-# 15 A        3407
-# 16 B        3407
-# 17 C        3407
-# 18 D        3407
-# 19 E        3407
-# 20 F        3407
-# 21 G        3407
-# 22 H        3407
-# 23 I        3407
-# 24 J        3407
-# 25 K        3407
-# 26 L        3407
-# 27 M        3407
-# 28 N        3407
-# 29 P        3407
-# 30 Q        3407
-# 31 R        3407
-# 32 S        3407
-# 33 T        3407
-# 34 U        3407
-# 35 V        3407
-# 36 W        3407
-# 37 X        3407
-# 38 Y        3407
-# 39 Z        3407
+  put_log("Caching data in the file
+%1 ...", cache_file.path)
+  
+  save(x.1bl.train,
+       y.1bl.train,
+       x.9.test,
+       y.9.test,
+       file = cache_file.path)
+  
+  put_log("The Train Data Subset objects has been cached in file:
+`%1`", cache_file.path)
+  
+  rm(split.list)
 }
 
-y.test.groups <- ds.get_classIDs.grouped(x.test)
-y.test <- y.test.groups$classID
+stopCluster(cl)
+stopImplicitCluster()
+put_end_date(start)
 
-stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
-{
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-#  1 #         852
-#  2 $         852
-#  3 &         852
-#  4 @         852
-#  5 0         852
-#  6 1         852
-#  7 2         852
-#  8 3         852
-#  9 4         852
-# 10 5         852
-# 11 6         852
-# 12 7         852
-# 13 8         852
-# 14 9         852
-# 15 A         852
-# 16 B         852
-# 17 C         852
-# 18 D         852
-# 19 E         852
-# 20 F         852
-# 21 G         852
-# 22 H         852
-# 23 I         852
-# 24 J         852
-# 25 K         852
-# 26 L         852
-# 27 M         852
-# 28 N         852
-# 29 P         852
-# 30 Q         852
-# 31 R         852
-# 32 S         852
-# 33 T         852
-# 34 U         852
-# 35 V         852
-# 36 W         852
-# 37 X         852
-# 38 Y         852
-# 39 Z         852  
-}
-
-dim(x.train)
+dim(x.1bl.train)
 #> [1] 16653   784
-str(x.train)
+str(x.1bl.train)
 
-str(y.train)
-length(y.train)
+str(y.1bl.train)
+length(y.1bl.train)
 
-str(x.test)
-str(y.test)
-length(y.test)
+str(x.9.test)
+str(y.9.test)
+length(y.9.test)
 #> [1] 817379
+
 
 ### Close Log ------------------------------------------------------------------
 log_close()
@@ -193,7 +197,7 @@ if (file.exists(cache_file.path)) {
   put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
   
   start <- put_start_date()
-  train_knn_pca.k4 <- caret::train(x.train, y.train, method = "knn", 
+  train_knn_pca.k4 <- caret::train(x.1bl.train, y.1bl.train, method = "knn", 
                                 preProcess = "pca",
                                 # trControl = trainControl(),
                                 tuneGrid = data.frame(k = 4))
@@ -275,7 +279,7 @@ if (file.exists(cache_file.path)) {
   put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
   
   start <- put_start_date()
-  train_knn_pca.k1_7.2 <- caret::train(x.train, y.train, method = "knn", 
+  train_knn_pca.k1_7.2 <- caret::train(x.1bl.train, y.1bl.train, method = "knn", 
                                 preProcess = "pca",
                                 trControl = trainControl("cv", 
                                                          number = 5, 
