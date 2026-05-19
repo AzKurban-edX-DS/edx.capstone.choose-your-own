@@ -377,12 +377,65 @@ cnn.bin_models.accuracy
 
 put_log("The evaluation of the CNN-based Binary Classifier models results in the following accuracies:
 %1", capture.output(cnn.bin_models.accuracy))
+# class  accuracy
+#' #     # 0.9995192
+#' $     $ 1.0000000
+#' &     & 0.9998077
+#' @     @ 0.9999342
+#' 0     0 0.9905732
+#' 1     1 0.9738435
+#' 2     2 0.9840534
+#' 3     3 0.9931875
+#' 4     4 0.9839958
+#' 5     5 0.9827479
+#' 6     6 0.9871399
+#' 7     7 0.9927580
+#' 8     8 0.9796366
+#' 9     9 0.9842771
+#' A     A 0.9622203
+#' B     B 0.9587421
+#' C     C 0.9828540
+#' D     D 0.9793681
+#' E     E 0.9849831
+#' F     F 0.9733219
+#' G     G 0.9022039
+#' H     H 0.9676555
+#' I     I 0.9670270
+#' J     J 0.9759390
+#' K     K 0.9734717
+#' L     L 0.9654734
+#' M     M 0.9909016
+#' N     N 0.9843641
+#' P     P 0.9810640
+#' Q     Q 0.9219745
+#' R     R 0.9760976
+#' S     S 0.9813778
+#' T     T 0.9856541
+#' U     U 0.9830638
+#' V     V 0.9803313
+#' W     W 0.9821060
+#' X     X 0.9677104
+#' Y     Y 0.9681717
+#' Z     Z 0.9825283
 
 
 cnn.bin_models.accuracy |>
   data.plot("Average Accuracy", 
             xname = "label", 
             yname = "accuracy")
+
+data.frame(class = y.labels,
+           accuracy = cnn.bin_models.accuracy[, 2]) |>
+  ggplot(mapping = aes(x = class,
+                       y = accuracy)) +
+  geom_col(fill = "steelblue",
+           color = "black") +
+  labs(x = "Handwritten Character Classl",
+       y = "Accuracy",
+       title = "CNN-based Binary Classifier Models: Class-wise Evaluation Results") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+                     expand = c(0, 0, 0.005, 0))
+
 
 # put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 # for all the handwritten characters with the following results:
