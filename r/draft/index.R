@@ -142,6 +142,19 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+## Load Flatten Dataset --------------------------------------------------------
+ds.load_flatten.script.path <- file.path(support_scripts.path, 
+                                         "load-flatten-dataset.R")
+
+stopifnot(file.exists(ds.load_flatten.script.path))
+
+source(ds.load_flatten.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 ## Build kNN+PCA & Random Forest Models ----------------------------------------
 
 knn_pca.rf.script.path <- file.path(models_script.path, "knn+pca&rf.R")

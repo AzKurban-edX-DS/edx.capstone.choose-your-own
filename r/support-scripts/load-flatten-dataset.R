@@ -4,7 +4,8 @@
 
 ### Open log: Load Input Data ----------------------------------___-------------
 open_logfile(".load-input-data")
-### Load Input Dataset ---------------------------------------------------------
+### Load Flatten Dataset ---------------------------------------------------------
+stopifnot(file.exists(my_emnist.file_path))
 
 start <- put_start_date()
 put_log("Loading flatten training dataset from the backup file...")
