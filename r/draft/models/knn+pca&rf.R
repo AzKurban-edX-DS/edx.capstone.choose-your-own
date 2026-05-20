@@ -242,10 +242,10 @@ put_log("kNN+PCA Model trained result:
 #                      expand = c(0, 0, 0.005, 0))
 
 k1_7nn_pca.model$results |>
-  data.plot(title = TeX(r'[Tuning the `kNN+PCA` model by $k$ parameter]'),
-xname = "k Parameter",
+  data.plot(title = "",
+xname = "k",
 yname = "Accuracy",
-xlabel = TeX(r'[$\delta$]'),
+xlabel = "k Parameter",
 ylabel = "Accuracy")
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
