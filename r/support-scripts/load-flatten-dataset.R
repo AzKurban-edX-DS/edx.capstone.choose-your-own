@@ -108,17 +108,17 @@ print(y.chars, n = length(y.chars$classID))
 
 ###
 
-## Split the Flatten Dataset into a Train & Test Sets --------------------------
-my_emnist.split.file_path <- file.path(train.data.path, "my_emnist-split.rds")
+## Split the Flatten Dataset into a Train & Test Sets with 20% Test Ratio ------
+my_emnist.split.file_path <- file.path(train.data.path, "my_emnist.20%test-split.rds")
 
 
-put_log("Splitting the Flattened Training Dataset into a Train and Test Sets...")
+put_log("Splitting the Flattened Training Dataset into a Train and Test Sets with 20% Test Ratio...")
 
 set.seed(N.classes)
 ds_flatten.split_list <- sample_train_test_sets.mx(x, my_emnist.set$img.file_path)
 
 put_log("The Flattened Training Dataset has been split into a Train and Test Sets:
-%1", capture.output(ds_flatten.split_list))
+%1", capture.output(str(ds_flatten.split_list)))
 
 put_log("Saving a backup copy of a split dataset...")
 
@@ -127,6 +127,29 @@ saveRDS(ds_flatten.split_list,
 
 put_log("The backup copy of a split dataset has been saved in the following file:
 %1", my_emnist.split.file_path)
+
+## Split the Dataset into Sets with 90% Test Ratio (10% for Train Set) ---------
+my_emnist.0.1split.file_path <- file.path(train.data.path, "my_emnist-split(10%train-set).rds")
+
+put_log("Splitting the Flattened Training Dataset into a Train and Test Sets 
+with 90% Test Ratio (10% for Train Set)...")
+
+set.seed(N.classes)
+ds_flatten.0.1split_list <- sample_train_test_sets.mx(x, 
+                                                      my_emnist.set$img.file_path,
+                                                      test.ratio = 0.9)
+
+put_log("The Flattened Training Dataset has been split into a Train and Test Sets 
+with 90% Test Ration (10% for Train Set):
+%1", capture.output(str(ds_flatten.0.1split_list)))
+
+put_log("Saving a backup copy of a split dataset (10% for Train Set)...")
+
+saveRDS(ds_flatten.0.1split_list, 
+        my_emnist.0.1split.file_path)
+
+put_log("The backup copy of a split dataset (10% for Train Set) has been saved in the following file:
+%1", my_emnist.0.1split.file_path)
 
 ## Close Log -------------------------------------------------------------------
 log_close()

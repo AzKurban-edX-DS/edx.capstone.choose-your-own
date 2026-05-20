@@ -16,25 +16,26 @@ if(!dir.exists(knn_pca.path))
 
 ### Open log: Load Split Dataset -------------
 open_logfile(".split.10%train.balanced_subset")
-#### Split Train Dataset  (10% for Train set) ----------------------------------
 
+#### Split Train Dataset  (10% for Train set) ----------------------------------
 start <- put_start_date()
 
-if (!exists("ds_flatten.split_list")) {
-  stopifnot(file.exists(my_emnist.split.file_path))
+
+if (!exists("ds_flatten.0.1split_list")) {
+  stopifnot(file.exists(my_emnist.0.1split.file_path))
 
   put_log1("Loading the Split Flattened Dataset from the backup file...")
   
-  ds_flatten.split_list <- readRDS(my_emnist.split.file_path)
+  ds_flatten.0.1split_list <- readRDS(my_emnist.0.1split.file_path)
   
   put_log("The Split Flattened Dataset has been loaded from the following backup file:
-%1", my_emnist.split.file_path)
+%1", my_emnist.0.1split.file_path)
 } 
 
 
-x.train <- ds_flatten.split_list$train_set$x.train
-x.test <- ds_flatten.split_list$test_set$x.test
-x.test.files <- ds_flatten.split_list$test_set$x.files
+x.train <- ds_flatten.0.1split_list$train_set$x.train
+x.test <- ds_flatten.0.1split_list$test_set$x.test
+x.test.files <- ds_flatten.0.1split_list$test_set$x.files
 
 
 
@@ -170,21 +171,22 @@ if(!dir.exists(knn_pca.path)) {
 }
 
 #### Open log: Pre-training kNN+PCA Model Log ----------------------------------
-open_logfile(".pre-train-model.k4nn+pca")
-#### Training k4NN+PCA model by *k* = 4 parameter -------
+open_logfile(".pre-train-model.k1-7nn+pca")
+#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 --------------
+k.values <- seq_len(8)
 
-cache_file.path <-
-  file.path(knn_pca.path, "x0.1.train.k4nn+pca.RData")
- 
+k1_7nn_pca.model.backup.path <-
+  file.path(knn_pca.path, "k1-7nn+pca(0.1train-set).rds")
+
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-if (file.exists(cache_file.path)) {
-  put_log1("Loading Model Fit Data from cache file: 
-%1...", cache_file.path)
+if (file.exists(k1_7nn_pca.model.backup.path)) {
+  put_log1("Loading pre-trained `kNN+PCA` Model (tuned for `k` values ranged from 1 to 7) from backup file: 
+%1...", k1_7nn_pca.model.backup.path)
   
   start <- put_start_date()
-  load(cache_file.path)
+  readRDS(k1_7nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 
   
@@ -193,107 +195,27 @@ if (file.exists(cache_file.path)) {
   put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
   
   start <- put_start_date()
-  train_knn_pca.k4 <- caret::train(x.train, y.train, method = "knn", 
-                                preProcess = "pca",
-                                # trControl = trainControl(),
-                                tuneGrid = data.frame(k = 4))
-  put_end_date(start)
-  # Time difference of 40.88067 mins
-  put_log("The Model `kNN+PCA` has been trained on the dataset subset: `x0.1.train`")
-
-  put_log("Saving Model in the cache file: `kNN+PCA`...")
-  start <- put_start_date()
-  save(train_knn_pca.k4, file = cache_file.path)
-  put_end_date(start)
-  # Time difference of 12.37275 secs
-  
-  put_log1("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
-`%1`", cache_file.path)
-
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-
-put_log("kNN+PCA Model trained result:
-%1", capture.output(str(train_knn_pca.k4)))
-
-acc.max.idx <- which.max(train_knn_pca.k4$results$Accuracy)
-acc.max.idx
-
-k4nn.max_accuracy <- train_knn_pca.k4$results$Accuracy[acc.max.idx]
-k4nn.max_accuracy
-
-k4nn.best <- train_knn_pca.k4$results$k[acc.max.idx]
-k4nn.best
-
-# 
-# k-Nearest Neighbors 
-
-# 75032 samples
-# 784 predictor
-# 39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
-# 
-# Pre-processing: principal component signal extraction (743), centered (743), scaled (743), remove (41) 
-# Resampling: Cross-Validated (5 fold) 
-# Summary of sample sizes: 60022, 60023, 60030, 60025, 60028 
-# Resampling results across tuning parameters:
-
-# k  Accuracy   Kappa    
-# 1  0.8520766  0.8461487
-# 3  0.8610591  0.8554102
-# 5  0.8632982  0.8576989
-# 7  0.8625919  0.8569392
-
-# Accuracy was used to select the optimal model using the largest value.
-# The final value used for the model was k = 5.
-
-### Close Log ------------------------------------------------------------------
-log_close()
-#### Open log: Pre-training kNN+PCA Model Log ----------------------------------
-open_logfile(".pre-train-model.k1-7.2nn+pca")
-#### Tuning k1_7.2NN+PCA model by *k* parameter ranging from 1 to 7 by step 2 -------
-k.values <- seq(1, 7, 2)
-
-cache_file.path <-
-  file.path(knn_pca.path, "x0.1.train.k1-7.2nn+pca.RData")
-
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-if (file.exists(cache_file.path)) {
-  put_log1("Loading Model Fit Data from cache file: 
-%1...", cache_file.path)
-  
-  start <- put_start_date()
-  load(cache_file.path)
-  put_end_date(start)
-  # Time difference of 
-  
-  put_log("Model Fit Data have been loaded from cache.")
-} else {
-  put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
-  
-  start <- put_start_date()
-  train_knn_pca.k1_7.2 <- caret::train(x.train, y.train, method = "knn", 
+  k1_7nn_pca.model <- caret::train(x.train, y.train, method = "knn", 
                                 preProcess = "pca",
                                 trControl = trainControl("cv", 
                                                          number = 5, 
                                                          p = 0.95,
-                                                         preProcOptions = list(thresh = 0.9)),
+                                                         preProcOptions = list(thresh = 0.9),
+                                                         verboseIter = TRUE),
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
   # Time difference of 40.88067 mins
   put_log("The Model `kNN+PCA` has been trained on the dataset subset: `x0.1.train`")
 
   put_log("Saving Model in the cache file: `kNN+PCA`...")
-  start <- put_start_date()
-  save(train_knn_pca.k1_7.2, file = cache_file.path)
+
+    saveRDS(k1_7nn_pca.model, 
+          file = k1_7nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 12.37275 secs
   
   put_log1("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
-`%1`", cache_file.path)
+`%1`", k1_7nn_pca.model.backup.path)
 
 }
 
@@ -301,16 +223,16 @@ stopCluster(cl)
 stopImplicitCluster()
 
 put_log("kNN+PCA Model trained result:
-%1", capture.output(train_knn_pca.k1_7.2))
-str(train_knn_pca.k1_7.2)
+%1", capture.output(k1_7nn_pca.model))
+str(k1_7nn_pca.model)
 
-acc.max.idx <- which.max(train_knn_pca.k1_7.2$results$Accuracy)
+acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
 
-k.1to7step2.max_accuracy <- train_knn_pca.k1_7.2$results$Accuracy[acc.max.idx]
+k.1to7step2.max_accuracy <- k1_7nn_pca.model$results$Accuracy[acc.max.idx]
 k.1to7step2.max_accuracy
 
-k.1to7step2.best <- train_knn_pca.k1_7.2$results$k[acc.max.idx]
+k.1to7step2.best <- k1_7nn_pca.model$results$k[acc.max.idx]
 k.1to7step2.best
 
 # 
@@ -341,7 +263,7 @@ open_logfile(".fine-tune-model.k4-6nn+pca")
 #### Fine-tuning kNN+PCA Model by *k* parameter (4 to 6) of kNN ----------------
 k.values <- c(4, 5, 6)
 
-cache_file.path <-
+k4_6nn_pca.model.backup.path <-
   file.path(knn_pca.path, "x0.1.train.fine-tune.k4-6NN+PCA.RData")
 
 start <- put_start_date()
@@ -351,11 +273,11 @@ start <- put_start_date()
 cl <- makeCluster(N_pcCores, type='PSOCK', outfile="")
 registerDoParallel(cl)
 
-if (file.exists(cache_file.path)) {
+if (file.exists(k4_6nn_pca.model.backup.path)) {
   put_log("Loading `kNN+PCA` model Fit Data from the cache file: 
-%1", cache_file.path)
+%1", k4_6nn_pca.model.backup.path)
   
-  load(cache_file.path)
+  load(k4_6nn_pca.model.backup.path)
   put_log("The `kNN+PCA` model Fit Data has been loaded from the cache file.")
 
 } else {
@@ -375,12 +297,12 @@ if (file.exists(cache_file.path)) {
 
   put_log("Saving fine-tuned `kNN+PCA` Model in the cache file...")
   start <- put_start_date()
-  save(train_knn_pca.k4_6, file = cache_file.path)
+  save(train_knn_pca.k4_6, file = k4_6nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 12.37275 secs
   
   put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
-`%1`", cache_file.path)
+`%1`", k4_6nn_pca.model.backup.path)
   # [1] "Thu Apr  9 09:55:40 2026"
   # Time difference of 40.88067 mins
 }
