@@ -230,19 +230,23 @@ stopImplicitCluster()
 put_log("kNN+PCA Model trained result:
 %1", capture.output(k1_7nn_pca.model))
 
-k1_7nn_pca.model$results |>
-# data.frame(class = y.labels,
-#            accuracy = cnn_multiclass.accuracy_by_class[, 1]) |>
-  ggplot(mapping = aes(x = k,
-                       y = Accuracy)) +
-  geom_col(fill = "steelblue",
-           color = "black") +
-  labs(x = "`k` Parameter value",
-       y = "Accuracy",
-       title = "Tuning the `kNN+PCA` model by *k* parameter") +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                     expand = c(0, 0, 0.005, 0))
+# k1_7nn_pca.model$results |>
+#   ggplot(mapping = aes(x = k,
+#                        y = Accuracy)) +
+#   geom_col(fill = "steelblue",
+#            color = "black") +
+#   labs(x = "`k` Parameter value",
+#        y = "Accuracy",
+#        title = "Tuning the `kNN+PCA` model by *k* parameter") +
+#   scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+#                      expand = c(0, 0, 0.005, 0))
 
+k1_7nn_pca.model$results |>
+  data.plot(title = TeX(r'[Tuning the `kNN+PCA` model by $k$ parameter]'),
+xname = "k Parameter",
+yname = "Accuracy",
+xlabel = TeX(r'[$\delta$]'),
+ylabel = "Accuracy")
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
