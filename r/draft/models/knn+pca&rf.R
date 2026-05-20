@@ -17,7 +17,7 @@ if(!dir.exists(knn_pca.path))
 ### Open log: Load Split Dataset -------------
 open_logfile(".split.10%train.balanced_subset")
 
-#### Split Train Dataset  (10% for Train set) ----------------------------------
+#### Load Split Train Dataset  (10% for Train set) ----------------------------------
 start <- put_start_date()
 
 
@@ -50,45 +50,45 @@ put_log("The Train Set is balanced by set of Classes:
 # A tibble: 39 × 2
 #    classID     n
 #    <fct>   <int>
-#  1 #        3407
-#  2 $        3407
-#  3 &        3407
-#  4 @        3407
-#  5 0        3407
-#  6 1        3407
-#  7 2        3407
-#  8 3        3407
-#  9 4        3407
-# 10 5        3407
-# 11 6        3407
-# 12 7        3407
-# 13 8        3407
-# 14 9        3407
-# 15 A        3407
-# 16 B        3407
-# 17 C        3407
-# 18 D        3407
-# 19 E        3407
-# 20 F        3407
-# 21 G        3407
-# 22 H        3407
-# 23 I        3407
-# 24 J        3407
-# 25 K        3407
-# 26 L        3407
-# 27 M        3407
-# 28 N        3407
-# 29 P        3407
-# 30 Q        3407
-# 31 R        3407
-# 32 S        3407
-# 33 T        3407
-# 34 U        3407
-# 35 V        3407
-# 36 W        3407
-# 37 X        3407
-# 38 Y        3407
-# 39 Z        3407
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425
 }
 
 y.test.groups <- ds.get_classIDs.grouped(x.test)
@@ -96,7 +96,7 @@ y.test <- y.test.groups$classID
 
 stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Test Set is balanced by set of Classes:
 %1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
 # A tibble: 39 × 2
@@ -173,6 +173,7 @@ if(!dir.exists(knn_pca.path)) {
 #### Open log: Pre-training kNN+PCA Model Log ----------------------------------
 open_logfile(".pre-train-model.k1-7nn+pca")
 #### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 --------------
+# (The training takes about half an hour)
 k.values <- seq_len(8)
 
 k1_7nn_pca.model.backup.path <-
@@ -192,16 +193,18 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   
   put_log("Model Fit Data have been loaded from cache.")
 } else {
-  put_log("Training Model `kNN+PCA` on the dataset subset: `x0.1.train`..." )
+  put_log("Training Model `kNN+PCA` on the !0% size Train Set..." )
   
   start <- put_start_date()
+  #flush.console()
   k1_7nn_pca.model <- caret::train(x.train, y.train, method = "knn", 
                                 preProcess = "pca",
                                 trControl = trainControl("cv", 
                                                          number = 5, 
                                                          p = 0.95,
                                                          preProcOptions = list(thresh = 0.9),
-                                                         verboseIter = TRUE),
+                                                         verboseIter = TRUE,
+                                                         verbose = TRUE),
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
   # Time difference of 40.88067 mins
@@ -222,9 +225,24 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
 stopCluster(cl)
 stopImplicitCluster()
 
+#### The Tuning Results Visualization & Analysis -------------------------------
+
 put_log("kNN+PCA Model trained result:
 %1", capture.output(k1_7nn_pca.model))
-str(k1_7nn_pca.model)
+
+k1_7nn_pca.model$results |>
+# data.frame(class = y.labels,
+#            accuracy = cnn_multiclass.accuracy_by_class[, 1]) |>
+  ggplot(mapping = aes(x = k,
+                       y = Accuracy)) +
+  geom_col(fill = "steelblue",
+           color = "black") +
+  labs(x = "`k` Parameter value",
+       y = "Accuracy",
+       title = "Tuning the `kNN+PCA` model by *k* parameter") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+                     expand = c(0, 0, 0.005, 0))
+
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
