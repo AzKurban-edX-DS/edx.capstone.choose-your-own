@@ -203,8 +203,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
                                                          number = 5, 
                                                          p = 0.95,
                                                          preProcOptions = list(thresh = 0.9),
-                                                         verboseIter = TRUE,
-                                                         verbose = TRUE),
+                                                         verboseIter = TRUE),
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
   # Time difference of 40.88067 mins
@@ -446,8 +445,7 @@ if (file.exists(k_best.nn_pca.model.backup.path)) {
                                                             number = 5, 
                                                             p = 0.95,
                                                             preProcOptions = list(thresh = 0.9),
-                                                            verboseIter = TRUE,
-                                                            verbose = TRUE),
+                                                            verboseIter = TRUE),
                                    tuneGrid = data.frame(k = k.best)) # *k* = 6
   put_end_date(start)
   # Time difference of 40.88067 mins
