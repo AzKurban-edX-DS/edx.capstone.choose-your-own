@@ -17,14 +17,14 @@ if(!dir.exists(knn_pca.path))
 ### Open log: Load Split Dataset -------------
 open_logfile(".split.10%train.balanced_subset")
 
-#### Load Split Train Dataset  (10% for Train set) ----------------------------------
+#### Loading Split Dataset allocated 10% for the Train Set ---------------------
 start <- put_start_date()
 
 
 if (!exists("ds_flatten.0.1split_list")) {
   stopifnot(file.exists(my_emnist.0.1split.file_path))
 
-  put_log1("Loading the Split Flattened Dataset from the backup file...")
+  put_log("Loading the Split Flattened Dataset from the backup file...")
   
   ds_flatten.0.1split_list <- readRDS(my_emnist.0.1split.file_path)
   
@@ -183,7 +183,7 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(k1_7nn_pca.model.backup.path)) {
-  put_log1("Loading pre-trained `kNN+PCA` Model (tuned for `k` values ranged from 1 to 7) from backup file: 
+  put_log("Loading pre-trained `kNN+PCA` Model (tuned for `k` values ranged from 1 to 7) from backup file: 
 %1...", k1_7nn_pca.model.backup.path)
   
   start <- put_start_date()
@@ -217,7 +217,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   put_end_date(start)
   # Time difference of 12.37275 secs
   
-  put_log1("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
 `%1`", k1_7nn_pca.model.backup.path)
 
 }
@@ -230,17 +230,7 @@ stopImplicitCluster()
 put_log("kNN+PCA Model trained result:
 %1", capture.output(k1_7nn_pca.model))
 
-# k1_7nn_pca.model$results |>
-#   ggplot(mapping = aes(x = k,
-#                        y = Accuracy)) +
-#   geom_col(fill = "steelblue",
-#            color = "black") +
-#   labs(x = "`k` Parameter value",
-#        y = "Accuracy",
-#        title = "Tuning the `kNN+PCA` model by *k* parameter") +
-#   scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-#                      expand = c(0, 0, 0.005, 0))
-
+# The Model tuning visualzation:
 k1_7nn_pca.model$results |>
   data.plot(title = "",
 xname = "k",
@@ -251,12 +241,12 @@ ylabel = "Accuracy")
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
 
-k.1to7step2.max_accuracy <- k1_7nn_pca.model$results$Accuracy[acc.max.idx]
-k.1to7step2.max_accuracy
+k.1_7.max_accuracy <- k1_7nn_pca.model$results$Accuracy[acc.max.idx]
+k.1_7.max_accuracy
 
-k.1to7step2.best <- k1_7nn_pca.model$results$k[acc.max.idx]
-k.1to7step2.best
-
+k.best <- k1_7nn_pca.model$results$k[acc.max.idx]
+k.best
+# 6
 # 
 # k-Nearest Neighbors 
 
@@ -280,96 +270,207 @@ k.1to7step2.best
 
 ### Close Log ------------------------------------------------------------------
 log_close()
-#### Open log: Fine-tuning kNN+PCA Model Log ---------------------------------
-open_logfile(".fine-tune-model.k4-6nn+pca")
-#### Fine-tuning kNN+PCA Model by *k* parameter (4 to 6) of kNN ----------------
-k.values <- c(4, 5, 6)
 
-k4_6nn_pca.model.backup.path <-
-  file.path(knn_pca.path, "x0.1.train.fine-tune.k4-6NN+PCA.RData")
+### Open log: Load Split Dataset -------------
+open_logfile(".split.10%train.balanced_subset")
+#### Loading Split Dataset allocated 20% for the Test set (default) ------------
 
 start <- put_start_date()
-# w.pc_cores <- as.integer(N_pcCores / 2 + 1) 
-# w.pc_cores  
 
-cl <- makeCluster(N_pcCores, type='PSOCK', outfile="")
+if (!exists("ds_flatten.split_list")) {
+  stopifnot(file.exists(my_emnist.split.file_path))
+  
+  put_log("Loading the Split Flattened Dataset from the backup file...")
+  
+  ds_flatten.split_list <- readRDS(my_emnist.split.file_path)
+  
+  put_log("The Split Flattened Dataset has been loaded from the following backup file:
+%1", my_emnist.split.file_path)
+} 
+
+
+x.train <- ds_flatten.split_list$train_set$x.train
+x.test <- ds_flatten.split_list$test_set$x.test
+x.test.files <- ds_flatten.split_list$test_set$x.files
+
+
+
+y.train.groups <- ds.get_classIDs.grouped(x.train)
+y.train <- y.train.groups$classID
+
+stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
+
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #        3407
+  #  2 $        3407
+  #  3 &        3407
+  #  4 @        3407
+  #  5 0        3407
+  #  6 1        3407
+  #  7 2        3407
+  #  8 3        3407
+  #  9 4        3407
+  # 10 5        3407
+  # 11 6        3407
+  # 12 7        3407
+  # 13 8        3407
+  # 14 9        3407
+  # 15 A        3407
+  # 16 B        3407
+  # 17 C        3407
+  # 18 D        3407
+  # 19 E        3407
+  # 20 F        3407
+  # 21 G        3407
+  # 22 H        3407
+  # 23 I        3407
+  # 24 J        3407
+  # 25 K        3407
+  # 26 L        3407
+  # 27 M        3407
+  # 28 N        3407
+  # 29 P        3407
+  # 30 Q        3407
+  # 31 R        3407
+  # 32 S        3407
+  # 33 T        3407
+  # 34 U        3407
+  # 35 V        3407
+  # 36 W        3407
+  # 37 X        3407
+  # 38 Y        3407
+  # 39 Z        3407
+}
+
+y.test.groups <- ds.get_classIDs.grouped(x.test)
+y.test <- y.test.groups$classID
+
+stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
+
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         852
+  #  2 $         852
+  #  3 &         852
+  #  4 @         852
+  #  5 0         852
+  #  6 1         852
+  #  7 2         852
+  #  8 3         852
+  #  9 4         852
+  # 10 5         852
+  # 11 6         852
+  # 12 7         852
+  # 13 8         852
+  # 14 9         852
+  # 15 A         852
+  # 16 B         852
+  # 17 C         852
+  # 18 D         852
+  # 19 E         852
+  # 20 F         852
+  # 21 G         852
+  # 22 H         852
+  # 23 I         852
+  # 24 J         852
+  # 25 K         852
+  # 26 L         852
+  # 27 M         852
+  # 28 N         852
+  # 29 P         852
+  # 30 Q         852
+  # 31 R         852
+  # 32 S         852
+  # 33 T         852
+  # 34 U         852
+  # 35 V         852
+  # 36 W         852
+  # 37 X         852
+  # 38 Y         852
+  # 39 Z         852  
+}
+
+dim(x.train)
+#> [1] 16653   784
+str(x.train)
+
+str(y.train)
+length(y.train)
+
+str(x.test)
+str(y.test)
+length(y.test)
+#> [1] 817379
+
+### Close Log ------------------------------------------------------------------
+log_close()
+
+#### Open log: Training kNN+PCA Model for best *k% Parameter -------------------
+open_logfile(".pre-train-model.k1-7nn+pca")
+#### Training kNN+PCA Model for best *k% Parameter -----------------------------
+# (The training takes about half an hour)
+
+k_best.nn_pca.model.backup.path <-
+  file.path(knn_pca.path, "k_best.nn+pca.rds")
+
+cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-if (file.exists(k4_6nn_pca.model.backup.path)) {
-  put_log("Loading `kNN+PCA` model Fit Data from the cache file: 
-%1", k4_6nn_pca.model.backup.path)
+if (file.exists(k_best.nn_pca.model.backup.path)) {
+  put_log("Loading pre-trained `kNN+PCA` Model (tuned for `k` values ranged from 1 to 7) from backup file: 
+%1...", k_best.nn_pca.model.backup.path)
   
-  load(k4_6nn_pca.model.backup.path)
-  put_log("The `kNN+PCA` model Fit Data has been loaded from the cache file.")
-
-} else {
-  put_log("Fine-tuning `kNN+PCA` model on the dataset subset: `x0.1.train`..." )
-  
-  train_knn_pca.k4_6 <- caret::train(x0.1.train, y0.1.train, method = "knn", 
-                                preProcess = c("nzv", "pca"),
-                                trControl = trainControl("cv", 
-                                                         number = 5, 
-                                                         p = 0.95,
-                                                         preProcOptions = list(thresh = 0.9),
-                                                         verboseIter = TRUE),
-                                tuneGrid = data.frame(k = k.values))
-  put_end_date(start)
-  # Time difference of 39.72623 mins
-  put_log("The Model `kNN+PCA` has been fine-tuned on the dataset subset: `x0.1.train`")
-
-  put_log("Saving fine-tuned `kNN+PCA` Model in the cache file...")
   start <- put_start_date()
-  save(train_knn_pca.k4_6, file = k4_6nn_pca.model.backup.path)
+  readRDS(k_best.nn_pca.model.backup.path)
+  put_end_date(start)
+  # Time difference of 
+  
+  put_log("Model Fit Data have been loaded from cache.")
+} else {
+  put_log("Training Model `kNN+PCA` on the !0% size Train Set..." )
+  
+  start <- put_start_date()
+  #flush.console()
+  k_best.nn_pca.model <- caret::train(x.train, y.train, method = "knn", 
+                                   preProcess = "pca",
+                                   trControl = trainControl("cv", 
+                                                            number = 5, 
+                                                            p = 0.95,
+                                                            preProcOptions = list(thresh = 0.9),
+                                                            verboseIter = TRUE,
+                                                            verbose = TRUE),
+                                   tuneGrid = data.frame(k = k.best)) # *k* = 6
+  put_end_date(start)
+  # Time difference of 40.88067 mins
+  put_log("The Model `kNN+PCA` has been trained on the Train Set")
+  
+  put_log("Saving `kNN+PCAM`odel in the cache file: `...")
+  
+  saveRDS(k_best.nn_pca.model, 
+          file = k_best.nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 12.37275 secs
   
   put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
-`%1`", k4_6nn_pca.model.backup.path)
-  # [1] "Thu Apr  9 09:55:40 2026"
-  # Time difference of 40.88067 mins
+`%1`", k_best.nn_pca.model.backup.path)
+  
 }
 
 stopCluster(cl)
 stopImplicitCluster()
-plot(train_knn_pca.k4_6)
-put_log("kNN+PCA Model trained result:
-%1",capture.output(train_knn_pca.k4_6))
-
-str(train_knn_pca.k4_6)
-
-acc.max.idx <- which.max(train_knn_pca.k4_6$results$Accuracy)
-k.4to6.max_accuracy <- train_knn_pca.k4_6$results$Accuracy[acc.max.idx]
-k.4to6.max_accuracy
-
-k.4to6.best <- train_knn_pca.k4_6$results$k[acc.max.idx]
-k.4to6.best
-
-k.4to6.best == k.1to7step2.best
-#> TRUE 
-
-# kNN+PCA Model trained result:
-#   k-Nearest Neighbors 
-# 
-# 75032 samples
-# 784 predictor
-# 39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
-# 
-# Pre-processing: principal component signal extraction (743), centered (743), scaled (743), remove (41) 
-# Resampling: Cross-Validated (5 fold) 
-# Summary of sample sizes: 60027, 60026, 60028, 60021, 60026 
-# Resampling results across tuning parameters:
-#   
-#   k  Accuracy   Kappa    
-# 1  0.8509833  0.8450118
-# 3  0.8602059  0.8545233
-# 5  0.8635644  0.8579822
-# 7  0.8624317  0.8567740
-# 
-# Accuracy was used to select the optimal model using the largest value.
-# The final value used for the model was k = 5.
 
 ### Close Log ------------------------------------------------------------------
 log_close()
+
 ##### Open log: Predictions on `k5NN+PCA` (fine-tuned) Model for `x0.1.test` dataset ----
 open_logfile(".x0.1.test.predict.k5nn+pca")
 ##### Constructing Predictions on k5NN+PCA (fine-tuned) Model for `x0.1.test` dataset ----
@@ -383,7 +484,7 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(cache_file.path)) {
-  put_log1("Loading Predicted Data from cache file: 
+  put_log("Loading Predicted Data from cache file: 
 %1...", cache_file.path)
   
   load(cache_file.path)
@@ -448,7 +549,7 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(cache_file.path)) {
-  put_log1("Loading Predicted Data from cache file: 
+  put_log("Loading Predicted Data from cache file: 
 %1...", cache_file.path)
   
   load(cache_file.path)
@@ -549,7 +650,7 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(cache_file.path)) {
-  put_log1("Loading Predicted Data from cache file: 
+  put_log("Loading Predicted Data from cache file: 
 %1...", cache_file.path)
   
   load(cache_file.path)

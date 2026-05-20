@@ -16,7 +16,7 @@ if(!dir.exists(knn_pca.path))
 
 ### Open log: Load Split Dataset -------------
 open_logfile(".split.10%train.balanced_subset")
-#### Split Train Dataset  (10% for Train set) ----------------------------------
+#### Loading Split Dataset allocated 20% for the Test set (default) ------------
 
 start <- put_start_date()
 
