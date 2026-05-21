@@ -4,14 +4,10 @@ Main (Index) Script
 
 ## Initial Paths ---------------------------------------------------------------
 r.path <- "r"
-
 draft_scripts.path <- file.path(r.path, "draft")
-stopifnot(dir.exists(draft_scripts.path))
-draft_scripts.path
 
-scripts.path <- draft_scripts.path
+scripts.path <- r.path
 stopifnot(dir.exists(scripts.path))
-scripts.path
 
 models_script.path <- file.path(scripts.path, "models")
 stopifnot(dir.exists(models_script.path))
@@ -28,7 +24,6 @@ support_scripts.path <- file.path(r.path, support_scripts.folder)
 stopifnot(dir.exists(support_scripts.path))
 support_functions.path <- file.path(r.path, support_functions.folder)
 stopifnot(dir.exists(support_functions.path))
-#stopifnot(dir.exists())
 
 setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 
