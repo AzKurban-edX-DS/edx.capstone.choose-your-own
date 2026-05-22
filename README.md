@@ -43,9 +43,9 @@ The following are essential directories and files of the project:
 - [setup.R](r/support-scripts/setup.R): Support script for installing
   all necessary packages, loading required libraries, and resolving
   conflicts;
-- [prepare-input-data.R](r/support-scripts/.R): Support script for
-  preparing datasets for training and testing the *Handwritten Character
-  Classifier* models developed in the project;
+- [prepare-input-data.R](r/support-scripts/prepare-input-data.R):
+  Support script for preparing datasets for training and testing the
+  *Handwritten Character Classifier* models developed in the project;
 - [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R):
   Support script for loading flattened dataset used by the following
   models:
@@ -79,9 +79,12 @@ The following are essential directories and files of the project:
   Directory for the *.RMD Report* files;
 - `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final
   *.PDF report* - the ultimate product of the project;
-- [data](data) folder: (automatically created if it does not exist,
-  after the first project run) Directory for all the data files used in
-  the project;
+- ***data*** (local) folder: (automatically created if it does not
+  exist, after the first project run) Directory for all the data files
+  used in the project.
+
+> \[!NOTE\] The contents of the *data* folder are not tracked on
+> *GitHub*.
 
 ## Working Environment
 
