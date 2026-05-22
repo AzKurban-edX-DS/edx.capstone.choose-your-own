@@ -43,3 +43,8 @@ bak/.venv/.lock
 bak/.venv/
 .positai
 tmp/
+r/draft/
+r/models/bak/
+r/models/cnn/bak/
+r/support-functions/bak/
+r/support-scripts/bsk/
