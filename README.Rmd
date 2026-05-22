@@ -39,7 +39,7 @@ The following are essential directories and files of the project:
 - [support-functions](r/support-functions) folder: Directory for the *User-defined Functions* scripts used throughout the project;
 - [support-scripts](r/support-scripts) folder: Directory for the *Auxiliary (Support) Scripts* used by the *Index `R` Script*;
 - [setup.R](r/support-scripts/setup.R): Support script for installing all necessary packages, loading required libraries, and resolving conflicts;
-- [prepare-input-data.R](r/support-scripts/.R): Support script for preparing datasets for training and testing the *Handwritten Character Classifier* models developed in the project;
+- [prepare-input-data.R](r/support-scripts/prepare-input-data.R): Support script for preparing datasets for training and testing the *Handwritten Character Classifier* models developed in the project;
 - [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R): Support script for loading flattened dataset used by the following models:
   - ***kNN+PCA MCC***: *Multiclass Classifier (MCC)* based on the [k-Nearest Neighborhood (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) algorithm, with the use of the [Principal Component Analysis (PCA)](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html) method for [preprocessing of predictors](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing);
   - ***RF MCC:*** *MCC* based on the [Random forests (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) algorithm;
