@@ -15,8 +15,6 @@ knitr::opts_chunk$set(
 
 # edx.Capstone Choose Your Own Project
 
-*A movie recommendation system using the MovieLens dataset*
-
 This is the _**Capstone Choose Your Own**_ Project as part of the [edX HarvardX PH125.9x Data Science Capstone Course](https://pll.harvard.edu/course/data-science-capstone) to build a _Choose Your Own Project_ according to the course requirements.
 
 > [!NOTE]
@@ -24,7 +22,7 @@ This is the _**Capstone Choose Your Own**_ Project as part of the [edX HarvardX 
 
 The goal of the project is to build a _Handwritten Character Recognition System_ using the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from the  [Kaggle](https://www.kaggle.com) platform.
 
-As described on the [landing web-page], the *context* of the dataset is as follows:
+As described on the [landing web-page](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), the *context* of the dataset is as follows:
 
 1. Used *EMNIST* data for Alphabets and Digits.
 2. Transformed the Data using some image processing techniques and convert it to 32,32 pixel black and white images.
@@ -37,124 +35,26 @@ As described on the [landing web-page], the *context* of the dataset is as follo
 The following are essential directories and files of the project:
 
 - [edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj): The [RStudio Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects) file;
-
 - [index.R](r/index.R): The *Index (main) `R` Script*;
-
-- [support-functions](r/support-functions): Folder for the *User-defined Functions* used throughout the project;
-
-- [support-scripts](r/support-scripts): Folder for the *Auxiliary (Support) Scripts* used by the *Index `R` Script*;
-
+- [support-functions](r/support-functions) folder: Directory for the *User-defined Functions* scripts used throughout the project;
+- [support-scripts](r/support-scripts) folder: Directory for the *Auxiliary (Support) Scripts* used by the *Index `R` Script*;
 - [setup.R](r/support-scripts/setup.R): Support script for installing all necessary packages, loading required libraries, and resolving conflicts;
-
-- [prepare-input-data.R](r/support-scripts/.R): Support script
-
-- [.R](r/support-scripts/.R): Support script
-
-- [HW-Chars.Recognition.Site](reports/HW-Chars.Recognition.Site): Folder for the *RMD-Report* files;
-
-- [capstone.choose-your-own.report.pdf](#): (Not implemented yet) The final *PDF report* - the ultimate product of the project;
-
-- `data` folder: (automatically created if it does not exist, after the first project run) Directory for all data files used in the project;  
+- [prepare-input-data.R](r/support-scripts/.R): Support script for preparing datasets for training and testing the *Handwritten Character Classifier* models developed in the project;
+- [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R): Support script for loading flattened dataset used by the following models:
+  - ***kNN+PCA MCC***: *Multiclass Classifier (MCC)* based on the [k-Nearest Neighborhood (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) algorithm, with the use of the [Principal Component Analysis (PCA)](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html) method for [preprocessing of predictors](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing);
+  - ***RF MCC:*** *MCC* based on the [Random forests (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) algorithm;
+  - ***BDL MCC:*** *Basic [Deep Learning](https://www.geeksforgeeks.org/deep-learning/introduction-deep-learning/) (BDL) MCC*;
+- [models](r/models) folder: Directory containing scripts for all the models used in the project;
+- [cnn](r/models/cnn) folder: Directory containing scripts for the following [Convolutional Neural Network (CNN)](https://learnopencv.com/understanding-convolutional-neural-networks-cnn/) models:
+  - ***CNN MCC:*** *CNN-based MCC*;
+  - ***CNN BCC:*** *CNN-based Binary Classifier (BCC)* models (a separate model for each *handwritten character* to recognize);
+  - ***CNN BCCE:*** [Ensemble](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#ensembles) of all the *CNN BCC* models (*BCCE*) aggregated to apply to the entire character set.
+- [HW-Chars.Recognition.Site](reports/HW-Chars.Recognition.Site) folder: Directory for the *.RMD Report* files;
+- `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final *.PDF report* - the ultimate product of the project;
+- [data](data) folder: (automatically created if it does not exist, after the first project run) Directory for all the data files used in the project;  
   
 ## Working Environment
 
 Since this project is an [RStudio Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects), it is recommended to work with the project in *RStudio IDE*.
-As mentioned above in section [Essential Directories and Files], the *RStudio Project* file is [Capstone-MovieLens.Rproj](Capstone-MovieLens.Rproj).
+As mentioned above in section [Essential Directories and Files], the *RStudio Project* file is  [edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj).
 
-## Running the project
-
-The simplest (and recommended) way to run the project for the very first time is to run the [__run-all.R](r/_startup/__run-all.R) script located in the [_startup](r/_startup) folder.
-
-This script is a runner for the [_starter.R](r/_startup/_starter.R) script, which in turn is a launcher for the following four scripts:
-
-1. [0.setup.R](r/_startup/0.setup.R): The script is a launcher for the [setup.R](r/src/support-scripts/setup.R) script mentioned above in the [Essential Directories and Files] section.
-2. [1.init.R](r/_startup/1.init.R): Initializes all the required datasets and loads the general-purpose and data helper functions from the following scripts:
-  - [logging-functions.R](r/src/support-functions/logging-functions.R): User-defined *logging functions*;
-  - [common-helper.functions.R](r/src/support-functions/common-helper.functions.R): User-defined *common helper functions*;
-  - [data.helper.functions.R](r/src/support-functions/data.helper.functions.R): User-defined *data helper functions*.
-3.[2.run-main-script.R](r/_startup/2.run-main-script.R): The script is a launcher for the [capstone-movielens.main.R](r/src/capstone-movielens.main.R) script mentioned above in the [Essential Directories and Files] section.
-4.[3.rmd.render.R](r/_startup/3.rmd.render.R): Renders the *Capstone PDF Report*.
-  
-> [!NOTE]
-> The very first execution of the script [__run-all.R](r/_startup/__run-all.R) may take several hours.
-
-Subsequent executions of the project scripts will be significantly faster, as the data stored in the cache during the initial run will not be recalculated.
-
-To force recalculation of the particular data, the corresponding cache file must be manually deleted. 
-
-Additionally, project scripts can subsequently be run individually to perform a specific task.
-These tasks are described in more detail below.
-
-Before running the scripts below, make sure that the following variables, containing the *File System paths*, are initialized:
-
-- `startup.path`;
-- `setup.script_path`;
-- `init.script_path`;
-- `run_main.script_path`;
-- `rmd_render.script_path`;
-
-These variables can be initialized by the following [code snippet](r/_startup/_starter.R#L2) provided in the script [_starter.R](r/_startup/_starter.R#L2):
-```{r starter-script@l2, eval=FALSE}
-## Source File Paths -----------------------------------------------------------
-startup.path <- "r/_startup"
-setup.script_path <- file.path(startup.path, "0.setup.R")
-init.script_path <- file.path(startup.path, "1.init.R")
-run_main.script_path <- file.path(startup.path, "2.run-main-script.R")
-rmd_render.script_path <- file.path(startup.path, "3.rmd.render.R")
-```
-
-### Installing Packages and/or Loading External Libraries
-
-As mentioned above in section [Essential Directories and Files], the script [setup.R](r/src/support-scripts/setup.R) installs all necessary packages, loads required libraries, and resolves conflicts.
-It can also be launched by the following [code snippet](r/_startup/_starter.R#L11) provided in the script [_starter.R](r/_startup/_starter.R#L11):
-```{r starter-script@l11, eval=FALSE}
-### Installing Packages and/or Loading External Libraries
-source(setup.script_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-```
-
-### Initializing Project Datasets and Loading Core Helper Functions
-
-As mentioned above in *this section*, the script [1.init.R](r/_startup/1.init.R) initializes all the required datasets and loads the general-purpose and data helper functions.
-It can also be launched by the following [code snippet](r/_startup/_starter.R#L19) provided in the script [_starter.R](r/_startup/_starter.R#L19):
-```{r starter-script@l19, eval=FALSE}
-### Initializing Project Datasets and Loading Core Helper Functions
-source(init.script_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-```
-
-### Launching the *Main `R` Script*
-
-As mentioned above in section [Essential Directories and Files], the script [capstone-movielens.main.R](r/src/capstone-movielens.main.R) is the *Project Main `R` Script*.
-It can also be launched by the following [code snippet](r/_startup/_starter.R#L27) provided in the script [_starter.R](r/_startup/_starter.R#L27):
-```{r starter-script@l27, eval=FALSE}
-### Launching the *Main `R` Script*
-source(run_main.script_path,
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-```
-
-### Rendering the Capstone PDF Report
-
-As mentioned above in *this section*, the script [3.rmd.render.R](r/_startup/3.rmd.render.R) renders the *Capstone PDF Report*.
-It can also be launched by the following [code snippet](r/_startup/_starter.R#L35) provided in the script [_starter.R](r/_startup/_starter.R#L35):
-```{r starter-script@l35, eval=FALSE}
-### Rendering the Capstone PDF Report
-source(rmd_render.script_path,
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-```

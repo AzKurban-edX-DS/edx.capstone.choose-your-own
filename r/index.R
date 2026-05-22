@@ -139,7 +139,7 @@ source(prepare_ds.script.path,
 
 ## Load Flatten Dataset --------------------------------------------------------
 ds.load_flatten.script.path <- file.path(support_scripts.path, 
-                                         "load-flatten-dataset.R")
+                                         "load-flattened-dataset.R")
 
 stopifnot(file.exists(ds.load_flatten.script.path))
 

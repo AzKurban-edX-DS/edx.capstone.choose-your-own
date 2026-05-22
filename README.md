@@ -1,2 +1,93 @@
-# edx.capstone.choose-your-own
-edx.Capstone Choose Your Own project
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# edx.Capstone Choose Your Own Project
+
+This is the ***Capstone Choose Your Own*** Project as part of the [edX
+HarvardX PH125.9x Data Science Capstone
+Course](https://pll.harvard.edu/course/data-science-capstone) to build a
+*Choose Your Own Project* according to the course requirements.
+
+> \[!NOTE\] This project is implemented as [RStudio
+> Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects).
+
+The goal of the project is to build a *Handwritten Character Recognition
+System* using the [HandWritten_Character
+Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)
+downloaded from the [Kaggle](https://www.kaggle.com) platform.
+
+As described on the [landing
+web-page](https://www.kaggle.com/datasets/vaibhao/handwritten-characters),
+the *context* of the dataset is as follows:
+
+1.  Used *EMNIST* data for Alphabets and Digits.
+2.  Transformed the Data using some image processing techniques and
+    convert it to 32,32 pixel black and white images.
+3.  Created the Data set for special character ( @, \#, \$, & )
+4.  Merged the Categories to avoid the misclassification
+5.  Total 39 Categories in Train and Validation set
+
+## Essential Directories and Files
+
+The following are essential directories and files of the project:
+
+- [edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj):
+  The [RStudio
+  Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects)
+  file;
+- [index.R](r/index.R): The *Index (main) `R` Script*;
+- [support-functions](r/support-functions) folder: Directory for the
+  *User-defined Functions* scripts used throughout the project;
+- [support-scripts](r/support-scripts) folder: Directory for the
+  *Auxiliary (Support) Scripts* used by the *Index `R` Script*;
+- [setup.R](r/support-scripts/setup.R): Support script for installing
+  all necessary packages, loading required libraries, and resolving
+  conflicts;
+- [prepare-input-data.R](r/support-scripts/.R): Support script for
+  preparing datasets for training and testing the *Handwritten Character
+  Classifier* models developed in the project;
+- [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R):
+  Support script for loading flattened dataset used by the following
+  models:
+  - ***kNN+PCA MCC***: *Multiclass Classifier (MCC)* based on the
+    [k-Nearest Neighborhood
+    (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro)
+    algorithm, with the use of the [Principal Component Analysis
+    (PCA)](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html)
+    method for [preprocessing of
+    predictors](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing);
+  - ***RF MCC:*** *MCC* based on the [Random forests
+    (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests)
+    algorithm;
+  - ***BDL MCC:*** *Basic [Deep
+    Learning](https://www.geeksforgeeks.org/deep-learning/introduction-deep-learning/)
+    (BDL) MCC*;
+- [models](r/models) folder: Directory containing scripts for all the
+  models used in the project;
+- [cnn](r/models/cnn) folder: Directory containing scripts for the
+  following [Convolutional Neural Network
+  (CNN)](https://learnopencv.com/understanding-convolutional-neural-networks-cnn/)
+  models:
+  - ***CNN MCC:*** *CNN-based MCC*;
+  - ***CNN BCC:*** *CNN-based Binary Classifier (BCC)* models (a
+    separate model for each *handwritten character* to recognize);
+  - ***CNN BCCE:***
+    [Ensemble](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#ensembles)
+    of all the *CNN BCC* models (*BCCE*) aggregated to apply to the
+    entire character set.
+- [HW-Chars.Recognition.Site](reports/HW-Chars.Recognition.Site) folder:
+  Directory for the *.RMD Report* files;
+- `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final
+  *.PDF report* - the ultimate product of the project;
+- [data](data) folder: (automatically created if it does not exist,
+  after the first project run) Directory for all the data files used in
+  the project;
+
+## Working Environment
+
+Since this project is an [RStudio
+Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects),
+it is recommended to work with the project in *RStudio IDE*. As
+mentioned above in section [Essential Directories and
+Files](#essential-directories-and-files), the *RStudio Project* file is
+[edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj).

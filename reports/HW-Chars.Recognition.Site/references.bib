@@ -117,7 +117,7 @@ title = {},
 doi = {}
 }
 
-@book{,
+@book{DL_R,
 title = {Deep Learning with R, Second Edition},
 author = {François Chollet with Tomasz Kalinowski and J. J. Allaire},
 year  = {2022},
@@ -144,6 +144,19 @@ annotation = {Deep learning from the ground up using R and the powerful Keras li
                   linear regression and machine learning.},
 }
 
+@book{IDS2_23,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 23: Dimention Reduction},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {In this chapter, we introduce a powerful set of techniques known collectively as dimension reduction.
+                  With fewer dimensions, visualization becomes more feasible, and patterns in the data become easier to detect.},
+}
+
 @book{IDS2_29,
   author       = {Rafael A. Irizarry},
   title        = {Introduction to Data Science, Part II, Chapter 29: Resampling methods},
@@ -158,10 +171,23 @@ annotation = {Deep learning from the ground up using R and the powerful Keras li
                   with the caret package later in Section 31.1.3.},
 }
 
-
-@book{IDS2_29-6_KFCV,
+@book{IDS2_29_1_kNN,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 29: Resampling and Model Assessment, Section 29.6: Cross validation / K-fold cross validation},
+  title        = {Introduction to Data Science, Part II, Chapter 29: Resampling methods, Section 29.1: Motivation with k-nearest neighbors},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {With k-nearest neighbors (kNN), we estimate p(x) in a similar way to bin smoothing. 
+                  First, we define the distance between all observations based on the features. 
+                  Then, for any point x0, we estimate p(x0) by identifying the k nearest points to x0 
+                  and taking an average of the ys associated with these points. 
+                  We refer to the set of points used to compute the average as the neighborhood.},
+}
+
+
+@book{IDS2_29_6_KFCV,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 29, Section 29.6: Cross validation / K-fold cross validation},
   date         = {2025-10-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation},
   urldate      = {2025-10-27},
@@ -171,6 +197,38 @@ annotation = {Deep learning from the ground up using R and the powerful Keras li
                   The K in K-fold cross validation, represents the number of time `B`. 
                   In the illustrations below we show an example that uses `B = 5`.},
 }
+
+@book{IDS2_30_5_RF,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 30, Section 30.5: Random forests},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {Random forests are a very popular machine learning approach 
+                  that addresses the shortcomings of decision trees using a clever idea. 
+                  The goal is to improve prediction performance and reduce instability 
+                  by averaging multiple decision trees: a forest of trees constructed with randomness. },
+}
+
+
+@book{IDS2_31_3,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 31, Section 31.3: Preprocessing},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {We often transform predictors before running machine learning algorithms. 
+                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
+}
+
 
 @book{IDS_E1_33,
   author       = {Rafael A. Irizarry},
