@@ -42,3 +42,4 @@ log/
 bak/.venv/.lock
 bak/.venv/
 .positai
+tmp/
