@@ -39,6 +39,8 @@ data/
 data0/
 r/support-scripts/setup0.R
 log/
+
+bak/
 bak/.venv/.lock
 bak/.venv/
 .positai
@@ -46,6 +48,8 @@ tmp/
 r/draft/
 r/models/bak/
 r/models/cnn/bak/
+r/models/cnn/img/
+r/models/cnn/research/bak
 r/support-functions/bak/
 r/support-scripts/bsk/
 .vs/
@@ -72,3 +76,18 @@ r/support-scripts/bsk/
 /r/support-scripts/bsk/bak000.zip
 /r/support-scripts/bsk/load-cnn-dataset.R
 /r/support-scripts/bsk/setup0.R
+/r/support-functions/helper.tmp.R
+/r/models/cnn/img/augmentation-fit2026-05-01 014944.png
+/r/models/cnn/img/augmentation-gen2026-05-01 014835.png
+/r/models/cnn/img/augmentation.history-plot1.2026-05-01 015456.png
+/r/models/cnn/img/augmentation.history-plot2.2026-05-01 015611.png
+/r/models/cnn/img/augmentation.history-plot3.2026-05-01 015715.png
+/r/models/cnn/img/augmentation2026-05-01 014335.png
+/r/models/cnn/img/augmnt-model2.2026-05-01 021228.png
+/r/models/cnn/img/augmnt.history-plot4.2026-05-01 015922.png
+/r/models/cnn/img/augmnt.history-plot6.2026-05-01 021026.png
+/r/models/cnn/img/ml-foundation2026-05-01 205535.png
+/r/models/cnn/research/tmp.R
+/r/models/cnn/research/bak/cnn-model.draft2research1.R
+/r/models/cnn/research/bak/cnn-model.draft2research2.R
+/r/models/cnn/research/bak/cnn-model.draft2research3.R
