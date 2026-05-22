@@ -51,7 +51,10 @@ The following are essential directories and files of the project:
   - ***CNN BCCE:*** [Ensemble](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#ensembles) of all the *CNN BCC* models (*BCCE*) aggregated to apply to the entire character set.
 - [HW-Chars.Recognition.Site](reports/HW-Chars.Recognition.Site) folder: Directory for the *.RMD Report* files;
 - `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final *.PDF report* - the ultimate product of the project;
-- [data](data) folder: (automatically created if it does not exist, after the first project run) Directory for all the data files used in the project;  
+- ***data*** (local) folder: (automatically created if it does not exist, after the first project run) Directory for all the data files used in the project. 
+
+> [!NOTE]
+> The contents of the *data* folder are not tracked on *GitHub*.
   
 ## Working Environment
 
