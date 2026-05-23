@@ -33,19 +33,19 @@ if (!exists("ds_flatten.0.1split_list")) {
 } 
 
 
-x.train <- ds_flatten.0.1split_list$train_set$x.train
-x.test <- ds_flatten.0.1split_list$test_set$x.test
-x.test.files <- ds_flatten.0.1split_list$test_set$x.files
+x0.1.train <- ds_flatten.0.1split_list$train_set$x0.1.train
+x0.9.test <- ds_flatten.0.1split_list$test_set$x0.9.test
+x0.9.test.files <- ds_flatten.0.1split_list$test_set$x.files
 
 
 
-y.train.groups <- ds.get_classIDs.grouped(x.train)
-y.train <- y.train.groups$classID
+y0.1.train.groups <- ds.get_classIDs.grouped(x0.1.train)
+y0.1.train <- y0.1.train.groups$classID
 
-stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
+stopifnot(sum(as.character(y0.1.train) != rownames(x0.1.train)) == 0)
 
 put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(y0.1.train.groups$groupByClass, n = N.classes)))
 {
 # A tibble: 39 × 2
 #    classID     n
@@ -91,13 +91,13 @@ put_log("The Train Set is balanced by set of Classes:
   # 39 Z         425
 }
 
-y.test.groups <- ds.get_classIDs.grouped(x.test)
-y.test <- y.test.groups$classID
+y0.9.test.groups <- ds.get_classIDs.grouped(x0.9.test)
+y0.9.test <- y0.9.test.groups$classID
 
-stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
+stopifnot(sum(as.character(y0.9.test) != rownames(x0.9.test)) == 0)
 
 put_log("The Test Set is balanced by set of Classes:
-%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(y0.9.test.groups$groupByClass, n = N.classes)))
 {
 # A tibble: 39 × 2
 #    classID     n
@@ -143,16 +143,16 @@ put_log("The Test Set is balanced by set of Classes:
 # 39 Z         852  
 }
 
-dim(x.train)
+dim(x0.1.train)
 #> [1] 16653   784
-str(x.train)
+str(x0.1.train)
 
-str(y.train)
-length(y.train)
+str(y0.1.train)
+length(y0.1.train)
 
-str(x.test)
-str(y.test)
-length(y.test)
+str(x0.9.test)
+str(y0.9.test)
+length(y0.9.test)
 #> [1] 817379
 
 ### Close Log ------------------------------------------------------------------
@@ -172,7 +172,7 @@ if(!dir.exists(knn_pca.path)) {
 
 #### Open log: Pre-training kNN+PCA Model Log ----------------------------------
 open_logfile(".pre-train-model.k1-7nn+pca")
-#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 --------------
+#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Train Set ----
 # (The training takes about half an hour)
 k.values <- seq_len(8)
 
@@ -183,21 +183,21 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(k1_7nn_pca.model.backup.path)) {
-  put_log("Loading pre-trained `kNN+PCA` Model (tuned for `k` values ranged from 1 to 7) from backup file: 
-%1...", k1_7nn_pca.model.backup.path)
+  put_log("Loading pre-trained `kNN+PCA` Model 
+(tuned for `k` values ranged from 1 to 7) from the backup file...")
   
-  start <- put_start_date()
-  readRDS(k1_7nn_pca.model.backup.path)
+  k1_7nn_pca.model <- readRDS(k1_7nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 
   
-  put_log("Model Fit Data have been loaded from cache.")
+  put_log("The pre-trained Model has been loaded from the following file:
+%1", k1_7nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the !0% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 10% size Train Set..." )
   
   start <- put_start_date()
   #flush.console()
-  k1_7nn_pca.model <- caret::train(x.train, y.train, method = "knn", 
+  k1_7nn_pca.model <- caret::train(x0.1.train, y0.1.train, method = "knn", 
                                 preProcess = "pca",
                                 trControl = trainControl("cv", 
                                                          number = 5, 
@@ -208,16 +208,17 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
                                 tuneGrid = data.frame(k = k.values))
   put_end_date(start)
   # Time difference of 40.88067 mins
-  put_log("The Model `kNN+PCA` has been trained on the dataset subset: `x0.1.train`")
+  put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
 
-  put_log("Saving Model in the cache file: `kNN+PCA`...")
+  put_log("Saving the pre-trained model in the backup file...")
 
     saveRDS(k1_7nn_pca.model, 
           file = k1_7nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 12.37275 secs
   
-  put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
+  put_log("The Model `kNN+PCA` pre-trained on the 10% size Train Set 
+for *k* values ranged from 1 to 7 has been backed up in the following file:
 `%1`", k1_7nn_pca.model.backup.path)
 
 }
@@ -227,15 +228,15 @@ stopImplicitCluster()
 
 #### The Tuning Results Visualization & Analysis -------------------------------
 
-put_log("kNN+PCA Model trained result:
+put_log("The pre-trained `kNN+PCA` Model trained result:
 %1", capture.output(k1_7nn_pca.model))
 
 # The Model tuning visualzation:
 k1_7nn_pca.model$results |>
-  data.plot(title = "",
+  data.plot(title = "`kNN+PCA` Multiclass Classifier Model Tuning Results",
 xname = "k",
 yname = "Accuracy",
-xlabel = "k Parameter",
+xlabel = "k",
 ylabel = "Accuracy")
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
@@ -271,8 +272,8 @@ k.best
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-### Open log: Load Split Dataset -------------
-open_logfile(".split.10%train.balanced_subset")
+### Open log: Load Split Dataset (Test Set of 20% size) ------------------------
+open_logfile(".split.20%test.balanced_subset")
 #### Loading Split Dataset allocated 20% for the Test set (default) ------------
 
 start <- put_start_date()
@@ -426,17 +427,17 @@ cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
 if (file.exists(k_best.nn_pca.model.backup.path)) {
-  put_log("Loading pre-trained `kNN+PCA` Model (tuned for `k` values ranged from 1 to 7) from backup file: 
-%1...", k_best.nn_pca.model.backup.path)
+  put_log("Loading the `kNN+PCA` Model (trained for the best `k` value) from the backup file...")
   
-  start <- put_start_date()
-  readRDS(k_best.nn_pca.model.backup.path)
+  k_best.nn_pca.model -> readRDS(k_best.nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 
   
-  put_log("Model Fit Data have been loaded from cache.")
+  put_log("The `kNN+PCA` Model trained for the best `k` value 
+has been loaded from the following backup file:
+%1", k_best.nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the !0% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 80% size Train Set..." )
   
   start <- put_start_date()
   #flush.console()
@@ -451,16 +452,16 @@ if (file.exists(k_best.nn_pca.model.backup.path)) {
                                    tuneGrid = data.frame(k = k.best)) # *k* = 6
   put_end_date(start)
   # Time difference of 40.88067 mins
-  put_log("The Model `kNN+PCA` has been trained on the Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
   
-  put_log("Saving `kNN+PCAM`odel in the cache file: `...")
+  put_log("Saving `kNN+PCAM`odel in the backup file: `...")
   
   saveRDS(k_best.nn_pca.model, 
           file = k_best.nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 12.37275 secs
   
-  put_log("The Model `kNN+PCA` trained on the dataset subset `x0.1.train` has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the 80% size Train Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
   
 }
@@ -471,11 +472,11 @@ stopImplicitCluster()
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-##### Open log: Predictions on `k5NN+PCA` (fine-tuned) Model for `x0.1.test` dataset ----
-open_logfile(".x0.1.test.predict.k5nn+pca")
-##### Constructing Predictions on k5NN+PCA (fine-tuned) Model for `x0.1.test` dataset ----
-cache_file.path <-
-  file.path(knn_pca.path, "x0.1.test.k5NN+PCA.predictions.RData")
+##### Open log: Predictions on `k5NN+PCA` (best *k*) Model -------------------
+open_logfile(".x.test.predict.k(best)nn+pca")
+##### Constructing Predictions on k5NN+PCA (for best *k* Parameter) ------------
+knn_pca.best.preds.backup <-
+  file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions.rds")
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
@@ -483,148 +484,71 @@ start <- put_start_date()
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-if (file.exists(cache_file.path)) {
+if (file.exists(knn_pca.best.preds.backup)) {
   put_log("Loading Predicted Data from cache file: 
-%1...", cache_file.path)
+%1...", knn_pca.best.preds.backup)
   
-  load(cache_file.path)
+  knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup)
+  k_best.nn_pca.model.predicted <- knn_pca.best.preds$predicted
+  knn_pca.best.accuracy <- knn_pca.best.preds$accuracy
+  rm(knn_pca.best.preds)
   put_end_date(start)
   # Time difference of 
   
   put_log("Predicted Data have been loaded from cache.")
 } else {
-  put_log("Constructing predictions for the `x0.1.test` dataset 
+  put_log("Constructing predictions for the `x.test` dataset 
 using the fine-tuned K5NN+PCA model...")
   
-  y0.1_hat_knn_pca.k4_6 <- stats::predict(train_knn_pca.k4_6, x0.1.test, type = "raw")
+  if(!exists("k_best.nn_pca.model")) {
+    stopifnot(file.exists(k_best.nn_pca.model.backup.path))
+    
+    put_log("Loading the `kNN+PCA` Model (trained for the best `k` value) from the backup file...")
+    
+    k_best.nn_pca.model -> readRDS(k_best.nn_pca.model.backup.path)
+    put_end_date(start)
+    # Time difference of 
+    
+    put_log("The `kNN+PCA` Model trained for the best `k` value 
+has been loaded from the following backup file:
+%1", k_best.nn_pca.model.backup.path)
+  }
+  
+  k_best.nn_pca.model.predicted <- stats::predict(k_best.nn_pca.model, x.test, type = "raw")
   put_end_date(start)
   # Time difference of 2.74791 mins
-  put_log("The `k5NN+PCA` Model: Generating predictions have been completed `x0.1.test` dataset.")
+  put_log("The (Best *k*) `kNN+PCA` Model: Generating predictions have been completed on `x.test` dataset.")
   
-  put_log("Validating accuracy of the k5NN+PCA (fine-tuned) Model predictions 
-made for the `x0.1.test` dataset...")
+  put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
+made on the `x.test` dataset...")
   
-  xy0.1.knn_pca.k4_6.accuracy <- mean(y0.1_hat_knn_pca.k4_6 == y0.1.test)
+  knn_pca.best.accuracy <- mean(k_best.nn_pca.model.predicted == y.test)
 
-  put_log("The accuracy value is %1", xy0.1.knn_pca.k4_6.accuracy)
+  put_log("The accuracy of the (Best *k*) `kNN+PCA` Model prediction is 
+%1", knn_pca.best.accuracy)
   #> [1] 0.8693882
   
-  save(y0.1_hat_knn_pca.k4_6,
-       xy0.1.knn_pca.k4_6.accuracy,
-       file = cache_file.path)
+  saveRDS(list(predicted = k_best.nn_pca.model.predicted,
+               accuracy = knn_pca.best.accuracy,
+               k_best = k.best),
+       file = knn_pca.best.preds.backup)
 }
 
 stopCluster(cl)
 stopImplicitCluster()
 #> [1] 
 
-put_log("Summary of predicted data made using the fine-tuned `k5NN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
-optimized for a sequence of *k* values ranging from 4 to 6,
-and tested on the 10% sample from the remaining 90% data of the `Train Set`:
-%1", summary(y0.1_hat_knn_pca.k4_6))
+put_log("Summary of predicted data made using the `kNN+PCA` model tuned by *k* parameter:
+%1", summary(k_best.nn_pca.model.predicted))
 
 
-put_log("Accuracy of the predicted data for the `k5NN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
-optimized for a sequence of *k* values ranging from 4 to 6,
-and tested on the 10% sample from the remaining data of the `Train Set`:
-%1", xy0.1.knn_pca.k4_6.accuracy)
+put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
+%1", knn_pca.best.accuracy)
 #> [1] 0.868550221477314
 
 
-##### Close Log ------------------------------------------------------------------
+##### Close Log ----------------------------------------------------------------
 log_close()
-
-##### Open log: Predictions on `k5NN+PCA` (fine-tuned) Model for `x0.9.test` dataset ----
-open_logfile(".x0.9.test.list.predict.k5nn+pca")
-##### Constructing Predictions on k5NN+PCA (fine-tuned) Model for `x0.9.test` dataset ----
-cache_file.path <-
-  file.path(knn_pca.path, "x0.9.test.list.k5NN+PCA.predictions.RData")
-
-start <- put_start_date()
-# Thu Apr 9 09:14:47 2026
-
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-if (file.exists(cache_file.path)) {
-  put_log("Loading Predicted Data from cache file: 
-%1...", cache_file.path)
-  
-  load(cache_file.path)
-  put_end_date(start)
-  # Time difference of 
-  
-  put_log("Predicted Data have been loaded from cache.")
-} else {
-
-  y_hat.k4_6nn.pca.x0.9.test <- lapply(seq_len(length(x0.9.test.list$x)), 
-                                                   function(i){
-    x.test <- x0.9.test.list$x[[i]]
-    y_hat <- x0.9.test.list$y[[i]]
-    put_log("Predicting on `x0.9.test.list`")
-    start <- put_start_date()
-    y_hat <- stats::predict(train_knn_pca.k4_6, x.test, type = "raw")
-    put_end_date(start)
-
-    plot(y_hat)
-    
-    put_log("Summary of predicted data for the `x0.1 kNN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
-optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
-and tested on the %1 10% subset of the remaining 90% of the `Train Set`:
-%2", n.to_ordinal(i), capture.output(summary(y_hat)))
-    
-    y_hat
-  }) |> unlist()
-  
-  put_log("Summary of predicted data for the `x0.1 kNN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
-optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
-and tested on the remaining 90% of the `Train Set`:
-%1", capture.output(summary(y_hat.k4_6nn.pca.x0.9.test)))
-  
-  plot(y_hat.k4_6nn.pca.x0.9.test)
-
-  put_log("Cashing prediction results in the file system...")
-  save(y_hat.k4_6nn.pca.x0.9.test,
-       file = cache_file.path)
-  
-  put_log("The prediction results have been saved to the file::
-%1", cache_file.path)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-
-##### Accuracy of the k5NN+PCA (fine-tuned) Model Predictions on `x0.9.test` dataset ----
-put_log("Validating predictions for the pre-tuned `x0.1 kNN+PCA` model...")
-
-xy0.9.k4_6nn.pca.accuracy <- 
-  mean(y_hat.k4_6nn.pca.x0.9.test == unlist(x0.9.test.list$y))
-xy0.9.k4_6nn.pca.accuracy
-#> 0.8677351
-
-put_log("Accuracy of the predicted data for the `x0.1 kNN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
-optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
-and tested on the remaining 90% of the `Train Set`:
-%1", xy0.9.k4_6nn.pca.accuracy)
-#> [1] 0.867735081163533
-
-##### Close Log ------------------------------------------------------------------
-log_close()
-
-
-## Clean Up Environment (x4e3, y4e3) -------------------------------------------
-# rm(x4e3)
-# rm(x0.1.train)
-# rm(x4e3.test)
-# 
-# rm(y4e3)
-# rm(y4e3.train)
-# rm(y4e3.test)
 
 ### Random Forest --------------------------------------------------------------
 # Reference:
@@ -634,76 +558,6 @@ log_close()
 # library(randomForest)
 
 #### Research and estimate performance of the `Random Forest` method -----------
-# nodesize = if (!is.null(y) && !is.factor(y)) 5 else 1,
-# trying increase its value to 20 in this section.
-
-##### Open log: Predictions on `RF` Model for `x0.1.test` dataset ----
-open_logfile(".x0.1.test.predict.rf.mtry9")
-##### Constructing Predictions on `RF.mtry9` Model for `x0.1.test` dataset ----
-cache_file.path <-
-  file.path(models.random_forest.research.path, "x0.1.test.rf.mtry9.predictions.RData")
-
-start <- put_start_date()
-# Thu Apr 9 09:14:47 2026
-
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-if (file.exists(cache_file.path)) {
-  put_log("Loading Predicted Data from cache file: 
-%1...", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Predicted Data have been loaded from cache.")
-  put_end_date(start)
-  # Time difference of 
-  
-} else {
-  put_log("Predicting `RF.mtry9` model on `x0.1.test`...")
-  
-  y0.1_hat_rf.mtry9 <- stats::predict(fit_rf.nzv.mtry9, x0.1.test, type = "response")
-  
-  put_log("The `RF.mtry9` Model: Generating predictions have been completed `x0.1.test` dataset.")
-  put_end_date(start)
-  # Time difference of 2.74791 mins
-  
-  
-  put_log("Validating accuracy of the `RF.mtry9` Model predictions 
-made for the `x0.1.test` dataset...")
-
-  xy0.rf.mtry9.accuracy <- mean(y0.1_hat_rf.mtry9 == y0.1.test)
-  # Time difference of ??? mins
-  put_log("The accuracy value is %1", xy0.rf.mtry9.accuracy)
-#> [1] 0.876092421884353
-  
-  put_log("Saving predicted results...")
-
-    save(y0.1_hat_rf.mtry9,
-       xy0.rf.mtry9.accuracy,
-       file = cache_file.path)
-    
-    put_log("The Train fit result has been saved to the cache file:
-%1.", cache_file.path)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-
-put_log("Summary of predicted data made using the `RF.mtry9` model,
-trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
-and tested on the 10% sample from the remaining 90% data of the `Train Set`:
-%1", summary(y0.1_hat_rf.mtry9),
-        capture_output = 1)
-
-
-put_log("Accuracy of the predicted data for the `RF.mtry9` model,
-trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
-and tested on the 10% sample from the remaining 90% data of the `Train Set`:
-%1", xy0.rf.mtry9.accuracy)
-#> 0.876092421884353
-
-##### Close Log ------------------------------------------------------------------
-log_close()
 ### Open log: Preprocessing datasets -------------------------------------------
 open_logfile("preprocess.datasets")
 ### Preprocessing datasets -------------------------------------------
@@ -720,7 +574,7 @@ if (file.exists(cache_file.path)) {
 } else {
   start <- put_start_date()
   nzv <- nearZeroVar(x0.1.train)
-  nzv.test <- nearZeroVar(x0.1.test)
+  nzv.test <- nearZeroVar(x.test)
   put_end_date(start)
   # Time difference of 56.0386 secs
   
@@ -728,8 +582,8 @@ if (file.exists(cache_file.path)) {
   dim(x0.1.train_nzv)
   # [1] 75032 743
   
-  x0.1.test_nzv <- x0.1.test[, -nzv]
-  dim(x0.1.test_nzv)
+  x.test_nzv <- x.test[, -nzv]
+  dim(x.test_nzv)
   # [1] 8353 743
   
   put_log("Pre-training `RF.mtry9` model on a 10% sample from the `Train set`,
@@ -750,9 +604,9 @@ if (file.exists(cache_file.path)) {
   put_log("Preprocess transformation has been applied on the `x0.1.train` object:
   %1", capture.output(str(x0.1.train.preprocessed)))
   
-  x0.1.test.preprocessed <- stats::predict(pp0.1, x0.1.test)
-  put_log("Preprocess transformation has been applied on the `x0.1.test` object:
-  %1", capture.output(str(x0.1.test.preprocessed)))
+  x.test.preprocessed <- stats::predict(pp0.1, x.test)
+  put_log("Preprocess transformation has been applied on the `x.test` object:
+  %1", capture.output(str(x.test.preprocessed)))
   put_end_date(start)
   
   start <- put_start_date()
@@ -761,9 +615,9 @@ if (file.exists(cache_file.path)) {
   put_log("`x0.1.train` object has been binarized:
   %1", capture.output(str(x0.1.train.binarized)))
   
-  x0.1.test.binarized <- x.binarize(x0.1.test)
-  put_log("Preprocess transformation has been applied on the `x0.1.test` object:
-  %1", capture.output(str(x0.1.test.binarized)))
+  x.test.binarized <- x.binarize(x.test)
+  put_log("Preprocess transformation has been applied on the `x.test` object:
+  %1", capture.output(str(x.test.binarized)))
   put_end_date(start)
   
   put_log("Caching Preprocessed Data in the file system...")
@@ -771,8 +625,8 @@ if (file.exists(cache_file.path)) {
   save(x0.1.train_nzv,
        x0.1.train.preprocessed,
        x0.1.train.binarized,
-       x0.1.test.preprocessed,
-       x0.1.test.binarized,
+       x.test.preprocessed,
+       x.test.binarized,
        file = cache_file.path)
   
   put_log("The Preprocessed data has been saved to the cache file:
@@ -792,7 +646,7 @@ cache_file.path <- file.path(models.random_forest.research.path,
 start <- put_start_date()
 fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train_nzv, 
                                         y0.1.train,
-                                        x0.1.test,
+                                        x.test,
                                         y0.1.test,
                                         cache_file = cache_file.path)
 # Time difference of the last iteration 19.8342 mins
@@ -883,7 +737,7 @@ mtry18 <- 18
 start <- put_start_date()
 fit_rf.pp.mtry18.tuned_result <- tune.rf(x0.1.train.preprocessed, 
                                       y0.1.train,
-                                      x0.1.test.preprocessed,
+                                      x.test.preprocessed,
                                       y0.1.test,
                                       mtry = mtry18,
                                       cache_file = cache_file.path)
@@ -925,7 +779,7 @@ mtry25 <- 25
 start <- put_start_date()
 fit_rf.pp.mtry25.tuned_result <- tune.rf(x0.1.train.preprocessed, 
                                       y0.1.train,
-                                      x0.1.test.preprocessed,
+                                      x.test.preprocessed,
                                       y0.1.test,
                                       mtry = mtry25,
                                       cache_file = cache_file.path)
@@ -967,7 +821,7 @@ mtry25 <- 25
 start <- put_start_date()
 fit_rf.bin.mtry25.tuned_result <- tune.rf(x0.1.train.binarized, 
                                       y0.1.train,
-                                      x0.1.test.binarized,
+                                      x.test.binarized,
                                       y0.1.test,
                                       mtry = mtry25,
                                       cache_file = cache_file.path)
@@ -1039,16 +893,16 @@ if (file.exists(cache_file.path)) {
 with parameter value: `.mtry = %1`.", mtry.val)
     put_end_date(start)
     
-    put_log("Predicting `RF` model on `x0.1.test` for `mtry = %1`...", mtry.val)
+    put_log("Predicting `RF` model on `x.test` for `mtry = %1`...", mtry.val)
     start <- put_start_date()
     
-    y_hat <- stats::predict(fit, x0.1.test, type = "response")
+    y_hat <- stats::predict(fit, x.test, type = "response")
     
     put_log("The `RF` Model: Generating predictions task has been completed.")
 
     
     put_log("Validating accuracy of the `RF.mtry9` Model predictions 
-made for the `x0.1.test` dataset...")
+made for the `x.test` dataset...")
     
     acc <- mean(y_hat == y0.1.test)
     put_log("The accuracy value is %1", acc)
@@ -1102,7 +956,7 @@ mtry16.17.20 = c(16, 17, 20)
 start <- put_start_date()
 fit_rf.nzv.mtry16.17.20.tuned_result <- tune.rf(x0.1.train_nzv, 
                                                 y0.1.train,
-                                                x0.1.test,
+                                                x.test,
                                                 y0.1.test,
                                                 mtry = mtry16.17.20,
                                                 cache_file = cache_file.path)
@@ -1142,7 +996,7 @@ mtry18_19 <- c(18, 19)
 start <- put_start_date()
 fit_rf.mtry18_19.tuned_result <- tune.rf(x0.1.train_nzv, 
                                                 y0.1.train,
-                                                x0.1.test,
+                                                x.test,
                                                 y0.1.test,
                                                 mtry = mtry18_19,
                                                 cache_file = cache_file.path)
@@ -1182,7 +1036,7 @@ mtry18 <- 18
 start <- put_start_date()
 fit_rf.mtry18.tuned_result <- tune.rf(x0.1.train_nzv, 
                                                 y0.1.train,
-                                                x0.1.test,
+                                                x.test,
                                                 y0.1.test,
                                                 mtry = mtry18,
                                                 cache_file = cache_file.path)
@@ -1222,7 +1076,7 @@ mtry7_25 <- seq(7,25)
 start <- put_start_date()
 fit_rf.mtry7_25.tuned_result <- tune.rf(x0.1.train_nzv, 
                                                 y0.1.train,
-                                                x0.1.test,
+                                                x.test,
                                                 y0.1.test,
                                                 mtry = mtry7_25,
                                                 cache_file = cache_file.path)
@@ -1263,7 +1117,7 @@ mtry20_30 <- seq(20,30)
 start <- put_start_date()
 fit_rf.mtry20_30.tuned_result <- tune.rf(x0.1.train_nzv, 
                                          y0.1.train,
-                                         x0.1.test,
+                                         x.test,
                                          y0.1.test,
                                          mtry = mtry20_30,
                                          cache_root = cache_root.path,
@@ -1306,7 +1160,7 @@ mtry27_30.45.60.90.150.180 <- c(27,28,29,30,45,60,90,150,180)
 start <- put_start_date()
 fit_rf.mtry27_30.45.60.90.150.180.tuned_result <- tune.rf(x0.1.train_nzv, 
                                          y0.1.train,
-                                         x0.1.test,
+                                         x.test,
                                          y0.1.test,
                                          mtry = mtry27_30.45.60.90.150.180,
                                          cache_root = cache_root.path,
@@ -1349,7 +1203,7 @@ mtry45_60_90.4 <- c(45,49,53,57,60,64,68,72,76,80,85,90)
 start <- put_start_date()
 fit_rf.mtry45_60_90.4.tuned_result <- tune.rf(x0.1.train_nzv, 
                                          y0.1.train,
-                                         x0.1.test,
+                                         x.test,
                                          y0.1.test,
                                          mtry = mtry45_60_90.4,
                                          cache_root = cache_root.path,
