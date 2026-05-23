@@ -429,7 +429,7 @@ registerDoParallel(cl)
 if (file.exists(k_best.nn_pca.model.backup.path)) {
   put_log("Loading the `kNN+PCA` Model (trained for the best `k` value) from the backup file...")
   
-  k_best.nn_pca.model -> readRDS(k_best.nn_pca.model.backup.path)
+  k_best.nn_pca.model <- readRDS(k_best.nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 
   
