@@ -55,7 +55,11 @@ tune.rf <- function(x,
 Loading Model Fit Data from cache file: 
 %1", cache_file)
     
-    load(cache_file)
+    tuned.info <- readRDS(cache_file)
+    mtry.tuned_result <- tuned.info$tuned_result
+    mtry <- tuned.info$mtry
+    rm(tuned.info)
+    
     put_log("Function `tune.rf`:
 Train Data list has been loaded from cache.")
     put_end_date(start)
@@ -67,7 +71,7 @@ Train Data list has been loaded from cache.")
       
       if (!is.null(local_root)) {
         m <- ifelse(is.na(mtry.val), "default", mtry.val)
-        local_cache <- str.build("rf.fit.ntree%1.mtry%2.RData", n.tree, m)
+        local_cache <- str.build("rf.fit.ntree%1.mtry%2.rds", n.tree, m)
         local_cache.path <- file.path(local_root, local_cache)
       }
       
@@ -76,7 +80,7 @@ Train Data list has been loaded from cache.")
 Loading RF Tuning Fit Data from local cache file: 
 %1", local_cache.path)
         
-        load(local_cache.path)
+        fit <- readRDS(local_cache.path)
         put_log("Function `tune.rf`:
 RF Tuning Fit Data has been loaded from cache.")
         put_end_date(start)
@@ -106,7 +110,7 @@ RF Tuning Fit Data has been loaded from cache.")
           put_log("Function `tune.rf`:
 Caching the model tuning fit result...")
 
-          save(fit, file = local_cache.path)
+          saveRDS(fit, file = local_cache.path)
 
           put_log("Function `tune.rf`:
 The model tuning fit result has been cached to file:
@@ -172,9 +176,9 @@ Data structure of the best result of the model tuning:
       
       put_log("Function `tune.rf`:
 Saving the model tuning result...")
-      save(mtry.tuned_result,
-           mtry,
-           file = cache_file)
+      saveRDS(list(tuned_result = mtry.tuned_result,
+                   mtry = mtry),
+              file = cache_file)
       put_log("Function `tune.rf`:
 The Pre-train fit result has been saved to the cache file:
 %1.", cache_file)

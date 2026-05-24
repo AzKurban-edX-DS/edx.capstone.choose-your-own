@@ -2,18 +2,6 @@
 # kNN+PCA & Random Forest Models
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Initial Paths ---------------------------------------------------------------
-stopifnot(dir.exists(models.path))
-models.random_forest.path <- file.path(models.path, "random-forest")
-
-if(!dir.exists(models.random_forest.path))
-  dir.create(models.random_forest.path)
-
-knn_pca.path = file.path(models.path, "knn-pca")
-
-if(!dir.exists(knn_pca.path))
-  dir.create(knn_pca.path)
-
 ### Open log: Load Split Dataset -------------
 open_logfile(".split.10%train.balanced_subset")
 
@@ -158,7 +146,16 @@ length(y0.9.test)
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-## Model Building --------------------------------------------------------------
+## `kNN+PCA` Model -------------------------------------------------------------
+# Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
+
+### `kNN+PCA` Model Initial Paths -----------------------------------------------------
+stopifnot(dir.exists(models.path))
+knn_pca.path = file.path(models.path, "knn-pca")
+
+if(!dir.exists(knn_pca.path))
+  dir.create(knn_pca.path)
+
 ### Training Model using methods: kNN, PCA -----------------------
 # Reference:
 # Dimension reduction with PCA
@@ -468,13 +465,15 @@ has been loaded from the following backup file:
 
 stopCluster(cl)
 stopImplicitCluster()
+  
+# Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
 
 ### Close Log ------------------------------------------------------------------
 log_close()
 
 ##### Open log: Predictions on `k5NN+PCA` (best *k*) Model -------------------
 open_logfile(".x.test.predict.k(best)nn+pca")
-##### Constructing Predictions on k5NN+PCA (for best *k* Parameter) ------------
+##### Constructing Predictions on k5NN+PCA (for best *k* Parameter value) ------
 knn_pca.best.preds.backup <-
   file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions.rds")
 
@@ -538,117 +537,45 @@ stopCluster(cl)
 stopImplicitCluster()
 #> [1] 
 
-put_log("Summary of predicted data made using the `kNN+PCA` model tuned by *k* parameter:
-%1", summary(k_best.nn_pca.model.predicted))
-
-
 put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
-#> [1] 0.868550221477314
+#> [1] 0.860810160105935
 
 
 ##### Close Log ----------------------------------------------------------------
 log_close()
 
-### Random Forest --------------------------------------------------------------
+## Random Forest --------------------------------------------------------------
 # Reference:
 # 3.6 Random Forest
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#random-forest
 
 # library(randomForest)
 
-#### Research and estimate performance of the `Random Forest` method -----------
-### Open log: Preprocessing datasets -------------------------------------------
-open_logfile("preprocess.datasets")
-### Preprocessing datasets -------------------------------------------
-cache_file.path <- file.path(models.random_forest.research.path, 
-                             "preprocessed-datasets.RData")
+### `Random Forest (RF)` Model Initial Paths -----------------------------------------------------
 
-if (file.exists(cache_file.path)) {
-  put_log("Loading Preprocessed Data from cache file: 
-%1", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Preprocessed Data has been loaded from cache.")
-  
-} else {
-  start <- put_start_date()
-  nzv <- nearZeroVar(x0.1.train)
-  nzv.test <- nearZeroVar(x.test)
-  put_end_date(start)
-  # Time difference of 56.0386 secs
-  
-  x0.1.train_nzv <- x0.1.train[, -nzv]
-  dim(x0.1.train_nzv)
-  # [1] 75032 743
-  
-  x.test_nzv <- x.test[, -nzv]
-  dim(x.test_nzv)
-  # [1] 8353 743
-  
-  put_log("Pre-training `RF.mtry9` model on a 10% sample from the `Train set`,
-          pre-processed by NZV method (`x0.1.train_nzv`)..." )
-  
-  start <- put_start_date()
-  
-  put_log("Preprocessing transformation using the `Train Set` (`x0.1.train` object)...")
-  start <- put_start_date()
-  pp0.1 <- preProcess(x0.1.train, method = c("nzv", "center", "scale")) 
-  
-  put_log("Preprocessing transformation has been completed")
-  put_end_date(start)
-  
-  start <- put_start_date()
-  put_log("Applying preprocess transformation on the datasets...")
-  x0.1.train.preprocessed <- stats::predict(pp0.1, x0.1.train)
-  put_log("Preprocess transformation has been applied on the `x0.1.train` object:
-  %1", capture.output(str(x0.1.train.preprocessed)))
-  
-  x.test.preprocessed <- stats::predict(pp0.1, x.test)
-  put_log("Preprocess transformation has been applied on the `x.test` object:
-  %1", capture.output(str(x.test.preprocessed)))
-  put_end_date(start)
-  
-  start <- put_start_date()
-  put_log("Binarizing the datasets...")
-  x0.1.train.binarized <- x.binarize(x0.1.train)
-  put_log("`x0.1.train` object has been binarized:
-  %1", capture.output(str(x0.1.train.binarized)))
-  
-  x.test.binarized <- x.binarize(x.test)
-  put_log("Preprocess transformation has been applied on the `x.test` object:
-  %1", capture.output(str(x.test.binarized)))
-  put_end_date(start)
-  
-  put_log("Caching Preprocessed Data in the file system...")
-  start <- put_start_date()
-  save(x0.1.train_nzv,
-       x0.1.train.preprocessed,
-       x0.1.train.binarized,
-       x.test.preprocessed,
-       x.test.binarized,
-       file = cache_file.path)
-  
-  put_log("The Preprocessed data has been saved to the cache file:
-  %1.", cache_file.path)
-  put_end_date(start)
-}
+models.random_forest.path <- file.path(models.path, "random-forest")
 
-##### Close Log ------------------------------------------------------------------
-log_close()
-open_logfile(".research.x0.1.train.preprocessed.fit_rf.mtry18")
-### Open log: `NZV` model for the default mtry  (NA) & ntree = 200 -------
-open_logfile("x0.1.train.nzv.fit_rf.mtry_default")
+if(!dir.exists(models.random_forest.path))
+  dir.create(models.random_forest.path)
+
+models.rf.tune.path = file.path(models.random_forest.path, "tune")
+
+if(!dir.exists(models.rf.tune.path))
+  dir.create(models.rf.tune.path)
+
+### Open log: `RF` model for the default mtry  (NA) & ntree = 200 --------------
+open_logfile("x0.1.train.fit_rf.mtry_default")
 ##### RF: Default value of `mtry (NA)` & ntree = 200 ---------------------------
-cache_file.path <- file.path(models.random_forest.research.path, 
-                             "x0.1.train.fit_rf.nzv.mtry_default.accuracy.RData")
+models.rf.tune.cache.path <- file.path(models.rf.tune.path, 
+                             "x0.1.train.fit_rf.mtry_default.rds")
 
 start <- put_start_date()
-fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train_nzv, 
-                                        y0.1.train,
-                                        x.test,
-                                        y0.1.test,
-                                        cache_file = cache_file.path)
+fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train, 
+                                            y0.1.train,
+                                            x.test,
+                                            y0.1.test,
+                                            cache_file = models.rf.tune.cache.path)
 # Time difference of the last iteration 19.8342 mins
 
 put_log("Structure of results of tuning the model for the default value of parameter `mtry (NA)`, 
