@@ -118,6 +118,7 @@ library(doParallel)
 
 p_load(conflicted)
 
+conflict_prefer("train", "caret")
 conflict_prefer("shape", "keras3", quiet = TRUE)
 conflict_prefer("evaluate", "keras3", quiet = TRUE)
 conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
