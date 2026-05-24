@@ -575,8 +575,8 @@ models.rf.tune.cache.path <- file.path(models.rf.tune.path,
 start <- put_start_date()
 fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train, 
                                             y0.1.train,
-                                            x.test,
-                                            y0.1.test,
+                                            x0.9.test,
+                                            y0.9.test,
                                             cache_file = models.rf.tune.cache.path)
 # Time difference of the last iteration 19.8342 mins
 
