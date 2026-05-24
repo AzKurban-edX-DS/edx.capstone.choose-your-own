@@ -29,7 +29,7 @@ tune.rf <- function(x,
                     mtry = NA, 
                     n.tree = 200,
                     cache_root = NULL,
-                    cache_file = NULL){
+                    cache_file = NULL) {
   
   local_root <- NULL
   local_cache.path <- NULL
@@ -66,6 +66,11 @@ Train Data list has been loaded from cache.")
     
   } else {
 
+    # mtry.tuned_result <- lapply(mtry, function(mtry.val) {
+    #   print_log("`mtry.val` is NA: %1",is.na(mtry.val))
+    #   mtry.val
+    # })
+    
     mtry.tuned_result <- lapply(mtry, function(mtry.val){
       start <- put_start_date()
       
@@ -148,7 +153,7 @@ Summary of prediction results for mtry = %1:
 Validating accuracy of the `RF.mtry9` Model predictions 
 made for the `x.test` dataset...")
       
-      acc <- mean(y_hat == y0.1.test)
+      acc <- mean(y_hat == y.test)
       put_log("Function `tune.rf`:
 The accuracy value is %1", acc)
       put_end_date(start)
