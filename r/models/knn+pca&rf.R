@@ -547,14 +547,14 @@ put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* par
 ##### Close Log ----------------------------------------------------------------
 log_close()
 
-## Random Forest --------------------------------------------------------------
+## Random Forest MCC Model -----------------------------------------------------
 # Reference:
 # 3.6 Random Forest
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#random-forest
 
 # library(randomForest)
 
-### `Random Forest (RF)` Model Initial Paths -----------------------------------------------------
+### `Random Forest (RF) MCC` Model Initial Paths -----------------------------------------------------
 
 models.random_forest.path <- file.path(models.path, "random-forest")
 
@@ -566,25 +566,25 @@ models.rf.tune.path = file.path(models.random_forest.path, "tune")
 if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
-### Open log: `RF` model for the default mtry  & ntree = 500 --------------
+### Open log: `RF MCC` model for the default mtry  & ntree = 500 --------------
 open_logfile("x0.1.train.fit_rf.mtry_default.ntree500")
-##### Train `RF` model with the default mtry value & ntree = 500 ---------------------------
+##### Train `RF MCC` model with the default mtry value & ntree = 500 ---------------------------
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
                              "fit_rf.mtry_default.ntree500.back.rds")
 
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry_default.backup.path)) {
-  put_log("Loading the `RF` model trained with the default `mtry` parameter value from the backup file...")
+  put_log("Loading the `RF MCC` model trained with the default `mtry` parameter value from the backup file...")
   
   fit_rf.mtry_default <- readRDS(fit_rf.mtry_default)
   
-  put_Log("The `RF` model trained with the default `mtry` parameter value 
+  put_Log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been loaded from the following backup file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
 } else {
-  put_log("Training the `RF` model with the default `mtry` parameter value...")
+  put_log("Training the `RF MCC` model with the default `mtry` parameter value...")
   set.seed(N.classes)
   fit_rf.mtry_default <- randomForest(x0.1.train, 
                                       y0.1.train,
@@ -593,14 +593,14 @@ has been loaded from the following backup file:
                                       keep.forest = TRUE,
                                       ntree = 500)
   
-  put_log("The `RF` model has been trained with the default `mtry` parameter value.")
+  put_log("The `RF MCC` model has been trained with the default `mtry` parameter value.")
   put_end_date(start)
   # Time difference of the last iteration 19.8342 mins
   
-  put_log("Saving the `RF` model trained with the default `mtry` parameter value to the backup file...")
+  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
   saveRDS(fit_rf.mtry_default,
           file = fit_rf.mtry_default.backup.path)
-  put_log("The `RF` model trained with the default `mtry` parameter value 
+  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
@@ -637,117 +637,71 @@ plot_confusion_matrix(rf_conf.mx,
 ##### Close Log ----------------------------------------------------------------
 log_close()
 
-### Open log: Optimizing for mtry = 14:56 --------------------------------------
-open_logfile(".research.x0.1.train.fit_rf.tune.mtry14-56")
-##### Tune `RF` model by mtry = 14:56 & ntree = 200 ---------------
-cache_file.path <- file.path(models.random_forest.research.path, 
-                             "x0.1.train.preprocessed.fit_rf.mtry14_56.accuracy.RData")
+### Open log: Tuning `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 400 ----
+open_logfile(".x0.1.train.fit_rf.tune_mtry")
+##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 400 ----
+fit_rf.tuned_mtry.backup.path <- file.path(models.rf.tune.path, 
+                                             "fit_rf.tuned_mtry.ntree500.back.rds")
 
-mtry14_56 <- seq(n.img_cols/2, 2*n.img_cols) # 14:56
 start <- put_start_date()
-fit_rf.pp.mtry14_56.tuned_result <- train(x0.1.train, 
-                                            y0.1.train,
-                                            x0.9.test,
-                                            y0.9.test,,
-                                      mtry = mtry14_56,
-                                      cache_file = cache_file.path)
 
-put_log("Below are results of tuning the model for parameter `mtry ranged from 14 to 56`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset and tested on the remaining 
-90% data of the `Train Set`:
-%1", capture.output(fit_rf.pp.mtry14_56.tuned_result))
+if(file.exists(fit_rf.tuned_mtry.backup.path)) {
+  put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
+  
+  fit_rf.tuned_mtry <- readRDS(fit_rf.tuned_mtry)
+  
+  put_Log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
+%1", fit_rf.tuned_mtry.backup.path)
+  put_end_date(start)
+} else {
+  put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
+  
+  #> Since p = n.img_cols * n.img_rows = n.img_cols^2 = 28^2
+  #> sqrt(p) = n.img_cols = 28
+
+  mtry.values <- seq(n.img_cols/2, 2*n.img_cols) # 14:56
+  start <- put_start_date()
+  set.seed(N.classes)
+  fit_rf.mtry_tuned <- train(x0.1.train, 
+                             y0.1.train,
+                             method = "rf",
+                             ntree = 400,
+                             tuneGrid = data.frame(mtry = mtry.valus))
+  
+  
+  put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
+  put_end_date(start)
+  # Time difference of the last iteration 19.8342 mins
+  
+  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
+  saveRDS(fit_rf.tuned_mtry,
+          file = fit_rf.tuned_mtry.backup.path)
+  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
+has been saved to the following backup file:
+%1", fit_rf.tuned_mtry.backup.path)
+  put_end_date(start)
+}
+
+put_log("Below are results of tuning the model by `mtry` parameter values, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+%1", capture.output(fit_rf.mtry_tuned))
 put_end_date(start)
 # Time difference of 17.51424 mins
 
-fit_rf.mtry14_56.accuracy <- 
-  sapply(fit_rf.pp.mtry14_56.tuned_result, 
-         function(result) result$accuracy)
+confusionMatrix(fit_rf.mtry_tuned)
+ggplot(fit_rf.mtry_tuned)
 
-plot(mtry14_56, fit_rf.mtry14_56.accuracy)
-
-max.idx <- which.max(fit_rf.mtry14_56.accuracy)
-
-max_accuracy <- max(fit_rf.mtry14_56.accuracy)
-max_accuracy
-# [1] 0.88136
-
-best_mtry <- mtry14_56[[max.idx]]
-best_mtry
+# plot(mtry14_56, fit_rf.mtry14_56.accuracy)
+# 
+# max.idx <- which.max(fit_rf.mtry14_56.accuracy)
+# 
+# max_accuracy <- max(fit_rf.mtry14_56.accuracy)
+# max_accuracy
+# # [1] 0.88136
+# 
+# best_mtry <- mtry14_56[[max.idx]]
+# best_mtry
 # [1] 18
 
 ##### Close Log ------------------------------------------------------------------
 log_close()
-##### RF: Default value of `mtry (NA)` & ntree = 200 ---------------------------
-models.rf.tune.cache.path <- file.path(models.rf.tune.path, 
-                             "x0.1.train.fit_rf.mtry_default.rds")
-
-start <- put_start_date()
-fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train, 
-                                            y0.1.train,
-                                            x0.9.test,
-                                            y0.9.test,
-                                            cache_file = models.rf.tune.cache.path)
-# Time difference of the last iteration 19.8342 mins
-
-put_log("Structure of results of tuning the model for the default value of parameter `mtry (NA)`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
-pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
-%1", capture.output(str(fit_rf.mtry_default.tuned_result)))
-put_end_date(start)
-# Time difference of 6.260901 hours
-
-fit_rf.mtry_default.accuracy <- 
-  sapply(fit_rf.mtry_default.tuned_result, 
-         function(result) result$accuracy)
-
-# plot(mtry_default, fit_rf.mtry_default.accuracy)
-
-max.idx <- which.max(fit_rf.mtry_default.accuracy)
-
-max_accuracy <- max(fit_rf.mtry_default.accuracy)
-max_accuracy
-# [1] 0.8361957
-
-# best_mtry <- mtry_default[[max.idx]]
-# best_mtry
-# [1] 25
-
-
-
-##### Tuning the `RF` model by mtry = 14:56 & ntree = 200 ---------------
-cache_file.path <- file.path(models.random_forest.research.path, 
-                             "x0.1.train.preprocessed.fit_rf.mtry14_56.accuracy.RData")
-
-mtry14_56 <- seq(n.img_cols/2, 2*n.img_cols) # 14:56
-start <- put_start_date()
-fit_rf.pp.mtry14_56.tuned_result <- tune.rf(x0.1.train, 
-                                            y0.1.train,
-                                            x0.9.test,
-                                            y0.9.test,,
-                                      mtry = mtry14_56,
-                                      cache_file = cache_file.path)
-
-put_log("Below are results of tuning the model for parameter `mtry ranged from 14 to 56`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset and tested on the remaining 
-90% data of the `Train Set`:
-%1", capture.output(fit_rf.pp.mtry14_56.tuned_result))
-put_end_date(start)
-# Time difference of 17.51424 mins
-
-fit_rf.mtry14_56.accuracy <- 
-  sapply(fit_rf.pp.mtry14_56.tuned_result, 
-         function(result) result$accuracy)
-
-plot(mtry14_56, fit_rf.mtry14_56.accuracy)
-
-max.idx <- which.max(fit_rf.mtry14_56.accuracy)
-
-max_accuracy <- max(fit_rf.mtry14_56.accuracy)
-max_accuracy
-# [1] 0.88136
-
-best_mtry <- mtry14_56[[max.idx]]
-best_mtry
-# [1] 18
-
