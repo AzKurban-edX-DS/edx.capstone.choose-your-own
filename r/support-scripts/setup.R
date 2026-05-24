@@ -91,6 +91,7 @@ library(prodlim)
 library(caret)
 library(randomForest)
 library(kernlab)
+library(ggplot2)
 
 library(logr)
 library(utils)

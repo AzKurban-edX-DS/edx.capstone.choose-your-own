@@ -568,7 +568,7 @@ if(!dir.exists(models.rf.tune.path))
 
 ### Open log: `RF` model for the default mtry  & ntree = 500 --------------
 open_logfile("x0.1.train.fit_rf.mtry_default.ntree500")
-##### Traun `RF` model for the default mtry  & ntree = 500 ---------------------------
+##### Train `RF` model with the default mtry value & ntree = 500 ---------------------------
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
                              "fit_rf.mtry_default.ntree500.back.rds")
 
@@ -606,26 +606,26 @@ has been saved to the following backup file:
   put_end_date(start)
 }
 
-put_log("Results of tuning the model for the default value of parameter `mtry`, 
+put_log("Results summary of tuning the model for the default value of parameter `mtry`, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
 and tested on the 10% sample from the remaining 
 90% data of the `Train Set`:
-%1", capture.output(fit_rf.mtry_default))
+%1", capture.output(summary(fit_rf.mtry_default)))
 put_end_date(start)
 # Time difference of 6.260901 hours
 
-ggpot(fit_rf.mtry_default)
+plot(fit_rf.mtry_default)
 
-rf_conf.mx <- confusionMatrix(fit_rf.mtry_default)
-rf_conf.mx
+put_log("Prediction accuracy of the 'RF' MCC Model trained with the default value 
+of the `mtry` parameter is as follows:
+%1", mean(fit_rf.mtry_default$test$predicted == y0.9.test))
+# [1] 0.8397469
 
-mean(fit_rf.mtry_default$predicted == y0.9.test)
-# [1] 0.8361957
+rf_conf.mx <- confusion_matrix(as.character(y0.9.test),
+                               as.character(fit_rf.mtry_default$test$predicted))
+str(rf_conf.mx)
 
-rf_conf.mx2 <- confusion_matrix(as.character(y0.9.test),
-                                           as.character(fit_rf.mtry_default$predicted))
-
-plot_confusion_matrix(rf_conf.mx2$`Confusion Matrix`[[1]],
+plot_confusion_matrix(rf_conf.mx,
                       palette = "Greens",
                       font_counts = font(size = 3.5,
                                          
@@ -633,8 +633,6 @@ plot_confusion_matrix(rf_conf.mx2$`Confusion Matrix`[[1]],
                       add_normalized = FALSE,
                       add_col_percentages = FALSE,
                       add_row_percentages = FALSE)
-
-
 
 ##### Close Log ----------------------------------------------------------------
 log_close()
