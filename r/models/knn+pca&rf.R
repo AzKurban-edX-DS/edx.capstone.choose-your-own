@@ -600,8 +600,8 @@ max_accuracy <- max(fit_rf.mtry_default.accuracy)
 max_accuracy
 # [1] 0.8833952
 
-best_mtry <- mtry_default[[max.idx]]
-best_mtry
+# best_mtry <- mtry_default[[max.idx]]
+# best_mtry
 # [1] 25
 
 
