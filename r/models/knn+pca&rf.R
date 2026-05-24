@@ -666,7 +666,7 @@ if(file.exists(fit_rf.tuned_mtry.backup.path)) {
                              y0.1.train,
                              method = "rf",
                              ntree = 400,
-                             tuneGrid = data.frame(mtry = mtry.valus))
+                             tuneGrid = data.frame(mtry = mtry.values))
   
   
   put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
