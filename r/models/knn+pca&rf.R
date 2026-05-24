@@ -21,8 +21,8 @@ if (!exists("ds_flatten.0.1split_list")) {
 } 
 
 
-x0.1.train <- ds_flatten.0.1split_list$train_set$x0.1.train
-x0.9.test <- ds_flatten.0.1split_list$test_set$x0.9.test
+x0.1.train <- ds_flatten.0.1split_list$train_set$x.train
+x0.9.test <- ds_flatten.0.1split_list$test_set$x.test
 x0.9.test.files <- ds_flatten.0.1split_list$test_set$x.files
 
 
@@ -473,7 +473,7 @@ log_close()
 
 ##### Open log: Predictions on `k5NN+PCA` (best *k*) Model -------------------
 open_logfile(".x.test.predict.k(best)nn+pca")
-##### Constructing Predictions on k5NN+PCA (for best *k* Parameter value) ------
+##### Constructing Predictions on kNN+PCA (for best *k* Parameter value) ------
 knn_pca.best.preds.backup <-
   file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions.rds")
 
@@ -496,8 +496,7 @@ if (file.exists(knn_pca.best.preds.backup)) {
   
   put_log("Predicted Data have been loaded from cache.")
 } else {
-  put_log("Constructing predictions for the `x.test` dataset 
-using the fine-tuned K5NN+PCA model...")
+  put_log("Constructing predictions using the `KNN+PCA` model trained for the best *k* value...")
   
   if(!exists("k_best.nn_pca.model")) {
     stopifnot(file.exists(k_best.nn_pca.model.backup.path))
@@ -515,7 +514,8 @@ has been loaded from the following backup file:
   
   k_best.nn_pca.model.predicted <- stats::predict(k_best.nn_pca.model, x.test, type = "raw")
   put_end_date(start)
-  # Time difference of 2.74791 mins
+  # Time difference of 2.25995 hours
+  
   put_log("The (Best *k*) `kNN+PCA` Model: Generating predictions have been completed on `x.test` dataset.")
   
   put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
@@ -523,14 +523,16 @@ made on the `x.test` dataset...")
   
   knn_pca.best.accuracy <- mean(k_best.nn_pca.model.predicted == y.test)
 
-  put_log("The accuracy of the (Best *k*) `kNN+PCA` Model prediction is 
-%1", knn_pca.best.accuracy)
+  put_log("Backing up the `kNN+PCA` Model's tuning best results to file...")
   #> [1] 0.8693882
   
   saveRDS(list(predicted = k_best.nn_pca.model.predicted,
                accuracy = knn_pca.best.accuracy,
                k_best = k.best),
        file = knn_pca.best.preds.backup)
+  
+  put_log("The accuracy of the (Best *k*) `kNN+PCA` Model prediction is 
+%1", knn_pca.best.accuracy)
 }
 
 stopCluster(cl)
