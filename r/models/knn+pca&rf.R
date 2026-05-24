@@ -650,18 +650,3 @@ best_mtry
 ##### Close Log ------------------------------------------------------------------
 log_close()
 
-## Clean Up Environment --------------------------------------------------------
-rm(x4e3)
-rm(x0.1.train)
-rm(x4e3.test)
-
-rm(y4e3)
-rm(y4e3.train)
-rm(y4e3.test)
-
-
-rm(train_knn_pca)
-rm(fit_rf.nzv.mtry9)
-rm(train_rf)
-
-
