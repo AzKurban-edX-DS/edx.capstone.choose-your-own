@@ -607,6 +607,7 @@ has been loaded from the following backup file:
 has been saved to the following backup file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
+# Time difference of  mins
 }
 
 stopCluster(cl)
@@ -645,9 +646,9 @@ log_close()
 
 ### Open log: Tuning `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 400 ----
 open_logfile(".x0.1.train.fit_rf.tune_mtry")
-##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 400 ----
+##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 fit_rf.tuned_mtry.backup.path <- file.path(models.rf.tune.path, 
-                                             "fit_rf.tuned_mtry.ntree500.back.rds")
+                                             "fit_rf.tuned_mtry.ntree200.back.rds")
 
 start <- put_start_date()
 
@@ -668,27 +669,34 @@ if(file.exists(fit_rf.tuned_mtry.backup.path)) {
   #> Since p = n.img_cols * n.img_rows = n.img_cols^2 = 28^2
   #> sqrt(p) = n.img_cols = 28
 
-  mtry.values <- seq(n.img_cols/2, 2*n.img_cols) # 14:56
+  mtry.values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
   start <- put_start_date()
   set.seed(N.classes)
   fit_rf.mtry_tuned <- train(x0.1.train, 
                              y0.1.train,
                              method = "rf",
-                             ntree = 400,
+                             ntree = 200,
+                             trControl = trainControl(
+                               method = "cv",          # K-fold cross-validation
+                               number = 5,             # 5 folds
+                               verboseIter = TRUE      # <--- This activates the progress output
+                             ),
                              tuneGrid = data.frame(mtry = mtry.values))
   
   
   put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
   put_end_date(start)
-  # Time difference of the last iteration 19.8342 mins
+  # Time difference of 27.74778 mins
   
   put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(fit_rf.tuned_mtry,
+  saveRDS(fit_rf.mtry_tuned,
           file = fit_rf.tuned_mtry.backup.path)
   put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
 %1", fit_rf.tuned_mtry.backup.path)
   put_end_date(start)
+# Time difference of 32.83442 mins
+
 }
 
 stopCluster(cl)
@@ -697,11 +705,40 @@ stopImplicitCluster()
 put_log("Below are results of tuning the model by `mtry` parameter values, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 %1", capture.output(fit_rf.mtry_tuned))
+
+{
+  # 16575 samples
+  #   784 predictor
+  #>    39 classes: 
+  #>    '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+  #>    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 
+  #>    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
+  # 
+  # No pre-processing
+  # Resampling: Cross-Validated (5 fold) 
+  # Summary of sample sizes: 13260, 13260, 13260, 13260, 13260 
+  # Resampling results across tuning parameters:
+  # 
+  #   mtry  Accuracy   Kappa    
+  #   14    0.8244947  0.8198762
+  #   20    0.8266667  0.8221053
+  #   26    0.8296833  0.8252012
+  #   32    0.8304072  0.8259443
+  #   38    0.8303469  0.8258824
+  #   44    0.8306486  0.8261920
+  #   50    0.8296229  0.8251393
+  #   56    0.8291403  0.8246440
+  # 
+  # Accuracy was used to select the optimal model using the largest value.
+  # The final value used for the model was mtry = 44.
+}
 put_end_date(start)
-# Time difference of 17.51424 mins
+
+ggplot(fit_rf.mtry_tuned)
+
+
 
 confusionMatrix(fit_rf.mtry_tuned)
-ggplot(fit_rf.mtry_tuned)
 
 # plot(mtry14_56, fit_rf.mtry14_56.accuracy)
 # 
