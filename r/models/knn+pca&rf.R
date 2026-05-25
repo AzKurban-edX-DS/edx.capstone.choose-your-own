@@ -644,24 +644,22 @@ plot_confusion_matrix(rf_conf.mx,
 ##### Close Log ----------------------------------------------------------------
 log_close()
 
-### Open log: Tuning `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 400 ----
-open_logfile(".x0.1.train.fit_rf.tune_mtry")
 ##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
-fit_rf.tuned_mtry.backup.path <- file.path(models.rf.tune.path, 
-                                             "fit_rf.tuned_mtry.ntree200.back.rds")
+##### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
+open_logfile(".x0.1.train.fit_rf.tune_mtry")
+
+fit_rf.mtry_tuned.backup.path <- file.path(models.rf.tune.path, 
+                                             "fit_rf.mtry-coarse_tuned.ntree200.back.rds")
 
 start <- put_start_date()
 
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-if(file.exists(fit_rf.tuned_mtry.backup.path)) {
+if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
   
-  fit_rf.tuned_mtry <- readRDS(fit_rf.tuned_mtry)
+  fit_rf.mtry_tuned <- readRDS(fit_rf.mtry_tuned.backup.path)
   
-  put_Log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
-%1", fit_rf.tuned_mtry.backup.path)
+  put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
+%1", fit_rf.mtry_tuned.backup.path)
   put_end_date(start)
 } else {
   put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
@@ -671,6 +669,10 @@ if(file.exists(fit_rf.tuned_mtry.backup.path)) {
 
   mtry.values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
   start <- put_start_date()
+
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   set.seed(N.classes)
   fit_rf.mtry_tuned <- train(x0.1.train, 
                              y0.1.train,
@@ -682,7 +684,8 @@ if(file.exists(fit_rf.tuned_mtry.backup.path)) {
                                verboseIter = TRUE      # <--- This activates the progress output
                              ),
                              tuneGrid = data.frame(mtry = mtry.values))
-  
+  stopCluster(cl)
+  stopImplicitCluster()
   
   put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
   put_end_date(start)
@@ -690,17 +693,15 @@ if(file.exists(fit_rf.tuned_mtry.backup.path)) {
   
   put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
   saveRDS(fit_rf.mtry_tuned,
-          file = fit_rf.tuned_mtry.backup.path)
+          file = fit_rf.mtry_tuned.backup.path)
   put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
-%1", fit_rf.tuned_mtry.backup.path)
+%1", fit_rf.mtry_tuned.backup.path)
   put_end_date(start)
 # Time difference of 32.83442 mins
 
 }
 
-stopCluster(cl)
-stopImplicitCluster()
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
@@ -734,11 +735,8 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 }
 put_end_date(start)
 
-ggplot(fit_rf.mtry_tuned)
-
-
-
 confusionMatrix(fit_rf.mtry_tuned)
+ggplot(fit_rf.mtry_tuned)
 
 # plot(mtry14_56, fit_rf.mtry14_56.accuracy)
 # 
@@ -752,5 +750,147 @@ confusionMatrix(fit_rf.mtry_tuned)
 # best_mtry
 # [1] 18
 
-##### Close Log ------------------------------------------------------------------
 log_close()
+
+##### Step 2. Fine Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 3 ----
+open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
+
+fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
+                                             "fit_rf.mtry-fine_tuned.ntree200.back.rds")
+
+start <- put_start_date()
+
+if(file.exists(fit_rf.mtry.fine_tuned.backup.path)) {
+  put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
+  
+  fit_rf.mtry.fine_tuned <- readRDS(fit_rf.mtry.fine_tuned.backup.path)
+  
+  put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
+%1", fit_rf.mtry.fine_tuned.backup.path)
+  put_end_date(start)
+} else {
+  put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
+  
+
+  acc.max.idx <- which.max(fit_rf.mtry_tuned$results$Accuracy)
+  mtry.fine_tune.values <- seq(mtry.values[acc.max.idx-1], 
+                               mtry.values[acc.max.idx+1], 
+                               3) # 38:50, step = 3
+  start <- put_start_date()
+
+  # Reference:
+  # The code snippet below was copied from the following resource:
+  # https://www.geeksforgeeks.org/machine-learning/how-to-track-progress-while-building-model-with-the-caret-package/
+
+  # Start of copied code snippet:
+  {  
+    # Define the control function for cross-validation with custom functions
+    custom_control <- trainControl(
+      method = "cv",
+      number = 5,
+      verboseIter = TRUE,
+      index = createFolds(iris$Species, k = 5),
+      savePredictions = "final",
+      summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
+      classProbs = TRUE
+    )
+    
+    # Custom progress functions
+    startFun <- function(x) {
+      cat("Starting training iteration", x, "\n")
+    }
+    endFun <- function(x) {
+      cat("Ending training iteration", x, "\n")
+    }
+    
+    # Assign custom functions to the control object
+    custom_control$start <- startFun
+    custom_control$end <- endFun
+  }
+  # End of copied code snippet
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  set.seed(N.classes)
+  fit_rf.mtry.fine_tuned <- train(x0.1.train, 
+                             y0.1.train,
+                             method = "rf",
+                             ntree = 200,
+                             trControl = custom_control,
+                             tuneGrid = data.frame(mtry = mtry.values))
+  stopCluster(cl)
+  stopImplicitCluster()
+  
+  put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
+  put_end_date(start)
+  # Time difference of 27.74778 mins
+  
+  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
+  saveRDS(fit_rf.mtry.fine_tuned,
+          file = fit_rf.mtry.fine_tuned.backup.path)
+  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
+has been saved to the following backup file:
+%1", fit_rf.mtry.fine_tuned.backup.path)
+  put_end_date(start)
+# Time difference of 32.83442 mins
+
+}
+
+
+put_log("Below are results of tuning the model by `mtry` parameter values, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+%1", capture.output(fit_rf.mtry.fine_tuned))
+
+{
+  # 16575 samples
+  #   784 predictor
+  #>    39 classes: 
+  #>    '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+  #>    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 
+  #>    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
+  # 
+  # No pre-processing
+  # Resampling: Cross-Validated (5 fold) 
+  # Summary of sample sizes: 13260, 13260, 13260, 13260, 13260 
+  # Resampling results across tuning parameters:
+  # 
+  #   mtry  Accuracy   Kappa    
+  #   14    0.8244947  0.8198762
+  #   20    0.8266667  0.8221053
+  #   26    0.8296833  0.8252012
+  #   32    0.8304072  0.8259443
+  #   38    0.8303469  0.8258824
+  #   44    0.8306486  0.8261920
+  #   50    0.8296229  0.8251393
+  #   56    0.8291403  0.8246440
+  # 
+  # Accuracy was used to select the optimal model using the largest value.
+  # The final value used for the model was mtry = 44.
+}
+put_end_date(start)
+
+confusionMatrix(fit_rf.mtry.fine_tuned)
+ggplot(fit_rf.mtry.fine_tuned)
+
+# plot(mtry14_56, fit_rf.mtry14_56.accuracy)
+# 
+# max.idx <- which.max(fit_rf.mtry14_56.accuracy)
+# 
+# max_accuracy <- max(fit_rf.mtry14_56.accuracy)
+# max_accuracy
+# # [1] 0.88136
+# 
+# best_mtry <- mtry14_56[[max.idx]]
+# best_mtry
+# [1] 18
+
+log_close()
+
+##### Close Log ------------------------------------------------------------------
+
+#----------
+
+
+
+

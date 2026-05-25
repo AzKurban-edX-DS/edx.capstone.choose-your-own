@@ -218,7 +218,8 @@ have been loaded from the following backup file:
   dim(cnn_multiclass.accuracy_by_class)
   
   #### ROC Curves
-  # Reference:
+  # References:
+  # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
   
   # Calculate ROC curve for each class
