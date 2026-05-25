@@ -752,7 +752,7 @@ ggplot(fit_rf.mtry_tuned)
 
 log_close()
 
-##### Step 2. Fine Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 3 ----
+##### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
 open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
 
 fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
@@ -789,10 +789,10 @@ if(file.exists(fit_rf.mtry.fine_tuned.backup.path)) {
       method = "cv",
       number = 5,
       verboseIter = TRUE,
-      index = createFolds(iris$Species, k = 5),
+      # index = createFolds(y0.1.train, k = 5),
       savePredictions = "final",
       summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
-      classProbs = TRUE
+      classProbs = FALSE
     )
     
     # Custom progress functions
@@ -814,11 +814,11 @@ if(file.exists(fit_rf.mtry.fine_tuned.backup.path)) {
 
   set.seed(N.classes)
   fit_rf.mtry.fine_tuned <- train(x0.1.train, 
-                             y0.1.train,
-                             method = "rf",
-                             ntree = 200,
-                             trControl = custom_control,
-                             tuneGrid = data.frame(mtry = mtry.values))
+                                  y0.1.train,
+                                  method = "rf",
+                                  ntree = 200,
+                                  trControl = custom_control,
+                                  tuneGrid = data.frame(mtry = mtry.fine_tune.values))
   stopCluster(cl)
   stopImplicitCluster()
   
