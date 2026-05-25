@@ -574,6 +574,9 @@ fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path,
 
 start <- put_start_date()
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 if(file.exists(fit_rf.mtry_default.backup.path)) {
   put_log("Loading the `RF MCC` model trained with the default `mtry` parameter value from the backup file...")
   
@@ -605,6 +608,9 @@ has been saved to the following backup file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
 }
+
+stopCluster(cl)
+stopImplicitCluster()
 
 put_log("Results summary of tuning the model for the default value of parameter `mtry`, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
@@ -645,6 +651,9 @@ fit_rf.tuned_mtry.backup.path <- file.path(models.rf.tune.path,
 
 start <- put_start_date()
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 if(file.exists(fit_rf.tuned_mtry.backup.path)) {
   put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
   
@@ -681,6 +690,9 @@ has been saved to the following backup file:
 %1", fit_rf.tuned_mtry.backup.path)
   put_end_date(start)
 }
+
+stopCluster(cl)
+stopImplicitCluster()
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
