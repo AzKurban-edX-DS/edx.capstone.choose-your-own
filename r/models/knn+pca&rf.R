@@ -566,9 +566,9 @@ models.rf.tune.path = file.path(models.random_forest.path, "tune")
 if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
-### Open log: `RF MCC` model for the default mtry  & ntree = 500 --------------
-open_logfile("x0.1.train.fit_rf.mtry_default.ntree500")
 ##### Train `RF MCC` model with the default mtry value & ntree = 500 ---------------------------
+open_logfile("x0.1.train.fit_rf.mtry_default.ntree500")
+
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
                              "fit_rf.mtry_default.ntree500.back.rds")
 
@@ -641,9 +641,7 @@ plot_confusion_matrix(rf_conf.mx,
                       add_col_percentages = FALSE,
                       add_row_percentages = FALSE)
 
-##### Close Log ----------------------------------------------------------------
 log_close()
-
 ##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ##### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
 open_logfile(".x0.1.train.fit_rf.tune_mtry")
@@ -964,12 +962,100 @@ confusionMatrix(fit_rf.mtry.final_tuned)
 ggplot(fit_rf.mtry.final_tuned)
 
 acc.final_tuned.max <- max(fit_rf.mtry.final_tuned$results$Accuracy)
-# 0.8312519
+# 0.8302262
 acc.final_tuned.max.idx <- which.max(fit_rf.mtry.final_tuned$results$Accuracy)
-# 3
+# 2
 mtry.final_tuned.best <- mtry.final_tune.values[acc.max.idx]
-# 44
+# 45
 
+mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max, 
+                    mtry.final_tuned.best,
+                    mtry.fine_tuned.best)
+# 44
+log_close()
+
+##### Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
+open_logfile("x.train.fit_rf.mtry_best.ntree400")
+
+fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path, 
+                                             "fit_rf.mtry_best.ntree400.back.rds")
+
+start <- put_start_date()
+
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+if(file.exists(fit_rf.mmtry_best.backup.path)) {
+  put_log("Loading the `RF MCC` model trained with the best `mtry` parameter value from the backup file...")
+  
+  fit_rf.mmtry_best <- readRDS(fit_rf.mmtry_best)
+  
+  put_Log("The `RF MCC` model trained with the best `mtry` parameter value 
+has been loaded from the following backup file:
+%1", fit_rf.mmtry_best.backup.path)
+  put_end_date(start)
+} else {
+  put_log("Training the `RF MCC` model with the best `mtry` parameter value...")
+  set.seed(N.classes)
+  fit_rf.mmtry_best <- randomForest(x.train, 
+                                    y.train,
+                                    x.test,
+                                    y.test,
+                                    mtry = mtry.best,
+                                    ntree = 400)
+  
+  put_log("The `RF MCC` model has been trained with the best `mtry` parameter value.")
+  put_end_date(start)
+  # Time difference of the last iteration 19.8342 mins
+  
+  put_log("Saving the `RF MCC` model trained with the best `mtry` parameter value to the backup file...")
+  saveRDS(fit_rf.mmtry_best,
+          file = fit_rf.mmtry_best.backup.path)
+  put_log("The `RF MCC` model trained with the best `mtry` parameter value 
+has been saved to the following backup file:
+%1", fit_rf.mmtry_best.backup.path)
+  put_end_date(start)
+  # Time difference of  mins
+}
+
+stopCluster(cl)
+stopImplicitCluster()
+
+put_log("Results summary of tuning the model for the best value of parameter `mtry`, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
+and tested on the 10% sample from the remaining 
+90% data of the `Train Set`:
+%1", capture.output(summary(fit_rf.mmtry_best)))
+put_end_date(start)
+# Time difference of 6.260901 hours
+
+plot(fit_rf.mmtry_best)
+
+put_log("Prediction accuracy of the 'RF' MCC Model trained with the best value 
+of the `mtry` parameter is as follows:
+%1", mean(fit_rf.mmtry_best$test$predicted == y.test))
+# [1] 0.886390995545925
+
+
+
+
+rf_conf.mx <- confusion_matrix(as.character(y.test),
+                               as.character(fit_rf.mmtry_best$test$predicted))
+str(rf_conf.mx)
+
+plot_confusion_matrix(rf_conf.mx,
+                      palette = "Greens",
+                      font_counts = font(size = 3.5,
+                                         
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
 
 log_close()
+
+
+
+
+
 
