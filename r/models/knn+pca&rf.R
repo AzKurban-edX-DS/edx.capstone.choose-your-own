@@ -957,12 +957,6 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 %1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
 
 {
-  #   mtry  Accuracy     Kappa
-  # 1   38 0.8296229 0.8251393
-  # 2   41 0.8300452 0.8255728
-  # 3   44 0.8312519 0.8268111
-  # 4   47 0.8288386 0.8243344
-  # 5   50 0.8302262 0.8257585
 }
 put_end_date(start)
 
@@ -976,24 +970,6 @@ acc.final_tuned.max.idx <- which.max(fit_rf.mtry.final_tuned$results$Accuracy)
 mtry.final_tuned.best <- mtry.final_tune.values[acc.max.idx]
 # 44
 
-# plot(mtry14_56, fit_rf.mtry14_56.accuracy)
-# 
-# max.idx <- which.max(fit_rf.mtry14_56.accuracy)
-# 
-# max_accuracy <- max(fit_rf.mtry14_56.accuracy)
-# max_accuracy
-# # [1] 0.88136
-# 
-# best_mtry <- mtry14_56[[max.idx]]
-# best_mtry
-# [1] 18
 
 log_close()
-
-##### Close Log ------------------------------------------------------------------
-
-#----------
-
-
-
 
