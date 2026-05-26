@@ -840,38 +840,141 @@ has been saved to the following backup file:
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
-%1", capture.output(fit_rf.mtry.fine_tuned))
+%1", capture.output(fit_rf.mtry.fine_tuned$results[,1:3]))
 
 {
-  # 16575 samples
-  #   784 predictor
-  #>    39 classes: 
-  #>    '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
-  #>    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 
-  #>    'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
-  # 
-  # No pre-processing
-  # Resampling: Cross-Validated (5 fold) 
-  # Summary of sample sizes: 13260, 13260, 13260, 13260, 13260 
-  # Resampling results across tuning parameters:
-  # 
-  #   mtry  Accuracy   Kappa    
-  #   14    0.8244947  0.8198762
-  #   20    0.8266667  0.8221053
-  #   26    0.8296833  0.8252012
-  #   32    0.8304072  0.8259443
-  #   38    0.8303469  0.8258824
-  #   44    0.8306486  0.8261920
-  #   50    0.8296229  0.8251393
-  #   56    0.8291403  0.8246440
-  # 
-  # Accuracy was used to select the optimal model using the largest value.
-  # The final value used for the model was mtry = 44.
+  #   mtry  Accuracy     Kappa
+  # 1   38 0.8296229 0.8251393
+  # 2   41 0.8300452 0.8255728
+  # 3   44 0.8312519 0.8268111
+  # 4   47 0.8288386 0.8243344
+  # 5   50 0.8302262 0.8257585
 }
 put_end_date(start)
 
 confusionMatrix(fit_rf.mtry.fine_tuned)
 ggplot(fit_rf.mtry.fine_tuned)
+
+acc.fine_tuned.max <- max(fit_rf.mtry.fine_tuned$results$Accuracy)
+# 0.8312519
+acc.fine_tuned.max.idx <- which.max(fit_rf.mtry.fine_tuned$results$Accuracy)
+# 3
+mtry.fine_tuned.best <- mtry.fine_tune.values[acc.max.idx]
+# 44
+
+log_close()
+
+##### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
+open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
+
+fit_rf.mtry.final_tuned.backup.path <- file.path(models.rf.tune.path, 
+                                             "fit_rf.mtry-final_tuned.ntree200.back.rds")
+
+start <- put_start_date()
+
+if(file.exists(fit_rf.mtry.final_tuned.backup.path)) {
+  put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
+  
+  fit_rf.mtry.final_tuned <- readRDS(fit_rf.mtry.final_tuned.backup.path)
+  
+  put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
+%1", fit_rf.mtry.final_tuned.backup.path)
+  put_end_date(start)
+} else {
+  put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
+  
+
+  mtry.seq <- seq(mtry.fine_tune.values[acc.fine_tuned.max.idx-1] + 1, 
+                  mtry.fine_tune.values[length(mtry.fine_tune.values)] - 1) 
+  
+  mtry.final_tune.values <- mtry.seq[mtry.seq != mtry.fine_tune.values[c(acc.fine_tuned.max.idx,
+                                                                         acc.fine_tuned.max.idx + 1)]]
+  
+  start <- put_start_date()
+
+  # Reference:
+  # The code snippet below was copied from the following resource:
+  # https://www.geeksforgeeks.org/machine-learning/how-to-track-progress-while-building-model-with-the-caret-package/
+
+  # Start of copied code snippet:
+  {  
+    # Define the control function for cross-validation with custom functions
+    custom_control <- trainControl(
+      method = "cv",
+      number = 5,
+      verboseIter = TRUE,
+      # index = createFolds(y0.1.train, k = 5),
+      savePredictions = "final",
+      summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
+      classProbs = FALSE
+    )
+    
+    # Custom progress functions
+    startFun <- function(x) {
+      cat("Starting training iteration", x, "\n")
+    }
+    endFun <- function(x) {
+      cat("Ending training iteration", x, "\n")
+    }
+    
+    # Assign custom functions to the control object
+    custom_control$start <- startFun
+    custom_control$end <- endFun
+  }
+  # End of copied code snippet
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  set.seed(N.classes)
+  fit_rf.mtry.final_tuned <- train(x0.1.train, 
+                                  y0.1.train,
+                                  method = "rf",
+                                  ntree = 200,
+                                  trControl = custom_control,
+                                  tuneGrid = data.frame(mtry = mtry.final_tune.values))
+  stopCluster(cl)
+  stopImplicitCluster()
+  
+  put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
+  put_end_date(start)
+  # Time difference of 27.74778 mins
+  
+  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
+  saveRDS(fit_rf.mtry.final_tuned,
+          file = fit_rf.mtry.final_tuned.backup.path)
+  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
+has been saved to the following backup file:
+%1", fit_rf.mtry.final_tuned.backup.path)
+  put_end_date(start)
+# Time difference of 32.83442 mins
+
+}
+
+
+put_log("Below are results of tuning the model by `mtry` parameter values, 
+trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+%1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
+
+{
+  #   mtry  Accuracy     Kappa
+  # 1   38 0.8296229 0.8251393
+  # 2   41 0.8300452 0.8255728
+  # 3   44 0.8312519 0.8268111
+  # 4   47 0.8288386 0.8243344
+  # 5   50 0.8302262 0.8257585
+}
+put_end_date(start)
+
+confusionMatrix(fit_rf.mtry.final_tuned)
+ggplot(fit_rf.mtry.final_tuned)
+
+acc.final_tuned.max <- max(fit_rf.mtry.final_tuned$results$Accuracy)
+# 0.8312519
+acc.final_tuned.max.idx <- which.max(fit_rf.mtry.final_tuned$results$Accuracy)
+# 3
+mtry.final_tuned.best <- mtry.final_tune.values[acc.max.idx]
+# 44
 
 # plot(mtry14_56, fit_rf.mtry14_56.accuracy)
 # 
