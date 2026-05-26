@@ -176,9 +176,6 @@ k.values <- seq_len(8)
 k1_7nn_pca.model.backup.path <-
   file.path(knn_pca.path, "k1-7nn+pca(0.1train-set).rds")
 
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
 if (file.exists(k1_7nn_pca.model.backup.path)) {
   put_log("Loading pre-trained `kNN+PCA` Model 
 (tuned for `k` values ranged from 1 to 7) from the backup file...")
@@ -194,6 +191,9 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   
   start <- put_start_date()
   #flush.console()
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   k1_7nn_pca.model <- caret::train(x0.1.train, y0.1.train, method = "knn", 
                                 preProcess = "pca",
                                 trControl = trainControl("cv", 
@@ -203,8 +203,11 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
                                                          verboseIter = TRUE,
                                                          verbose = TRUE),
                                 tuneGrid = data.frame(k = k.values))
+  stopCluster(cl)
+  stopImplicitCluster()
   put_end_date(start)
   # Time difference of 40.88067 mins
+  
   put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
 
   put_log("Saving the pre-trained model in the backup file...")
@@ -219,9 +222,6 @@ for *k* values ranged from 1 to 7 has been backed up in the following file:
 `%1`", k1_7nn_pca.model.backup.path)
 
 }
-
-stopCluster(cl)
-stopImplicitCluster()
 
 #### The Tuning Results Visualization & Analysis -------------------------------
 
@@ -420,9 +420,6 @@ open_logfile(".pre-train-model.k1-7nn+pca")
 k_best.nn_pca.model.backup.path <-
   file.path(knn_pca.path, "k_best.nn+pca.rds")
 
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
 if (file.exists(k_best.nn_pca.model.backup.path)) {
   put_log("Loading the `kNN+PCA` Model (trained for the best `k` value) from the backup file...")
   
@@ -437,6 +434,11 @@ has been loaded from the following backup file:
   put_log("Training Model `kNN+PCA` on the 80% size Train Set..." )
   
   start <- put_start_date()
+  
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   #flush.console()
   k_best.nn_pca.model <- caret::train(x.train, y.train, method = "knn", 
                                    preProcess = "pca",
@@ -447,8 +449,11 @@ has been loaded from the following backup file:
                                                             verboseIter = TRUE,
                                                             verbose = TRUE),
                                    tuneGrid = data.frame(k = k.best)) # *k* = 6
+  stopCluster(cl)
+  stopImplicitCluster()
   put_end_date(start)
   # Time difference of 40.88067 mins
+
   put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
   
   put_log("Saving `kNN+PCAM`odel in the backup file: `...")
@@ -463,9 +468,6 @@ has been loaded from the following backup file:
   
 }
 
-stopCluster(cl)
-stopImplicitCluster()
-  
 # Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
 
 ### Close Log ------------------------------------------------------------------
@@ -479,9 +481,6 @@ knn_pca.best.preds.backup <-
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
-
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
 
 if (file.exists(knn_pca.best.preds.backup)) {
   put_log("Loading Predicted Data from cache file: 
@@ -512,7 +511,13 @@ has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
   }
   
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   k_best.nn_pca.model.predicted <- stats::predict(k_best.nn_pca.model, x.test, type = "raw")
+
+  stopCluster(cl)
+  stopImplicitCluster()
   put_end_date(start)
   # Time difference of 2.25995 hours
   
@@ -534,10 +539,6 @@ made on the `x.test` dataset...")
   put_log("The accuracy of the (Best *k*) `kNN+PCA` Model prediction is 
 %1", knn_pca.best.accuracy)
 }
-
-stopCluster(cl)
-stopImplicitCluster()
-#> [1] 
 
 put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
@@ -574,27 +575,31 @@ fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path,
 
 start <- put_start_date()
 
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
 if(file.exists(fit_rf.mtry_default.backup.path)) {
   put_log("Loading the `RF MCC` model trained with the default `mtry` parameter value from the backup file...")
   
-  fit_rf.mtry_default <- readRDS(fit_rf.mtry_default)
+  fit_rf.mtry_default <- readRDS(fit_rf.mtry_default.backup.path)
   
-  put_Log("The `RF MCC` model trained with the default `mtry` parameter value 
+  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been loaded from the following backup file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
 } else {
   put_log("Training the `RF MCC` model with the default `mtry` parameter value...")
   set.seed(N.classes)
+
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   fit_rf.mtry_default <- randomForest(x0.1.train, 
                                       y0.1.train,
                                       x0.9.test,
                                       y0.9.test,
                                       keep.forest = TRUE,
                                       ntree = 500)
+  
+  stopCluster(cl)
+  stopImplicitCluster()
   
   put_log("The `RF MCC` model has been trained with the default `mtry` parameter value.")
   put_end_date(start)
@@ -609,9 +614,6 @@ has been saved to the following backup file:
   put_end_date(start)
 # Time difference of  mins
 }
-
-stopCluster(cl)
-stopImplicitCluster()
 
 put_log("Results summary of tuning the model for the default value of parameter `mtry`, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
@@ -982,21 +984,22 @@ fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path,
 
 start <- put_start_date()
 
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
 if(file.exists(fit_rf.mmtry_best.backup.path)) {
   put_log("Loading the `RF MCC` model trained with the best `mtry` parameter value from the backup file...")
   
-  fit_rf.mmtry_best <- readRDS(fit_rf.mmtry_best)
+  fit_rf.mmtry_best <- readRDS(fit_rf.mmtry_best.backup.path)
   
-  put_Log("The `RF MCC` model trained with the best `mtry` parameter value 
+  put_log("The `RF MCC` model trained with the best `mtry` parameter value 
 has been loaded from the following backup file:
 %1", fit_rf.mmtry_best.backup.path)
   put_end_date(start)
 } else {
   put_log("Training the `RF MCC` model with the best `mtry` parameter value...")
   set.seed(N.classes)
+
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
   fit_rf.mmtry_best <- randomForest(x.train, 
                                     y.train,
                                     x.test,
@@ -1004,6 +1007,9 @@ has been loaded from the following backup file:
                                     mtry = mtry.best,
                                     ntree = 400)
   
+  stopCluster(cl)
+  stopImplicitCluster()
+
   put_log("The `RF MCC` model has been trained with the best `mtry` parameter value.")
   put_end_date(start)
   # Time difference of the last iteration 19.8342 mins
@@ -1017,9 +1023,6 @@ has been saved to the following backup file:
   put_end_date(start)
   # Time difference of  mins
 }
-
-stopCluster(cl)
-stopImplicitCluster()
 
 put_log("Results summary of tuning the model for the best value of parameter `mtry`, 
 trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
