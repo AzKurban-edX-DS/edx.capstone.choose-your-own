@@ -1208,11 +1208,11 @@ plot_bars.accuracy.by_class(y.labels,
                             title.prefix = "Tuned Random Forest-based Multiclass")
 
 
-rf_conf.mx <- confusion_matrix(as.character(y.test),
+fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
                                as.character(fit_rf.mmtry_best$test$predicted))
-str(rf_conf.mx)
+str(fit_rf.mmtry_best.conf.mx)
 
-plot_confusion_matrix(rf_conf.mx,
+plot_confusion_matrix(fit_rf.mmtry_best.conf.mx,
                       palette = "Greens",
                       font_counts = font(size = 3,
                                          
