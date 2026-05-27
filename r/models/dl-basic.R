@@ -242,13 +242,13 @@ if(file.exists(dl.basic.model.file_path)) {
   
   #### Training DL Basic Muliclass Classifier (MCC) Model **********************
   
-  dl.basic.callbacks <- list(
-    callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
-                              monitor = "val_accuracy",
-                              mode = max,
-                              # save_best_only = TRUE,
-                              verbose = 1)
-  )
+  # dl.basic.callbacks <- list(
+  #   callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
+  #                             monitor = "val_accuracy",
+  #                             mode = max,
+  #                             # save_best_only = TRUE,
+  #                             verbose = 1)
+  # )
 
   put_log("Training the DLB MCC Model...")
   start <- put_start_date()
@@ -258,8 +258,8 @@ if(file.exists(dl.basic.model.file_path)) {
         y.train.cat, 
         epochs = 100, 
         batch_size = 512, 
-        validation_split = 0.15,
-        callbaks = dl.basic.callbacks
+        validation_split = 0.15
+        #callbaks = dl.basic.callbacks
         )
   
   
