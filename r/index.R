@@ -163,7 +163,7 @@ source(knn_pca.rf.script.path,
        keep.source = TRUE)
 
 
-## Basic Deep Learning Models --------------------------------------------------
+## Basic Deep Learning Model --------------------------------------------------
 stopifnot(file.exists(dl_basic.scripts.path))
 
 source(dl_basic.scripts.path, 
