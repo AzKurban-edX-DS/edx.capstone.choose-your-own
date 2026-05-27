@@ -78,8 +78,15 @@ if(!require(pROC))
 if(!require(cvms))
   install.packages("cvms")
 
+if(!require(ggimage))
+  install.packages("ggimage")
+
+if(!require(rsvg))
+  install.packages("rsvg")
+
 # if(!require())
 #   install.packages("")
+
 
 ## Load Libraries & resolve conflicts ------------------------------------------
 
@@ -109,7 +116,8 @@ library(magick)
 library(abind)
 library(pROC)
 library(cvms)
-
+library(rsvg)
+library(ggimage)
 
 library(doParallel)
 

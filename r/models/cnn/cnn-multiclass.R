@@ -19,12 +19,12 @@ cnn_multiclass.model.file_path <- file.path(data.dl.cnn.multiclass.dir,
 cnn_multiclass.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
                                                     "cnn_multiclass.train_history.backup.rds")
 
+if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
+  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
+
 cnn_multiclass.checkpoint.file_path <- 
   file.path(data.dl.cnn.multiclass.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
-
-if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
-  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
 
 ## Preparing Training Data ---------------------------------------------------------
 put_log("Preparing Training Data...")
@@ -79,6 +79,7 @@ char_n.max == min(y.train.chars$n)
 
 put_log("The number of rows for each *Character Class* to be recognized in the Train Set is as follows:
 %1", capture.output(print(y.train.chars, n = nrow(y.train.chars))))
+{
 # A tibble: 39 × 2
 #    classID     n
 #    <fct>   <int>
@@ -121,6 +122,8 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 # 37 X        3408
 # 38 Y        3408
 # 39 Z        3408
+}
+
 ## Model building --------------------------------------------------------------
 
 n.output <- N.classes
@@ -205,7 +208,7 @@ if(file.exists(cnn_multiclass.model.file_path)) {
                                 verbose = 1)
     )
     
-    put_log("Training the CNN-based Multiclass Classifier Model...")
+    put_log("Training the CNN-based Multiclass Classifier (CNN MCC) Model...")
     start <- put_start_date()
     
     # Train model
@@ -219,30 +222,27 @@ if(file.exists(cnn_multiclass.model.file_path)) {
       )
     # acc: 0.8741
     
-    
-    put_log("Saving pre-trained model...")
+    put_log("Saving the pre-trained CNN MCC Model...")
     save_model(cnn_multiclass.model,
                filepath = cnn_multiclass.model.file_path,
                overwrite = TRUE)
     
-    put_log("Saving the CNN-based Multiclass Classifier Model...")
-    saveRDS(cnn_multiclass.train_history,
-            file = cnn_multiclass.train_history.file_path)
-    put_log("Saving the CNN-based Multiclass Classifier Model...")
-    
-    put_log("Saving pre-trained model...")
-    save_model(cnn_multiclass.model,
-               filepath = cnn_multiclass.model.file_path,
-               overwrite = TRUE)
-    
-    put_log("The CNN-Based Multiclass Classifier Model has been trained 
+    put_log("The CNN MCC has been trained 
 and saved in the following file:
   %1", cnn_multiclass.model.file_path)
+    
+    put_log("Saving the CNN MCC Model History...")
+    saveRDS(cnn_multiclass.train_history,
+            file = cnn_multiclass.train_history.file_path)
+    
+    put_log("The CNN MCC Model History has been trained 
+and saved in the following file:
+  %1", cnn_multiclass.train_history.file_path)
   }
 }
 
 
-put_log("The CNN-Based Multiclass Classifier Model has been created and trained:
+put_log("The CNN MCC Model has been created and trained:
 
 %1", capture.output(cnn_multiclass.model))
 

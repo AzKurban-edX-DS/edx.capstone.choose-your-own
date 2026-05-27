@@ -167,8 +167,8 @@ if(!dir.exists(knn_pca.path)) {
   dir.create(knn_pca.path)
 }
 
-#### Open log: Pre-training kNN+PCA Model Log ----------------------------------
 open_logfile(".pre-train-model.k1-7nn+pca")
+
 #### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Train Set ----
 # (The training takes about half an hour)
 k.values <- seq_len(8)
@@ -223,18 +223,16 @@ for *k* values ranged from 1 to 7 has been backed up in the following file:
 
 }
 
+
 #### The Tuning Results Visualization & Analysis -------------------------------
 
 put_log("The pre-trained `kNN+PCA` Model trained result:
 %1", capture.output(k1_7nn_pca.model))
 
 # The Model tuning visualzation:
-k1_7nn_pca.model$results |>
-  data.plot(title = "`kNN+PCA` Multiclass Classifier Model Tuning Results",
-xname = "k",
-yname = "Accuracy",
-xlabel = "k",
-ylabel = "Accuracy")
+trellis.par.set(caretTheme())
+plot(k1_7nn_pca.model, 
+     sub = "`kNN+PCA` Multiclass Classifier Model Tuning Results")
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
@@ -269,29 +267,15 @@ k.best
 ### Close Log ------------------------------------------------------------------
 log_close()
 
-### Open log: Load Split Dataset (Test Set of 20% size) ------------------------
-open_logfile(".split.20%test.balanced_subset")
 #### Loading Split Dataset allocated 20% for the Test set (default) ------------
+open_logfile(".split.20%test.balanced_subset")
 
 start <- put_start_date()
-
-if (!exists("ds_flatten.split_list")) {
-  stopifnot(file.exists(my_emnist.split.file_path))
-  
-  put_log("Loading the Split Flattened Dataset from the backup file...")
-  
-  ds_flatten.split_list <- readRDS(my_emnist.split.file_path)
-  
-  put_log("The Split Flattened Dataset has been loaded from the following backup file:
-%1", my_emnist.split.file_path)
-} 
-
-
-x.train <- ds_flatten.split_list$train_set$x.train
-x.test <- ds_flatten.split_list$test_set$x.test
-x.test.files <- ds_flatten.split_list$test_set$x.files
-
-
+ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
+                                 my_emnist.split.file_path)
+x.train <- ds_flatten$x.train
+x.test <- ds_flatten$x.test
+x.test.files <- ds_flatten$x.files
 
 y.train.groups <- ds.get_classIDs.grouped(x.train)
 y.train <- y.train.groups$classID
@@ -409,13 +393,11 @@ str(y.test)
 length(y.test)
 #> [1] 817379
 
-### Close Log ------------------------------------------------------------------
 log_close()
 
-#### Open log: Training kNN+PCA Model for best *k% Parameter -------------------
-open_logfile(".pre-train-model.k1-7nn+pca")
 #### Training kNN+PCA Model for best *k% Parameter -----------------------------
 # (The training takes about half an hour)
+open_logfile(".pre-train-model.k1-7nn+pca")
 
 k_best.nn_pca.model.backup.path <-
   file.path(knn_pca.path, "k_best.nn+pca.rds")
@@ -440,15 +422,17 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
   
   #flush.console()
-  k_best.nn_pca.model <- caret::train(x.train, y.train, method = "knn", 
-                                   preProcess = "pca",
-                                   trControl = trainControl("cv", 
-                                                            number = 5, 
-                                                            p = 0.95,
-                                                            preProcOptions = list(thresh = 0.9),
-                                                            verboseIter = TRUE,
-                                                            verbose = TRUE),
-                                   tuneGrid = data.frame(k = k.best)) # *k* = 6
+  k_best.nn_pca.model <- caret::train(x.train, 
+                                      y.train, 
+                                      method = "knn", 
+                                      preProcess = "pca",
+                                      trControl = trainControl("cv", 
+                                                               number = 5, 
+                                                               p = 0.95,
+                                                               preProcOptions = list(thresh = 0.9),
+                                                               verboseIter = TRUE,
+                                                               verbose = TRUE),
+                                      tuneGrid = data.frame(k = k.best)) # *k* = 6
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
@@ -468,14 +452,14 @@ has been loaded from the following backup file:
   
 }
 
+
+
+log_close()
 # Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
 
-### Close Log ------------------------------------------------------------------
-log_close()
-
-##### Open log: Predictions on `k5NN+PCA` (best *k*) Model -------------------
-open_logfile(".x.test.predict.k(best)nn+pca")
 ##### Constructing Predictions on kNN+PCA (for best *k* Parameter value) ------
+open_logfile(".x.test.predict.k(best)nn+pca")
+
 knn_pca.best.preds.backup <-
   file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions.rds")
 
@@ -523,11 +507,6 @@ has been loaded from the following backup file:
   
   put_log("The (Best *k*) `kNN+PCA` Model: Generating predictions have been completed on `x.test` dataset.")
   
-  put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
-made on the `x.test` dataset...")
-  
-  knn_pca.best.accuracy <- mean(k_best.nn_pca.model.predicted == y.test)
-
   put_log("Backing up the `kNN+PCA` Model's tuning best results to file...")
   #> [1] 0.8693882
   
@@ -540,12 +519,80 @@ made on the `x.test` dataset...")
 %1", knn_pca.best.accuracy)
 }
 
+put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
+made on the `x.test` dataset...")
+knn_pca.best.accuracy <- mean(k_best.nn_pca.model.predicted == y.test)
+
 put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
 #> [1] 0.860810160105935
 
+knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+                                                                 y.test,
+                                                                 k_best.nn_pca.model.predicted)
+knn_pca.best.accuracy.by_class
+{
+  #' class  accuracy
+  #'     # 1.0000000
+  #'     $ 1.0000000
+  #'     & 1.0000000
+  #'     @ 1.0000000
+  #'     0 0.9706573
+  #'     1 0.6607981
+  #'     2 0.8509390
+  #'     3 0.9483568
+  #'     4 0.8779343
+  #'     5 0.8157277
+  #'     6 0.8931925
+  #'     7 0.9612676
+  #'     8 0.8403756
+  #'     9 0.8884977
+  #'     A 0.8039906
+  #'     B 0.8157277
+  #'     C 0.9389671
+  #'     D 0.8755869
+  #'     E 0.8838028
+  #'     F 0.8603286
+  #'     G 0.5727700
+  #'     H 0.8920188
+  #'     I 0.6467136
+  #'     J 0.9119718
+  #'     K 0.8591549
+  #'     L 0.5246479
+  #'     M 0.9460094
+  #'     N 0.9190141
+  #'     P 0.9436620
+  #'     Q 0.5234742
+  #'     R 0.8685446
+  #'     S 0.8791080
+  #'     T 0.8849765
+  #'     U 0.9119718
+  #'     V 0.9178404
+  #'     W 0.9401408
+  #'     X 0.8767606
+  #'     Y 0.7746479
+  #'     Z 0.8920188
+}
 
-##### Close Log ----------------------------------------------------------------
+plot_bars.accuracy.by_class(y.labels,
+                            knn_pca.best.accuracy.by_class,
+                            title.prefix = "kNN+PCA-based Multiclass")
+
+knn_pca.best.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
+                                            as.character(fit_rf.mtry_default$test$predicted))
+str(knn_pca.best.mx.mtry_default)
+
+plot_confusion_matrix(knn_pca.best.mx.mtry_default,
+                      palette = "Greens",
+                      font_counts = font(size = 3,
+                                         
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
+
+
+
 log_close()
 
 ## Random Forest MCC Model -----------------------------------------------------
@@ -630,13 +677,69 @@ of the `mtry` parameter is as follows:
 %1", mean(fit_rf.mtry_default$test$predicted == y0.9.test))
 # [1] 0.8397469
 
-rf_conf.mx <- confusion_matrix(as.character(y0.9.test),
-                               as.character(fit_rf.mtry_default$test$predicted))
-str(rf_conf.mx)
+fit_rf.mtry_default.accuracy.by_class <- 
+  MCClassifier.accuracy.by_class(y.labels,
+                                 y0.9.test,
+                                 fit_rf.mtry_default$test$predicted)
 
-plot_confusion_matrix(rf_conf.mx,
+fit_rf.mtry_default.accuracy.by_class
+{
+  
+#' class  accuracy
+#'     # 1.0000000
+#'     $ 1.0000000
+#'     & 1.0000000
+#'     @ 0.9994784
+#'     0 0.9530516
+#'     1 0.6966615
+#'     2 0.7509129
+#'     3 0.9259259
+#'     4 0.8495044
+#'     5 0.7996870
+#'     6 0.8928013
+#'     7 0.9405321
+#'     8 0.8012520
+#'     9 0.9183620
+#'     A 0.7712572
+#'     B 0.8252478
+#'     C 0.8969744
+#'     D 0.7793427
+#'     E 0.8724570
+#'     F 0.8557642
+#'     G 0.4718310
+#'     H 0.8510694
+#'     I 0.6165884
+#'     J 0.8763693
+#'     K 0.8638498
+#'     L 0.4783516
+#'     M 0.9381847
+#'     N 0.8774126
+#'     P 0.9170579
+#'     Q 0.5670318
+#'     R 0.8341158
+#'     S 0.8281168
+#'     T 0.8286385
+#'     U 0.8823683
+#'     V 0.8839332
+#'     W 0.9431403
+#'     X 0.8821075
+#'     Y 0.8004695
+#'     Z 0.8802817
+    }
+
+plot_bars.accuracy.by_class(y.labels,
+                            fit_rf.mtry_default.accuracy.by_class,
+                            title.prefix = "Random Forest-based (default `mtry`) Multiclass")
+
+
+
+rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
+                               as.character(fit_rf.mtry_default$test$predicted))
+str(rf_conf.mx.mtry_default)
+
+plot_confusion_matrix(rf_conf.mx.mtry_default,
                       palette = "Greens",
-                      font_counts = font(size = 3.5,
+                      font_counts = font(size = 3,
                                          
                                          color = "red"),
                       add_normalized = FALSE,
@@ -656,7 +759,10 @@ start <- put_start_date()
 if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
   
-  fit_rf.mtry_tuned <- readRDS(fit_rf.mtry_tuned.backup.path)
+  fit.bak <- readRDS(fit_rf.mtry_tuned.backup.path)
+  fit_rf.mtry_tuned <- fit.bak$fit
+  mtry.tune_values <- fit.bak$mtry
+  rm(fit.bak)
   
   put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
 %1", fit_rf.mtry_tuned.backup.path)
@@ -667,7 +773,7 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   #> Since p = n.img_cols * n.img_rows = n.img_cols^2 = 28^2
   #> sqrt(p) = n.img_cols = 28
 
-  mtry.values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
+  mtry.tune_values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
   start <- put_start_date()
 
   cl <- makeCluster(N_pcCores)
@@ -683,7 +789,7 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
                                number = 5,             # 5 folds
                                verboseIter = TRUE      # <--- This activates the progress output
                              ),
-                             tuneGrid = data.frame(mtry = mtry.values))
+                             tuneGrid = data.frame(mtry = mtry.tune_values))
   stopCluster(cl)
   stopImplicitCluster()
   
@@ -692,7 +798,8 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   # Time difference of 27.74778 mins
   
   put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(fit_rf.mtry_tuned,
+  saveRDS(list(fit = fit_rf.mtry_tuned,
+               mtry = mtry.tune_values),
           file = fit_rf.mtry_tuned.backup.path)
   put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
@@ -761,20 +868,23 @@ fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path,
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry.fine_tuned.backup.path)) {
-  put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
+  put_log("Loading the `RF MCC` model fine-tuned with `mtry` parameter values from the backup file...")
   
-  fit_rf.mtry.fine_tuned <- readRDS(fit_rf.mtry.fine_tuned.backup.path)
+  fit.bak <- readRDS(fit_rf.mtry.fine_tuned.backup.path)
+  fit_rf.mtry.fine_tuned <- fit.bak$fit
+  mtry.fine_tune.values <- fit.bak$mtry
+  rm(fit.bak)
   
-  put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
+  put_log("The `RF MCC` model, fine-tuned with `mtry` parameter values, 
+has been loaded from the following backup file:
 %1", fit_rf.mtry.fine_tuned.backup.path)
   put_end_date(start)
 } else {
-  put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
-  
+  put_log("Fine-Tuning the `RF MCC` model by `mtry` parameter values...")
 
   acc.max.idx <- which.max(fit_rf.mtry_tuned$results$Accuracy)
-  mtry.fine_tune.values <- seq(mtry.values[acc.max.idx-1], 
-                               mtry.values[acc.max.idx+1], 
+  mtry.fine_tune.values <- seq(mtry.tune_values[acc.max.idx-1], 
+                               mtry.tune_values[acc.max.idx+1], 
                                3) # 38:50, step = 3
   start <- put_start_date()
 
@@ -822,14 +932,15 @@ if(file.exists(fit_rf.mtry.fine_tuned.backup.path)) {
   stopCluster(cl)
   stopImplicitCluster()
   
-  put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
+  put_log("The `RF MCC` model has been fine-tuned by `mtry` parameter values.")
   put_end_date(start)
   # Time difference of 27.74778 mins
   
-  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(fit_rf.mtry.fine_tuned,
+  put_log("Saving the `RF MCC` model trained with the fine-tuned `mtry` parameter values to the backup file...")
+  saveRDS(list(fit = fit_rf.mtry.fine_tuned,
+               mtry = mtry.fine_tune.values),
           file = fit_rf.mtry.fine_tuned.backup.path)
-  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
+  put_log("The `RF MCC` model trained with the fine-tuned `mtry` parameter values 
 has been saved to the following backup file:
 %1", fit_rf.mtry.fine_tuned.backup.path)
   put_end_date(start)
@@ -873,23 +984,26 @@ fit_rf.mtry.final_tuned.backup.path <- file.path(models.rf.tune.path,
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry.final_tuned.backup.path)) {
-  put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
+  put_log("Loading the `RF MCC` model final tuned with `mtry` parameter values from the backup file...")
   
-  fit_rf.mtry.final_tuned <- readRDS(fit_rf.mtry.final_tuned.backup.path)
+  fit.bak <- readRDS(fit_rf.mtry.final_tuned.backup.path)
+  fit_rf.mtry.final_tuned <- fit.bak$fit
+  mtry.final_tune.values <- fit.bak$mtry
+  rm(fit.bak)
   
-  put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
+  put_log("The `RF MCC` model, final tuned with `mtry` parameter values, 
+has been loaded from the following backup file:
 %1", fit_rf.mtry.final_tuned.backup.path)
   put_end_date(start)
 } else {
-  put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
-  
+  put_log("Final Tuning the `RF MCC` model by `mtry` parameter values...")
 
   mtry.seq <- seq(mtry.fine_tune.values[acc.fine_tuned.max.idx-1] + 1, 
                   mtry.fine_tune.values[length(mtry.fine_tune.values)] - 1) 
   
   mtry.final_tune.values <- mtry.seq[mtry.seq != mtry.fine_tune.values[c(acc.fine_tuned.max.idx,
                                                                          acc.fine_tuned.max.idx + 1)]]
-  
+  rm(mtry.seq)
   start <- put_start_date()
 
   # Reference:
@@ -941,7 +1055,8 @@ if(file.exists(fit_rf.mtry.final_tuned.backup.path)) {
   # Time difference of 27.74778 mins
   
   put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(fit_rf.mtry.final_tuned,
+  saveRDS(list(fit = fit_rf.mtry.final_tuned,
+               mtry = mtry.final_tune.values),
           file = fit_rf.mtry.final_tuned.backup.path)
   put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
@@ -1039,7 +1154,58 @@ of the `mtry` parameter is as follows:
 %1", mean(fit_rf.mmtry_best$test$predicted == y.test))
 # [1] 0.886390995545925
 
+fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+                                                                 y.test,
+                                                                 fit_rf.mmtry_best$test$predicted)
+fit_rf.mmtry_best.accuracy.by_class
+{
+  #' class  accuracy
+  #'     # 1.0000000
+  #'     $ 1.0000000
+  #'     & 1.0000000
+  #'     @ 1.0000000
+  #'     0 0.9659624
+  #'     1 0.7300469
+  #'     2 0.8521127
+  #'     3 0.9448357
+  #'     4 0.9049296
+  #'     5 0.8544601
+  #'     6 0.9072770
+  #'     7 0.9636150
+  #'     8 0.8791080
+  #'     9 0.9178404
+  #'     A 0.8673709
+  #'     B 0.8896714
+  #'     C 0.9483568
+  #'     D 0.8873239
+  #'     E 0.9131455
+  #'     F 0.9201878
+  #'     G 0.6173709
+  #'     H 0.9084507
+  #'     I 0.6830986
+  #'     J 0.9154930
+  #'     K 0.9084507
+  #'     L 0.5422535
+  #'     M 0.9483568
+  #'     N 0.9143192
+  #'     P 0.9553991
+  #'     Q 0.6713615
+  #'     R 0.9002347
+  #'     S 0.8638498
+  #'     T 0.9178404
+  #'     U 0.9237089
+  #'     V 0.9178404
+  #'     W 0.9636150
+  #'     X 0.9248826
+  #'     Y 0.8392019
+  #'     Z 0.9072770
+  
+  
+}
 
+plot_bars.accuracy.by_class(y.labels,
+                            fit_rf.mmtry_best.accuracy.by_class,
+                            title.prefix = "Tuned Random Forest-based Multiclass")
 
 
 rf_conf.mx <- confusion_matrix(as.character(y.test),
@@ -1048,7 +1214,7 @@ str(rf_conf.mx)
 
 plot_confusion_matrix(rf_conf.mx,
                       palette = "Greens",
-                      font_counts = font(size = 3.5,
+                      font_counts = font(size = 3,
                                          
                                          color = "red"),
                       add_normalized = FALSE,

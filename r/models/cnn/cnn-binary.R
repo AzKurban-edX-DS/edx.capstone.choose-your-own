@@ -424,18 +424,9 @@ cnn.bin_models.accuracy |>
             xname = "label", 
             yname = "accuracy")
 
-data.frame(class = y.labels,
-           accuracy = cnn.bin_models.accuracy[, 2]) |>
-  ggplot(mapping = aes(x = class,
-                       y = accuracy)) +
-  geom_col(fill = "steelblue",
-           color = "black") +
-  labs(x = "Handwritten Character Classl",
-       y = "Accuracy",
-       title = "CNN-based Binary Classifier Models: Class-wise Evaluation Results") +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                     expand = c(0, 0, 0.005, 0))
-
+plot_bars.accuracy.by_class(y.labels,
+                            cnn.bin_models.accuracy[, 2],
+                            title.prefix = "CNN-based Binary")
 
 # put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 # for all the handwritten characters with the following results:

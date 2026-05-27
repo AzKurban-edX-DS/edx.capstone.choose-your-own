@@ -161,6 +161,25 @@ img.load.bin28x28mx.list <- function(root_path,
        img.list = img_list)
 }
 
+load_flatten_datasets <- function(dat.obj_name, dat.file_path) {
+  if (!exists(dat.obj_name)) {
+    stopifnot(file.exists(dat.file_path))
+    
+    put_log("Function `load_flatten_datasets`:
+Loading the Split Flattened Dataset from the backup file...")
+    
+    ds_flatten.split_list <- readRDS(dat.file_path)
+    
+    put_log("Function `load_flatten_datasets`:
+The Split Flattened Dataset has been loaded from the following backup file:
+%1", dat.file_path)
+  } 
+  
+  list(x.train = ds_flatten.split_list$train_set$x.train,
+       x.test = ds_flatten.split_list$test_set$x.test,
+       x.test.files = ds_flatten.split_list$test_set$x.files)
+}
+
 ## Image Processing ------------------------------------------------------------
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 

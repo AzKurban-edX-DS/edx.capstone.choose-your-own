@@ -201,22 +201,53 @@ have been loaded from the following backup file:
   y.test.idx <- seq_len(length(y.test))
   # head(y.test.idx)
   
-  cnn_multiclass.accuracy_by_class <- sapply(y.labels, function(label) {
-    idx <- y.test.idx[y.test == label]
-    n <- length(idx)
-    # put_log("Class of character `%1` has %2 items.",
-    #         label, n)
-    
-    accuracy <- mean(cnn.prediction.values[idx] == label)
-    
-    put_log("Accuracy for the class `%1` (of size %2) is %3.",
-            label, n, accuracy) 
-    
-    accuracy
-  }) |> matrix(ncol = 1, dimnames = list(class = y.labels, "accuracy")) 
-  
-  dim(cnn_multiclass.accuracy_by_class)
-  
+  cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
+                                                                      y.test,
+                                                                      cnn.prediction.values)
+  cnn_multiclass.accuracy_by_class
+  {  
+    #' class  accuracy
+    #'     # 0.9988263
+    #'     $ 1.0000000
+    #'     & 1.0000000
+    #'     @ 1.0000000
+    #'     0 0.9765258
+    #'     1 0.7171362
+    #'     2 0.9248826
+    #'     3 0.9812207
+    #'     4 0.9342723
+    #'     5 0.8967136
+    #'     6 0.9460094
+    #'     7 0.9847418
+    #'     8 0.9471831
+    #'     9 0.9295775
+    #'     A 0.9143192
+    #'     B 0.9272300
+    #'     C 0.9694836
+    #'     D 0.9483568
+    #'     E 0.9495305
+    #'     F 0.9518779
+    #'     G 0.7159624
+    #'     H 0.9530516
+    #'     I 0.6807512
+    #'     J 0.9424883
+    #'     K 0.9518779
+    #'     L 0.5434272
+    #'     M 0.9753521
+    #'     N 0.9636150
+    #'     P 0.9812207
+    #'     Q 0.7453052
+    #'     R 0.9542254
+    #'     S 0.9307512
+    #'     T 0.9553991
+    #'     U 0.9518779
+    #'     V 0.9483568
+    #'     W 0.9788732
+    #'     X 0.9483568
+    #'     Y 0.9072770
+    #'     Z 0.9295775  
+  }  
+
   #### ROC Curves
   # References:
   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
@@ -242,13 +273,15 @@ have been loaded from the following backup file:
 have been backed up to the following file:
 %1", cnn_multiclass.model.eval.file_path)
   
+  
+  
 }
 
 ### Logging Accuracies by class -------------------------------------------------
 
 put_log("The total set of accuracies by class is as follows:
 %1", capture.output(df.cnn_multiclass.accuracy_by_class))
-
+{
 # class  accuracy
     #' # 1.0000000
     #' $ 1.0000000
@@ -289,23 +322,15 @@ put_log("The total set of accuracies by class is as follows:
     #' X 0.9554513
     #' Y 0.8944900
     #' Z 0.9261430
+}
 
 ### Visualization --------------------------------------------------------------
 
 #### Class-wise accuracy
 
-
-str(cnn_multiclass.conf.mx)
-
-plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
-                      palette = "Greens",
-                      font_counts = font(size = 3.5,
-                                         
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
+plot_bars.accuracy.by_class(y.labels,
+                            cnn_multiclass.accuracy_by_class[, 1],
+                            title.prefix = "CNN-based Multiclass")
 
 # Plot ROC curves
 plot(roc_curves[[1]], main = "ROC Curves for CNN-based Multiclass Classification")
@@ -313,17 +338,17 @@ for (class.idx in 2:N.classes) {
   lines(roc_curves[[class.idx]], col = class.idx)
 }
 
-data.frame(class = y.labels,
-           accuracy = cnn_multiclass.accuracy_by_class[, 1]) |>
-  ggplot(mapping = aes(x = class,
-                       y = accuracy)) +
-  geom_col(fill = "steelblue",
-           color = "black") +
-  labs(x = "Handwritten Character Classl",
-       y = "Accuracy",
-       title = "CNN-based Multiclass Classifier Model: Class-wise Evaluation Results") +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                     expand = c(0, 0, 0.005, 0))
+
+str(cnn_multiclass.conf.mx)
+
+plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
+                      palette = "Greens",
+                      font_counts = font(size = 3,
+                                         
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
 
 
 

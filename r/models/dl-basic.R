@@ -2,88 +2,6 @@
 # Basic Deep Learning Model
 #%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Open log: Split Train Dataset (x) -------------
-open_logfile(".split.80%train.balanced_subset")
-#### Split Train Dataset  (90% for Train set) ----------------------------------
-# char_files.max4e3 <- 4e3 
-# char_files.max4e3
-
-dim.x <- dim(x)
-dim.x
-dim.x[1]
-dim.x[2]
-
-sample_seed <- dim.x[1]
-sample_seed
-shuffle_seed <- as.integer(sample_seed*test_ratio)
-shuffle_seed
-
-cache_file.path <- file.path(ds.subsets.path, "x.9bl.train(balanced).RData")
-cache_file.path
-
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-if (file.exists(cache_file.path)) {
-  put_log1("Loading Split Train Data from cache file: 
-%1", cache_file.path)
-  
-  load(cache_file.path)
-  put_log("Train Data list has been loaded from cache.")
-} else {
-  split.list <- sample_train_test_sets.mx(x, 
-                                          sample_seed,
-                                          test.ratio = 0.1,
-                                          shuffle.seed = shuffle_seed)
-  str(split.list)
-  
-  x.9bl.train <- split.list$train_set
-  y.9bl.train <- as.factor(rownames(x.9bl.train))
-  
-  x.1.test <- split.list$test_set
-  y.1.test <- as.factor(rownames(x.1.test))
-  
-  
-  #   x0.1.test.list <- splitDataset(split.list$test_set, 9)
-  #   put_log1("Test dataset list structure:
-  # %1", capture.output(str(x0.1.test.list)))
-  
-  put_log1("Caching data in the file
-%1 ...", cache_file.path)
-  
-  save(x.9bl.train,
-       y.9bl.train,
-       x.1.test,
-       y.1.test,
-       file = cache_file.path)
-  
-  put_log1("The Train Data Subset objects has been cached in file:
-`%1`", cache_file.path)
-  
-  rm(split.list)
-}
-
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
-
-dim(x.9bl.train)
-#> [1] 16653   784
-str(x.9bl.train)
-
-str(y.9bl.train)
-length(y.9bl.train)
-
-str(x.1.test)
-str(y.1.test)
-length(y.1.test)
-#> [1] 817379
-
-
-### Close Log ------------------------------------------------------------------
-log_close()
-
 ### Basic DL Classifier -----------------------------------------------------------
 # Reference:
 # MNIST Handwritten Digit Recognition in Keras
@@ -95,38 +13,201 @@ log_close()
 # https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
 # https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
 
-y.9bl.train.cat <- to_categorical(y.9bl.train)
-colnames(y.9bl.train.cat) <- y.labels
-dim(y.9bl.train.cat)
-str(y.9bl.train.cat)
-head(y.9bl.train.cat)
-# max(y.9bl.train.cat)
+#### Loading Split Dataset allocated 20% for the Test set (default) ------------
+open_logfile(".split.20%test.balanced_subset")
 
-y.1.test.cat <- to_categorical(y.1.test)
-colnames(y.1.test.cat) <- y.labels
-dim(y.1.test.cat)
-str(y.1.test.cat)
-head(y.1.test.cat)
+start <- put_start_date()
+stopifnot(file.exists(my_emnist.split.file_path))
 
-#### Open log: Building Basic DL Model -----------------------------------------
-open_logfile("dl.basic-model")
-#### DL Model building on dataset: `dl.model`: `x0.1.dl.model` ---------
+ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
+                                    my_emnist.split.file_path)
+x.train <- ds_flatten$x.train
+x.test <- ds_flatten$x.test
+x.test.files <- ds_flatten$x.files
+
+y.train.groups <- ds.get_classIDs.grouped(x.train)
+y.train <- y.train.groups$classID
+
+stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
+
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #        3407
+  #  2 $        3407
+  #  3 &        3407
+  #  4 @        3407
+  #  5 0        3407
+  #  6 1        3407
+  #  7 2        3407
+  #  8 3        3407
+  #  9 4        3407
+  # 10 5        3407
+  # 11 6        3407
+  # 12 7        3407
+  # 13 8        3407
+  # 14 9        3407
+  # 15 A        3407
+  # 16 B        3407
+  # 17 C        3407
+  # 18 D        3407
+  # 19 E        3407
+  # 20 F        3407
+  # 21 G        3407
+  # 22 H        3407
+  # 23 I        3407
+  # 24 J        3407
+  # 25 K        3407
+  # 26 L        3407
+  # 27 M        3407
+  # 28 N        3407
+  # 29 P        3407
+  # 30 Q        3407
+  # 31 R        3407
+  # 32 S        3407
+  # 33 T        3407
+  # 34 U        3407
+  # 35 V        3407
+  # 36 W        3407
+  # 37 X        3407
+  # 38 Y        3407
+  # 39 Z        3407
+}
+
+y.test.groups <- ds.get_classIDs.grouped(x.test)
+y.test <- y.test.groups$classID
+
+stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
+
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         852
+  #  2 $         852
+  #  3 &         852
+  #  4 @         852
+  #  5 0         852
+  #  6 1         852
+  #  7 2         852
+  #  8 3         852
+  #  9 4         852
+  # 10 5         852
+  # 11 6         852
+  # 12 7         852
+  # 13 8         852
+  # 14 9         852
+  # 15 A         852
+  # 16 B         852
+  # 17 C         852
+  # 18 D         852
+  # 19 E         852
+  # 20 F         852
+  # 21 G         852
+  # 22 H         852
+  # 23 I         852
+  # 24 J         852
+  # 25 K         852
+  # 26 L         852
+  # 27 M         852
+  # 28 N         852
+  # 29 P         852
+  # 30 Q         852
+  # 31 R         852
+  # 32 S         852
+  # 33 T         852
+  # 34 U         852
+  # 35 V         852
+  # 36 W         852
+  # 37 X         852
+  # 38 Y         852
+  # 39 Z         852  
+}
+
+dim(x.train)
+#> [1] 16653   784
+str(x.train)
+
+str(y.train)
+length(y.train)
+
+str(x.test)
+str(y.test)
+length(y.test)
+#> [1] 817379
+
+log_close()
+
+y.train.cat <- to_categorical(y.train)
+colnames(y.train.cat) <- y.labels
+dim(y.train.cat)
+str(y.train.cat)
+head(y.train.cat)
+# max(y.train.cat)
+
+y.test.cat <- to_categorical(y.test)
+colnames(y.test.cat) <- y.labels
+dim(y.test.cat)
+str(y.test.cat)
+head(y.test.cat)
+
+#### Init DL Basic Model Paths -------------------------------------------------
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
 
-cache_file.path <- file.path(dl.keras3.path, 
-                             "dl.x.9bl.train.model.RData")
+dl.basic.dir_path <- file.path(dl.keras3.path, "dl.basic")
 
-if (file.exists(cache_file.path)) {
-  put_log("Loading `DL Keras3` model from cache file: 
-%1", cache_file.path)
+if(!dir.exists(dl.basic.dir_path))
+  dir.create(dl.basic.dir_path)
+
+dl.basic.checkpoints.dir <- file.path(dl.basic.dir_path,
+                                            "checkpoints")
+if(!dir.exists(dl.basic.checkpoints.dir))
+  dir.create(dl.basic.checkpoints.dir)
+
+dl.basic.checkpoint.file_path <- 
+  file.path(dl.basic.checkpoints.dir, 
+            "dl.basic.{epoch:02d}-{val_loss:.2f}.keras")
+
+
+
+dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
+                             "dl.basic.pre-trained.model.keras")
+
+dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
+                             "dl.basic.model.train_history.bak.rds")
+
+#### Building Deep Learning Basic Multiclass Classifier (DLB MCC) Model --------
+open_logfile("dl.basic-model")
+
+
+if(file.exists(dl.basic.model.file_path)) {
+  put_log("Loading pre-trained DLB MCC Model...")
   
-  load(cache_file.path)
-  put_log("`DL Keras3` model has been loaded from cache.")
+  dl.basic.model <- load_model(dl.basic.model.file_path)
   
+  put_log("The DLB MCC Model has been loaded from the backup file:
+%1", dl.basic.model.file_path)
+  
+  if(file.exists(dl.basic.model.train_history.file_path)){
+    put_log("Loading the DLB MCC Model Train History...")
+    
+    dl.basic.train_history <- readRDS(dl.basic.model.train_history.file_path)
+    
+    put_log("The DLB MCC Model has been loaded from the backup file:
+%1", dl.basic.model.train_history.file_path)
+  } else {
+    warning("The DLB MCC Model backup does not exist:
+", dl.basic.model.train_history.file_path)
+  }
 } else {
-  n.input_shape <- ncol(x.9bl.train)
+  n.input_shape <- ncol(x.train)
   # 784
   
   n.output <- length(y.labels)
@@ -135,7 +216,7 @@ if (file.exists(cache_file.path)) {
   n.hl.units <- ceiling(n.input_shape*2/3+n.output)
   # 562
   
-  dl.model <- keras_model_sequential() |>
+  dl.basic.model <- keras_model_sequential() |>
     layer_dense(units = n.hl.units, activation = "relu", 
                 input_shape = c(n.input_shape)) |>
     layer_dropout(rate = 0.25) |> 
@@ -149,48 +230,66 @@ if (file.exists(cache_file.path)) {
     layer_dropout(rate = 0.25) |> 
     layer_dense(units = n.output, activation = "softmax")
   
-  summary(dl.model)
+  summary(dl.basic.model)
   
-  dl.model |> compile(
+  dl.basic.model |> compile(
     loss = "categorical_crossentropy",
     optimizer = optimizer_adam(),
     metrics = c("accuracy")
   )
   
-  put_log("Training the Basic DL Model...")
+  summary(dl.basic.model)
+  
+  #### Training DL Basic Muliclass Classifier (MCC) Model **********************
+  
+  dl.basic.callbacks <- list(
+    callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
+                              monitor = "val_accuracy",
+                              mode = max,
+                              # save_best_only = TRUE,
+                              verbose = 1)
+  )
+
+  put_log("Training the DLB MCC Model...")
   start <- put_start_date()
   
-  dl.x.9bl.train.history <- dl.model |> 
-    fit(x.9bl.train, 
-        y.9bl.train.cat, 
+  dl.basic.train_history <- dl.basic.model |> 
+    fit(x.train, 
+        y.train.cat, 
         epochs = 100, 
         batch_size = 512, 
-        validation_split = 0.15)
+        validation_split = 0.15,
+        callbaks = dl.basic.callbacks
+        )
   
-  put_log("The Basic DL Model has been trained on `x.9bl.train` dataset.")
-  put_end_date(start)
   
-  put_log("Saving `DL Keras3` model to the cache file...")
-  start <- put_start_date()
+  put_log("Saving pre-trained DLB MCC Model...")
+  save_model(dl.basic.model,
+             filepath = dl.basic.model.file_path,
+             overwrite = FALSE)
   
-  save(dl.model,
-       dl.x.9bl.train.history,
-       file = cache_file.path)
+  put_log("The DLB MCC Model has been trained 
+and saved in the following file:
+  %1", dl.basic.model.file_path)
+
   
-  put_log("The `DL Keras3` model has been saved to the cache file: 
-%1", cache_file.path)
-  put_log("Training Basic DL Model task has been completed on the Train Set 
-(90% balanced sample of the dataset).")
+  put_log("Saving the DLB MCC Model History...")
+  saveRDS(dl.basic.train_history,
+          file = dl.basic.model.train_history.file_path)
+  
+  put_log("The DLB MCC Model History has been trained 
+and saved in the following file:
+  %1", dl.basic.model.train_history.file_path)
   put_end_date(start)
   # Time difference of 38.48235 mins
 }
 
-plot(dl.x.9bl.train.history)
-str(dl.x.9bl.train.history)
+plot(dl.basic.train_history)
+str(dl.basic.train_history)
 #### DL Basic Model Evaluation ----------------------------------------------
 put_log("Evaluating DL Model...")
 start <- put_start_date()
-dl.eval.result <- dl.model |> evaluate(x.1.test, y.1.test.cat)
+dl.eval.result <- dl.basic.model |> evaluate(x.test, y.test.cat)
 put_log("DL Model evaluation result:
 %1", capture.output(str(dl.eval.result)))
 # List of 2
@@ -201,7 +300,7 @@ put_end_date(start)
 # Time difference of 1.668308 mins
 
 start <- put_start_date()
-dl.preds <- dl.model |> predict(x.1.test) 
+dl.preds <- dl.basic.model |> predict(x.test) 
 put_end_date(start)
 # Time difference of  mins
 
@@ -230,10 +329,10 @@ dim(dl.predictions)
 # dl.predictions$numpy()
 
 
-# y.1.test
-# as.integer(y.1.test)
+# y.test
+# as.integer(y.test)
 
-dl.model.accuracy <- mean(dl.predictions$numpy() == as.integer(y.1.test))
+dl.model.accuracy <- mean(dl.predictions$numpy() == as.integer(y.test))
 put_log("DL Model accuracy: %1",dl.model.accuracy)
 
 # [1] 0.7955373

@@ -307,3 +307,48 @@ cnn.binclass.get_prediction_values <- function(preds) {
   # (as.vector(preds) > 0.5) |> as.integer()
   preds %>% `>` (0.5) |> as.integer()
 }
+
+# Utility Functions ------------------------------------------------------------
+
+# Multiclass Classifier: Class-wise Accuracy
+MCClassifier.accuracy.by_class <- function(classes.factor,
+                                         y.test,
+                                         predicted.values) {
+  y.test.idx <- seq_len(length(y.test))
+
+  sapply(classes.factor, function(class) {
+    idx <- y.test.idx[y.test == class]
+    n <- length(idx)
+
+    accuracy <- mean(predicted.values[idx] == class)
+    
+    put_log("Function `multiclass.accuracy.by_class`:
+Accuracy for the class `%1` (of size %2) is %3.",
+            class, n, accuracy) 
+    accuracy
+  }) |> matrix(ncol = 1, dimnames = list(class = y.labels, "accuracy")) 
+}
+
+      plot_bars.accuracy.by_class <- function(classes.factor,
+                                              class.accuracies,
+                                              title.prefix = NULL,
+                                              .title = "Classifier Model: Class-wise Evaluation Result",
+                                              .color = "black",
+                                              .fill = "steelblue") {
+        if(!is.null(title.prefix))
+          .title = paste(title.prefix, .title)
+        
+        data.frame(class = classes.factor,
+                   accuracy = class.accuracies) |>
+          ggplot(mapping = aes(x = class,
+                               y = accuracy)) +
+          geom_col(fill = .fill,
+                   color = .color) +
+          labs(x = "Handwritten Character Class",
+               y = "Accuracy",
+               title = .title) +
+          scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+                             expand = c(0, 0, 0.005, 0))
+      }
+      
+      
