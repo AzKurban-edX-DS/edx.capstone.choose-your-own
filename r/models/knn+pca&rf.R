@@ -1100,14 +1100,16 @@ fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path,
 start <- put_start_date()
 
 if(file.exists(fit_rf.mmtry_best.backup.path)) {
-  put_log("Loading the `RF MCC` model trained with the best `mtry` parameter value from the backup file...")
+  put_log("Loading data of the fine-tuned `RF MCC` model, 
+trained with the best `mtry` parameter value, from the backup file...")
   
   fit.set <- readRDS(fit_rf.mmtry_best.backup.path)
   fit_rf.mmtry_best <- fit.set$fit
   fit_rf.mmtry_best.conf.mx <- fit.set$confusion.mx
+  rm(fit.set)
   
-  put_log("The `RF MCC` model trained with the best `mtry` parameter value 
-has been loaded from the following backup file:
+  put_log("The data of the fine-tuned `RF MCC` Model, 
+trained with the best `mtry` parameter value, has been loaded from the following backup file:
 %1", fit_rf.mmtry_best.backup.path)
   put_end_date(start)
 } else {
@@ -1124,44 +1126,41 @@ has been loaded from the following backup file:
                                     mtry = mtry.best,
                                     ntree = 400)
   
+  put_log("The `RF MCC` Model has been trained with the default `mtry` parameter value.")
+  put_end_date(start)
+  # Time difference of the last iteration 19.8342 mins
   
-  put_log("Creating confusion matrix...")
+  put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
   fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
                                                 as.character(fit_rf.mmtry_best$test$predicted))
-  put_log("The confution matrix has been created:
+  put_log("Fine-tuned `RF MCC` Model: The Confusion Matrix has been created:
 %1", capture.output(fit_rf.mmtry_best.conf.mx))
   put_end_date(start)
 
   stopCluster(cl)
   stopImplicitCluster()
 
-  put_log("The `RF MCC` model has been trained with the best `mtry` parameter value.")
-  put_end_date(start)
-  # Time difference of the last iteration 19.8342 mins
-  
-  put_log("Saving the `RF MCC` model trained with the best `mtry` parameter value to the backup file...")
+  put_log("Saving the fine-tuned `RF MCC` Model data...")
   saveRDS(list(fit = fit_rf.mmtry_best,
                confusion.mx = fit_rf.mmtry_best.conf.mx),
           file = fit_rf.mmtry_best.backup.path)
-  put_log("The `RF MCC` model trained with the best `mtry` parameter value 
-has been saved to the following backup file:
+  put_log("The data of the fine-tuned `RF MCC` Model has been saved to the following file:
 %1", fit_rf.mmtry_best.backup.path)
   put_end_date(start)
   # Time difference of  mins
 }
 
-put_log("Results summary of tuning the model for the best value of parameter `mtry`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
-and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
-%1", capture.output(summary(fit_rf.mmtry_best)))
+put_log("The results of the fine-tuning `RF MCC` Model (trained with the best `mtry` parameter value
+on a 10% sample of the`Train Set` dataset, and tested on the remaining 90% of the `Train Set`) 
+are as follows:
+%1", capture.output(fit_rf.mmtry_best))
 put_end_date(start)
 # Time difference of 6.260901 hours
 
 # cl <- makeCluster(N_pcCores)
 # registerDoParallel(cl)
 # # plot(fit_rf.mmtry_best)
-# 
+# dev.off()
 # plot_confusion_matrix(fit_rf.mmtry_best.conf.mx,
 #                       palette = "Greens",
 #                       font_counts = font(size = 3,
@@ -1174,16 +1173,16 @@ put_end_date(start)
 # stopImplicitCluster()
 
 
-put_log("Prediction accuracy of the 'RF' MCC Model trained with the best value 
-of the `mtry` parameter is as follows:
+put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model, 
+trained with the best `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mmtry_best$test$predicted == y.test))
 # [1] 0.886390995545925
 
 fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                  y.test,
                                                                  fit_rf.mmtry_best$test$predicted)
-put_log("The per-class prediction accuracy of the fine-tuned 'RF' MCC Model 
-trained with the best value of the `mtry` parameter is as follows:
+put_log("The per-class prediction accuracy of the fine-tuned 'RF MCC' Model, 
+trained with the best `mtry` parameter value, is as follows:
 %1", capture.output(fit_rf.mmtry_best.accuracy.by_class))
 {
   #' class  accuracy
