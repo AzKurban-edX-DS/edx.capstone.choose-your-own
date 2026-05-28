@@ -10,11 +10,11 @@ kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
   
   if (system(trimws(paste("kaggle datasets download", kaggle_dataset, "--path", 
                           data.local_path, ifelse(unzip, "--unzip", "")))) != 0) {
-    stop(get_log1("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.path))
+    stop(str.build("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.path))
   }
   
   if(!dir.exists(data.local_path)) {
-    stop(get_log1("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.path))
+    stop(str.build("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.path))
   }
 }
 

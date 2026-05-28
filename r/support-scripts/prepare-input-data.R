@@ -20,7 +20,7 @@ if(!dir.exists(raw_data.chars.path)) {
 and unziped to the following directory: 
 `%1`", raw_data.chars.path)
 } else {
-  warning(get_log1("The Kaggle image files have already been downloaded 
+  warning(str.build("The Kaggle image files have already been downloaded 
 and saved to the following directory: 
 `%1`.
 If you need to rerun the download, delete the root folder and rerun this script.", 
@@ -36,7 +36,7 @@ if (dir.exists(dir.to_remove)) {
   unlink(dir.to_remove, recursive = TRUE, force = TRUE)
   print_log1("Directory removed: `%1`", dir.to_remove)
 } else {
-  warning(get_log1("Couldn't delete the folder:
+  warning(str.build("Couldn't delete the folder:
 `%1`  
 It has already been deleted or moved.", 
                    dir.to_remove))

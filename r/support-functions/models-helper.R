@@ -308,7 +308,54 @@ cnn.binclass.get_prediction_values <- function(preds) {
   preds %>% `>` (0.5) |> as.integer()
 }
 
-# Utility Functions ------------------------------------------------------------
+## Analysis & Visualization ----------------------------------------------------
+
+create_confusion_matrix <- function(targets, 
+                                    predictions,
+                                    create_plot = FALSE,
+                                    palette = "Greens",
+                                    font_counts = font(size = 3,
+                                                       color = "red"),
+                                    add_normalized = FALSE,
+                                    add_col_percentages = FALSE,
+                                    add_row_percentages = FALSE) {
+  put_log("Function `create_confusion_matrix`:
+Creating confusion matrix...")
+  start <- put_start_date()
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  conf.mx <- confusion_matrix(as.character(targets),
+                                           as.character(predictions))
+  put_log("Function `create_confusion_matrix`:
+The confution matrix has been created:
+%1", capture.output(conf.mx))
+
+  if(create_plot){
+    put_log("Function `create_confusion_matrix`:
+Plotting confusion matrix, please wait...")
+    plot.mx <- plot_confusion_matrix(conf.mx,
+                                     palette = palette,
+                                     font_counts = font_counts,
+                                     add_normalized = add_normalized,
+                                     add_col_percentages = add_col_percentages,
+                                     add_row_percentages = add_row_percentages)
+  }
+
+  stopCluster(cl)
+  stopImplicitCluster()
+  put_end_date(start)
+  
+  if(create_plot) {
+    list(conf.mx = conf.mx,
+         mx.plot = plot.mx)
+  } else {
+    conf.mx
+  }
+}
+
+## Utility Functions -----------------------------------------------------------
 
 # Multiclass Classifier: Class-wise Accuracy
 MCClassifier.accuracy.by_class <- function(classes.factor,

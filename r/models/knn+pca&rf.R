@@ -578,19 +578,9 @@ plot_bars.accuracy.by_class(y.labels,
                             knn_pca.best.accuracy.by_class,
                             title.prefix = "kNN+PCA-based Multiclass")
 
-knn_pca.best.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
-                                            as.character(fit_rf.mtry_default$test$predicted))
-str(knn_pca.best.mx.mtry_default)
-
-plot_confusion_matrix(knn_pca.best.mx.mtry_default,
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
+create_confution_matrix()
+put_end_date(start)
+# Time difference of  hours
 
 
 log_close()
@@ -623,11 +613,15 @@ fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path,
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry_default.backup.path)) {
-  put_log("Loading the `RF MCC` model trained with the default `mtry` parameter value from the backup file...")
+  put_log("Loading data of the `RF MCC` model, 
+trained with the default `mtry` parameter value, from the backup file...")
   
-  fit_rf.mtry_default <- readRDS(fit_rf.mtry_default.backup.path)
+  fit.set <- readRDS(fit_rf.mtry_default.backup.path)
+  fit_rf.mtry_default <- fit.set$fit
+  rf_conf.mx.mtry_default <- fit.set$confusion.mx
+  #rm(fit.set)
   
-  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
+  put_log("The data of the `RF MCC` Model, trained with the default `mtry` parameter value, 
 has been loaded from the following backup file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
@@ -645,15 +639,24 @@ has been loaded from the following backup file:
                                       keep.forest = TRUE,
                                       ntree = 500)
   
+  put_log("The `RF MCC` model has been trained with the default `mtry` parameter value.")
+  put_end_date(start)
+  
+  put_log("Creating confusion matrix...")
+  rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
+                                              as.character(fit_rf.mtry_default$test$predicted))
+  put_log("The confution matrix has been created:
+%1", capture.output(rf_conf.mx.mtry_default))
+  put_end_date(start)
+
   stopCluster(cl)
   stopImplicitCluster()
   
-  put_log("The `RF MCC` model has been trained with the default `mtry` parameter value.")
-  put_end_date(start)
   # Time difference of the last iteration 19.8342 mins
   
   put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(fit_rf.mtry_default,
+  saveRDS(list(fit = fit_rf.mtry_default,
+               confusion.mx = rf_conf.mx.mtry_default),
           file = fit_rf.mtry_default.backup.path)
   put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
@@ -662,15 +665,26 @@ has been saved to the following backup file:
 # Time difference of  mins
 }
 
-put_log("Results summary of tuning the model for the default value of parameter `mtry`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
-and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
-%1", capture.output(summary(fit_rf.mtry_default)))
+put_log("The results of tuning the model, trained using the `Random Forest` method 
+with the default value of parameter `mtry`,  on a 10% sample of the`Train Set` dataset, 
+and tested on the remaining 90% data of the `Train Set`, are as follows:
+%1", capture.output(fit_rf.mtry_default))
 put_end_date(start)
 # Time difference of 6.260901 hours
 
-plot(fit_rf.mtry_default)
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# plot(fit_rf.mtry_default)
+# 
+# plot_confusion_matrix(rf_conf.mx.mtry_default,
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# stopCluster(cl)
+# stopImplicitCluster()
 
 put_log("Prediction accuracy of the 'RF' MCC Model trained with the default value 
 of the `mtry` parameter is as follows:
@@ -682,7 +696,9 @@ fit_rf.mtry_default.accuracy.by_class <-
                                  y0.9.test,
                                  fit_rf.mtry_default$test$predicted)
 
-fit_rf.mtry_default.accuracy.by_class
+put_log("The per-class prediction accuracy of the 'RF' MCC Model trained 
+with the default value of the `mtry` parameter is as follows:
+%1",capture.output(fit_rf.mtry_default.accuracy.by_class))
 {
   
 #' class  accuracy
@@ -730,22 +746,6 @@ fit_rf.mtry_default.accuracy.by_class
 plot_bars.accuracy.by_class(y.labels,
                             fit_rf.mtry_default.accuracy.by_class,
                             title.prefix = "Random Forest-based (default `mtry`) Multiclass")
-
-
-
-rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
-                               as.character(fit_rf.mtry_default$test$predicted))
-str(rf_conf.mx.mtry_default)
-
-plot_confusion_matrix(rf_conf.mx.mtry_default,
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
 log_close()
 ##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ##### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
@@ -1102,7 +1102,9 @@ start <- put_start_date()
 if(file.exists(fit_rf.mmtry_best.backup.path)) {
   put_log("Loading the `RF MCC` model trained with the best `mtry` parameter value from the backup file...")
   
-  fit_rf.mmtry_best <- readRDS(fit_rf.mmtry_best.backup.path)
+  fit.set <- readRDS(fit_rf.mmtry_best.backup.path)
+  fit_rf.mmtry_best <- fit.set$fit
+  fit_rf.mmtry_best.conf.mx <- fit.set$confusion.mx
   
   put_log("The `RF MCC` model trained with the best `mtry` parameter value 
 has been loaded from the following backup file:
@@ -1122,6 +1124,14 @@ has been loaded from the following backup file:
                                     mtry = mtry.best,
                                     ntree = 400)
   
+  
+  put_log("Creating confusion matrix...")
+  fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
+                                                as.character(fit_rf.mmtry_best$test$predicted))
+  put_log("The confution matrix has been created:
+%1", capture.output(fit_rf.mmtry_best.conf.mx))
+  put_end_date(start)
+
   stopCluster(cl)
   stopImplicitCluster()
 
@@ -1130,7 +1140,8 @@ has been loaded from the following backup file:
   # Time difference of the last iteration 19.8342 mins
   
   put_log("Saving the `RF MCC` model trained with the best `mtry` parameter value to the backup file...")
-  saveRDS(fit_rf.mmtry_best,
+  saveRDS(list(fit = fit_rf.mmtry_best,
+               confusion.mx = fit_rf.mmtry_best.conf.mx),
           file = fit_rf.mmtry_best.backup.path)
   put_log("The `RF MCC` model trained with the best `mtry` parameter value 
 has been saved to the following backup file:
@@ -1147,7 +1158,21 @@ and tested on the 10% sample from the remaining
 put_end_date(start)
 # Time difference of 6.260901 hours
 
-plot(fit_rf.mmtry_best)
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# # plot(fit_rf.mmtry_best)
+# 
+# plot_confusion_matrix(fit_rf.mmtry_best.conf.mx,
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# 
+# stopCluster(cl)
+# stopImplicitCluster()
+
 
 put_log("Prediction accuracy of the 'RF' MCC Model trained with the best value 
 of the `mtry` parameter is as follows:
@@ -1157,7 +1182,9 @@ of the `mtry` parameter is as follows:
 fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                  y.test,
                                                                  fit_rf.mmtry_best$test$predicted)
-fit_rf.mmtry_best.accuracy.by_class
+put_log("The per-class prediction accuracy of the fine-tuned 'RF' MCC Model 
+trained with the best value of the `mtry` parameter is as follows:
+%1", capture.output(fit_rf.mmtry_best.accuracy.by_class))
 {
   #' class  accuracy
   #'     # 1.0000000
@@ -1206,21 +1233,6 @@ fit_rf.mmtry_best.accuracy.by_class
 plot_bars.accuracy.by_class(y.labels,
                             fit_rf.mmtry_best.accuracy.by_class,
                             title.prefix = "Tuned Random Forest-based Multiclass")
-
-
-fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
-                               as.character(fit_rf.mmtry_best$test$predicted))
-str(fit_rf.mmtry_best.conf.mx)
-
-plot_confusion_matrix(fit_rf.mmtry_best.conf.mx,
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
 log_close()
 
 
