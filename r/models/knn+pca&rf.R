@@ -483,7 +483,7 @@ if (file.exists(knn_pca.best.preds.backup)) {
   
   if (file.exists(knn_pca.best.preds.backup0)) {
     put_log("Loading Predicted Data from cache file: 
-%1...", knn_pca.best.preds.backup)
+%1...", knn_pca.best.preds.backup0)
     
     knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup0)
     k_best.nn_pca.model.predicted <- knn_pca.best.preds$predicted
@@ -546,7 +546,7 @@ has been loaded from the following backup file:
   #              probs = k_best.nn_pca.probs,
   #              accuracy = knn_pca.best.accuracy,
   #              k_best = k.best),
-  #      file = knn_pca.best.preds.backup)
+  #      file = knn_pca.best.preds.backup0)
   
   saveRDS(list(predicted = k_best.nn_pca.predicted,
                probs = k_best.nn_pca.probs,
