@@ -208,7 +208,6 @@ which contains a testing sample stored in the `x.test` variable having the follo
 # shape(33267, 28, 28)
 
 # rm(split3d.list)
-### Close Log ------------------------------------------------------------------
 log_close()
 
 ### Build CNN-Based Multiclass Classifier Model --------------------------------

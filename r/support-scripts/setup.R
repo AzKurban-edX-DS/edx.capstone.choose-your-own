@@ -130,6 +130,8 @@ conflict_prefer("train", "caret")
 conflict_prefer("shape", "keras3", quiet = TRUE)
 conflict_prefer("evaluate", "keras3", quiet = TRUE)
 conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
+# conflict_prefer("save.image", "base")
+conflicts_prefer(base::save.image)
 
 # reticulate::virtualenv_remove("r-tensorflow")
 # install_tensorflow(extra_packages="pillow")

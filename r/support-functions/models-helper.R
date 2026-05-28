@@ -302,6 +302,11 @@ cnn.create_model <- function(img.width,
 }
 
 
+predicted_probs2classes <- function(x, classes.factor) {
+  sapply(seq(nrow(x)), function(i) {
+    classes.factor[which.max(x[i,])]
+  })
+}
 
 cnn.binclass.get_prediction_values <- function(preds) {
   # (as.vector(preds) > 0.5) |> as.integer()
@@ -309,6 +314,7 @@ cnn.binclass.get_prediction_values <- function(preds) {
 }
 
 ## Analysis & Visualization ----------------------------------------------------
+
 
 create_confusion_matrix <- function(targets, 
                                     predictions,

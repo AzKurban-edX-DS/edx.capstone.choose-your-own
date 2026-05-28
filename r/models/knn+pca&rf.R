@@ -460,6 +460,9 @@ log_close()
 ##### Constructing Predictions on kNN+PCA (for best *k* Parameter value) ------
 open_logfile(".x.test.predict.k(best)nn+pca")
 
+knn_pca.best.preds.backup0 <-
+  file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions0.rds")
+
 knn_pca.best.preds.backup <-
   file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions.rds")
 
@@ -471,11 +474,23 @@ if (file.exists(knn_pca.best.preds.backup)) {
 %1...", knn_pca.best.preds.backup)
   
   knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup)
-  k_best.nn_pca.model.predicted <- knn_pca.best.preds$predicted
-  knn_pca.best.accuracy <- knn_pca.best.preds$accuracy
+  k_best.nn_pca.predicted <- knn_pca.best.preds$predicted
+  k_best.nn_pca.probs <- knn_pca.best.preds$probs
+  
   rm(knn_pca.best.preds)
   put_end_date(start)
   # Time difference of 
+  
+  if (file.exists(knn_pca.best.preds.backup0)) {
+    put_log("Loading Predicted Data from cache file: 
+%1...", knn_pca.best.preds.backup)
+    
+    knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup0)
+    k_best.nn_pca.model.predicted <- knn_pca.best.preds$predicted
+    rm(knn_pca.best.preds)
+    put_end_date(start)
+    # Time difference of 
+  }
   
   put_log("Predicted Data have been loaded from cache.")
 } else {
@@ -498,20 +513,43 @@ has been loaded from the following backup file:
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  k_best.nn_pca.model.predicted <- stats::predict(k_best.nn_pca.model, x.test, type = "raw")
+  
+  set.seed(nrow(x.test))
+  
+  # k_best.nn_pca.model.predicted <- stats::predict(k_best.nn_pca.model,
+  #                                                 x.test,
+  #                                                 type = "raw")
 
+  k_best.nn_pca.probs <- predict.train(k_best.nn_pca.model, 
+                                       newdata = x.test,
+                                       type = "prob",
+                                       verbose = TRUE)
+  
+  k_best.nn_pca.predicted <- predicted_probs2classes(as.matrix(k_best.nn_pca.probs),
+                                                  y.labels)
+  
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
   # Time difference of 2.25995 hours
   
+  # sum(k_best.nn_pca.model.predicted != k_best.nn_pca.predicted)
+  # diff.idx <- which(k_best.nn_pca.model.predicted != k_best.nn_pca.predicted)
+  # k_best.nn_pca.probs[diff.idx,]
+
   put_log("The (Best *k*) `kNN+PCA` Model: Generating predictions have been completed on `x.test` dataset.")
   
   put_log("Backing up the `kNN+PCA` Model's tuning best results to file...")
   #> [1] 0.8693882
   
-  saveRDS(list(predicted = k_best.nn_pca.model.predicted,
-               accuracy = knn_pca.best.accuracy,
+  # saveRDS(list(predicted = k_best.nn_pca.model.predicted,
+  #              probs = k_best.nn_pca.probs,
+  #              accuracy = knn_pca.best.accuracy,
+  #              k_best = k.best),
+  #      file = knn_pca.best.preds.backup)
+  
+  saveRDS(list(predicted = k_best.nn_pca.predicted,
+               probs = k_best.nn_pca.probs,
                k_best = k.best),
        file = knn_pca.best.preds.backup)
   
@@ -521,7 +559,8 @@ has been loaded from the following backup file:
 
 put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
 made on the `x.test` dataset...")
-knn_pca.best.accuracy <- mean(k_best.nn_pca.model.predicted == y.test)
+knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test)
+knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test)
 
 put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
@@ -619,7 +658,7 @@ trained with the default `mtry` parameter value, from the backup file...")
   fit.set <- readRDS(fit_rf.mtry_default.backup.path)
   fit_rf.mtry_default <- fit.set$fit
   rf_conf.mx.mtry_default <- fit.set$confusion.mx
-  #rm(fit.set)
+  rm(fit.set)
   
   put_log("The data of the `RF MCC` Model, trained with the default `mtry` parameter value, 
 has been loaded from the following backup file:
@@ -639,13 +678,14 @@ has been loaded from the following backup file:
                                       keep.forest = TRUE,
                                       ntree = 500)
   
-  put_log("The `RF MCC` model has been trained with the default `mtry` parameter value.")
+  put_log("The `RF MCC` Model has been trained with the default `mtry` parameter value.")
   put_end_date(start)
   
-  put_log("Creating confusion matrix...")
+  put_log("`RF MCC` Model pre-trained with the default `mtry` parameter value: Creating a Confusion Matrix...")
   rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
                                               as.character(fit_rf.mtry_default$test$predicted))
-  put_log("The confution matrix has been created:
+  put_log("`RF MCC` Model pre-trained with the default `mtry` parameter value: 
+The Confusion Matrix has been created:
 %1", capture.output(rf_conf.mx.mtry_default))
   put_end_date(start)
 
@@ -654,29 +694,33 @@ has been loaded from the following backup file:
   
   # Time difference of the last iteration 19.8342 mins
   
-  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
+  put_log("Saving the pre-trained `RF MCC` Model data...")
   saveRDS(list(fit = fit_rf.mtry_default,
                confusion.mx = rf_conf.mx.mtry_default),
           file = fit_rf.mtry_default.backup.path)
-  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
-has been saved to the following backup file:
+  put_log("The data of the pre-trained `RF MCC` Model (with the default `mtry` parameter value) 
+has been saved to the following file:
 %1", fit_rf.mtry_default.backup.path)
   put_end_date(start)
 # Time difference of  mins
 }
 
-put_log("The results of tuning the model, trained using the `Random Forest` method 
-with the default value of parameter `mtry`,  on a 10% sample of the`Train Set` dataset, 
-and tested on the remaining 90% data of the `Train Set`, are as follows:
+put_log("The results of pre-training the `RF MCC` Model 
+(with the default `mtry` parameter value) on a 10% sample of the`Train Set` dataset 
+and testing on the remaining 90% of the `Train Set` are as follows:
 %1", capture.output(fit_rf.mtry_default))
 put_end_date(start)
 # Time difference of 6.260901 hours
 
+plot(fit_rf.mtry_default, 
+     main = "`RF MCC` Model Pre-trained with the Default `mtry` Parameter Value")
+
 # cl <- makeCluster(N_pcCores)
 # registerDoParallel(cl)
-# plot(fit_rf.mtry_default)
 # 
+# dev.off()
 # plot_confusion_matrix(rf_conf.mx.mtry_default,
+#                       plot_title = caption,
 #                       palette = "Greens",
 #                       font_counts = font(size = 3,
 #                                          color = "red"),
@@ -686,8 +730,8 @@ put_end_date(start)
 # stopCluster(cl)
 # stopImplicitCluster()
 
-put_log("Prediction accuracy of the 'RF' MCC Model trained with the default value 
-of the `mtry` parameter is as follows:
+put_log("Prediction accuracy of the `RF MCC` Model,
+pre-trained with the default `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mtry_default$test$predicted == y0.9.test))
 # [1] 0.8397469
 
@@ -696,8 +740,8 @@ fit_rf.mtry_default.accuracy.by_class <-
                                  y0.9.test,
                                  fit_rf.mtry_default$test$predicted)
 
-put_log("The per-class prediction accuracy of the 'RF' MCC Model trained 
-with the default value of the `mtry` parameter is as follows:
+put_log("The per-class prediction accuracy of the `RF MCC` Model, pre-trained 
+with the default `mtry` parameter value, is as follows:
 %1",capture.output(fit_rf.mtry_default.accuracy.by_class))
 {
   
@@ -1126,7 +1170,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
                                     mtry = mtry.best,
                                     ntree = 400)
   
-  put_log("The `RF MCC` Model has been trained with the default `mtry` parameter value.")
+  put_log("The `RF MCC` Model has been trained with the best `mtry` parameter value.")
   put_end_date(start)
   # Time difference of the last iteration 19.8342 mins
   
@@ -1150,16 +1194,18 @@ trained with the best `mtry` parameter value, has been loaded from the following
   # Time difference of  mins
 }
 
-put_log("The results of the fine-tuning `RF MCC` Model (trained with the best `mtry` parameter value
-on a 10% sample of the`Train Set` dataset, and tested on the remaining 90% of the `Train Set`) 
+put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
+on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
 are as follows:
 %1", capture.output(fit_rf.mmtry_best))
 put_end_date(start)
 # Time difference of 6.260901 hours
 
+plot(fit_rf.mmtry_best)
+
 # cl <- makeCluster(N_pcCores)
 # registerDoParallel(cl)
-# # plot(fit_rf.mmtry_best)
+#
 # dev.off()
 # plot_confusion_matrix(fit_rf.mmtry_best.conf.mx,
 #                       palette = "Greens",
