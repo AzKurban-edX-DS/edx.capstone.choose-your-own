@@ -591,20 +591,20 @@ for (class.idx in 2:N.classes) {
   lines(k_best.nn_pca.roc_curves[[class.idx]], col = class.idx)
 }
 
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-dev.off()
-plot_confusion_matrix(k_best.nn_pca.conf.mx,
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
-stopCluster(cl)
-stopImplicitCluster()
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# 
+# dev.off()
+# plot_confusion_matrix(k_best.nn_pca.conf.mx,
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# 
+# stopCluster(cl)
+# stopImplicitCluster()
 
 knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                  y.test,
