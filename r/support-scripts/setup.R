@@ -130,6 +130,7 @@ conflict_prefer("train", "caret")
 conflict_prefer("shape", "keras3", quiet = TRUE)
 conflict_prefer("evaluate", "keras3", quiet = TRUE)
 conflict_prefer("set_random_seed", "keras3", quiet = TRUE)
+
 # conflict_prefer("save.image", "base")
 conflicts_prefer(base::save.image)
 
@@ -137,7 +138,7 @@ conflicts_prefer(base::save.image)
 # install_tensorflow(extra_packages="pillow")
 # install_tensorflow(envname = "r-tensorflow")
 
-# reticulate::install_python(version = "3.11")
+reticulate::install_python(version = "3.11")
 
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
@@ -146,8 +147,62 @@ N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
 N_pcCores
 
 ## Init Global Variables -------------------------------------------------------
+
 n.img_rows <- 28
 n.img_cols <- 28
+
+## Init Project Paths ----------------------------------------------------------
+
+support_scripts.path <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
+stopifnot(dir.exists(support_scripts.path))
+
+scripts.path <- "r"
+stopifnot(dir.exists(scripts.path))
+
+models_script.path <- file.path(scripts.path, "models")
+stopifnot(dir.exists(models_script.path))
+models_script.path
+
+models.cnn_script.path <- file.path(models_script.path, "cnn")
+stopifnot(dir.exists(models_script.path))
+models.cnn_script.path
+
+support_functions.folder <- "support-functions"
+
+support_functions.path <- file.path(r.path, support_functions.folder)
+stopifnot(dir.exists(support_functions.path))
+
+setup_script.file_path <- file.path(support_scripts.path, "setup.R")
+
+data.path <- "data"
+raw_data.path <- file.path(data.path, "raw")
+raw_data.path
+
+raw_data.folder_name <- "Vaibs.HW-Chars"
+raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
+raw_data.chars.path
+
+img.train.root_path <- file.path(raw_data.chars.path, "Train")
+img.train.root_path
+
+img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
+img.validation.root_path
+
+dataset.path <- file.path(data.path, "dataset")
+dir.create(dataset.path)
+dataset.path
+
+train.data.path <- file.path(dataset.path, "train")
+dir.create(train.data.path)
+train.data.path
+
+final_test.data.path <- file.path(dataset.path, "final_test")
+dir.create(final_test.data.path)
+final_test.data.path
+
+models.path <- file.path(data.path, "models")
+dir.create(models.path)
+models.path
 
 ## Load Logging Helper Functions ---------------------------------------------------
 log_func_script.file_path <- file.path(support_functions.path, "logging-helper.R")

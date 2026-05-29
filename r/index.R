@@ -3,59 +3,10 @@ Main (Index) Script
 #%%%%%%%%%%%%%%%%%%%%
 
 ## Initial Paths ---------------------------------------------------------------
-r.path <- "r"
-draft_scripts.path <- file.path(r.path, "draft")
-
-scripts.path <- r.path
-stopifnot(dir.exists(scripts.path))
-
-models_script.path <- file.path(scripts.path, "models")
-stopifnot(dir.exists(models_script.path))
-models_script.path
-
-models.cnn_script.path <- file.path(models_script.path, "cnn")
-stopifnot(dir.exists(models_script.path))
-models.cnn_script.path
-
-support_functions.folder <- "support-functions"
-support_scripts.folder <- "support-scripts"
-
-support_scripts.path <- file.path(r.path, support_scripts.folder)
-stopifnot(dir.exists(support_scripts.path))
-support_functions.path <- file.path(r.path, support_functions.folder)
-stopifnot(dir.exists(support_functions.path))
-
-setup_script.file_path <- file.path(support_scripts.path, "setup.R")
-
-data.path <- "data"
-raw_data.path <- file.path(data.path, "raw")
-raw_data.path
-
-raw_data.folder_name <- "Vaibs.HW-Chars"
-raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
-raw_data.chars.path
-
-img.train.root_path <- file.path(raw_data.chars.path, "Train")
-img.train.root_path
-
-img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
-img.validation.root_path
-
-dataset.path <- file.path(data.path, "dataset")
-dir.create(dataset.path)
-dataset.path
-
-train.data.path <- file.path(dataset.path, "train")
-dir.create(train.data.path)
-train.data.path
-
-final_test.data.path <- file.path(dataset.path, "final_test")
-dir.create(final_test.data.path)
-final_test.data.path
-
-models.path <- file.path(data.path, "models")
-dir.create(models.path)
-models.path
+# r.path <- "r"
+# draft_scripts.path <- file.path(r.path, "draft")
+# support_scripts.folder <- "support-scripts"
+# support_scripts.path <-  file.path(r.path, support_scripts.folder)
 
 ## Setup -----------------------------------------------------------------------
 source(setup_script.file_path, 
