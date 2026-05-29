@@ -2,10 +2,8 @@
 # kNN+PCA & Random Forest Models
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-### Open log: Load Split Dataset -------------
-open_logfile(".split.10%train.balanced_subset")
-
 #### Loading Split Dataset allocated 10% for the Train Set ---------------------
+open_logfile(".split.10%train.balanced_subset")
 start <- put_start_date()
 
 
@@ -143,13 +141,12 @@ str(y0.9.test)
 length(y0.9.test)
 #> [1] 817379
 
-### Close Log ------------------------------------------------------------------
 log_close()
 
-## `kNN+PCA` Model -------------------------------------------------------------
+## `kNN+PCA MCC` Model -------------------------------------------------------------
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
-### `kNN+PCA` Model Initial Paths -----------------------------------------------------
+### `kNN+PCA MCC` Model Initial Paths -----------------------------------------------------
 stopifnot(dir.exists(models.path))
 knn_pca.path = file.path(models.path, "knn-pca")
 
@@ -177,7 +174,7 @@ k1_7nn_pca.model.backup.path <-
   file.path(knn_pca.path, "k1-7nn+pca(0.1train-set).rds")
 
 if (file.exists(k1_7nn_pca.model.backup.path)) {
-  put_log("Loading pre-trained `kNN+PCA` Model 
+  put_log("Loading pre-trained `kNN+PCA MCC` Model 
 (tuned for `k` values ranged from 1 to 7) from the backup file...")
   
   k1_7nn_pca.model <- readRDS(k1_7nn_pca.model.backup.path)
@@ -223,16 +220,15 @@ for *k* values ranged from 1 to 7 has been backed up in the following file:
 
 }
 
-
 #### The Tuning Results Visualization & Analysis -------------------------------
 
-put_log("The pre-trained `kNN+PCA` Model trained result:
+put_log("The pre-trained `kNN+PCA MCC` Model trained result:
 %1", capture.output(k1_7nn_pca.model))
 
 # The Model tuning visualzation:
 trellis.par.set(caretTheme())
 plot(k1_7nn_pca.model, 
-     sub = "`kNN+PCA` Multiclass Classifier Model Tuning Results")
+     main = "`kNN+PCA` Multiclass Classifier Model Tuning Results")
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
@@ -264,7 +260,6 @@ k.best
 # Accuracy was used to select the optimal model using the largest value.
 # The final value used for the model was k = 5.
 
-### Close Log ------------------------------------------------------------------
 log_close()
 
 #### Loading Split Dataset allocated 20% for the Test set (default) ------------
@@ -403,13 +398,13 @@ k_best.nn_pca.model.backup.path <-
   file.path(knn_pca.path, "k_best.nn+pca.rds")
 
 if (file.exists(k_best.nn_pca.model.backup.path)) {
-  put_log("Loading the `kNN+PCA` Model (trained for the best `k` value) from the backup file...")
+  put_log("Loading the `kNN+PCA MCC` Model (trained for the best `k` value) from the backup file...")
   
   k_best.nn_pca.model <- readRDS(k_best.nn_pca.model.backup.path)
   put_end_date(start)
   # Time difference of 
   
-  put_log("The `kNN+PCA` Model trained for the best `k` value 
+  put_log("The `kNN+PCA MCC` Model trained for the best `k` value 
 has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
 } else {
@@ -453,7 +448,6 @@ has been loaded from the following backup file:
 }
 
 
-
 log_close()
 # Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
 
@@ -475,11 +469,14 @@ if (file.exists(knn_pca.best.preds.backup)) {
   knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup)
   k_best.nn_pca.predicted <- knn_pca.best.preds$predicted
   k_best.nn_pca.probs <- knn_pca.best.preds$probs
+  k_best.nn_pca.conf.mx <- knn_pca.best.preds$confusion.mx
+  k_best.nn_pca.roc_curves <- knn_pca.best.preds$roc.curves
+  k_best <- knn_pca.best.preds$k_best
   
   rm(knn_pca.best.preds)
   put_end_date(start)
   # Time difference of 
-  
+
 #   if (file.exists(knn_pca.best.preds.backup0)) {
 #     put_log("Loading Predicted Data from cache file: 
 # %1...", knn_pca.best.preds.backup0)
@@ -494,18 +491,18 @@ if (file.exists(knn_pca.best.preds.backup)) {
   put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
 %1...", knn_pca.best.preds.backup)
 } else {
-  put_log("Constructing predictions using the `KNN+PCA` model trained for the best *k* value...")
+  put_log("Constructing predictions using the `kNN+PCA MCC` Model trained for the best *k* value...")
   
   if(!exists("k_best.nn_pca.model")) {
     stopifnot(file.exists(k_best.nn_pca.model.backup.path))
     
-    put_log("Loading the `kNN+PCA` Model (trained for the best `k` value) from the backup file...")
+    put_log("Loading the `kNN+PCA MCC` Model (trained for the best `k` value) from the backup file...")
     
     k_best.nn_pca.model -> readRDS(k_best.nn_pca.model.backup.path)
     put_end_date(start)
     # Time difference of 
     
-    put_log("The `kNN+PCA` Model trained for the best `k` value 
+    put_log("The `kNN+PCA MCC` Model trained for the best `k` value 
 has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
   }
@@ -528,6 +525,26 @@ has been loaded from the following backup file:
   k_best.nn_pca.predicted <- predicted_probs2classes(as.matrix(k_best.nn_pca.probs),
                                                   y.labels)
   
+  #### ROC Curves
+  # References:
+  # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+  # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
+  
+  put_log("Fine-tuned `kNN+PCA MCC` Model: ROC curve calculation for each class...")
+  
+  k_best.nn_pca.roc_curves <- lapply(y.labels, function(class) {
+    bin_labels <- as.integer(y.test == class)
+    roc_curve <- roc(bin_labels, k_best.nn_pca.probs[, as.integer(class)])
+  })
+  put_log("Fine-tuned `kNN+PCA MCC` Model: The per-class ROC curve calculation has been completed.")
+  
+  put_log("Fine-tuned `kNN+PCA MCC` Model: Creating a Confusion Matrix...")
+  k_best.nn_pca.conf.mx <- confusion_matrix(as.character(y.test),
+                                                as.character(k_best.nn_pca.predicted))
+  put_log("Fine-tuned `kNN+PCA MCC` Model: The Confusion Matrix has been created:
+%1", capture.output(k_best.nn_pca.conf.mx))
+  put_end_date(start)
+
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
@@ -537,9 +554,9 @@ has been loaded from the following backup file:
   # diff.idx <- which(k_best.nn_pca.model.predicted != k_best.nn_pca.predicted)
   # k_best.nn_pca.probs[diff.idx,]
 
-  put_log("The (Best *k*) `kNN+PCA` Model: Generating predictions have been completed on `x.test` dataset.")
+  put_log("The (Best *k*) `kNN+PCA MCC` Model: Generating predictions have been completed on `x.test` dataset.")
   
-  put_log("Backing up the `kNN+PCA` Model's tuning best results to file...")
+  put_log("Saving the Fine-tuned `kNN+PCA MCC` Model data...")
   #> [1] 0.8693882
   
   # saveRDS(list(predicted = k_best.nn_pca.model.predicted,
@@ -550,21 +567,44 @@ has been loaded from the following backup file:
   
   saveRDS(list(predicted = k_best.nn_pca.predicted,
                probs = k_best.nn_pca.probs,
+               confusion.mx = k_best.nn_pca.conf.mx,
+               roc.curves = k_best.nn_pca.roc_curves,
                k_best = k.best),
        file = knn_pca.best.preds.backup)
   
-  put_log("The accuracy of the (Best *k*) `kNN+PCA` Model prediction is 
-%1", knn_pca.best.accuracy)
+  put_log("The data of the fine-tuned `kNN+PCA MCC` Model has been saved to the following file:
+%1", knn_pca.best.preds.backup)
 }
 
-put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
+put_log("Validating accuracy of the (Best *k*) `kNN+PCA MCC` Model predictions 
 made on the `x.test` dataset...")
 # knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test)
 knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test)
 
-put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
+put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
 #> [1] 0.860810160105935
+
+plot(k_best.nn_pca.roc_curves[[1]], 
+     main = "ROC Curves for the Fine-tuned `kNN+PCA MCC` Model by the `k` Parameter")
+for (class.idx in 2:N.classes) {
+  lines(k_best.nn_pca.roc_curves[[class.idx]], col = class.idx)
+}
+
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+dev.off()
+plot_confusion_matrix(k_best.nn_pca.conf.mx,
+                      palette = "Greens",
+                      font_counts = font(size = 3,
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
+
+stopCluster(cl)
+stopImplicitCluster()
 
 knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                  y.test,
@@ -617,8 +657,6 @@ knn_pca.best.accuracy.by_class
 plot_bars.accuracy.by_class(y.labels,
                             knn_pca.best.accuracy.by_class,
                             title.prefix = "kNN+PCA-based Multiclass")
-
-create_confution_matrix()
 put_end_date(start)
 # Time difference of  hours
 
