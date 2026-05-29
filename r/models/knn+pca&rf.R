@@ -470,8 +470,7 @@ start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
 
 if (file.exists(knn_pca.best.preds.backup)) {
-  put_log("Loading Predicted Data from cache file: 
-%1...", knn_pca.best.preds.backup)
+  put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
   
   knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup)
   k_best.nn_pca.predicted <- knn_pca.best.preds$predicted
@@ -481,18 +480,19 @@ if (file.exists(knn_pca.best.preds.backup)) {
   put_end_date(start)
   # Time difference of 
   
-  if (file.exists(knn_pca.best.preds.backup0)) {
-    put_log("Loading Predicted Data from cache file: 
-%1...", knn_pca.best.preds.backup0)
-    
-    knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup0)
-    k_best.nn_pca.model.predicted <- knn_pca.best.preds$predicted
-    rm(knn_pca.best.preds)
-    put_end_date(start)
-    # Time difference of 
-  }
+#   if (file.exists(knn_pca.best.preds.backup0)) {
+#     put_log("Loading Predicted Data from cache file: 
+# %1...", knn_pca.best.preds.backup0)
+#     
+#     knn_pca.best.preds <- readRDS(knn_pca.best.preds.backup0)
+#     k_best.nn_pca.model.predicted <- knn_pca.best.preds$predicted
+#     rm(knn_pca.best.preds)
+#     put_end_date(start)
+#     # Time difference of 
+#   }
   
-  put_log("Predicted Data have been loaded from cache.")
+  put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
+%1...", knn_pca.best.preds.backup)
 } else {
   put_log("Constructing predictions using the `KNN+PCA` model trained for the best *k* value...")
   
@@ -559,7 +559,7 @@ has been loaded from the following backup file:
 
 put_log("Validating accuracy of the (Best *k*) `kNN+PCA` Model predictions 
 made on the `x.test` dataset...")
-knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test)
+# knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test)
 knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test)
 
 put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* parameter:
@@ -568,49 +568,50 @@ put_log("Accuracy of the predicted data for the `kNN+PCA` model tuned by *k* par
 
 knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                  y.test,
-                                                                 k_best.nn_pca.model.predicted)
+                                                                 k_best.nn_pca.predicted)
 knn_pca.best.accuracy.by_class
 {
-  #' class  accuracy
-  #'     # 1.0000000
-  #'     $ 1.0000000
-  #'     & 1.0000000
-  #'     @ 1.0000000
-  #'     0 0.9706573
-  #'     1 0.6607981
-  #'     2 0.8509390
-  #'     3 0.9483568
-  #'     4 0.8779343
-  #'     5 0.8157277
-  #'     6 0.8931925
-  #'     7 0.9612676
-  #'     8 0.8403756
-  #'     9 0.8884977
-  #'     A 0.8039906
-  #'     B 0.8157277
-  #'     C 0.9389671
-  #'     D 0.8755869
-  #'     E 0.8838028
-  #'     F 0.8603286
-  #'     G 0.5727700
-  #'     H 0.8920188
-  #'     I 0.6467136
-  #'     J 0.9119718
-  #'     K 0.8591549
-  #'     L 0.5246479
-  #'     M 0.9460094
-  #'     N 0.9190141
-  #'     P 0.9436620
-  #'     Q 0.5234742
-  #'     R 0.8685446
-  #'     S 0.8791080
-  #'     T 0.8849765
-  #'     U 0.9119718
-  #'     V 0.9178404
-  #'     W 0.9401408
-  #'     X 0.8767606
-  #'     Y 0.7746479
-  #'     Z 0.8920188
+  
+#' class  accuracy
+#'     # 1.0000000
+#'     $ 1.0000000
+#'     & 1.0000000
+#'     @ 1.0000000
+#'     0 0.9753521
+#'     1 0.7159624
+#'     2 0.8673709
+#'     3 0.9553991
+#'     4 0.8955399
+#'     5 0.8403756
+#'     6 0.9096244
+#'     7 0.9647887
+#'     8 0.8497653
+#'     9 0.9002347
+#'     A 0.8169014
+#'     B 0.8227700
+#'     C 0.9436620
+#'     D 0.8697183
+#'     E 0.8744131
+#'     F 0.8697183
+#'     G 0.5551643
+#'     H 0.8943662
+#'     I 0.6549296
+#'     J 0.9178404
+#'     K 0.8650235
+#'     L 0.4730047
+#'     M 0.9483568
+#'     N 0.9178404
+#'     P 0.9366197
+#'     Q 0.4929577
+#'     R 0.8591549
+#'     S 0.8556338
+#'     T 0.8720657
+#'     U 0.9154930
+#'     V 0.9178404
+#'     W 0.9330986
+#'     X 0.8849765
+#'     Y 0.7570423
+#'     Z 0.8755869  
 }
 
 plot_bars.accuracy.by_class(y.labels,
@@ -1144,12 +1145,12 @@ fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path,
 start <- put_start_date()
 
 if(file.exists(fit_rf.mmtry_best.backup.path)) {
-  put_log("Loading data of the fine-tuned `RF MCC` model, 
-trained with the best `mtry` parameter value, from the backup file...")
+  put_log("Loading data of the fine-tuned `RF MCC` Model by the `mtry` parameter...")
   
   fit.set <- readRDS(fit_rf.mmtry_best.backup.path)
   fit_rf.mmtry_best <- fit.set$fit
   fit_rf.mmtry_best.conf.mx <- fit.set$confusion.mx
+  fit_rf.mmtry_best.roc_curves <- fit.set$roc.curves
   rm(fit.set)
   
   put_log("The data of the fine-tuned `RF MCC` Model, 
@@ -1163,6 +1164,8 @@ trained with the best `mtry` parameter value, has been loaded from the following
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
+  set.seed(nrow(x.test))
+  
   fit_rf.mmtry_best <- randomForest(x.train, 
                                     y.train,
                                     x.test,
@@ -1173,6 +1176,19 @@ trained with the best `mtry` parameter value, has been loaded from the following
   put_log("The `RF MCC` Model has been trained with the best `mtry` parameter value.")
   put_end_date(start)
   # Time difference of the last iteration 19.8342 mins
+  
+  #### ROC Curves
+  # References:
+  # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+  # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
+  
+  # Calculate ROC curve for each class
+  fit_rf.mmtry_best.roc_curves <- lapply(y.labels, function(class) {
+    bin_labels <- as.integer(y.test == class)
+    roc_curve <- roc(bin_labels, fit_rf.mmtry_best$test$votes[, as.integer(class)])
+  })
+  
+ 
   
   put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
   fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
@@ -1186,7 +1202,8 @@ trained with the best `mtry` parameter value, has been loaded from the following
 
   put_log("Saving the fine-tuned `RF MCC` Model data...")
   saveRDS(list(fit = fit_rf.mmtry_best,
-               confusion.mx = fit_rf.mmtry_best.conf.mx),
+               confusion.mx = fit_rf.mmtry_best.conf.mx,
+               roc.curves = fit_rf.mmtry_best.roc_curves),
           file = fit_rf.mmtry_best.backup.path)
   put_log("The data of the fine-tuned `RF MCC` Model has been saved to the following file:
 %1", fit_rf.mmtry_best.backup.path)
@@ -1201,7 +1218,15 @@ are as follows:
 put_end_date(start)
 # Time difference of 6.260901 hours
 
-plot(fit_rf.mmtry_best)
+plot(fit_rf.mmtry_best,
+     main = "Fine-tuning Results of the `RF MCC` Model by the `mtry` Parameter")
+
+plot(fit_rf.mmtry_best.roc_curves[[1]], 
+     main = "ROC Curves for the Fine-tuned `RF MCC` Model by the `mtry` Parameter")
+for (class.idx in 2:N.classes) {
+  lines(fit_rf.mmtry_best.roc_curves[[class.idx]], col = class.idx)
+}
+
 
 # cl <- makeCluster(N_pcCores)
 # registerDoParallel(cl)
