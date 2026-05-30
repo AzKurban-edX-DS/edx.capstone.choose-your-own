@@ -8,6 +8,12 @@ Main (Index) Script
 # support_scripts.folder <- "support-scripts"
 # support_scripts.path <-  file.path(r.path, support_scripts.folder)
 
+support_scripts.path <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
+stopifnot(dir.exists(support_scripts.path))
+
+setup_script.file_path <- file.path(support_scripts.path, "setup.R")
+stopifnot(file.exists(setup_script.file_path))
+
 ## Setup -----------------------------------------------------------------------
 source(setup_script.file_path, 
        catch.aborts = TRUE,

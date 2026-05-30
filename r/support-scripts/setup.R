@@ -153,9 +153,6 @@ n.img_cols <- 28
 
 ## Init Project Paths ----------------------------------------------------------
 
-support_scripts.path <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
-stopifnot(dir.exists(support_scripts.path))
-
 scripts.path <- "r"
 stopifnot(dir.exists(scripts.path))
 
@@ -169,10 +166,8 @@ models.cnn_script.path
 
 support_functions.folder <- "support-functions"
 
-support_functions.path <- file.path(r.path, support_functions.folder)
+support_functions.path <- file.path(scripts.path, support_functions.folder)
 stopifnot(dir.exists(support_functions.path))
-
-setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 
 data.path <- "data"
 raw_data.path <- file.path(data.path, "raw")
