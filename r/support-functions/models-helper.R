@@ -315,6 +315,31 @@ cnn.binclass.get_prediction_values <- function(preds) {
 
 ## Analysis & Visualization ----------------------------------------------------
 
+calc.roc_curves.cnn <- function(targets,
+                                predicted.probs,
+                                classes.factor) {
+  calc.roc_curves(targets, 
+                  predicted.probs,
+                  classes.factor,
+                  is.targets.categorical = TRUE)
+}
+
+calc.roc_curves <- function(targets,
+                            predicted.probs,
+                            classes.factor,
+                            is.targets.categorical = FALSE) {
+  
+  lapply(classes.factor, function(class) {
+    class.idx <- as.integer(class)
+    
+    if(is.targets.categorical) {
+      bin_labels <- targets[, class.idx]
+    } else {
+      bin_labels <- as.integer(targets == class)
+    }
+    roc_curve <- roc(bin_labels, predicted.probs[, as.integer(class)])
+  })
+}
 
 create_confusion_matrix <- function(targets, 
                                     predictions,
@@ -361,6 +386,29 @@ Plotting confusion matrix, please wait...")
   }
 }
 
+plot_bars.accuracy.by_class <- function(classes.factor,
+                                        class.accuracies,
+                                        title.prefix = NULL,
+                                        .title = "Classifier Model: Class-wise Evaluation Result",
+                                        .color = "black",
+                                        .fill = "steelblue") {
+  if(!is.null(title.prefix))
+    .title = paste(title.prefix, .title)
+  
+  data.frame(class = classes.factor,
+             accuracy = class.accuracies) |>
+    ggplot(mapping = aes(x = class,
+                         y = accuracy)) +
+    geom_col(fill = .fill,
+             color = .color) +
+    labs(x = "Handwritten Character Class",
+         y = "Accuracy",
+         title = .title) +
+    scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+                       expand = c(0, 0, 0.005, 0))
+}
+
+
 ## Utility Functions -----------------------------------------------------------
 
 # Multiclass Classifier: Class-wise Accuracy
@@ -382,26 +430,3 @@ Accuracy for the class `%1` (of size %2) is %3.",
   }) |> matrix(ncol = 1, dimnames = list(class = y.labels, "accuracy")) 
 }
 
-      plot_bars.accuracy.by_class <- function(classes.factor,
-                                              class.accuracies,
-                                              title.prefix = NULL,
-                                              .title = "Classifier Model: Class-wise Evaluation Result",
-                                              .color = "black",
-                                              .fill = "steelblue") {
-        if(!is.null(title.prefix))
-          .title = paste(title.prefix, .title)
-        
-        data.frame(class = classes.factor,
-                   accuracy = class.accuracies) |>
-          ggplot(mapping = aes(x = class,
-                               y = accuracy)) +
-          geom_col(fill = .fill,
-                   color = .color) +
-          labs(x = "Handwritten Character Class",
-               y = "Accuracy",
-               title = .title) +
-          scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                             expand = c(0, 0, 0.005, 0))
-      }
-      
-      

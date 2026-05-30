@@ -253,18 +253,16 @@ have been loaded from the following backup file:
   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
   
-  # Calculate ROC curve for each class
-  roc_curves <- lapply(as.integer(y.labels), function(class.idx) {
-    bin_labels <- y.test.cat[, class.idx]
-    roc_curve <- roc(bin_labels, cnn_multiclass.preds[, class.idx])
-  })
-  
+  put_log("Calculating a ROC curve for each class...")
+  cnn_mcc.roc_curves <- calc.roc_curves.cnn(y.test.cat,
+                                            cnn_multiclass.preds,
+                                            y.labels)
   
   put_log("Saving the Multiclass Classifier model Evaluation Results...")
   save(cnn_multiclass.eval.result,
        cnn_multiclass.preds,
        cnn.prediction.values,
-       roc_curves,
+       cnn_mcc.roc_curves,
        cnn_multiclass.conf.mx,
        cnn_multiclass.accuracy_by_class,
        file = cnn_multiclass.model.eval.file_path)
@@ -333,9 +331,9 @@ plot_bars.accuracy.by_class(y.labels,
                             title.prefix = "CNN-based Multiclass")
 
 # Plot ROC curves
-plot(roc_curves[[1]], main = "ROC Curves for CNN-based Multiclass Classification")
+plot(cnn_mcc.roc_curves[[1]], main = "ROC Curves for CNN-based Multiclass Classification")
 for (class.idx in 2:N.classes) {
-  lines(roc_curves[[class.idx]], col = class.idx)
+  lines(cnn_mcc.roc_curves[[class.idx]], col = class.idx)
 }
 
 

@@ -1,19 +1,14 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Basic Deep Learning Model
-#%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%
+# BDL MCC  Model
+#%%%%%%%%%%%%%%%%%%%%%
 
-### Basic DL Classifier -----------------------------------------------------------
+# Basic Deep Learning Multiclass Classifier (BDL MCC)  Model
+
 # Reference:
 # MNIST Handwritten Digit Recognition in Keras
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 
-#### Converting labels factor to categorical -----------------------------------
-# Reference: 
-#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
-# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
-# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
-
-#### Loading Split Dataset allocated 20% for the Test set (default) ------------
+## Loading Split Dataset allocated 20% for the Test set (default) ------------
 open_logfile(".split.20%test.balanced_subset")
 
 start <- put_start_date()
@@ -141,7 +136,13 @@ str(y.test)
 length(y.test)
 #> [1] 817379
 
-log_close()
+
+#### Converting labels factor to categorical -----------------------------------
+# Reference: 
+#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
+# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
+# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
+
 
 y.train.cat <- to_categorical(y.train)
 colnames(y.train.cat) <- y.labels
@@ -156,7 +157,9 @@ dim(y.test.cat)
 str(y.test.cat)
 head(y.test.cat)
 
-#### Init DL Basic Model Paths -------------------------------------------------
+log_close()
+
+## Init DL Basic Model Paths ---------------------------------------------------
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
@@ -183,30 +186,33 @@ dl.basic.model.file_path <- file.path(dl.basic.dir_path,
 dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
                              "dl.basic.model.train_history.bak.rds")
 
-#### Building Deep Learning Basic Multiclass Classifier (DLB MCC) Model --------
+## Building Basic DL MCC Model -------------------------------------------------
+
 open_logfile("dl.basic-model")
 
 
 if(file.exists(dl.basic.model.file_path)) {
-  put_log("Loading pre-trained DLB MCC Model...")
+  put_log("Loading pre-trained BDL MCC Model...")
   
   dl.basic.model <- load_model(dl.basic.model.file_path)
   
-  put_log("The DLB MCC Model has been loaded from the backup file:
+  put_log("The BDL MCC Model has been loaded from the backup file:
 %1", dl.basic.model.file_path)
   
   if(file.exists(dl.basic.model.train_history.file_path)){
-    put_log("Loading the DLB MCC Model Train History...")
+    put_log("Loading the BDL MCC Model Train History...")
     
     dl.basic.train_history <- readRDS(dl.basic.model.train_history.file_path)
     
-    put_log("The DLB MCC Model has been loaded from the backup file:
+    put_log("The BDL MCC Model has been loaded from the backup file:
 %1", dl.basic.model.train_history.file_path)
   } else {
-    warning("The DLB MCC Model backup does not exist:
+    warning("The BDL MCC Model backup does not exist:
 ", dl.basic.model.train_history.file_path)
   }
 } else {
+  ### Defining & Compiling the Basic DL MCC Model ******************************
+  
   n.input_shape <- ncol(x.train)
   # 784
   
@@ -240,7 +246,7 @@ if(file.exists(dl.basic.model.file_path)) {
   
   summary(dl.basic.model)
   
-  #### Training DL Basic Muliclass Classifier (MCC) Model **********************
+  ### Training the Basic DL MCC Model ******************************************
   
   # dl.basic.callbacks <- list(
   #   callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
@@ -250,7 +256,7 @@ if(file.exists(dl.basic.model.file_path)) {
   #                             verbose = 1)
   # )
 
-  put_log("Training the DLB MCC Model...")
+  put_log("Training the BDL MCC Model...")
   start <- put_start_date()
   
   dl.basic.train_history <- dl.basic.model |> 
@@ -263,35 +269,39 @@ if(file.exists(dl.basic.model.file_path)) {
         )
   
   
-  put_log("Saving pre-trained DLB MCC Model...")
+  put_log("Saving pre-trained BDL MCC Model...")
   save_model(dl.basic.model,
              filepath = dl.basic.model.file_path,
              overwrite = FALSE)
   
-  put_log("The DLB MCC Model has been trained 
+  put_log("The BDL MCC Model has been trained 
 and saved in the following file:
   %1", dl.basic.model.file_path)
 
-  
-  put_log("Saving the DLB MCC Model History...")
+  put_log("Saving the BDL MCC Model History...")
   saveRDS(dl.basic.train_history,
           file = dl.basic.model.train_history.file_path)
   
-  put_log("The DLB MCC Model History has been trained 
+  put_log("The BDL MCC Model History has been trained 
 and saved in the following file:
   %1", dl.basic.model.train_history.file_path)
   put_end_date(start)
   # Time difference of 38.48235 mins
 }
 
+put_log("The Basic `DL MCC` Model has been trained with the following results
+%1", dl.basic.model)
+
+
 plot(dl.basic.train_history)
 str(dl.basic.train_history)
-#### DL Basic Model Evaluation ----------------------------------------------
+
+## BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
 start <- put_start_date()
-dl.eval.result <- dl.basic.model |> evaluate(x.test, y.test.cat)
+bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test.cat)
 put_log("DL Model evaluation result:
-%1", capture.output(str(dl.eval.result)))
+%1", capture.output(str(bdl.eval.result)))
 # List of 2
 #  $ accuracy: num 0.796
 #  $ loss    : num 1.52
@@ -300,12 +310,12 @@ put_end_date(start)
 # Time difference of 1.668308 mins
 
 start <- put_start_date()
-dl.preds <- dl.basic.model |> predict(x.test) 
+bdl.preds <- dl.basic.model |> predict(x.test) 
 put_end_date(start)
 # Time difference of  mins
 
-colnames(dl.preds) <- y.labels
-head(dl.preds[,1:5])
+colnames(bdl.preds) <- y.labels
+head(bdl.preds[,1:5])
 #                 #            $            &            @            0
 # [1,] 8.469580e-25 2.824278e-25 1.338040e-31 1.180656e-36 3.503761e-16
 # [2,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
@@ -314,65 +324,126 @@ head(dl.preds[,1:5])
 # [5,] 4.731567e-38 0.000000e+00 0.000000e+00 0.000000e+00 5.828601e-27
 # [6,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
 
-dim(dl.preds)
-#> [1] 684467     39
+dim(bdl.preds)
+#> [1] 33228    39
 
-dl.preds.ts <- as_tensor(dl.preds)
-str(dl.preds.ts)
+bdl.preds.ts <- as_tensor(bdl.preds)
+str(bdl.preds.ts)
 #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
 
-dl.predictions <- dl.preds.ts |> op_argmax(2)
-dl.predictions
+bdl.predictions <- bdl.preds.ts |> op_argmax(2)
+bdl.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(dl.predictions)
+dim(bdl.predictions)
 #> [1] 684467
-# dl.predictions$numpy()
+# bdl.predictions$numpy()
 
 
 # y.test
 # as.integer(y.test)
 
-dl.model.accuracy <- mean(dl.predictions$numpy() == as.integer(y.test))
-put_log("DL Model accuracy: %1",dl.model.accuracy)
+bdl.pred.values.idx <- bdl.predictions$numpy()
+head(bdl.pred.values.idx)
 
-# [1] 0.7955373
+bdl.pred.values <- y.labels[bdl.pred.values.idx]
+head(bdl.pred.values)
 
-##### Close Log ------------------------------------------------------------------
-log_close()
+dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
+put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
+# [1] 0.9045985
 
-# ---------------------------
-# Reference:
-#
+
+put_log("BDL MCC Model: Calculating a ROC curve for each class...")
+dl.basic.roc_curves <- calc.roc_curves(y.test,
+                                       bdl.preds,
+                                       y.labels)
+
+put_log("BDL MCC Model: The per-class ROC curve calculation has been completed.")
+
+plot(dl.basic.roc_curves[[1]], 
+     main = "ROC Curves for the Basic Deep Learning Multiclass Classifier Model")
+for (class.idx in 2:N.classes) {
+  lines(dl.basic.roc_curves[[class.idx]], col = class.idx)
+}
+
+
+put_log("BDL MCC Model: Creating a Confusion Matrix...")
+dl.basic.conf.mx <- confusion_matrix(as.character(y.test),
+                                     as.character(bdl.pred.values))
+put_log("BDL MCC Model: The Confusion Matrix has been created:
+%1", capture.output(dl.basic.conf.mx))
+
+# start <- put_start_date()
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
 # 
-start <- put_start_date()
+# dev.off()
+# plot_confusion_matrix(dl.basic.conf.mx,
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# 
+# stopCluster(cl)
+# stopImplicitCluster()
+# put_end_date(start)
+
+dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+                                                             y.test,
+                                                             bdl.pred.values)
+dl.basic.accuracy.by_class
+{
+#' class  accuracy
+#'     # 1.0000000
+#'     $ 1.0000000
+#'     & 1.0000000
+#'     @ 1.0000000
+#'     0 0.9589202
+#'     1 0.7464789
+#'     2 0.8814554
+#'     3 0.9565728
+#'     4 0.9354460
+#'     5 0.9213615
+#'     6 0.9107981
+#'     7 0.9812207
+#'     8 0.9307512
+#'     9 0.8591549
+#'     A 0.8708920
+#'     B 0.9143192
+#'     C 0.9248826
+#'     D 0.9284038
+#'     E 0.9507042
+#'     F 0.9460094
+#'     G 0.7077465
+#'     H 0.9366197
+#'     I 0.6737089
+#'     J 0.9295775
+#'     K 0.9213615
+#'     L 0.5316901
+#'     M 0.9694836
+#'     N 0.9366197
+#'     P 0.9812207
+#'     Q 0.7417840
+#'     R 0.9553991
+#'     S 0.8920188
+#'     T 0.9530516
+#'     U 0.9096244
+#'     V 0.9284038
+#'     W 0.9659624
+#'     X 0.9330986
+#'     Y 0.8931925
+#'     Z 0.9014085
+}
+
+plot_bars.accuracy.by_class(y.labels,
+                            dl.basic.accuracy.by_class,
+                            title.prefix = "Basic DL Multiclass")
 put_end_date(start)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+log_close()
 
 

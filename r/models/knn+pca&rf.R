@@ -1,8 +1,11 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# kNN+PCA & Random Forest Models
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%
+# kNN+PCA MCC & RF Models 
+#%%%%%%%%%%%%%%%%%%%%%%%%%
 
-#### Loading Split Dataset allocated 10% for the Train Set ---------------------
+#> k-Nearest Neighbors with Principal Component Analysis (kNN+PCA) and 
+#> Random Forest (RF) Multiclass Classifier Models
+
+## Loading Split Dataset allocated 10% for the Train Set ---------------------
 open_logfile(".split.10%train.balanced_subset")
 start <- put_start_date()
 
@@ -143,7 +146,7 @@ length(y0.9.test)
 
 log_close()
 
-## `kNN+PCA MCC` Model -------------------------------------------------------------
+## `kNN+PCA MCC` Model Tuning --------------------------------------------------
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
 ### `kNN+PCA MCC` Model Initial Paths -----------------------------------------------------
@@ -262,7 +265,7 @@ k.best
 
 log_close()
 
-#### Loading Split Dataset allocated 20% for the Test set (default) ------------
+## Loading Split Dataset allocated 20% for the Test set (default) ------------
 open_logfile(".split.20%test.balanced_subset")
 
 start <- put_start_date()
@@ -390,7 +393,7 @@ length(y.test)
 
 log_close()
 
-#### Training kNN+PCA Model for best *k% Parameter -----------------------------
+## Training kNN+PCA Model for best *k% Parameter -----------------------------
 # (The training takes about half an hour)
 open_logfile(".pre-train-model.k1-7nn+pca")
 
@@ -530,12 +533,11 @@ has been loaded from the following backup file:
   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
   
-  put_log("Fine-tuned `kNN+PCA MCC` Model: ROC curve calculation for each class...")
+  put_log("Fine-tuned `kNN+PCA MCC` Model: Calculating a ROC curve for each class...")
+  k_best.nn_pca.roc_curves <- calc.roc_curves(y.test,
+                                              k_best.nn_pca.probs,
+                                              y.labels)
   
-  k_best.nn_pca.roc_curves <- lapply(y.labels, function(class) {
-    bin_labels <- as.integer(y.test == class)
-    roc_curve <- roc(bin_labels, k_best.nn_pca.probs[, as.integer(class)])
-  })
   put_log("Fine-tuned `kNN+PCA MCC` Model: The per-class ROC curve calculation has been completed.")
   
   put_log("Fine-tuned `kNN+PCA MCC` Model: Creating a Confusion Matrix...")
@@ -670,7 +672,7 @@ log_close()
 
 # library(randomForest)
 
-### `Random Forest (RF) MCC` Model Initial Paths -----------------------------------------------------
+### `Random Forest (RF) MCC` Model Initial Paths -------------------------------
 
 models.random_forest.path <- file.path(models.path, "random-forest")
 
@@ -682,7 +684,7 @@ models.rf.tune.path = file.path(models.random_forest.path, "tune")
 if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
-##### Train `RF MCC` model with the default mtry value & ntree = 500 ---------------------------
+### Train `RF MCC` model with the default mtry value & ntree = 500 ---------------------------
 open_logfile("x0.1.train.fit_rf.mtry_default.ntree500")
 
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
@@ -830,8 +832,8 @@ plot_bars.accuracy.by_class(y.labels,
                             fit_rf.mtry_default.accuracy.by_class,
                             title.prefix = "Random Forest-based (default `mtry`) Multiclass")
 log_close()
-##### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
-##### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
+### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
+#### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
 open_logfile(".x0.1.train.fit_rf.tune_mtry")
 
 fit_rf.mtry_tuned.backup.path <- file.path(models.rf.tune.path, 
@@ -942,7 +944,7 @@ ggplot(fit_rf.mtry_tuned)
 
 log_close()
 
-##### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
+#### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
 open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
 
 fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
@@ -1058,7 +1060,7 @@ mtry.fine_tuned.best <- mtry.fine_tune.values[acc.max.idx]
 
 log_close()
 
-##### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
+#### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
 open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
 
 fit_rf.mtry.final_tuned.backup.path <- file.path(models.rf.tune.path, 
@@ -1174,7 +1176,7 @@ mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max,
 # 44
 log_close()
 
-##### Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
+### Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
 open_logfile("x.train.fit_rf.mtry_best.ntree400")
 
 fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path, 
@@ -1220,13 +1222,13 @@ trained with the best `mtry` parameter value, has been loaded from the following
   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
   
-  # Calculate ROC curve for each class
-  fit_rf.mmtry_best.roc_curves <- lapply(y.labels, function(class) {
-    bin_labels <- as.integer(y.test == class)
-    roc_curve <- roc(bin_labels, fit_rf.mmtry_best$test$votes[, as.integer(class)])
-  })
-  
+  put_log("Fine-tuned `RF MCC` Model: Calculating a ROC curve for each class...")
+  fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y.test,
+                                                  fit_rf.mmtry_best$test$votes,
+                                                  y.labels)
  
+  put_log("Fine-tuned `RF MCC` Model: The per-class ROC curve calculation has been completed.")
+  
   
   put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
   fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
