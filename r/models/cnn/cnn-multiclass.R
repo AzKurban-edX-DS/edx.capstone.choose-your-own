@@ -108,13 +108,11 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 # 39 Z        3408
 }
 
-## Model building --------------------------------------------------------------
+## CNN MCC Model building --------------------------------------------------------------
 
-n.output <- N.classes
-batch_size <- 128
-num_classes <- 39
-epochs <- 100
-vld_split <- 0.2
+cnn_mcc.batch_size <- 128
+cnn_mcc.epochs <- 100
+cnn_mcc.vld_split <- 0.2
 
 if(file.exists(cnn_multiclass.model.file_path)) {
   put_log("Loading pre-trained CNN-Based Multiclass Classifier Model...")
@@ -156,7 +154,7 @@ if(file.exists(cnn_multiclass.model.file_path)) {
       layer_flatten() |>
       layer_dense(units = 128, activation = "relu") |>
       layer_dropout(rate = 0.3) |>
-      layer_dense(units = n.output, activation = "softmax")
+      layer_dense(units = N.classes, activation = "softmax")
     
     summary(cnn_multiclass.model)
     # plot(cnn_multiclass.model)
@@ -176,7 +174,7 @@ if(file.exists(cnn_multiclass.model.file_path)) {
   #### Training CNN-Based Muliclass Classifier Model ***************************
   {
     #> Now, we can train the model with our processed data. 
-    #> Each epochs's history can be saved to track the progress. 
+    #> Each cnn_mcc.epochs's history can be saved to track the progress. 
     #> Please note, as we are not using GPU, it takes a few minutes to finish. 
     #> Please be patient while waiting for the results. 
     #> The training time can be significantly reduced if running on GPU. [*]
@@ -198,9 +196,9 @@ if(file.exists(cnn_multiclass.model.file_path)) {
     cnn_multiclass.train_history <- cnn_multiclass.model |> 
       fit(x.train, 
           y.train.cat,
-          epochs = epochs,
-          batch_size = batch_size,
-          validation_split = vld_split,
+          cnn_mcc.epochs = cnn_mcc.epochs,
+          cnn_mcc.batch_size = cnn_mcc.batch_size,
+          validation_split = cnn_mcc.vld_split,
           callbacks = cnn_multiclass.callbacks
       )
     # acc: 0.8741
