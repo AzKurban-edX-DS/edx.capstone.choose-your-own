@@ -48,7 +48,6 @@ cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-mo
 cnn_models.ensemble.cache_file.path
 
 #### Define a few parameters to be used in the CNN model --------------------------
-# n.output <- 39
 batch_size <- 128
 num_classes <- 39
 epochs <- 100

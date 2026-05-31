@@ -216,10 +216,7 @@ if(file.exists(dl.basic.model.file_path)) {
   n.input_shape <- ncol(x.train)
   # 784
   
-  n.output <- length(y.labels)
-  # 39
-  
-  n.hl.units <- ceiling(n.input_shape*2/3+n.output)
+  n.hl.units <- ceiling(n.input_shape*2/3+N.classes)
   # 562
   
   dl.basic.model <- keras_model_sequential() |>
@@ -234,7 +231,7 @@ if(file.exists(dl.basic.model.file_path)) {
     layer_dropout(rate = 0.25) |> 
     layer_dense(units = n.hl.units, activation = "relu") |>
     layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.output, activation = "softmax")
+    layer_dense(units = N.classes, activation = "softmax")
   
   summary(dl.basic.model)
   
