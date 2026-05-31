@@ -94,7 +94,7 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Load Flatten Dataset --------------------------------------------------------
+### Load Flatten Dataset --------------------------------------------------------
 ds.load_flatten.script.path <- file.path(support_scripts.path, 
                                          "load-flattened-dataset.R")
 
@@ -130,9 +130,10 @@ source(dl_basic.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## CNN-based Multiclass Classifier Model ---------------------------------------
+## CNN-based Classifier Models -------------------------------------------------
+### CNN-based Multiclass Classifier Model ---------------------------------------
 open_logfile(".ds.prepare.train&test.balanced_sets")
-## Prepare Training & Testing Sets -----------------------------------------------------
+#### Prepare Training & Testing Sets -----------------------------------------------------
 put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
 
 start <- put_start_date()
@@ -167,7 +168,7 @@ which contains a testing sample stored in the `x.test` variable having the follo
 # rm(split3d.list)
 log_close()
 
-### Build CNN-Based Multiclass Classifier Model --------------------------------
+#### Build CNN-Based Multiclass Classifier Model --------------------------------
 
 source(cnn_multiclass.script.path, 
        catch.aborts = TRUE,
@@ -176,7 +177,7 @@ source(cnn_multiclass.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
+#### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
 
 source(cnn_multiclass.evaluation.script.path, 
        catch.aborts = TRUE,
@@ -185,8 +186,7 @@ source(cnn_multiclass.evaluation.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## CNN-based Binary Classifier Models ------------------------------------------
-## Build & Train a CNN-based Binary Classifier Models --------------------------
+### CNN-based Binary Classifier Models -----------------------------------------
 source(cnn_binary.scripts.path, 
        catch.aborts = TRUE,
        echo = TRUE,
@@ -194,9 +194,11 @@ source(cnn_binary.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Final Test for the CNN-Based Classifier Models ------------------------------
+### Final Test for the CNN-Based Classifier Models -----------------------------
+#### Preparing the Final Test Data -------------------------------------------
+
 open_logfile(".ds.prepare.final-test.balanced_sets")
-### Preparing the Final Test Data -------------------------------------------
+
 put_log("Preparing a Final Test Set for validating the CNN-based Models...")
 start <- put_start_date()
 
@@ -210,7 +212,7 @@ if(!exists("ft.img28x28mx.array")) {
 put_log("The Final Test Data has the following structure:
 %1", capture.output(str(ft.img28x28mx.array)))
 
-#### Creating Final Test Dataset -----------------------------------------------
+##### Creating Final Test Dataset -----------------------------------------------
 final_sample_seed <- length(y.labels) + 1 # 40
 
 put_log("Making a balanced sample from the Validation 28x28 Image Data Array...")
@@ -229,10 +231,10 @@ put_log("The Test Set has been saved in the object `x3d.test` with the following
 # shape(33267, 28, 28)
 
 rm(ft.sample_set)
-### Close Log ------------------------------------------------------------------
+
 log_close()
 
-### Final Test for pre-trained CNN-Based Multiclass Classifier Model -----------
+#### Final Test for pre-trained CNN-Based Multiclass Classifier Model -----------
 
 source(cnn_multiclass.evaluation.script.path, 
        catch.aborts = TRUE,
@@ -242,8 +244,8 @@ source(cnn_multiclass.evaluation.script.path,
        keep.source = TRUE)
 
 
-## Ensemble based on CNN-based Binary Classifier Models ------------------------
-### Init CNN-Based Ensemble Model Directories ----------------------------------
+#### Ensemble based on CNN-based Binary Classifier Models ----------------------
+##### Init CNN-Based Ensemble Model Directories --------------------------------
 cnn_binary.ensemble.scripts.path <- file.path(models.cnn_script.path, 
                                               "cnn-binary.ensemble.R")
 stopifnot(file.exists(cnn_binary.ensemble.scripts.path))
@@ -253,7 +255,7 @@ cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,
                                                  "cnn.lbl-models.ensemble.RData")
 cnn_models.ensemble.cache_file.path
 
-### Final Test for CNN-Based Ensemble Model ------------------------------------
+##### Final Test for CNN-Based Ensemble Model ----------------------------------
 source(cnn_binary.ensemble.scripts.path, 
        catch.aborts = TRUE,
        echo = TRUE,
