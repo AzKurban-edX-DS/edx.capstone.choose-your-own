@@ -53,14 +53,14 @@ cnn_bin.models.dat <- lapply(y.labels, function(label) {
   
   put_log("Building model for class `%1` (%2)...", label.char, label.idx)
   
-  cnn_bin.model.supporting_data.file_path <- file.path(data.cnn.binary.models.dir, 
+  model.supporting_data.file_path <- file.path(data.cnn.binary.models.dir, 
                                                        str_flatten(c(cnn_bin.model.file.base_name,
                                                                      label.idx,
                                                                      label.char,
                                                                      "RData"),
                                                                    collapse = "."))
   
-  cnn.bin_model.file_path <- file.path(data.cnn.binary.models.dir, 
+  bin_model.file_path <- file.path(data.cnn.binary.models.dir, 
                                        str_flatten(c(cnn_bin.model.file.base_name,
                                                      label.idx,
                                                      label.char,
@@ -73,21 +73,22 @@ cnn_bin.models.dat <- lapply(y.labels, function(label) {
                                                         as.character(label),
                                                         "RData"),
                                                       collapse = "."))
-  if(file.exists(cnn.bin_model.file_path)) {
+  if(file.exists(bin_model.file_path)) {
     put_log("Loading pre-trained CNN-Based Binary Classifier Model for Class `%1`...",
             label.char)
-    cnn_multiclass.model <- load_model(cnn.bin_model.file_path)
+    bin_model <- load_model(bin_model.file_path)
     put_log("The CNN-Based Binary Classifier Model has been loaded from the backup file:
-%1", cnn.bin_model.file_path)
+%1", bin_model.file_path)
     
-    if(file.exists(cnn_multiclass.train_history.file_path)){
-      put_log("Loading the CNN-Based Binary Classifier Model Train History...")
-      cnn_multiclass.train_history <- readRDS(cnn_multiclass.train_history.file_path)
-      put_log("The CNN-Based Binary Classifier Model has been loaded from the backup file:
-%1", cnn_multiclass.train_history.file_path)
+    if(file.exists(model.supporting_data.file_path)){
+      put_log("Loading the CNN-Based Binary Classifier Model Train History for Class `%1`...",
+              label.char)
+      load(model.supporting_data.file_path)
+      put_log("The CNN-Based Binary Classifier Model History for Class `%1` has been loaded from the following file:
+%2", label.char, model.supporting_data.file_path)
     } else {
       warning("The CNN-Based Binary Classifier Model History backup does not exist for class `%1`:
-%2", label.char, cnn_multiclass.train_history.file_path)
+%2", label.char, model.supporting_data.file_path)
     }
   } else {
     ### Preparing a Train & Test Sets for the Current Class Model  
@@ -216,26 +217,26 @@ Summary of the model:
               label.char, 
               label.idx)
       
-      save(cnn.bin_model.file_path,
+      save(bin_model.file_path,
            cnn.1bl.train_history,
            cnn_bin.ds_sample.set,
-           file = cnn_bin.model.supporting_data.file_path)
+           file = model.supporting_data.file_path)
       
       put_log("The (CNN) Binary Classifier Model for Class `%1` (%2) has been backed up to file:
-%3",label.char, label,cnn_bin.model.supporting_data.file_path)
+%3",label.char, label,model.supporting_data.file_path)
       
       put_log("Saving the (CNN) Binary Classifier Model for Class `%1` (%2) to file...", 
               label.char,
               label.idx)
       
       save_model(bin_model,
-                 filepath = cnn.bin_model.file_path,
+                 filepath = bin_model.file_path,
                  overwrite = TRUE)
       
       put_log("The (CNN) Binary Classifier Model for label `%1` (%2) has been cached to file:
 %3",label.char, 
               label.idx, 
-              cnn.bin_model.file_path)
+              bin_model.file_path)
       
     }
   } 
@@ -318,8 +319,8 @@ the handwritten character '%1' is as follows:
   
   put_end_date(start)
   
-  list(saved_model.filepath = cnn.bin_model.file_path,
-       lbl.data.cache.path = cnn_bin.model.supporting_data.file_path,
+  list(saved_model.filepath = bin_model.file_path,
+       lbl.data.cache.path = model.supporting_data.file_path,
        train_history = cnn.1bl.train_history,
        preds = preds,
        accuracy = accuracy,
@@ -425,5 +426,4 @@ plot_bars.accuracy.by_class(y.labels,
 # for all the handwritten characters with the following results:
 # %1", capture.output(str(evaluation.results)))
 
-### Close Log ------------------------------------------------------------------
 log_close()
