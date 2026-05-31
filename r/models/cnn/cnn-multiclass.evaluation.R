@@ -252,7 +252,7 @@ put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.acc
 ### Logging Accuracies by class -------------------------------------------------
 
 put_log("The total set of accuracies by class is as follows:
-%1", capture.output(df.cnn_multiclass.accuracy_by_class))
+%1", capture.output(cnn_multiclass.accuracy_by_class))
 {
 # class  accuracy
     #' # 1.0000000
