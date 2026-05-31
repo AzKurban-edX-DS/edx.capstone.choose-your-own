@@ -160,7 +160,7 @@ which contains a training sample stored in the `x.train` variable having the fol
 # shape(132912, 28, 28)
 
 x3d.test_set <- split3d.list$test_set
-put_log("The Test Set has been saved in the object `x3d.test`, 
+put_log("The Test Set has been saved in the object `x3d.test_set`, 
 which contains a testing sample stored in the `x.test` variable having the following shape:
 %1", capture.output(shape(x3d.test_set$x.test)))
 # shape(33267, 28, 28)

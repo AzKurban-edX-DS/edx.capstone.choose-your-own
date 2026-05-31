@@ -74,7 +74,7 @@ x.test <- array_reshape(x3d.test_set$x.test,
 x.test.files <- x3d.test_set$x.files
 
 put_log("The Test Set has been reshaped as follows:
-%1", capture.output(shape(x3d.test)))
+%1", capture.output(shape(x.test)))
 # shape(33267, 28, 28)
 
 ### class Identifies: Quick Analysis ---------------------------------------------
