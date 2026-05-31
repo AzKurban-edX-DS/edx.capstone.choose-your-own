@@ -37,6 +37,9 @@ if(exists("cnn_multiclass.train_history")){
 put_log("Preparing a Test Set...")
 start <- put_start_date()
 
+put_log("Input Test Data Object structure
+%1", capture.output(str(x3d.test_set)))
+
 class.groups <- ds.get_classIDs.grouped(x3d.test_set$x.test)
 
 y.test <- class.groups$classID
@@ -69,13 +72,12 @@ x.test <- array_reshape(x3d.test_set$x.test,
                           1))
 
 x.test.files <- x3d.test_set$x.files
-str(x3d.test_set)
 
 put_log("The Test Set has been reshaped as follows:
 %1", capture.output(shape(x3d.test)))
 # shape(33267, 28, 28)
 
-## class Identifies: Quick Analysis ---------------------------------------------
+### class Identifies: Quick Analysis ---------------------------------------------
 
 y.test.chars <- class.groups$groupByClass
 #str(y.test.chars)
@@ -87,55 +89,57 @@ char_n.max == min(y.test.chars$n)
 
 put_log("The number of rows for each *Character Class* to be recognized in the Test Set is as follows:
 %1", capture.output(print(y.test.chars, n = nrow(y.test.chars))))
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-#  1 #         853
-#  2 $         853
-#  3 &         853
-#  4 @         853
-#  5 0         853
-#  6 1         853
-#  7 2         853
-#  8 3         853
-#  9 4         853
-# 10 5         853
-# 11 6         853
-# 12 7         853
-# 13 8         853
-# 14 9         853
-# 15 A         853
-# 16 B         853
-# 17 C         853
-# 18 D         853
-# 19 E         853
-# 20 F         853
-# 21 G         853
-# 22 H         853
-# 23 I         853
-# 24 J         853
-# 25 K         853
-# 26 L         853
-# 27 M         853
-# 28 N         853
-# 29 P         853
-# 30 Q         853
-# 31 R         853
-# 32 S         853
-# 33 T         853
-# 34 U         853
-# 35 V         853
-# 36 W         853
-# 37 X         853
-# 38 Y         853
-# 39 Z         853
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         853
+  #  2 $         853
+  #  3 &         853
+  #  4 @         853
+  #  5 0         853
+  #  6 1         853
+  #  7 2         853
+  #  8 3         853
+  #  9 4         853
+  # 10 5         853
+  # 11 6         853
+  # 12 7         853
+  # 13 8         853
+  # 14 9         853
+  # 15 A         853
+  # 16 B         853
+  # 17 C         853
+  # 18 D         853
+  # 19 E         853
+  # 20 F         853
+  # 21 G         853
+  # 22 H         853
+  # 23 I         853
+  # 24 J         853
+  # 25 K         853
+  # 26 L         853
+  # 27 M         853
+  # 28 N         853
+  # 29 P         853
+  # 30 Q         853
+  # 31 R         853
+  # 32 S         853
+  # 33 T         853
+  # 34 U         853
+  # 35 V         853
+  # 36 W         853
+  # 37 X         853
+  # 38 Y         853
+  # 39 Z         853
+}
 
-## Init Evaluation Results File Path -------------------------------------------------------------
-cnn_multiclass.model.eval.file_path <- file.path(data.dl.cnn.multiclass.dir, 
-                                            "cnn.multiclass.model.eval.RData")
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
+
+cnn_multiclass.model.eval.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+                                            "cnn.multiclass.model.eval.RData")
 
 if(file.exists(cnn_multiclass.model.eval.file_path)) {
   put_log("Loading the Multiclass Classifier model Evaluation Results...")
@@ -146,14 +150,15 @@ have been loaded from the following backup file:
   put_end_date(start)
 } else {
   put_log("Evaluating CNN Model...")
-  start <- put_start_date()
   cnn_multiclass.eval.result <- cnn_multiclass.model |> evaluate(x.test, y.test.cat)
-  put_log("CNN Model evaluation result:
-%1", capture.output(str(cnn_multiclass.eval.result)))
-  # List of 2
-    # $ accuracy: num 0.919
-    # $ loss    : num 0.236
-
+  put_log("CNN MCC Model evaluation has been completed with the following result:
+%1", capture.output(cnn_multiclass.eval.result))
+  # $accuracy
+  # [1] 0.9193752
+  # 
+  # $loss
+  # [1] 0.2359146
+  
   put_end_date(start)
   
   # model prediction
@@ -184,18 +189,14 @@ have been loaded from the following backup file:
   cnn.prediction.values <- y.labels[cnn.prediction.values.idx]
   head(cnn.prediction.values)
   
-  cnn_multiclass.accuracy <- mean(cnn.prediction.values == y.test)
-  put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.accuracy)
-  # 0.919375225713254
-  #> For final test (expected value):
-  #> CNN Model accuracy: 0.910364145658263
-  
-  # cnn_multiclass.conf.mx0 <- confusionMatrix(y.test, cnn.prediction.values)
-  
-  #### Confusion Matrix Visualization using `cvms` package
+  # Confusion Matrix data suitable for Visualization using the `cvms` package:
   # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
+  put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
+suitable for visualization using the `cvms` package...")
   cnn_multiclass.conf.mx <- confusion_matrix(as.character(y.test),
                                              as.character(cnn.prediction.values))
+  put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
+%1", cnn_multiclass.conf.mx)  
   
   #### Accuracy by Class ---
   y.test.idx <- seq_len(length(y.test))
@@ -204,50 +205,6 @@ have been loaded from the following backup file:
   cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                       y.test,
                                                                       cnn.prediction.values)
-  cnn_multiclass.accuracy_by_class
-  {  
-    #' class  accuracy
-    #'     # 0.9988263
-    #'     $ 1.0000000
-    #'     & 1.0000000
-    #'     @ 1.0000000
-    #'     0 0.9765258
-    #'     1 0.7171362
-    #'     2 0.9248826
-    #'     3 0.9812207
-    #'     4 0.9342723
-    #'     5 0.8967136
-    #'     6 0.9460094
-    #'     7 0.9847418
-    #'     8 0.9471831
-    #'     9 0.9295775
-    #'     A 0.9143192
-    #'     B 0.9272300
-    #'     C 0.9694836
-    #'     D 0.9483568
-    #'     E 0.9495305
-    #'     F 0.9518779
-    #'     G 0.7159624
-    #'     H 0.9530516
-    #'     I 0.6807512
-    #'     J 0.9424883
-    #'     K 0.9518779
-    #'     L 0.5434272
-    #'     M 0.9753521
-    #'     N 0.9636150
-    #'     P 0.9812207
-    #'     Q 0.7453052
-    #'     R 0.9542254
-    #'     S 0.9307512
-    #'     T 0.9553991
-    #'     U 0.9518779
-    #'     V 0.9483568
-    #'     W 0.9788732
-    #'     X 0.9483568
-    #'     Y 0.9072770
-    #'     Z 0.9295775  
-  }  
-
   #### ROC Curves
   # References:
   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
@@ -274,6 +231,23 @@ have been backed up to the following file:
   
   
 }
+
+put_log("CNN MCC Model evaluation result:
+%1", capture.output(cnn_multiclass.eval.result))
+# $accuracy
+# [1] 0.9193752
+# 
+# $loss
+# [1] 0.2359146
+
+cnn_multiclass.accuracy <- mean(cnn.prediction.values == y.test)
+put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.accuracy)
+# 0.919375225713254
+#> For final test (expected value):
+#> CNN Model accuracy: 0.910364145658263
+
+# cnn_multiclass.conf.mx0 <- confusionMatrix(y.test, cnn.prediction.values)
+
 
 ### Logging Accuracies by class -------------------------------------------------
 
@@ -325,7 +299,7 @@ put_log("The total set of accuracies by class is as follows:
 ### Visualization --------------------------------------------------------------
 
 #### Class-wise accuracy
-
+put_log("`CNN MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(y.labels,
                             cnn_multiclass.accuracy_by_class[, 1],
                             title.prefix = "CNN-based Multiclass")
@@ -336,29 +310,31 @@ for (class.idx in 2:N.classes) {
   lines(cnn_mcc.roc_curves[[class.idx]], col = class.idx)
 }
 
-
-str(cnn_multiclass.conf.mx)
-
-plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
-
+# put_log("Plotting the confusion matrix, please wait...")
+# start <- put_start_date()
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# 
+# dev.off()
+# plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+#                                          
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# stopCluster(cl)
+# stopImplicitCluster()
+# put_end_date(start)
 
 ### Review Some Errors --------------------------------------------------------- 
 
 recg.err.info <- recognition_err.table(cnn.prediction.values,
                                         y.test,
-                                        x.test.files) |>
-  print.image_grid()
-
+                                        x.test.files)
 put_log("First 30 prediction errors:
-%1", capture.output(recg.err.info$err.table))
+%1", capture.output(head(recg.err.info, n = 30)))
 #    predicted actual                                         file
 # 1          9      G  data/raw/Vaibs.HW-Chars/Train/G/_1_2079.jpg
 # 2          L      1    data/raw/Vaibs.HW-Chars/Train/1/21673.jpg
@@ -391,6 +367,12 @@ put_log("First 30 prediction errors:
 # 29         6      B  data/raw/Vaibs.HW-Chars/Train/B/_1_4978.jpg
 # 30         V      U    data/raw/Vaibs.HW-Chars/Train/U/15093.jpg
 
+# print(recg.err.info$image.grid)
+# dev.off()
+print.image_grid(recg.err.info)
+# dev.off()
+# str(recg.err.info)
+
+
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-## Close Log ------------------------------------------------------------------
 log_close()

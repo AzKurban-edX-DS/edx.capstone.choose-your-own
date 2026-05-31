@@ -656,6 +656,7 @@ knn_pca.best.accuracy.by_class
 #'     Z 0.8755869  
 }
 
+put_log("`kNN+PCA MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(y.labels,
                             knn_pca.best.accuracy.by_class,
                             title.prefix = "kNN+PCA-based Multiclass")
@@ -828,6 +829,7 @@ with the default `mtry` parameter value, is as follows:
 #'     Z 0.8802817
     }
 
+put_log("`RF MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(y.labels,
                             fit_rf.mtry_default.accuracy.by_class,
                             title.prefix = "Random Forest-based (default `mtry`) Multiclass")

@@ -2,31 +2,15 @@
 # CNN-Based Multiclass Classifier Model
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Reference: Convolution Neural Network (CNN) --------------------------------
+## Reference: Convolution Neural Network (CNN) 
 # Reference:
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-## Open Log --------------------------------------------------------------------
-open_logfile(".train.cnn_multiclass-classifier.model")
-put_log("Defining and training a CNN-based Multiclass Classifier Model...")
-
-stopifnot(exists("x3d.train_set"))
-
-## Init File Paths -------------------------------------------------------------
-cnn_multiclass.model.file_path <- file.path(data.dl.cnn.multiclass.dir, 
-                                            "cnn.pre-trained.multiclass.model.keras")
-cnn_multiclass.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
-                                                    "cnn_multiclass.train_history.backup.rds")
-
-if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
-  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
-
-cnn_multiclass.checkpoint.file_path <- 
-  file.path(data.dl.cnn.multiclass.checkpoints.dir, 
-            "{epoch:02d}-{val_loss:.2f}.keras")
-
 ## Preparing Training Data ---------------------------------------------------------
+
+open_logfile(".train.cnn_multiclass-classifier.model")
+
 put_log("Preparing Training Data...")
 start <- put_start_date()
 
@@ -190,7 +174,6 @@ if(file.exists(cnn_multiclass.model.file_path)) {
   }
   
   #### Training CNN-Based Muliclass Classifier Model ***************************
-  
   {
     #> Now, we can train the model with our processed data. 
     #> Each epochs's history can be saved to track the progress. 

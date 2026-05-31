@@ -328,10 +328,10 @@ print.image_grid <- function(err.table,
     image_montage(tile = tile, geometry = geometry)
   
   image_info(img_grid)
-  print(img_grid)
   
-  list(err.table = err.table[err_index.range,],
-       image.grid = img_grid)
+  print(img_grid)
+  # dev.off()
+  img_grid
 }
 
 ## Data processing -------------------------------------------------------------

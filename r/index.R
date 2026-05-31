@@ -131,7 +131,7 @@ source(dl_basic.scripts.path,
        keep.source = TRUE)
 
 ## CNN-based Classifier Models -------------------------------------------------
-### CNN-based Multiclass Classifier Model ---------------------------------------
+### CNN-based Multiclass Classifier (CNN MCC) Model ---------------------------------------
 open_logfile(".ds.prepare.train&test.balanced_sets")
 #### Prepare Training & Testing Sets -----------------------------------------------------
 put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
@@ -165,10 +165,30 @@ which contains a testing sample stored in the `x.test` variable having the follo
 %1", capture.output(shape(x3d.test_set$x.test)))
 # shape(33267, 28, 28)
 
-# rm(split3d.list)
+rm(split3d.list)
+
+#### Init File Paths -------------------------------------------------------------
+
+put_log("Defining and training a CNN-based Multiclass Classifier Model...")
+
+stopifnot(exists("x3d.train_set"))
+
+
+cnn_multiclass.model.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+                                            "cnn.pre-trained.multiclass.model.keras")
+cnn_multiclass.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
+                                                    "cnn_multiclass.train_history.backup.rds")
+
+if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
+  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
+
+cnn_multiclass.checkpoint.file_path <- 
+  file.path(data.dl.cnn.multiclass.checkpoints.dir, 
+            "{epoch:02d}-{val_loss:.2f}.keras")
+
 log_close()
 
-#### Build CNN-Based Multiclass Classifier Model --------------------------------
+#### Build CNN-Based Multiclass Classifier (CNN MCC) Model ---------------------
 
 source(cnn_multiclass.script.path, 
        catch.aborts = TRUE,
