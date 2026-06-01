@@ -80,16 +80,22 @@ cnn_bin.models.dat <- lapply(y.labels, function(label) {
     put_log("The CNN-Based Binary Classifier Model has been loaded from the backup file:
 %1", bin_model.file_path)
     
-    if(file.exists(model.supporting_data.file_path)){
-      put_log("Loading the CNN-Based Binary Classifier Model Train History for Class `%1`...",
-              label.char)
-      load(model.supporting_data.file_path)
-      put_log("The CNN-Based Binary Classifier Model History for Class `%1` has been loaded from the following file:
+    stopifnot(file.exists(model.supporting_data.file_path))
+    
+    put_log("Loading the CNN-Based Binary Classifier Model Train History for Class `%1`...",
+            label.char)
+    load(model.supporting_data.file_path)
+    put_log("The CNN-Based Binary Classifier Model History for Class `%1` has been loaded from the following file:
 %2", label.char, model.supporting_data.file_path)
-    } else {
-      warning("The CNN-Based Binary Classifier Model History backup does not exist for class `%1`:
-%2", label.char, model.supporting_data.file_path)
-    }
+  
+    stopifnot(exists("cnn.1bl.train_history"))
+    stopifnot(exists("cnn_bin.ds_sample.set"))
+    
+    x.test <- cnn_bin.ds_sample.set$test_set$x.test
+    y.test <- cnn_bin.ds_sample.set$test_set$y.test
+    test.files <- cnn_bin.ds_sample.set$test_set$x.files
+    
+    rm(cnn_bin.ds_sample.set)
   } else {
     ### Preparing a Train & Test Sets for the Current Class Model  
     {
@@ -221,6 +227,8 @@ Summary of the model:
            cnn.1bl.train_history,
            cnn_bin.ds_sample.set,
            file = model.supporting_data.file_path)
+      
+      rm(cnn_bin.ds_sample.set)
       
       put_log("The (CNN) Binary Classifier Model for Class `%1` (%2) has been backed up to file:
 %3",label.char, label,model.supporting_data.file_path)
@@ -420,7 +428,7 @@ cnn.bin_models.accuracy |>
 
 plot_bars.accuracy.by_class(y.labels,
                             cnn.bin_models.accuracy[, 2],
-                            title.prefix = "CNN-based Binary")
+                            .title = "Evaluation Results of the CNN-based Binary Classifier Models")
 
 # put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 # for all the handwritten characters with the following results:

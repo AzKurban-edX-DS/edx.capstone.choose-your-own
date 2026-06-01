@@ -301,7 +301,6 @@ cnn.create_model <- function(img.width,
     layer_dense(units = output.classes, activation = output.activation)
 }
 
-
 predicted_probs2classes <- function(x, classes.factor) {
   sapply(seq(nrow(x)), function(i) {
     classes.factor[which.max(x[i,])]

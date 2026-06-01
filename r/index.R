@@ -233,7 +233,7 @@ put_log("The Final Test Data has the following structure:
 %1", capture.output(str(ft.img28x28mx.array)))
 
 ##### Creating Final Test Dataset -----------------------------------------------
-final_sample_seed <- length(y.labels) + 1 # 40
+final_sample_seed <- nrow(ft.img28x28mx.array) # 22524
 
 put_log("Making a balanced sample from the Validation 28x28 Image Data Array...")
 
