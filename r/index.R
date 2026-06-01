@@ -11,18 +11,6 @@ Main (Index) Script
 support_scripts.path <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
 stopifnot(dir.exists(support_scripts.path))
 
-setup_script.file_path <- file.path(support_scripts.path, "setup.R")
-stopifnot(file.exists(setup_script.file_path))
-
-## Setup -----------------------------------------------------------------------
-source(setup_script.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-
 ### Deep Learning Models-related paths ----------------------------------------
 dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
@@ -82,6 +70,18 @@ data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir,
                                                    "evaluation")
 if(!dir.exists(data.cnn.binary.models.evaluation.dir))
   dir.create(data.cnn.binary.models.evaluation.dir)
+
+## Setup -----------------------------------------------------------------------
+
+setup_script.file_path <- file.path(support_scripts.path, "setup.R")
+stopifnot(file.exists(setup_script.file_path))
+
+source(setup_script.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 ## Prepare Input Datasets ------------------------------------------------------
 prepare_ds.script.path <- file.path(support_scripts.path, "prepare-input-data.R")
@@ -214,8 +214,8 @@ source(cnn_binary.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Final Test for the CNN-Based Classifier Models -----------------------------
-#### Preparing the Final Test Data -------------------------------------------
+## Final Test for the Best Models ----------------------------------------------
+### Preparing the Final Test Data ----------------------------------------------
 
 open_logfile(".ds.prepare.final-test.balanced_sets")
 
@@ -254,7 +254,7 @@ rm(ft.sample_set)
 
 log_close()
 
-#### Final Test for pre-trained CNN-Based Multiclass Classifier Model -----------
+### Final Testing of the CNN-Based Multiclass Classifier Model --------------------
 
 source(cnn_multiclass.evaluation.script.path, 
        catch.aborts = TRUE,
@@ -264,19 +264,13 @@ source(cnn_multiclass.evaluation.script.path,
        keep.source = TRUE)
 
 
-#### Ensemble based on CNN-based Binary Classifier Models ----------------------
-##### Init CNN-Based Ensemble Model Directories --------------------------------
-cnn_binary.ensemble.scripts.path <- file.path(models.cnn_script.path, 
+### Final Testing of an Ensemble of CNN-Based Binary Classifier Models ---------
+
+cnn_binary.ensemble.script.path <- file.path(models.cnn_script.path, 
                                               "cnn-binary.ensemble.R")
-stopifnot(file.exists(cnn_binary.ensemble.scripts.path))
-cnn_binary.ensemble.scripts.path
+stopifnot(file.exists(cnn_binary.ensemble.script.path))
 
-cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,
-                                                 "cnn.lbl-models.ensemble.RData")
-cnn_models.ensemble.cache_file.path
-
-##### Final Test for CNN-Based Ensemble Model ----------------------------------
-source(cnn_binary.ensemble.scripts.path, 
+source(cnn_binary.ensemble.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

@@ -44,8 +44,8 @@ cnn.callbacks.checkpoints.path <- file.path(cnn.callbacks.path, "checkpoints")
 if(!dir.exists(cnn.callbacks.checkpoints.path))
   dir.create(cnn.callbacks.checkpoints.path)
 
-cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-models.ensemble.RData")
-cnn_models.ensemble.cache_file.path
+cnn_binary.ensemble.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-models.ensemble.RData")
+cnn_binary.ensemble.backup.path
 
 #### Define a few parameters to be used in the CNN model --------------------------
 batch_size <- 128
@@ -506,12 +506,12 @@ log_close()
 open_logfile(".cnn-model.ensemble-classifier")
 ##### Build Ensemble Classifier ------------------------------------------------
 
-if (file.exists(cnn_models.ensemble.cache_file.path)) {
+if (file.exists(cnn_binary.ensemble.backup.path)) {
   put_log("CNN: loading the Ensemble Classifier Results from cache file: 
-%1", cnn_models.ensemble.cache_file.path)
-  load(cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
+  load(cnn_binary.ensemble.backup.path)
   put_log("CNN: the Ensemble Classifier Results have been loaded from the cache file:
-%1", cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
 } else {
   
   if(!exists("evaluation.results")) {
@@ -780,9 +780,9 @@ have been loaded from the cache file:
   put_log("CNN: Caching the Ensemble Classifier Results...")
   save(cnn.ensemble,
        y_test,
-       file = cnn_models.ensemble.cache_file.path)
+       file = cnn_binary.ensemble.backup.path)
   put_log("CNN: the Ensemble Classifier Results have been saved to the cache file:
-%1", cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
   
   
 }

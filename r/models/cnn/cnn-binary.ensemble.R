@@ -2,13 +2,14 @@
 # CNN-Based Ensemble Classifier for all labels 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Open Log for Preparing Final Test Set -----------------------------------------
+## Preparing Validation Set ----------------------------------------------------
+
 open_logfile(".cnn.ensemble.load-final-test-data")
+start <- put_start_date()
+
 put_log("Evaluating the pre-trained CNN-based Binary Classifier Models...")
 
-## Preparing Validation Set ----------------------------------------------------
 put_log("Preparing a Test Set...")
-start <- put_start_date()
 
 stopifnot(exists("x3d.test"))
 
@@ -59,6 +60,7 @@ char_n.max == min(y_cnn.test.chars$n)
 
 put_log("The number of rows for each *Character Class* to be recognized in the Test Set is as follows:
 %1", capture.output(print(y_cnn.test.chars, n = nrow(y_cnn.test.chars))))
+{
 # A tibble: 39 × 2
 #    classID     n
 #    <fct>   <int>
@@ -101,20 +103,27 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 # 37 X         853
 # 38 Y         853
 # 39 Z         853
+}
 
 ### Close Log ---------------------------------------------------------------
 log_close()
 
 ##### Open Log for Ensemble Classifier -----------------------------------------
 open_logfile(".cnn-model.ensemble-classifier")
-##### Build & Test Ensemble Classifier ------------------------------------------------
+##### Build & Test Ensemble Classifier -----------------------------------------
 
-if (file.exists(cnn_models.ensemble.cache_file.path)) {
+
+cnn_binary.ensemble.backup.path <- file.path(data.cnn.binary.dir, 
+                                                 "cnn.lbl-models.ensemble.RData")
+
+
+
+if (file.exists(cnn_binary.ensemble.backup.path)) {
   put_log("CNN: loading the Ensemble Classifier Results from cache file: 
-%1", cnn_models.ensemble.cache_file.path)
-  load(cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
+  load(cnn_binary.ensemble.backup.path)
   put_log("CNN: the Ensemble Classifier Results have been loaded from the cache file:
-%1", cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
 } else {
   stopifnot(file.exists(hwChar.CNN.binCls.models.backup.path))
   hwChar.CNN.binCls.models <- readRDS(hwChar.CNN.binCls.models.backup.path)
