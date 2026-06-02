@@ -5,6 +5,8 @@
 ## Preparing Validation Set ----------------------------------------------------
 
 open_logfile(".cnn.ensemble.load-final-test-data")
+stopifnot(exists("ft.x3d.test_set"))
+
 start <- put_start_date()
 
 put_log("Evaluating the pre-trained CNN-based Binary Classifier Models...")

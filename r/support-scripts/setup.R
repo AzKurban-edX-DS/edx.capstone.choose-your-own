@@ -153,9 +153,6 @@ n.img_cols <- 28
 
 ## Init Project Paths ----------------------------------------------------------
 
-scripts.path <- "r"
-stopifnot(dir.exists(scripts.path))
-
 models_script.path <- file.path(scripts.path, "models")
 stopifnot(dir.exists(models_script.path))
 models_script.path

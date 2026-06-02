@@ -2,76 +2,13 @@
 Main (Index) Script
 #%%%%%%%%%%%%%%%%%%%%
 
-## Initial Paths ---------------------------------------------------------------
-# r.path <- "r"
-# draft_scripts.path <- file.path(r.path, "draft")
-# support_scripts.folder <- "support-scripts"
-# support_scripts.path <-  file.path(r.path, support_scripts.folder)
-
-support_scripts.path <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
-stopifnot(dir.exists(support_scripts.path))
-
-### Deep Learning Models-related paths ----------------------------------------
-dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
-dl.keras3.path <- file.path(models.path, "dl.keras3")
-dir.create(dl.keras3.path)
-
-#### CNN-Based Directories Paths -----------------------------------------------
-
-data.dl.cnn.dir <- file.path(dl.keras3.path, "cnn")
-
-if(!dir.exists(data.dl.cnn.dir))
-  dir.create(data.dl.cnn.dir)
-
-
-##### CNN-Based Multiclass Classifier Model Directories ------------------------
-# Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
-
-cnn_multiclass.script.path <- file.path(models.cnn_script.path, 
-                                         "cnn-multiclass.R")
-stopifnot(file.exists(cnn_multiclass.script.path))
-
-cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
-                                                   "cnn-multiclass.evaluation.R")
-stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
-
-data.dl.cnn.multiclass.dir <- file.path(data.dl.cnn.dir, "multiclass")
-
-if(!dir.exists(data.dl.cnn.multiclass.dir))
-  dir.create(data.dl.cnn.multiclass.dir)
-
-data.dl.cnn.multiclass.checkpoints.dir <- file.path(data.dl.cnn.multiclass.dir, "checkpoints")
-
-if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
-  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
-
-
-##### CNN-Based Binary Models Directories -----------------------------------
-cnn_binary.scripts.path <- file.path(models.cnn_script.path, "cnn-binary.R")
-stopifnot(file.exists(cnn_binary.scripts.path))
-
-data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
-
-if(!dir.exists(data.cnn.binary.dir))
-  dir.create(data.cnn.binary.dir)
-
-
-data.cnn.binary.models.dir <- file.path(data.cnn.binary.dir, "models")
-
-if(!dir.exists(data.cnn.binary.models.dir))
-  dir.create(data.cnn.binary.models.dir)
-
-data.cnn.binary.models.checkpoints.dir <- file.path(data.cnn.binary.models.dir, 
-                                                    "checkpoints")
-if(!dir.exists(data.cnn.binary.models.checkpoints.dir))
-  dir.create(data.cnn.binary.models.checkpoints.dir)
-
-data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir, 
-                                                   "evaluation")
-if(!dir.exists(data.cnn.binary.models.evaluation.dir))
-  dir.create(data.cnn.binary.models.evaluation.dir)
-
 ## Setup -----------------------------------------------------------------------
+
+scripts.path <- "r"
+stopifnot(dir.exists(scripts.path))
+
+support_scripts.path <-  file.path(scripts.path, "support-scripts")
+stopifnot(dir.exists(support_scripts.path))
 
 setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
@@ -121,6 +58,11 @@ source(knn_pca.rf.script.path,
 
 
 ## Basic Deep Learning Model --------------------------------------------------
+
+dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
+dl.keras3.path <- file.path(models.path, "dl.keras3")
+dir.create(dl.keras3.path)
+
 stopifnot(file.exists(dl_basic.scripts.path))
 
 source(dl_basic.scripts.path, 
@@ -130,23 +72,55 @@ source(dl_basic.scripts.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## CNN-based Classifier Models -------------------------------------------------
-### CNN-based Multiclass Classifier (CNN MCC) Model ---------------------------------------
+## CNN-Based Classifier Models -------------------------------------------------
+
+### Initial Paths --------------------------------------------------------------
+data.dl.cnn.dir <- file.path(dl.keras3.path, "cnn")
+
+if(!dir.exists(data.dl.cnn.dir))
+  dir.create(data.dl.cnn.dir)
+
+### CNN-based Multiclass Classifier (CNN MCC) Model ----------------------------
+# Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
+
+#### Initial Paths -------------------------------------------------------------
+
 open_logfile(".ds.prepare.train&test.balanced_sets")
+
+cnn_multiclass.script.path <- file.path(models.cnn_script.path, 
+                                         "cnn-multiclass.R")
+stopifnot(file.exists(cnn_multiclass.script.path))
+
+cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
+                                                   "cnn-multiclass.evaluation.R")
+stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
+
+data.dl.cnn.multiclass.dir <- file.path(data.dl.cnn.dir, "multiclass")
+
+if(!dir.exists(data.dl.cnn.multiclass.dir))
+  dir.create(data.dl.cnn.multiclass.dir)
+
+data.dl.cnn.multiclass.checkpoints.dir <- file.path(data.dl.cnn.multiclass.dir, "checkpoints")
+
+if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
+  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
+
 #### Prepare Training & Testing Sets -----------------------------------------------------
 put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
 
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path))
+
 put_log("Loading the Train 28x28 Image Data Array Set from the backup file...")
 img_mx.set <- readRDS(train.img28x28mx.array.file_path)
+
 put_log("The Train 28x28 Image Data Array Set has been loading from the following file:
 %1", train.img28x28mx.array.file_path)
+
 put_log("The Train 28x28 Image Data Array Set structure:
 %1", capture.output(str(img_mx.set)))
 
 put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
-
 
 set.seed(N.classes)
 split3d.list <- sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
@@ -207,6 +181,31 @@ source(cnn_multiclass.evaluation.script.path,
        keep.source = TRUE)
 
 ### CNN-based Binary Classifier Models -----------------------------------------
+
+cnn_binary.scripts.path <- file.path(models.cnn_script.path, "cnn-binary.R")
+stopifnot(file.exists(cnn_binary.scripts.path))
+
+data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
+
+if(!dir.exists(data.cnn.binary.dir))
+  dir.create(data.cnn.binary.dir)
+
+
+data.cnn.binary.models.dir <- file.path(data.cnn.binary.dir, "models")
+
+if(!dir.exists(data.cnn.binary.models.dir))
+  dir.create(data.cnn.binary.models.dir)
+
+data.cnn.binary.models.checkpoints.dir <- file.path(data.cnn.binary.models.dir, 
+                                                    "checkpoints")
+if(!dir.exists(data.cnn.binary.models.checkpoints.dir))
+  dir.create(data.cnn.binary.models.checkpoints.dir)
+
+data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir, 
+                                                   "evaluation")
+if(!dir.exists(data.cnn.binary.models.evaluation.dir))
+  dir.create(data.cnn.binary.models.evaluation.dir)
+
 source(cnn_binary.scripts.path, 
        catch.aborts = TRUE,
        echo = TRUE,
@@ -221,36 +220,37 @@ open_logfile(".ds.prepare.final-test.balanced_sets")
 
 put_log("Preparing a Final Test Set for validating the CNN-based Models...")
 start <- put_start_date()
+stopifnot(file.exists(final_test.img28x28mx.array.file_path))
 
-if(!exists("ft.img28x28mx.array")) {
-  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
-  ft.img28x28mx.array <- readRDS(final_test.img28x28mx.array.file_path)
-  put_log("The Final Test Data has been loaded from the following backup file:
+put_log("Loading the Final Test 28x28 Image Data Array Set from the backup file...")
+ft.img_mx.set <- readRDS(final_test.img28x28mx.array.file_path)
+
+put_log("The Final Test 28x28 Image Data Array Set has been loading from the following file:
 %1", final_test.img28x28mx.array.file_path)
-}
 
-put_log("The Final Test Data has the following structure:
-%1", capture.output(str(ft.img28x28mx.array)))
+put_log("The Final Test 28x28 Image Data Set structure:
+%1", capture.output(str(ft.img_mx.set)))
 
 ##### Creating Final Test Dataset -----------------------------------------------
-final_sample_seed <- nrow(ft.img28x28mx.array) # 22524
-
 put_log("Making a balanced sample from the Validation 28x28 Image Data Array...")
 
-set.seed(final_sample_seed)
-ft.sample_set <- sample_train_test_sets.x3d(ft.img28x28mx.array, test.ratio = 1)
+set.seed(N.classes)
+ft.sample_set <- sample_train_test_sets.x3d(ft.img_mx.set$img28x28mx.array,
+                                           ft.img_mx.set$img28x28mx.fpath,
+                                           test.ratio = 1)
 
 put_log("The Final Test Set sample has been made from the Validation 28x28 Image Data Array,
 which is returned in an object with the following structure:
 %1", capture.output(str(ft.sample_set)))
 put_end_date(start)
 
-x3d.test <- ft.sample_set$test_set
-put_log("The Test Set has been saved in the object `x3d.test` with the following shape:
-%1", capture.output(shape(x3d.test)))
-# shape(33267, 28, 28)
+ft.x3d.test_set <- ft.sample_set$test_set
+put_log("The Test Set has been saved in the object `ft.x3d.test_set`, 
+which contains a testing sample stored in the `x.test` variable having the following shape:
+%1", capture.output(shape(ft.x3d.test_set$x.test)))
+# shape(4641, 28, 28)
 
-rm(ft.sample_set)
+# rm(ft.sample_set)
 
 log_close()
 
