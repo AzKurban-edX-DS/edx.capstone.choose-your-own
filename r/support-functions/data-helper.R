@@ -193,7 +193,7 @@ img.file_path.get_list <- function(root_path,
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
-    put_log1("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file_path.get_list`:
 Getting file path list from the following char's root folders:
 %1", file.root_path)
 
@@ -216,7 +216,7 @@ Getting file path list from the following char's root folders:
       fpath.list <- fpath.list[file.idx]
     }
     
-    put_log2("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file_path.get_list`:
 %1 files in folder: %2", length(fpath.list), folder_name)
 
     list(root_path = file.root_path,

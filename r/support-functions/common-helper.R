@@ -146,7 +146,7 @@ Iteration %1", i)
 prm_val: %1", prm_val)
     param_vals_tmp[i] <- prm_val
 
-    put_log2("Function: `tune.model_param`:
+    put_log("Function: `tune.model_param`:
 param_vals_tmp[%1]: %2", i, param_vals_tmp[i])
     put_log1("Function: `tune.model_param`:
 param_vals_tmp length: %1", length(param_vals_tmp))
@@ -158,7 +158,7 @@ param_vals_tmp length: %1", length(param_vals_tmp))
 RMSE_tmp: %1", RMSE_tmp)
     RMSEs_tmp[i] <- RMSE_tmp
 
-    put_log2("Function: `tune.model_param`:
+    put_log("Function: `tune.model_param`:
 RMSEs_tmp[%1]: %2", i, RMSEs_tmp[i])
     put_log1("Function: `tune.model_param`:
 RMSEs_tmp length: %1", length(RMSEs_tmp))
@@ -171,7 +171,7 @@ RMSEs_tmp length: %1", length(RMSEs_tmp))
       warning("Function: `tune.model_param`:
 `RSME` reached its minimum: ", RMSE_min, "
 for parameter value: ", prm_val)
-      put_log2("Function: `tune.model_param`:
+      put_log("Function: `tune.model_param`:
 Current `RMSE` value is %1 related to parameter value: %2",
                RMSE_tmp,
                prm_val)
@@ -242,7 +242,7 @@ model.tune.param_range <- function(loop_starter,
       warning("Function `model.tune.param_range`:
 parameter value increment is too small.")
 
-      put_log2("Function `model.tune.param_range`:
+      put_log("Function `model.tune.param_range`:
 Final best RMSE for `parameter value = %1`: %2",
                param_values.best_result["param.best_value"],
                param_values.best_result["best_RMSE"])
@@ -353,7 +353,7 @@ File saved: %1", file_path_tmp)
       put_log1("Function `model.tune.param_range`:
 Current minimal RMSE: %1", rmse_min)
 
-      put_log2("Function `model.tune.param_range`:
+      put_log("Function `model.tune.param_range`:
 Reached minimal RMSE for the test parameter value = %1: %2",
                param_values.best_result["param.best_value"],
                param_values.best_result["best_RMSE"])
@@ -368,12 +368,12 @@ Reached minimal RMSE for the test parameter value = %1: %2",
               best_RMSE, "
 Currently computed minial value is: ", min_RMSE)
 
-      put_log2("Function `model.tune.param_range`:
+      put_log("Function `model.tune.param_range`:
 Current minimal RMSE for `parameter value = %1`: %2",
                tuned.result$parameter.value[which.min(tuned.result$RMSE)],
                min_RMSE)
 
-      put_log2("Function `model.tune.param_range`:
+      put_log("Function `model.tune.param_range`:
 So far reached best RMSE for `parameter value = %1`: %2",
                param_values.best_result["param.best_value"],
                param_values.best_result["best_RMSE"])
@@ -390,7 +390,7 @@ So far reached best RMSE for `parameter value = %1`: %2",
           get_best_param.result(tuned.result$parameter.value,
                                 tuned.result$RMSE)
         # browser()
-        put_log2("Function `model.tune.param_range`:
+        put_log("Function `model.tune.param_range`:
       Reached the best RMSE for `parameter value = %1`: %2",
                  param_values.best_result["param.best_value"],
                  param_values.best_result["best_RMSE"])
@@ -413,7 +413,7 @@ Currently computed minial value is: ", min_RMSE)
       get_best_param.result(tuned.result$parameter.value,
                           tuned.result$RMSE)
 
-    put_log2("Function `model.tune.param_range`:
+    put_log("Function `model.tune.param_range`:
 Currently reached best RMSE for `parameter value = %1`: %2",
              param_values.best_result["param.best_value"],
              param_values.best_result["best_RMSE"])
