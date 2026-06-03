@@ -167,59 +167,9 @@ have been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 1.502232 mins
   
-  dim(cnn_multiclass.preds)
-  
-  colnames(cnn_multiclass.preds) <- y.labels
-  head(cnn_multiclass.preds[,1:5])
-  
-  cnn_preds.ts <- as_tensor(cnn_multiclass.preds)
-  str(cnn_preds.ts)
-  #> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
-  
-  cnn_multiclass.predictions <- cnn_preds.ts |> op_argmax(2)
-  str(cnn_multiclass.predictions)
-  cnn_multiclass.predictions
-  #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-  dim(cnn_multiclass.predictions)
-  #> [1] 684467
-  cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
-  head(cnn.prediction.values.idx)
-  cnn_mcc.prediction.values <- y.labels[cnn.prediction.values.idx]
-  head(cnn_mcc.prediction.values)
-  
-  # Confusion Matrix data suitable for Visualization using the `cvms` package:
-  # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-  put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
-suitable for visualization using the `cvms` package...")
-  cnn_multiclass.conf.mx <- confusion_matrix(as.character(y.test),
-                                             as.character(cnn_mcc.prediction.values))
-  put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
-%1", cnn_multiclass.conf.mx)  
-  
-  #### Accuracy by Class ---
-  y.test.idx <- seq_len(length(y.test))
-  # head(y.test.idx)
-  
-  cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
-                                                                      y.test,
-                                                                      cnn_mcc.prediction.values)
-  #### ROC Curves
-  # References:
-  # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
-  # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
-  
-  put_log("Calculating a ROC curve for each class...")
-  cnn_mcc.roc_curves <- calc.roc_curves.cnn(y.test.cat,
-                                            cnn_multiclass.preds,
-                                            y.labels)
-  
   put_log("Saving the Multiclass Classifier model Evaluation Results...")
   save(cnn_multiclass.eval.result,
        cnn_multiclass.preds,
-       cnn_mcc.prediction.values,
-       cnn_mcc.roc_curves,
-       cnn_multiclass.conf.mx,
-       cnn_multiclass.accuracy_by_class,
        file = cnn_multiclass.model.eval.file_path)
   
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
@@ -235,6 +185,52 @@ put_log("CNN MCC Model evaluation result:
 # 
 # $loss
 # [1] 0.2359146
+
+dim(cnn_multiclass.preds)
+
+colnames(cnn_multiclass.preds) <- y.labels
+head(cnn_multiclass.preds[,1:5])
+
+cnn_preds.ts <- as_tensor(cnn_multiclass.preds)
+str(cnn_preds.ts)
+#> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
+
+cnn_multiclass.predictions <- cnn_preds.ts |> op_argmax(2)
+str(cnn_multiclass.predictions)
+cnn_multiclass.predictions
+#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
+dim(cnn_multiclass.predictions)
+#> [1] 684467
+cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
+head(cnn.prediction.values.idx)
+cnn_mcc.prediction.values <- y.labels[cnn.prediction.values.idx]
+head(cnn_mcc.prediction.values)
+
+# Confusion Matrix data suitable for Visualization using the `cvms` package:
+# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
+put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
+suitable for visualization using the `cvms` package...")
+cnn_multiclass.conf.mx <- confusion_matrix(as.character(y.test),
+                                           as.character(cnn_mcc.prediction.values))
+put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
+%1", cnn_multiclass.conf.mx)  
+
+#### Accuracy by Class ---
+y.test.idx <- seq_len(length(y.test))
+# head(y.test.idx)
+
+cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
+                                                                   y.test,
+                                                                   cnn_mcc.prediction.values)
+#### ROC Curves
+# References:
+# https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+# https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
+
+put_log("Calculating a ROC curve for each class...")
+cnn_mcc.roc_curves <- calc.roc_curves.cnn(y.test.cat,
+                                          cnn_multiclass.preds,
+                                          y.labels)
 
 cnn_multiclass.accuracy <- mean(cnn_mcc.prediction.values == y.test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.accuracy)
