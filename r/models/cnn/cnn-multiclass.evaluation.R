@@ -37,7 +37,8 @@ if(exists("cnn_multiclass.train_history")){
 put_log("Preparing a Test Set...")
 start <- put_start_date()
 
-put_log("Input Test Data Object structure
+put_log("The Test Set data is stored in the object `x3d.test_set`, 
+having the following structure:
 %1", capture.output(str(x3d.test_set)))
 
 class.groups <- ds.get_classIDs.grouped(x3d.test_set$x.test)
@@ -75,7 +76,7 @@ x.test.files <- x3d.test_set$x.files
 
 put_log("The Test Set has been reshaped as follows:
 %1", capture.output(shape(x.test)))
-# shape(33267, 28, 28)
+# shape(33228, 28, 28, 1)
 
 ### class Identifies: Quick Analysis ---------------------------------------------
 
@@ -186,15 +187,15 @@ have been loaded from the following backup file:
   #> [1] 684467
   cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
   head(cnn.prediction.values.idx)
-  cnn.prediction.values <- y.labels[cnn.prediction.values.idx]
-  head(cnn.prediction.values)
+  cnn_mcc.prediction.values <- y.labels[cnn.prediction.values.idx]
+  head(cnn_mcc.prediction.values)
   
   # Confusion Matrix data suitable for Visualization using the `cvms` package:
   # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
   put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
 suitable for visualization using the `cvms` package...")
   cnn_multiclass.conf.mx <- confusion_matrix(as.character(y.test),
-                                             as.character(cnn.prediction.values))
+                                             as.character(cnn_mcc.prediction.values))
   put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
 %1", cnn_multiclass.conf.mx)  
   
@@ -204,7 +205,7 @@ suitable for visualization using the `cvms` package...")
   
   cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                                       y.test,
-                                                                      cnn.prediction.values)
+                                                                      cnn_mcc.prediction.values)
   #### ROC Curves
   # References:
   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
@@ -218,7 +219,7 @@ suitable for visualization using the `cvms` package...")
   put_log("Saving the Multiclass Classifier model Evaluation Results...")
   save(cnn_multiclass.eval.result,
        cnn_multiclass.preds,
-       cnn.prediction.values,
+       cnn_mcc.prediction.values,
        cnn_mcc.roc_curves,
        cnn_multiclass.conf.mx,
        cnn_multiclass.accuracy_by_class,
@@ -227,9 +228,7 @@ suitable for visualization using the `cvms` package...")
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
 %1", cnn_multiclass.model.eval.file_path)
-  
-  
-  
+
 }
 
 put_log("CNN MCC Model evaluation result:
@@ -240,13 +239,13 @@ put_log("CNN MCC Model evaluation result:
 # $loss
 # [1] 0.2359146
 
-cnn_multiclass.accuracy <- mean(cnn.prediction.values == y.test)
+cnn_multiclass.accuracy <- mean(cnn_mcc.prediction.values == y.test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.accuracy)
 # 0.919375225713254
 #> For final test (expected value):
 #> CNN Model accuracy: 0.910364145658263
 
-# cnn_multiclass.conf.mx0 <- confusionMatrix(y.test, cnn.prediction.values)
+# cnn_multiclass.conf.mx0 <- confusionMatrix(y.test, cnn_mcc.prediction.values)
 
 
 ### Logging Accuracies by class -------------------------------------------------
@@ -310,27 +309,27 @@ for (class.idx in 2:N.classes) {
   lines(cnn_mcc.roc_curves[[class.idx]], col = class.idx)
 }
 
-# put_log("Plotting the confusion matrix, please wait...")
-# start <- put_start_date()
-# cl <- makeCluster(N_pcCores)
-# registerDoParallel(cl)
-# 
-# dev.off()
-# plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
-#                       palette = "Greens",
-#                       font_counts = font(size = 3,
-#                                          
-#                                          color = "red"),
-#                       add_normalized = FALSE,
-#                       add_col_percentages = FALSE,
-#                       add_row_percentages = FALSE)
-# stopCluster(cl)
-# stopImplicitCluster()
-# put_end_date(start)
+put_log("Plotting the confusion matrix, please wait...")
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+dev.off()
+plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
+                      palette = "Greens",
+                      font_counts = font(size = 3,
+
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
+stopCluster(cl)
+stopImplicitCluster()
+put_end_date(start)
 
 ### Review Some Errors --------------------------------------------------------- 
 
-recg.err.info <- recognition_err.table(cnn.prediction.values,
+recg.err.info <- recognition_err.table(cnn_mcc.prediction.values,
                                         y.test,
                                         x.test.files)
 put_log("First 30 prediction errors:
