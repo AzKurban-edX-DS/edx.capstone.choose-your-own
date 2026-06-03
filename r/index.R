@@ -254,17 +254,7 @@ which contains a testing sample stored in the `x.test` variable having the follo
 
 log_close()
 
-### Final Testing of the CNN-Based Multiclass Classifier Model --------------------
-
-source(cnn_multiclass.evaluation.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-
-### Final Testing of an Ensemble of CNN-Based Binary Classifier Models ---------
+### Final Testing of CNN BCC-Based Ensemble ------------------------------------
 
 cnn_binary.ensemble.script.path <- file.path(models.cnn_script.path, 
                                               "cnn-binary.ensemble.R")
@@ -276,3 +266,20 @@ source(cnn_binary.ensemble.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+### Final Testing of the CNN-Based Multiclass Classifier Model -----------------
+
+x3d.test_set <- ft.x3d.test_set
+rm(ft.x3d.test_set)
+
+cnn_multiclass.model.eval.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+                                                 "cnn.multiclass.model.final-test.RData")
+
+source(cnn_multiclass.evaluation.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+

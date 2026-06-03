@@ -365,9 +365,6 @@ stopCluster(cl)
 stopImplicitCluster()
 put_end_date(start)
 
-
-
-
 ### Review Some Errors --------------------------------------------------------- 
 
 

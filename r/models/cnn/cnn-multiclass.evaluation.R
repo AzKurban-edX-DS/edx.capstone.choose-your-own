@@ -1,10 +1,10 @@
-## Open log: Evaluate CNN Model -------------------------------------------------
+# CNN MCC Model Evaluation -----------------------------------------------------
 open_logfile(".evaluate-cnn-model")
-put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
-
 stopifnot(exists("x3d.test_set"))
 
-## Loading the Pre-trained CNN-based Multiclass Classifier Model ----------------------------------------------
+## Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
+put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
+
 if (!exists("cnn_multiclass.model")) {
   stopifnot(file.exists(cnn_multiclass.model.file_path))
   
@@ -138,9 +138,6 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
-
-cnn_multiclass.model.eval.file_path <- file.path(data.dl.cnn.multiclass.dir, 
-                                            "cnn.multiclass.model.eval.RData")
 
 if(file.exists(cnn_multiclass.model.eval.file_path)) {
   put_log("Loading the Multiclass Classifier model Evaluation Results...")
