@@ -347,50 +347,26 @@ plot_bars.accuracy.by_class(y.labels,
                             .title = "CNN BCC-Based Ensemble: Class-wise Evaluation Result",
                             )
 
-put_log("Plotting the confusion matrix, please wait...")
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-dev.off()
-plot_confusion_matrix(cnn_bcc.ensemble.conf.mx$`Confusion Matrix`[[1]],
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
+# put_log("Plotting the confusion matrix, please wait...")
+# start <- put_start_date()
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# 
+# dev.off()
+# plot_confusion_matrix(cnn_bcc.ensemble.conf.mx$`Confusion Matrix`[[1]],
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+# 
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# stopCluster(cl)
+# stopImplicitCluster()
+# put_end_date(start)
 
 ### Review Some Errors --------------------------------------------------------- 
 
 
 
 log_close()
-#----------------------------------
-err.idx <- which(cnn.prediction.values != as.integer(y.test))
-length(err.idx)
-# 94951
-err.head.idx <- head(err.idx)
-
-
-
-err.pred.values <- cnn.prediction.values[err.idx]
-head(err.pred.values)
-
-err.teslbl.values <- y.test[err.idx]
-head(err.teslbl.values)
-
-err.head.img <- x.test[err.head.idx,,,1]
-dim(err.head.img)
-
-# par(mfrow = c(6, 1))
-# for(i in err.head.idx) {
-#   char.image(x.test[i,,,1])
-# }
-# par(mfrow = c(1,1))
-
-#> [*] Reference: https://databricks-prod-cloudfronlbl.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/lateslbl.html

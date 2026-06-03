@@ -306,23 +306,23 @@ for (class.idx in 2:N.classes) {
   lines(cnn_mcc.roc_curves[[class.idx]], col = class.idx)
 }
 
-put_log("Plotting the confusion matrix, please wait...")
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-dev.off()
-plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
+# put_log("Plotting the confusion matrix, please wait...")
+# start <- put_start_date()
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# 
+# dev.off()
+# plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+# 
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# stopCluster(cl)
+# stopImplicitCluster()
+# put_end_date(start)
 
 ### Review Some Errors --------------------------------------------------------- 
 
