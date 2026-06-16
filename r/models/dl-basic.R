@@ -216,10 +216,13 @@ if(file.exists(dl.basic.model.file_path)) {
   n.input_shape <- ncol(x.train)
   # 784
   
-  n.hl.units <- ceiling(n.input_shape*2/3+N.classes)
-  # 562
+  n.hl.units <- 512 # ceiling(n.input_shape*2/3+N.classes)
+                    # 562
   
-  dl.basic.model <- keras_model_sequential() |>
+  
+  dl.basic.inputs <- layer_input(shape = c(n.input_shape))
+  
+  dl.basic.outputs <- dl.basic.inputs |>
     layer_dense(units = n.hl.units, activation = "relu", 
                 input_shape = c(n.input_shape)) |>
     layer_dropout(rate = 0.25) |> 
@@ -233,39 +236,42 @@ if(file.exists(dl.basic.model.file_path)) {
     layer_dropout(rate = 0.25) |> 
     layer_dense(units = N.classes, activation = "softmax")
   
-  summary(dl.basic.model)
+  
+  dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
+  dl.basic.model
   
   dl.basic.model |> compile(
-    loss = "categorical_crossentropy",
-    optimizer = optimizer_adam(),
-    metrics = c("accuracy")
+    loss = "sparse_categorical_crossentropy",
+    optimizer = keras3::optimizer_adamax(0.001),
+    metrics = "accuracy"
   )
   
   summary(dl.basic.model)
   
   ### Training the Basic DL MCC Model ******************************************
   
-  # dl.basic.callbacks <- list(
-  #   callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
-  #                             monitor = "val_accuracy",
-  #                             mode = max,
-  #                             # save_best_only = TRUE,
-  #                             verbose = 1)
-  # )
+  dl.basic.callbacks <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
+                              monitor = "val_loss",
+                              save_best_only = TRUE,
+                              verbose = 1)
+  )
+  
+  
 
   put_log("Training the BDL MCC Model...")
   start <- put_start_date()
   
   dl.basic.train_history <- dl.basic.model |> 
     fit(x.train, 
-        y.train.cat, 
+        y.train, 
         epochs = 100, 
-        batch_size = 512, 
-        validation_split = 0.15
-        #callbaks = dl.basic.callbacks
+        # batch_size = 128, 
+        callbacks = dl.basic.callbacks,
+        validation_split = 0.2
         )
-  
-  
+
   put_log("Saving pre-trained BDL MCC Model...")
   save_model(dl.basic.model,
              filepath = dl.basic.model.file_path,
@@ -295,18 +301,16 @@ str(dl.basic.train_history)
 
 ## BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
-start <- put_start_date()
-bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test.cat)
+bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test)
 put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
 # List of 2
-#  $ accuracy: num 0.796
-#  $ loss    : num 1.52
+#  $ accuracy: num 0.907
+#  $ loss    : num 0.299
 
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-start <- put_start_date()
 bdl.preds <- dl.basic.model |> predict(x.test) 
 put_end_date(start)
 # Time difference of  mins
@@ -314,12 +318,12 @@ put_end_date(start)
 colnames(bdl.preds) <- y.labels
 head(bdl.preds[,1:5])
 #                 #            $            &            @            0
-# [1,] 8.469580e-25 2.824278e-25 1.338040e-31 1.180656e-36 3.503761e-16
-# [2,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
-# [3,] 9.542136e-15 3.782388e-15 1.619873e-16 3.058267e-19 4.522308e-08
-# [4,] 7.770129e-13 1.467184e-19 8.129414e-25 4.881509e-21 9.999547e-01
-# [5,] 4.731567e-38 0.000000e+00 0.000000e+00 0.000000e+00 5.828601e-27
-# [6,] 0.000000e+00 0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
+# [1,] 3.792269e-07 8.851480e-07 2.578369e-08 3.807849e-07 3.528773e-05
+# [2,] 1.730552e-13 6.454766e-15 1.392669e-09 6.399740e-10 3.266690e-07
+# [3,] 9.197757e-16 3.064377e-12 1.566798e-11 5.085300e-16 8.313370e-07
+# [4,] 7.945133e-08 5.979302e-07 3.491478e-08 4.118463e-09 3.721448e-06
+# [5,] 1.046998e-12 9.161977e-15 2.002677e-24 1.114895e-18 6.859786e-13
+# [6,] 4.039502e-14 1.164542e-14 2.524913e-17 2.605324e-14 5.818604e-10
 
 dim(bdl.preds)
 #> [1] 33228    39
@@ -332,7 +336,7 @@ bdl.predictions <- bdl.preds.ts |> op_argmax(2)
 bdl.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
 dim(bdl.predictions)
-#> [1] 684467
+#> [1] 33228
 # bdl.predictions$numpy()
 
 
@@ -347,7 +351,7 @@ head(bdl.pred.values)
 
 dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
-# [1] 0.9045985
+# 0.906735283495847
 
 
 put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
@@ -398,45 +402,45 @@ dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
 dl.basic.accuracy.by_class
 {
 #' class  accuracy
-#'     # 1.0000000
-#'     $ 1.0000000
-#'     & 1.0000000
-#'     @ 1.0000000
-#'     0 0.9589202
-#'     1 0.7464789
-#'     2 0.8814554
-#'     3 0.9565728
-#'     4 0.9354460
-#'     5 0.9213615
-#'     6 0.9107981
-#'     7 0.9812207
-#'     8 0.9307512
-#'     9 0.8591549
-#'     A 0.8708920
-#'     B 0.9143192
-#'     C 0.9248826
-#'     D 0.9284038
-#'     E 0.9507042
-#'     F 0.9460094
-#'     G 0.7077465
-#'     H 0.9366197
-#'     I 0.6737089
-#'     J 0.9295775
-#'     K 0.9213615
-#'     L 0.5316901
-#'     M 0.9694836
-#'     N 0.9366197
-#'     P 0.9812207
-#'     Q 0.7417840
-#'     R 0.9553991
-#'     S 0.8920188
-#'     T 0.9530516
-#'     U 0.9096244
-#'     V 0.9284038
-#'     W 0.9659624
-#'     X 0.9330986
-#'     Y 0.8931925
-#'     Z 0.9014085
+  #' # 1.0000000
+  #' $ 1.0000000
+  #' & 1.0000000
+  #' @ 1.0000000
+  #' 0 0.9671362
+  #' 1 0.8638498
+  #' 2 0.9143192
+  #' 3 0.9565728
+  #' 4 0.9319249
+  #' 5 0.9025822
+  #' 6 0.9284038
+  #' 7 0.9800469
+  #' 8 0.9295775
+  #' 9 0.9507042
+  #' A 0.8791080
+  #' B 0.9025822
+  #' C 0.9589202
+  #' D 0.9295775
+  #' E 0.9495305
+  #' F 0.9577465
+  #' G 0.6725352
+  #' H 0.9237089
+  #' I 0.6525822
+  #' J 0.9272300
+  #' K 0.9272300
+  #' L 0.3967136
+  #' M 0.9659624
+  #' N 0.9389671
+  #' P 0.9683099
+  #' Q 0.7159624
+  #' R 0.9448357
+  #' S 0.9084507
+  #' T 0.9518779
+  #' U 0.9330986
+  #' V 0.9401408
+  #' W 0.9624413
+  #' X 0.9518779
+  #' Y 0.8685446
+  #' Z 0.9096244
 }
 
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")

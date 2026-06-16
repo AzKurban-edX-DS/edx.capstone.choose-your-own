@@ -188,7 +188,7 @@ Summary of the model:
       #> The training time can be significantly reduced if running on GPU. [*]
       
       cnn.lbl.callbacks <- list(
-        # callback_early_stopping(patience = 3, monitor = 'val_loss'),
+        callback_early_stopping(patience = 3, monitor = 'val_loss'),
         callback_model_checkpoint(filepath = bin_model.checkpoint.file_path,
                                   monitor = "val_accuracy",
                                   mode = max,

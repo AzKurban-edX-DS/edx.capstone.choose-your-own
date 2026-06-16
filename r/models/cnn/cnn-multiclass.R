@@ -140,19 +140,19 @@ if(file.exists(cnn_multiclass.model.file_path)) {
     #> of the image. [*]
     
     cnn_multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
-      layer_conv_2d(filters = 8L,
-                    kernel_size = 5, 
-                    strides = 1,
+      layer_conv_2d(filters = 16L,
+                    kernel_size = c(2L, 2L), 
+                    # strides = 1,
                     activation = "relu") |>
-      layer_max_pooling_2d(strides = c(2, 2)) |>
+      layer_max_pooling_2d() |>
       layer_dropout(rate = 0.25) |>
       layer_conv_2d(filters = 16L, 
-                    kernel_size = 5,
+                    kernel_size = c(3L, 3L),
                     strides = 1,
                     activation = "relu") |>
-      layer_max_pooling_2d(strides = c(2, 2)) |>
+      layer_max_pooling_2d() |>
       layer_flatten() |>
-      layer_dense(units = 128, activation = "relu") |>
+      layer_dense(units = 100L, activation = "relu") |>
       layer_dropout(rate = 0.3) |>
       layer_dense(units = N.classes, activation = "softmax")
     
@@ -185,7 +185,7 @@ if(file.exists(cnn_multiclass.model.file_path)) {
       callback_model_checkpoint(filepath = cnn_multiclass.checkpoint.file_path,
                                 monitor = "val_accuracy",
                                 mode = max,
-                                # save_best_only = TRUE,
+                                save_best_only = TRUE,
                                 verbose = 1)
     )
     
