@@ -4,9 +4,10 @@
 
 # Basic Deep Learning Multiclass Classifier (BDL MCC)  Model
 
-# Reference:
+# References:
 # MNIST Handwritten Digit Recognition in Keras
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
+# ref.bib: DL_R3_E2-S7.3
 
 ## Loading Split Dataset allocated 20% for the Test set (default) ------------
 open_logfile(".split.20%test.balanced_subset")
@@ -169,6 +170,11 @@ dl.basic.dir_path <- file.path(dl.keras3.path, "dl.basic")
 if(!dir.exists(dl.basic.dir_path))
   dir.create(dl.basic.dir_path)
 
+dl.basic.tuning.dir <- file.path(dl.basic.dir_path,
+                                            "tuning")
+if(!dir.exists(dl.basic.tuning.dir))
+  dir.create(dl.basic.tuning.dir)
+
 dl.basic.checkpoints.dir <- file.path(dl.basic.dir_path,
                                             "checkpoints")
 if(!dir.exists(dl.basic.checkpoints.dir))
@@ -178,13 +184,158 @@ dl.basic.checkpoint.file_path <-
   file.path(dl.basic.checkpoints.dir, 
             "dl.basic.{epoch:02d}-{val_loss:.2f}.keras")
 
-
-
 dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
                              "dl.basic.pre-trained.model.keras")
 
 dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
                              "dl.basic.model.train_history.bak.rds")
+
+## Tuning Basic DL MCC Model ---------------------------------------------------
+
+n.input_shape <- ncol(x.train)
+# 784
+
+dl.basic.inputs <- layer_input(shape = c(n.input_shape))
+
+### 1 Hidden Layer ----------------------------------------------
+
+stopifnot(dir.exists(dl.basic.tuning.dir))
+
+hl1.dir <- file.path(dl.basic.tuning.dir,"1-hidden-layer")
+if(!dir.exists(hl1.dir))
+  dir.create(hl1.dir)
+
+dl.model.hl1.tuning_results.file_path <- 
+  file.path(hl1.dir, "1hl.units_tuning.results.rds")
+
+n.hl.units <- c(784, 562, 512, 256, 128, 64)
+
+put_log("Tuning DL Basic Model for 1 Hidden Layer with different number of units...")
+start <- put_start_date()
+
+dl.basic.tuning.result <- lapply(n.hl.units, function(n.units) {
+  stopifnot(dir.exists(hl1.dir))
+  
+  n_units.dir <- file.path(hl1.dir, paste0(n.units, "units"))
+  
+  if(!dir.exists(n_units.dir))
+    dir.create(n_units.dir)
+  
+  model.file_path <- file.path(n_units.dir, "dl.basic.model.keras")
+  
+  model.train_history.file_path <- file.path(n_units.dir, 
+                                             "dl.basic.model.train_history.rds")
+  
+  checkpoints.dir <- file.path(n_units.dir, "checkpoints")
+  
+  if(!dir.exists(checkpoints.dir))
+    dir.create(checkpoints.dir)
+  
+  checkpoints.file_path <- 
+    file.path(checkpoints.dir, 
+              "dl.basic.hl1.{epoch:02d}-{val_loss:.2f}.keras")
+
+  dl.basic.outputs <- dl.basic.inputs |>
+    layer_dense(units = n.units, activation = "relu", 
+                input_shape = c(n.input_shape)) |>
+    layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    layer_dense(units = N.classes, activation = "softmax")
+  
+  
+  dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
+  dl.basic.model
+  
+  dl.basic.model |> compile(
+    loss = "sparse_categorical_crossentropy",
+    optimizer = keras3::optimizer_adamax(0.001),
+    metrics = "accuracy"
+  )
+  
+  summary(dl.basic.model)
+
+ 
+  model.callbacks <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = checkpoints.file_path,
+                              monitor = "val_loss",
+                              save_best_only = TRUE,
+                              verbose = 1)
+  )
+  
+  ### Training the Basic DL MCC Model ******************************************
+  
+  put_log("Training the BDL MCC Model...")
+  start <- put_start_date()
+  
+  model.train_history <- dl.basic.model |> 
+    fit(x.train, 
+        y.train, 
+        epochs = 50, 
+        # batch_size = 128, 
+        callbacks = model.callbacks,
+        validation_split = 0.2
+    )
+  
+  put_log("Saving pre-trained BDL MCC Model...")
+  save_model(dl.basic.model,
+             filepath = model.file_path,
+             overwrite = TRUE)
+  
+  put_log("The BDL MCC Model has been trained 
+and saved in the following file:
+  %1", model.file_path)
+  
+  put_log("Saving the BDL MCC Model History...")
+  saveRDS(model.train_history,
+          file = model.train_history.file_path)
+  
+  put_log("The BDL MCC Model History has been trained 
+and saved in the following file:
+  %1", model.train_history.file_path)
+  # Time difference of 38.48235 mins
+  
+  put_log("Evaluating DL Model...")
+  eval.result <- dl.basic.model |> evaluate(x.test, y.test)
+  put_log("DL Model evaluation result:
+%1", capture.output(str(eval.result)))
+  # List of 2
+  #  $ accuracy: num 0.907
+  #  $ loss    : num 0.299
+  
+  put_end_date(start)
+  
+  
+  list(model.file_path = model.file_path,
+       train_history = model.train_history,
+       eval.result = eval.result,
+       n.units = n.units)
+  
+})
+
+names(dl.basic.tuning.result) <- as.character(n.hl.units)
+str(dl.basic.tuning.result)
+
+put_log("Saving the BDL MCC Model History...")
+saveRDS(dl.basic.tuning.result,
+        file = dl.model.hl1.tuning_results.file_path)
+
+put_log("The BDL MCC Model History has been trained 
+and saved in the following file:
+  %1", dl.model.hl1.tuning_results.file_path)
+put_end_date(start)
+
+best_tuning.result <- dl.basic.tuning.result$`784`
+str(best_tuning.result)
+
+plot(best_tuning.result$train_history)
 
 ## Building Basic DL MCC Model -------------------------------------------------
 

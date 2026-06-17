@@ -1,5 +1,7 @@
 # Setup -----------------------------------------------------------------------
 options(timeout = max(300, getOption("timeout")))
+options(reticulate.conda_binary = "C:\\ProgramData\\anaconda3\\condabin\\conda.bat")
+
 ## Install Packages ------------------------------------------------------------
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
 #> https://github.com/AzKurban-edX-DS/harvardx-movielens
@@ -39,17 +41,35 @@ if(!require(remotes))
 if(!require(doParallel))
   install.packages("doParallel")
 
-if(!require(reticulate))
-  install.packages("reticulate")
+if(!require(reticulate)) {
+  install.packages(c("reticulate", "tensorflow", "keras3", "autokeras"))
+  reticulate::install_python()
+  
+}
 
-if(!require(tfdatasets))
-  install.packages("tfdatasets")
+
+
+if(!require(autokeras)) {
+  install.packages("autokeras")
+  library(autokeras)
+  install_autokeras(method = "conda")
+}
 
 if(!require(keras3)) {
   install.packages("keras3")
   library(keras3)
   install_keras()
 }
+
+if(!require(tfdatasets))
+  install.packages("tfdatasets")
+
+# remotes::install_github("jcrodriguez1989/autokeras")
+
+# if(!require(kerastuneR))
+#   install.packages('kerastuneR')
+
+# devtools::install_github('eagerai/kerastuneR')
 
 # if(!require(tensorflow))
 #   remotes::install_github("rstudio/tensorflow")
@@ -87,7 +107,6 @@ if(!require(rsvg))
 # if(!require())
 #   install.packages("")
 
-
 ## Load Libraries & resolve conflicts ------------------------------------------
 
 library(matrixStats)
@@ -107,6 +126,7 @@ library(reticulate)
 library(pacman)
 
 # detach("package:keras", unload = TRUE)
+
 library(tensorflow)
 library(tfdatasets)
 library(keras3)
@@ -138,7 +158,8 @@ conflicts_prefer(base::save.image)
 # install_tensorflow(extra_packages="pillow")
 # install_tensorflow(envname = "r-tensorflow")
 
-reticulate::install_python(version = "3.11")
+# reticulate::install_python(version = "3.11")
+# reticulate::install_python(version = "3.6")
 
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
