@@ -1,6 +1,5 @@
 # Setup -----------------------------------------------------------------------
 options(timeout = max(300, getOption("timeout")))
-options(reticulate.conda_binary = "C:\\ProgramData\\anaconda3\\condabin\\conda.bat")
 
 ## Install Packages ------------------------------------------------------------
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
@@ -41,25 +40,8 @@ if(!require(remotes))
 if(!require(doParallel))
   install.packages("doParallel")
 
-if(!require(reticulate)) {
-  install.packages(c("reticulate", "tensorflow", "keras3", "autokeras"))
-  reticulate::install_python()
-  
-}
 
 
-
-if(!require(autokeras)) {
-  install.packages("autokeras")
-  library(autokeras)
-  install_autokeras(method = "conda")
-}
-
-if(!require(keras3)) {
-  install.packages("keras3")
-  library(keras3)
-  install_keras()
-}
 
 if(!require(tfdatasets))
   install.packages("tfdatasets")
