@@ -5,8 +5,6 @@ detach("package:keras3", unload = TRUE)
 detach("package:tensorflow", unload = TRUE)
 detach("package:reticulate", unload = TRUE)
 # detach("package:", unload = TRUE)
-# detach("package:", unload = TRUE)
-# detach("package:", unload = TRUE)
-# 
 
+.rs.restartR()
 
