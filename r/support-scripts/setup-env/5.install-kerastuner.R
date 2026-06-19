@@ -1,7 +1,7 @@
 options(timeout = max(300, getOption("timeout")))
 
 if(!require(pak)) 
-  install.packages("pak")
+  install.packages("pak", repos = "https://cloud.r-project.org")
 
 if(!require(kerastuneR)) {
   #install.packages("kerastuneR")
@@ -18,6 +18,6 @@ if(!require(kerastuneR)) {
                                envname = "mini.r-tensorflow_py3.11",
                                tensorflow = '2.21',
                                restart_session = FALSE)
-  .rs.restartR()
+  # .rs.restartR()
 }
 

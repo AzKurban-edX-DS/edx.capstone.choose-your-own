@@ -1,6 +1,6 @@
 if(!require(keras3)) {
   options(timeout = max(300, getOption("timeout")))
-  install.packages("keras3")
+  install.packages("keras3", repos = "https://cloud.r-project.org")
 
   library(reticulate)
 

@@ -1,6 +1,6 @@
 if(!require(autokeras)) {
   options(timeout = max(300, getOption("timeout")))
-  install.packages("autokeras")
+  install.packages("autokeras", repos = "https://cloud.r-project.org")
 
   library(autokeras)
   library(reticulate)
