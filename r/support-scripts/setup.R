@@ -46,19 +46,6 @@ if(!require(doParallel))
 if(!require(tfdatasets))
   install.packages("tfdatasets")
 
-# remotes::install_github("jcrodriguez1989/autokeras")
-
-# if(!require(kerastuneR))
-#   install.packages('kerastuneR')
-
-# devtools::install_github('eagerai/kerastuneR')
-
-# if(!require(tensorflow))
-#   remotes::install_github("rstudio/tensorflow")
-# 
-# library(tensorflow)
-# install_tensorflow(envname = "r-tensorflow")
-
 if (!require(pacman)) 
   install.packages("pacman")
 
@@ -90,6 +77,11 @@ if(!require(rsvg))
 #   install.packages("")
 
 ## Load Libraries & resolve conflicts ------------------------------------------
+library(reticulate)
+
+# Tell reticulate to use this new environment for the rest of your session
+use_miniconda("mini.r-tensorflow_py3.11", required = TRUE)
+
 
 library(matrixStats)
 library(dslabs)
@@ -103,7 +95,6 @@ library(ggplot2)
 
 library(logr)
 library(utils)
-library(reticulate)
 
 library(pacman)
 
