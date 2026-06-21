@@ -6,5 +6,4 @@
 Rscript.exe "1.install-reticulate&miniconda.R"
 Rscript.exe "2.install-tensorflow.R"
 Rscript.exe "3.install-keras3.R"
-Rscript.exe "4.install-autokeras.R"
-Rscript.exe "5.install-kerastuner.R"
+Rscript.exe "4.install-kerastuner.R"

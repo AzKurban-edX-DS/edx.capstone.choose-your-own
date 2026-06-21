@@ -1,9 +1,12 @@
 ## Not run: 
-library(reticulate)
-py_require(python_version = "3.11")
-py_require()
-
-library(keras3)
+# library(reticulate)
+# py_require(python_version = "3.11")
+# py_require()
+# 
+# library(keras3)
+library(tensorflow)
+library(keras)
+py_require_tensorflow()
 library(autokeras)
 
 # use the MNIST dataset as an example

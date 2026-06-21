@@ -77,10 +77,24 @@ if(!require(rsvg))
 #   install.packages("")
 
 ## Load Libraries & resolve conflicts ------------------------------------------
+
+# 1. Always load reticulate first to set your Python environment
 library(reticulate)
 
+py_require(python_version = "3.11")
+py_require()
 # Tell reticulate to use this new environment for the rest of your session
 use_miniconda("mini.r-tensorflow_py3.11", required = TRUE)
+py_require()
+
+# 2. Load the core backend engine
+library(tensorflow)
+
+# 3. Load the high-level framework
+library(keras3)
+
+# 4. Load the automation and tuning packages last
+library(kerastuneR)
 
 
 library(matrixStats)
@@ -100,9 +114,7 @@ library(pacman)
 
 # detach("package:keras", unload = TRUE)
 
-library(tensorflow)
 library(tfdatasets)
-library(keras3)
 
 library(imager)
 library(magick)
