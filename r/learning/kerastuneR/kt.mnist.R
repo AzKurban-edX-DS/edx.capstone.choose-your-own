@@ -39,45 +39,66 @@ c(mnist_train, mnist_test) %<-%  mnist_data
 rm(mnist_data)
 
 str(mnist_train)
-
-mnist_train$x = tf$dtypes$cast(mnist_train$x, 'float32') / 255.
 str(mnist_train$x)
 dim(mnist_train$x)
 shape(mnist_train$x)
 
-mnist_train$x[1,,]
+# mnist_train.x = tf$dtypes$cast(mnist_train$x, 'float32') / 255.
+mnist_train_x = tf$dtypes$cast(mnist_train$x / 255, 'int32')
+str(mnist_train_x)
+dim(mnist_train_x)
+shape(mnist_train_x)
+
+mnist_train.x = mnist_train_x[seq(6e3),,] # / 255.
+str(mnist_train.x)
+dim(mnist_train.x)
+shape(mnist_train.x)
+
+# mnist_train$x[1,,]
 
 str(mnist_train$y)
 dim(mnist_train$y)
 shape(mnist_train$y)
 
 
-mnist_test$x = tf$dtypes$cast(mnist_test$x, 'float32') / 255.
+# mnist_test$x = tf$dtypes$cast(mnist_test$x, 'float32') / 255.
 
-x_train = keras3::array_reshape(mnist_train$x, dim = c(6e4,28,28))
-# x_train <- np_array(x.train)
+# x_train = keras3::array_reshape(mnist_train$x, dim = c(6e4,28,28))# [6e3,,]
+# x_train = keras3::array_reshape(mnist_train$x[seq(6e3),,], dim = c(6e3,28,28))# 
+x_train <- mnist_train.x
+x_train <-  tf$dtypes$cast(x.train[seq(6e3),,], 'int32')
+# x_train <- np_array(x.train[seq(6e3),,])
 str(x_train)
 dim(x_train)
 shape(x_train)
 
-x_test = keras3::array_reshape(mnist_test$x, dim = c(1e4,28,28))
-# x_test <- np_array(x_test)
-str(x_test)
+# # x_test = keras3::array_reshape(mnist_test$x, dim = c(1e4,28,28))
+# x_test = keras3::array_reshape(mnist_test$x[seq(1e3),,], dim = c(1e3,28,28))
+# # x_test <- np_array(x.test)
+# str(x_test)
+# dim(x_test)
+# shape(x_test)
 
-y_train <- mnist_train$y
-# y_train <- y.train
+# y_train <- mnist_train$y
+y_train <- mnist_train$y[seq(6e3)]
+y_train <- as.array(as.integer(y.train[seq(6e3)]) -1)
+stopifnot(max(y_train) == 38)
+stopifnot(min(y_train) == 0)
+
 str(y_train)
 dim(y_train)
 shape(y_train)
 
-y_test <- mnist_test$y
-# y_test <- y.test
-str(y_test)
+# y_test <- mnist_test$y
+# y_test <- mnist_test$y[seq(1e3)]
+# # y_test <- y.test
+# str(y_test)
+# dim(y_test)
+# shape(y_test)
 
 hp = HyperParameters()
 hp$Choice('learning_rate', c(1e-1, 1e-3))
 hp$Int('num_layers', 2L, 20L)
-
 
 tuner = RandomSearch(
   hypermodel =  dl_basic.model.sequential,
@@ -91,9 +112,11 @@ tuner = RandomSearch(
 
 tuner %>% fit_tuner(x = x_train,
                     y = y_train,
-                    epochs = 5,
-                    validation_data = list(x_test,
-                                           y_test))
+                    # validation_data = list(x_test,
+                    #                        y_test),
+                    validation_split = 0.2,  # Uses 20% of the data for validation
+                    epochs = 5)
+                    
 
 result = kerastuneR::plot_tuner(tuner)
 # the list will show the plot and the data.frame of tuning results
