@@ -93,3 +93,4 @@ r/support-scripts/bsk/
 /r/models/cnn/research/bak/cnn-model.draft2research3.R
 *.keras
 *.RDataTmp1
+r/learning/kerastuneR/kt.mnist/mnist-prj/

@@ -214,7 +214,10 @@ dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path,
 # x.test <- matrix(as.vector(x.test), ncol = x.cols)
 # str(x.test)
 
-# dl_basic.tuner = RandomSearch(
+hp = HyperParameters()
+hp$Choice('learning_rate', c(1e-1, 1e-3))
+hp$Int('num_layers', 2L, 20L)
+
 dl_basic.tuner = RandomSearch(
   hypermodel =  dl_basic.model.sequential,
   max_trials = 5,

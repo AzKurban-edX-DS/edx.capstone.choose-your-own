@@ -1,3 +1,26 @@
+# library(keras3)
+library(kerastuneR)
+library(magrittr)
+
+mnist_model = function(hp) {
+  
+  model = keras_model_sequential() %>% 
+    layer_flatten(input_shape = c(28,28))
+  for (i in 1:(hp$get('num_layers')) ) {
+    # model %>% layer_dense(32, activation='relu') %>% 
+    #   layer_dense(units = 10, activation='softmax')
+    model %>% layer_dense(128, activation='relu') %>% 
+      layer_dense(units = 39, activation='softmax')
+  } %>% 
+    compile(
+      optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
+      loss = 'sparse_categorical_crossentropy',
+      metrics = 'accuracy') 
+  
+  return(model)
+}
+
+## Init Directories ------------------------------------------------------------
 
 kt.mnist.dir <- "r/learning/kerastuneR/kt.mnist"
 
@@ -9,49 +32,56 @@ mnist_prj.dir <- file.path(kt.mnist.dir, "mnist-prj")
 if(!dir.exists(mnist_prj.dir))
   dir.create(mnist_prj.dir)
 
-# library(keras3)
-library(kerastuneR)
-library(magrittr)
+## Tune MNIST Model ------------------------------------------------------------
 
 mnist_data = dataset_fashion_mnist()
 c(mnist_train, mnist_test) %<-%  mnist_data
 rm(mnist_data)
 
+str(mnist_train)
+
 mnist_train$x = tf$dtypes$cast(mnist_train$x, 'float32') / 255.
 str(mnist_train$x)
+dim(mnist_train$x)
+shape(mnist_train$x)
+
+mnist_train$x[1,,]
+
 str(mnist_train$y)
+dim(mnist_train$y)
+shape(mnist_train$y)
 
 
 mnist_test$x = tf$dtypes$cast(mnist_test$x, 'float32') / 255.
 
-mnist_train$x = keras3::array_reshape(mnist_train$x, dim = c(6e4,28,28))
-mnist_test$x = keras3::array_reshape(mnist_test$x, dim = c(1e4,28,28))
+x_train = keras3::array_reshape(mnist_train$x, dim = c(6e4,28,28))
+# x_train <- np_array(x.train)
+str(x_train)
+dim(x_train)
+shape(x_train)
 
+x_test = keras3::array_reshape(mnist_test$x, dim = c(1e4,28,28))
+# x_test <- np_array(x_test)
+str(x_test)
+
+y_train <- mnist_train$y
+# y_train <- y.train
+str(y_train)
+dim(y_train)
+shape(y_train)
+
+y_test <- mnist_test$y
+# y_test <- y.test
+str(y_test)
 
 hp = HyperParameters()
 hp$Choice('learning_rate', c(1e-1, 1e-3))
 hp$Int('num_layers', 2L, 20L)
 
 
-mnist_model = function(hp) {
-  
-  model = keras_model_sequential() %>% 
-    layer_flatten(input_shape = c(28,28))
-  for (i in 1:(hp$get('num_layers')) ) {
-    model %>% layer_dense(32, activation='relu') %>% 
-      layer_dense(units = 10, activation='softmax')
-  } %>% 
-    compile(
-      optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
-      loss = 'sparse_categorical_crossentropy',
-      metrics = 'accuracy') 
-  
-  return(model)
-}
-
-
 tuner = RandomSearch(
-  hypermodel =  mnist_model,
+  hypermodel =  dl_basic.model.sequential,
+  # hypermodel =  mnist_model,
   max_trials = 5,
   hyperparameters = hp,
   tune_new_entries = T,
@@ -59,10 +89,11 @@ tuner = RandomSearch(
   directory = mnist_prj.dir,
   project_name = 'mnist_space')
 
-tuner %>% fit_tuner(x = mnist_train$x,
-                    y = mnist_train$y,
+tuner %>% fit_tuner(x = x_train,
+                    y = y_train,
                     epochs = 5,
-                    validation_data = list(mnist_test$x, mnist_test$y))
+                    validation_data = list(x_test,
+                                           y_test))
 
 result = kerastuneR::plot_tuner(tuner)
 # the list will show the plot and the data.frame of tuning results
