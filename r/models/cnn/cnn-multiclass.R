@@ -14,7 +14,7 @@ open_logfile(".train.cnn_multiclass-classifier.model")
 put_log("Preparing Training Data...")
 start <- put_start_date()
 
-put_log("The Train Set object (`x3d.train_set`) hase the following structure:
+put_log("The Train Set object (`x3d.train_set`) has the following structure:
 %1", capture.output(str(x3d.train_set)))
 
 class.groups <- ds.get_classIDs.grouped(x3d.train_set$x.train)

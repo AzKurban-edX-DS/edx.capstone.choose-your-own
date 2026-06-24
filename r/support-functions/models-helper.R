@@ -207,7 +207,99 @@ x.binarize <- function(x) {
   (x > 0.5)*1
 }
 
-predict.dl_model <- function(model,
+dl_basic.model.sequential = function(hp) {
+  
+  model = keras_model_sequential() %>% 
+    layer_flatten(input_shape = c(28,28))
+  
+  for (i in 1:(hp$get('num_layers')) ) {
+    model %>% layer_dense(128, activation='relu') %>% 
+      layer_dense(units = 39, activation='softmax')
+  } %>% 
+    compile(
+      optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
+      loss = 'sparse_categorical_crossentropy',
+      metrics = 'accuracy') 
+  
+  return(model)
+}
+
+
+build.dl_basic.model <- function(hp) {
+  n.inputs <- 28*28
+ 
+  model_inputs <- layer_input(shape = c(n.inputs))
+  
+  model_outputs <- model_inputs |>
+    layer_dense(units = hp$Int("units",
+                               min_value = 64,
+                               max_value = n.inputs,
+                               step=  32), 
+                activation = "relu") |>
+    layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    # layer_dense(units = n.hl.units, activation = "relu") |>
+    # layer_dropout(rate = 0.25) |> 
+    layer_dense(units = N.classes, activation = "softmax")
+  
+  
+  model <- keras_model(model_inputs, model_outputs)
+
+  model |> compile(
+    loss = "categorical_crossentropy",
+    optimizer = tf$keras$optimizers$Adam(
+      hp$Choice('learning_rate',
+                values=c(1e-2, 1e-3, 1e-4))),
+    metrics = "accuracy"
+  )
+  
+  summary(model)
+  model
+}
+
+build.dl_basic.model.dynamic_layers <- function(hp) {
+  n.inputs <- 28*28
+  
+  model_inputs <- layer_input(shape = c(n.inputs))
+
+  n.layers <- hp$Int("num_layers", min_value = 1, max_value = 4)
+  layer <- model_inputs
+  
+  # Tune the NUMBER OF LAYERS dynamically
+  # The tuner will try anywhere from 1 to 4 hidden layers
+  for (i in 1:n.layers) {
+    
+    layer <- layer |>
+      layer_dense(units = hp$Int(paste0("units_", i),
+                                 min_value = 64,
+                                 max_value = n.inputs,
+                                 step=  32), 
+                  activation = "relu") |>
+      # Good practice: add dropout to prevent deep layers from overfitting
+      layer_dropout(rate = 0.2) 
+  }
+  
+  model_outputs <- layer |> 
+    layer_dense(units = N.classes, activation = "softmax")
+  
+  
+  model <- keras_model(model_inputs, model_outputs)
+  
+  model|>compile(
+    loss = "categorical_crossentropy", # Use sparse_categorical_crossentropy if labels are integers
+    optimizer =  keras3::optimizer_adamax(0.001),
+    metrics = "accuracy"
+  )
+  
+  return(model)
+}
+
+predict.dl_basic.model <- function(model,
                              x.test,
                              class.labels) {
   put_log("Evaluating DL Model...")
@@ -227,7 +319,7 @@ predict.dl_model <- function(model,
   
   predictions <- preds.ts |> op_argmax(2)
   
-  put_log("Function `predict.dl_model`:
+  put_log("Function `predict.dl_basic.model`:
 Predictions have been constructed:
 %1", capture.output(str(predictions)))
   put_end_date(start)

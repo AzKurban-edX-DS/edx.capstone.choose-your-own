@@ -11,19 +11,20 @@
 
 ## Loading Split Dataset allocated 20% for the Test set (default) ------------
 open_logfile(".split.20%test.balanced_subset")
-
 start <- put_start_date()
-stopifnot(file.exists(my_emnist.split.file_path))
+# stopifnot(file.exists(my_emnist.split.file_path))
+stopifnot(exists("x3d.train_set"))
+stopifnot(exists("x3d.test_set"))
 
-ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
-                                    my_emnist.split.file_path)
-x.train <- ds_flatten$x.train
-storage.mode(x.train) <- "double"
+# ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
+#                                     my_emnist.split.file_path)
+x.train <- x3d.train_set$x.train
+storage.mode(x.train) <- "integer"
 
-x.test <- ds_flatten$x.test
-storage.mode(x.test) <- "double"
+x.test <- x3d.test_set$x.test
+storage.mode(x.test) <- "integer"
 
-x.test.files <- ds_flatten$x.files
+x.test.files <- x3d.test_set$x.files
 
 y.train.groups <- ds.get_classIDs.grouped(x.train)
 y.train <- y.train.groups$classID
@@ -205,34 +206,35 @@ dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path,
                              "dl.basic.model.train_history.bak.rds")
 
 ## Tuning Basic DL MCC Model ---------------------------------------------------
-x.cols <- ncol(x.train)
+# x.cols <- ncol(x.train)
+# 
+# x.train <- matrix(as.vector(x.train), ncol = x.cols)
+# str(x.train)
+# 
+# x.test <- matrix(as.vector(x.test), ncol = x.cols)
+# str(x.test)
 
-x.train <- matrix(as.vector(x.train), ncol = x.cols)
-str(x.train)
-
-x.test <- matrix(as.vector(x.test), ncol = x.cols)
-str(x.test)
-
+# dl_basic.tuner = RandomSearch(
 dl_basic.tuner = RandomSearch(
-  build.dl_basic.model,
+  hypermodel =  dl_basic.model.sequential,
+  max_trials = 5,
+  hyperparameters = hp,
+  tune_new_entries = T,
   objective = 'val_accuracy',
-  max_trials = 10,
-  # executions_per_trial = 3,
-  project_name = "single_hidden_layer",
-  directory = dl.basic.keras_tuner.dir)
+  directory = dl.basic.keras_tuner.dir,
+  project_name = 'dl_basic.tuning')
 
-dl_basic.tuner |> search_summary()
-
-# Run the search to find the optimal layer configuration
-dl_basic.tuner |>
-  fit_tuner(x.train,
-            y.train,
-            epochs = 5,
-            validation_data = list(x.test, y.test))
+dl_basic.tuner %>% fit_tuner(x = x.train,
+                             y = y.train,
+                             epochs = 5,
+                             validation_data = list(x.test, y.test))
 
 result = kerastuneR::plot_tuner(dl_basic.tuner)
 # the list will show the plot and the data.frame of tuning results
 result 
+
+# best_5_models = tuner %>% get_best_models(5)
+# best_5_models[[1]] %>% plot_keras_model()
 
 ### 1 Hidden Layer ----------------------------------------------
 dl.basic.inputs <- layer_input(shape = c(n.input_shape))

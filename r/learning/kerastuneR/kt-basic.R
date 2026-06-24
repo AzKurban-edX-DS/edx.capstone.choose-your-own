@@ -7,14 +7,25 @@ if(!dir.exists(tuner_basic.dir))
 # library(kerastuneR)
 library(magrittr)
 
-x_data <- matrix(data = runif(500,0,1),nrow = 50,ncol = 5)
+# x_data <- matrix(data = runif(500,0,1),nrow = 50,ncol = 5)
+# str(x_data)
+# y_data <-  ifelse(runif(50,0,1) > 0.6, 1L,0L) |> as.matrix()
+# str(y_data)
+# 
+# x_data2 <- matrix(data = runif(500,0,1),nrow = 50,ncol = 5)
+# str(x_data2)
+# y_data2 <-  ifelse(runif(50,0,1) > 0.6, 1L,0L) |> as.matrix()
+# str(y_data2)
+
+
+x_data <- matrix(data = runif(784*500,0,1),nrow = 500, ncol = 784)
 str(x_data)
-y_data <-  ifelse(runif(50,0,1) > 0.6, 1L,0L) |> as.matrix()
+y_data <-  ifelse(runif(500,0,1) > 0.6, 1L,0L) |> as.matrix()
 str(y_data)
 
-x_data2 <- matrix(data = runif(500,0,1),nrow = 50,ncol = 5)
+x_data2 <- matrix(data = runif(784*100,0,1),nrow = 100, ncol = 784)
 str(x_data2)
-y_data2 <-  ifelse(runif(50,0,1) > 0.6, 1L,0L) |> as.matrix()
+y_data2 <-  ifelse(runif(100,0,1) > 0.6, 1L,0L) |> as.matrix()
 str(y_data2)
 
 build_model = function(hp) {
@@ -60,3 +71,25 @@ result
 
 # best_5_models = tuner %>% get_best_models(5)
 # best_5_models[[1]] %>% plot_keras_model()
+
+# ------------------------------------------------------------------------------
+plot(best_tuning.result$train_history)
+
+tuner = RandomSearch(
+  build_model,
+  objective = 'val_accuracy',
+  max_trials = 5,
+  executions_per_trial = 3,
+  directory = tuner_basic.dir,
+  project_name = 'helloworld')
+
+tuner |> search_summary()
+
+tuner |> fit_tuner(x.train,
+                   y.train,
+                   epochs = 5, 
+                   validation_data = list(x.test, y.test))
+
+result <- kerastuneR::plot_tuner(tuner)
+# the list will show the plot and the data.frame of tuning results
+result 
