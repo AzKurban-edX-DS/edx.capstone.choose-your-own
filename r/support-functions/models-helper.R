@@ -224,7 +224,6 @@ dl_basic.model.sequential = function(hp) {
   return(model)
 }
 
-
 build.dl_basic.model <- function(hp) {
   n.inputs <- 28*28
  
@@ -262,37 +261,135 @@ build.dl_basic.model <- function(hp) {
   model
 }
 
-build.dl_basic.model.dynamic_layers <- function(hp) {
-  n.inputs <- 28*28
-  
-  model_inputs <- layer_input(shape = c(n.inputs))
+dl.tune.hwr_model <- function(input_shape = c(28, 28),
+                          dropout.rate = 0.2,
+                          learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
+                          min_layers = 2L,
+                          max_layers = 20L,
+                          min_units = 39,
+                          max_units = 784,
+                          units.tune_step = 32,
+                          max_trials = 5,
+                          tune_new_entries = TRUE,
+                          objective = 'val_accuracy',
+                          project_name = 'DL.ModelTuner',
+                          validation_split = 0.2,
+                          validation_data = NULL,
+                          epochs = 5,
+                          dl.build_model,
+                          x_train,
+                          y_train) {
+  dl.tune_model(input_shape,
+                N.classes,
+                dropout.rate,
+                learning_rate,
+                min_layers,
+                max_layers,
+                min_units,
+                max_units,
+                units.tune_step,
+                max_trials,
+                tune_new_entries,
+                objective,
+                project_name,
+                validation_split,
+                validation_data,
+                epochs,
+                dl.build_model,
+                x_train,
+                y_train)
+}
 
-  n.layers <- hp$Int("num_layers", min_value = 1, max_value = 4)
-  layer <- model_inputs
+dl.tune_model <- function(input_shape = c(28, 28),
+                          n.outputs,
+                          dropout.rate = 0.2,
+                          learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
+                          min_layers = 2L,
+                          max_layers = 20L,
+                          min_units = 39,
+                          max_units = 784,
+                          units.tune_step = 32,
+                          max_trials = 5,
+                          tune_new_entries = TRUE,
+                          objective = 'val_accuracy',
+                          project_name = 'DL.ModelTuner',
+                          validation_split = 0.2,
+                          validation_data = NULL,
+                          epochs = 5,
+                          dl.build_model,
+                          x_train,
+                          y_train) {
+  hp = HyperParameters()
   
+  # Choice of one value among a predefined set of possible values.
+  # Choice(name, values, ordered = NULL, default = NULL, parent_name = NULL, parent_values = NULL)
+  hp$Choice('learning_rate', learning_rate)
+  
+  hp$Int('num_layers', 
+         min_layers,
+         max_layers)
+  
+  for (i in seq(max_layers)) {
+    hp$Int(paste0("units_", i),
+           min_value = min_units,
+           max_value = max_units,
+           step = units.tune_step)    
+  }
+  
+  tuner = RandomSearch(
+    hypermodel =  function(hp) dl.build_model(hp,
+                                              input_shape,
+                                              n.outputs,
+                                              dropout.rate),
+    max_trials = max_trials,
+    hyperparameters = hp,
+    tune_new_entries = tune_new_entries,
+    objective = objective,
+    directory = mnist_prj.dir,
+    project_name = project_name)
+  
+  if(is.null(validation_data)){
+    tuner %>% fit_tuner(x = x_train,
+                        y = y_train,
+                        validation_split = validation_split,
+                        epochs = epochs)
+  } else {
+    tuner %>% fit_tuner(x = x_train,
+                        y = y_train,
+                        validation_data = validation_data,
+                        epochs = epochs)
+  }
+  
+  tuner
+}
+
+dl_basic.tunable_model <- function(hp,
+                                   input_shape = c(28, 28),
+                                   n.outputs,
+                                   dropout.rate = 0.2) {
+  
+  model_inputs <- layer_input(shape = input_shape)
+  layer <- model_inputs |> layer_flatten()
+
   # Tune the NUMBER OF LAYERS dynamically
   # The tuner will try anywhere from 1 to 4 hidden layers
-  for (i in 1:n.layers) {
+  for (i in 1:hp$get('num_layers')) {
     
     layer <- layer |>
-      layer_dense(units = hp$Int(paste0("units_", i),
-                                 min_value = 64,
-                                 max_value = n.inputs,
-                                 step=  32), 
+      layer_dense(units = hp$get(paste0("units_", i)),
                   activation = "relu") |>
       # Good practice: add dropout to prevent deep layers from overfitting
-      layer_dropout(rate = 0.2) 
+      layer_dropout(rate = dropout.rate) 
   }
   
   model_outputs <- layer |> 
-    layer_dense(units = N.classes, activation = "softmax")
-  
-  
+    layer_dense(units = n.outputs, activation = "softmax")
+
   model <- keras_model(model_inputs, model_outputs)
   
-  model|>compile(
-    loss = "categorical_crossentropy", # Use sparse_categorical_crossentropy if labels are integers
-    optimizer =  keras3::optimizer_adamax(0.001),
+  # For `loss` argument, Use sparse_categorical_crossentropy if labels are integers
+  model|>compile(loss = "sparse_categorical_crossentropy",
+    optimizer =  keras3::optimizer_adamax(hp$get('learning_rate')),
     metrics = "accuracy"
   )
   

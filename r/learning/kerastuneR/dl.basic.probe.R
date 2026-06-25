@@ -78,46 +78,50 @@ shape(y_train)
 # dim(y_test)
 # shape(y_test)
 
-mnist_model = function(hp) {
-  
-  model = keras_model_sequential() %>% 
-    layer_flatten(input_shape = c(28,28))
-  for (i in 1:(hp$get('num_layers')) ) {
-    # model %>% layer_dense(32, activation='relu') %>% 
-    #   layer_dense(units = 10, activation='softmax')
-    model %>% layer_dense(128, activation='relu') %>% 
-      layer_dense(units = 39, activation='softmax')
-  } %>% 
-    compile(
-      optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
-      loss = 'sparse_categorical_crossentropy',
-      metrics = 'accuracy') 
-  
-  return(model)
-}
+# mnist_model = function(hp) {
+#   
+#   model = keras_model_sequential() %>% 
+#     layer_flatten(input_shape = c(28,28))
+#   for (i in 1:(hp$get('num_layers')) ) {
+#     # model %>% layer_dense(32, activation='relu') %>% 
+#     #   layer_dense(units = 10, activation='softmax')
+#     model %>% layer_dense(128, activation='relu') %>% 
+#       layer_dense(units = 39, activation='softmax')
+#   } %>% 
+#     compile(
+#       optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
+#       loss = 'sparse_categorical_crossentropy',
+#       metrics = 'accuracy') 
+#   
+#   return(model)
+# }
 
 
-hp = HyperParameters()
-hp$Choice('learning_rate', c(1e-1, 1e-2, 1e-3, 1e-4))
-hp$Int('num_layers', 2L, 20L)
+# hp = HyperParameters()
+# hp$Choice('learning_rate', c(1e-1, 1e-2, 1e-3, 1e-4))
+# hp$Int('num_layers', 2L, 20L)
 
-tuner = RandomSearch(
-  hypermodel =  dl_basic.model.sequential,
-  # hypermodel =  mnist_model,
-  max_trials = 5,
-  hyperparameters = hp,
-  tune_new_entries = T,
-  objective = 'val_accuracy',
-  directory = mnist_prj.dir,
-  project_name = 'mnist_space')
-
-tuner %>% fit_tuner(x = x_train,
-                    y = y_train,
-                    # validation_data = list(x_test,
-                    #                        y_test),
-                    validation_split = 0.2,  # Uses 20% of the data for validation
-                    epochs = 5)
+# tuner = RandomSearch(
+#   hypermodel =  dl_basic.model.sequential,
+#   # hypermodel =  mnist_model,
+#   max_trials = 5,
+#   hyperparameters = hp,
+#   tune_new_entries = T,
+#   objective = 'val_accuracy',
+#   directory = mnist_prj.dir,
+#   project_name = 'mnist_space')
+# 
+# tuner %>% fit_tuner(x = x_train,
+#                     y = y_train,
+#                     # validation_data = list(x_test,
+#                     #                        y_test),
+#                     validation_split = 0.2,  # Uses 20% of the data for validation
+#                     epochs = 5)
                     
+tuner <- dl.tune.hwr_model(project_name = "DL.Basic.Tuner.Probe",
+                           dl.build_model = dl_basic.tunable_model,
+                           x_train = x_train,
+                           y_train = y_train)
 
 result = kerastuneR::plot_tuner(tuner)
 # the list will show the plot and the data.frame of tuning results
