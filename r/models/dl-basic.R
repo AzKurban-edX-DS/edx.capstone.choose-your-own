@@ -141,6 +141,34 @@ str(y.test)
 length(y.test)
 #> [1] 817379
 
+shape(x.train)
+# shape(132873, 784)
+
+max_img_pixels <- max(rowSums(x.train))
+put_log("The maximum number of pixels in the Train Set images is as follows: %1",
+        max_img_pixels)
+#> 593
+
+# References:
+# https://community.deeplearning.ai/t/number-of-the-hidden-units-in-hidden-layers/24916
+# https://milvus.io/ai-quick-reference/how-do-you-decide-the-number-of-neurons-per-layer
+# https://tracyrenee61.medium.com/how-do-you-calculate-the-correct-number-of-neurons-to-place-in-the-hidden-layers-of-a-neural-19cbaf68452c
+# https://arxiv.org/pdf/1707.09725#page=11
+# https://app.speechify.com/item/bde53a50-bd0e-4328-8273-27caf5174899?type=WEB
+# https://www.kaggle.com/discussions/general/321114
+# https://ijettjournal.org/assets/volume-3/issue-6/IJETT-V3I6P206.pdf
+# https://www.heatonresearch.com/2017/06/01/hidden-layers.html [JH_NHL]
+
+n.hl.units <- ceiling(28*28/3*2 + 39)
+# 562
+
+put_log("For the couple of hidden layers of our first deep learning model, 
+we will choose %1 neurons, which meets the value suggested by the rule-of-thumb methods 
+(outlined in the article 'Heaton Research: The Number of Hidden Layers' [JH_NHL2017-06-01]), 
+and also does not exceed the maximum number of black pixels (%2) making up every (pre-processed) image 
+contained in the training set.",
+        n.hl.units,
+        max_img_pixels)
 
 #### Converting labels factor to categorical -----------------------------------
 # Reference: 
@@ -204,177 +232,6 @@ dl.basic.model.file_path <- file.path(dl.basic.dir_path,
 dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
                              "dl.basic.model.train_history.bak.rds")
 
-## Tuning Basic DL MCC Model ---------------------------------------------------
-x.cols <- ncol(x.train)
-
-x.train <- matrix(as.vector(x.train), ncol = x.cols)
-str(x.train)
-
-x.test <- matrix(as.vector(x.test), ncol = x.cols)
-str(x.test)
-
-dl_basic.tuner = RandomSearch(
-  build.dl_basic.model,
-  objective = 'val_accuracy',
-  max_trials = 10,
-  # executions_per_trial = 3,
-  project_name = "single_hidden_layer",
-  directory = dl.basic.keras_tuner.dir)
-
-dl_basic.tuner |> search_summary()
-
-# Run the search to find the optimal layer configuration
-dl_basic.tuner |>
-  fit_tuner(x.train,
-            y.train,
-            epochs = 5,
-            validation_data = list(x.test, y.test))
-
-result = kerastuneR::plot_tuner(dl_basic.tuner)
-# the list will show the plot and the data.frame of tuning results
-result 
-
-### 1 Hidden Layer ----------------------------------------------
-dl.basic.inputs <- layer_input(shape = c(n.input_shape))
-
-stopifnot(dir.exists(dl.basic.tuning.dir))
-
-hl1.dir <- file.path(dl.basic.tuning.dir,"1-hidden-layer")
-if(!dir.exists(hl1.dir))
-  dir.create(hl1.dir)
-
-dl.model.hl1.tuning_results.file_path <- 
-  file.path(hl1.dir, "1hl.units_tuning.results.rds")
-
-n.hl.units <- c(784, 562, 512, 256, 128, 64)
-
-put_log("Tuning DL Basic Model for 1 Hidden Layer with different number of units...")
-start <- put_start_date()
-
-dl.basic.tuning.result <- lapply(n.hl.units, function(n.units) {
-  stopifnot(dir.exists(hl1.dir))
-  
-  n_units.dir <- file.path(hl1.dir, paste0(n.units, "units"))
-  
-  if(!dir.exists(n_units.dir))
-    dir.create(n_units.dir)
-  
-  model.file_path <- file.path(n_units.dir, "dl.basic.model.keras")
-  
-  model.train_history.file_path <- file.path(n_units.dir, 
-                                             "dl.basic.model.train_history.rds")
-  
-  checkpoints.dir <- file.path(n_units.dir, "checkpoints")
-  
-  if(!dir.exists(checkpoints.dir))
-    dir.create(checkpoints.dir)
-  
-  checkpoints.file_path <- 
-    file.path(checkpoints.dir, 
-              "dl.basic.hl1.{epoch:02d}-{val_loss:.2f}.keras")
-
-  dl.basic.outputs <- dl.basic.inputs |>
-    layer_dense(units = n.units, activation = "relu", 
-                input_shape = c(n.input_shape)) |>
-    layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    layer_dense(units = N.classes, activation = "softmax")
-  
-  
-  dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
-  dl.basic.model
-  
-  dl.basic.model |> compile(
-    loss = "sparse_categorical_crossentropy",
-    optimizer = keras3::optimizer_adamax(0.001),
-    metrics = "accuracy"
-  )
-  
-  summary(dl.basic.model)
-
- 
-  model.callbacks <- list(
-    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = checkpoints.file_path,
-                              monitor = "val_loss",
-                              save_best_only = TRUE,
-                              verbose = 1)
-  )
-  
-  ### Training the Basic DL MCC Model ******************************************
-  
-  put_log("Training the BDL MCC Model...")
-  start <- put_start_date()
-  
-  model.train_history <- dl.basic.model |> 
-    fit(x.train, 
-        y.train, 
-        epochs = 50, 
-        # batch_size = 128, 
-        callbacks = model.callbacks,
-        validation_split = 0.2
-    )
-  
-  put_log("Saving pre-trained BDL MCC Model...")
-  save_model(dl.basic.model,
-             filepath = model.file_path,
-             overwrite = TRUE)
-  
-  put_log("The BDL MCC Model has been trained 
-and saved in the following file:
-  %1", model.file_path)
-  
-  put_log("Saving the BDL MCC Model History...")
-  saveRDS(model.train_history,
-          file = model.train_history.file_path)
-  
-  put_log("The BDL MCC Model History has been trained 
-and saved in the following file:
-  %1", model.train_history.file_path)
-  # Time difference of 38.48235 mins
-  
-  put_log("Evaluating DL Model...")
-  eval.result <- dl.basic.model |> evaluate(x.test, y.test)
-  put_log("DL Model evaluation result:
-%1", capture.output(str(eval.result)))
-  # List of 2
-  #  $ accuracy: num 0.907
-  #  $ loss    : num 0.299
-  
-  put_end_date(start)
-  
-  
-  list(model.file_path = model.file_path,
-       train_history = model.train_history,
-       eval.result = eval.result,
-       n.units = n.units)
-  
-})
-
-names(dl.basic.tuning.result) <- as.character(n.hl.units)
-str(dl.basic.tuning.result)
-
-put_log("Saving the BDL MCC Model History...")
-saveRDS(dl.basic.tuning.result,
-        file = dl.model.hl1.tuning_results.file_path)
-
-put_log("The BDL MCC Model History has been trained 
-and saved in the following file:
-  %1", dl.model.hl1.tuning_results.file_path)
-put_end_date(start)
-
-best_tuning.result <- dl.basic.tuning.result$`784`
-str(best_tuning.result)
-
-plot(best_tuning.result$train_history)
-
 ## Building Basic DL MCC Model -------------------------------------------------
 
 open_logfile("dl.basic-model")
@@ -385,7 +242,7 @@ n.input_shape <- ncol(x.train)
 if(file.exists(dl.basic.model.file_path)) {
   put_log("Loading pre-trained BDL MCC Model...")
   
-  dl.basic.model <- load_model(dl.basic.model.file_path)
+  dl.basic.model <- keras3::load_model(dl.basic.model.file_path)
   
   put_log("The BDL MCC Model has been loaded from the backup file:
 %1", dl.basic.model.file_path)
@@ -407,29 +264,16 @@ if(file.exists(dl.basic.model.file_path)) {
   n.input_shape <- ncol(x.train)
   # 784
   
-  n.hl.units <- 512 # ceiling(n.input_shape*2/3+N.classes)
-                    # 562
-  
-  
   dl.basic.inputs <- layer_input(shape = c(n.input_shape))
   
   dl.basic.outputs <- dl.basic.inputs |>
-    layer_dense(units = n.hl.units, activation = "relu", 
-                input_shape = c(n.input_shape)) |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
     layer_dense(units = n.hl.units, activation = "relu") |>
     layer_dropout(rate = 0.25) |> 
     layer_dense(units = N.classes, activation = "softmax")
   
   
   dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
-  dl.basic.model
+  # dl.basic.model
   
   dl.basic.model |> compile(
     loss = "categorical_crossentropy",
@@ -456,7 +300,7 @@ if(file.exists(dl.basic.model.file_path)) {
   
   dl.basic.train_history <- dl.basic.model |> 
     fit(x.train, 
-        y.train, 
+        y.train.cat, 
         epochs = 100, 
         # batch_size = 128, 
         callbacks = dl.basic.callbacks,
@@ -464,7 +308,7 @@ if(file.exists(dl.basic.model.file_path)) {
         )
 
   put_log("Saving pre-trained BDL MCC Model...")
-  save_model(dl.basic.model,
+  keras3::save_model(dl.basic.model,
              filepath = dl.basic.model.file_path,
              overwrite = FALSE)
   
@@ -492,12 +336,12 @@ str(dl.basic.train_history)
 
 ## BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
-bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test)
+bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test.cat)
 put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
 # List of 2
-#  $ accuracy: num 0.907
-#  $ loss    : num 0.299
+#  $ accuracy: num 0.897
+#  $ loss    : num 0.314
 
 put_end_date(start)
 # Time difference of 1.668308 mins
@@ -509,13 +353,12 @@ put_end_date(start)
 colnames(bdl.preds) <- y.labels
 head(bdl.preds[,1:5])
 #                 #            $            &            @            0
-# [1,] 3.792269e-07 8.851480e-07 2.578369e-08 3.807849e-07 3.528773e-05
-# [2,] 1.730552e-13 6.454766e-15 1.392669e-09 6.399740e-10 3.266690e-07
-# [3,] 9.197757e-16 3.064377e-12 1.566798e-11 5.085300e-16 8.313370e-07
-# [4,] 7.945133e-08 5.979302e-07 3.491478e-08 4.118463e-09 3.721448e-06
-# [5,] 1.046998e-12 9.161977e-15 2.002677e-24 1.114895e-18 6.859786e-13
-# [6,] 4.039502e-14 1.164542e-14 2.524913e-17 2.605324e-14 5.818604e-10
-
+# [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
+# [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
+# [3,] 2.074071e-11 1.434007e-10 3.564378e-09 8.688334e-12 2.087918e-05
+# [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
+# [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
+# [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
 dim(bdl.preds)
 #> [1] 33228    39
 
@@ -542,7 +385,7 @@ head(bdl.pred.values)
 
 dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
-# 0.906735283495847
+# 0.897195136631756
 
 
 put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
@@ -572,7 +415,7 @@ put_log("The confusion matrix based on the `BDL MCC` Model evaluation results ha
 # start <- put_start_date()
 # cl <- makeCluster(N_pcCores)
 # registerDoParallel(cl)
-#
+# 
 # 
 # dev.off()
 # plot_confusion_matrix(dl.basic.conf.mx,
@@ -593,45 +436,45 @@ dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
 dl.basic.accuracy.by_class
 {
 #' class  accuracy
-  #' # 1.0000000
-  #' $ 1.0000000
-  #' & 1.0000000
-  #' @ 1.0000000
-  #' 0 0.9671362
-  #' 1 0.8638498
-  #' 2 0.9143192
-  #' 3 0.9565728
-  #' 4 0.9319249
-  #' 5 0.9025822
-  #' 6 0.9284038
-  #' 7 0.9800469
-  #' 8 0.9295775
-  #' 9 0.9507042
-  #' A 0.8791080
-  #' B 0.9025822
-  #' C 0.9589202
-  #' D 0.9295775
-  #' E 0.9495305
-  #' F 0.9577465
-  #' G 0.6725352
-  #' H 0.9237089
-  #' I 0.6525822
-  #' J 0.9272300
-  #' K 0.9272300
-  #' L 0.3967136
-  #' M 0.9659624
-  #' N 0.9389671
-  #' P 0.9683099
-  #' Q 0.7159624
-  #' R 0.9448357
-  #' S 0.9084507
-  #' T 0.9518779
-  #' U 0.9330986
-  #' V 0.9401408
-  #' W 0.9624413
-  #' X 0.9518779
-  #' Y 0.8685446
-  #' Z 0.9096244
+    #' # 1.0000000
+    #' $ 1.0000000
+    #' & 1.0000000
+    #' @ 1.0000000
+    #' 0 0.9612676
+    #' 1 0.7605634
+    #' 2 0.8967136
+    #' 3 0.9530516
+    #' 4 0.9131455
+    #' 5 0.8697183
+    #' 6 0.9166667
+    #' 7 0.9753521
+    #' 8 0.9424883
+    #' 9 0.8345070
+    #' A 0.8697183
+    #' B 0.9072770
+    #' C 0.9319249
+    #' D 0.9225352
+    #' E 0.9272300
+    #' F 0.9436620
+    #' G 0.6737089
+    #' H 0.9190141
+    #' I 0.6901408
+    #' J 0.9307512
+    #' K 0.9295775
+    #' L 0.4518779
+    #' M 0.9577465
+    #' N 0.9190141
+    #' P 0.9518779
+    #' Q 0.7523474
+    #' R 0.9295775
+    #' S 0.8908451
+    #' T 0.9190141
+    #' U 0.9401408
+    #' V 0.8920188
+    #' W 0.9671362
+    #' X 0.9366197
+    #' Y 0.9049296
+    #' Z 0.9084507
 }
 
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
@@ -639,9 +482,6 @@ plot_bars.accuracy.by_class(y.labels,
                             dl.basic.accuracy.by_class,
                             title.prefix = "Basic DL Multiclass")
 put_end_date(start)
-
-
-
 log_close()
 
 
