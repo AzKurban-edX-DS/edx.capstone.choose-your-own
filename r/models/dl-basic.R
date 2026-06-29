@@ -387,49 +387,6 @@ dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.897195136631756
 
-
-put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
-dl.basic.roc_curves <- calc.roc_curves(y.test,
-                                       bdl.preds,
-                                       y.labels)
-put_log("`BDL MCC` Model Evaluation: The per-class ROC curve calculation 
-has been completed.")
-
-plot(dl.basic.roc_curves[[1]], 
-     main = "ROC Curves for the `Basic Deep Learning Multiclass Classifier` Model")
-for (class.idx in 2:N.classes) {
-  lines(dl.basic.roc_curves[[class.idx]], col = class.idx)
-}
-
-
-# Confusion Matrix data suitable for Visualization using the `cvms` package:
-# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
-using the `cvms` package...")
-dl.basic.conf.mx <- confusion_matrix(as.character(y.test),
-                                     as.character(bdl.pred.values))
-put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(dl.basic.conf.mx))  
-
-# put_log("Plotting the confusion matrix, please wait...")
-# start <- put_start_date()
-# cl <- makeCluster(N_pcCores)
-# registerDoParallel(cl)
-# 
-# 
-# dev.off()
-# plot_confusion_matrix(dl.basic.conf.mx,
-#                       palette = "Greens",
-#                       font_counts = font(size = 3,
-#                                          color = "red"),
-#                       add_normalized = FALSE,
-#                       add_col_percentages = FALSE,
-#                       add_row_percentages = FALSE)
-# 
-# stopCluster(cl)
-# stopImplicitCluster()
-# put_end_date(start)
-
 dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
                                                              y.test,
                                                              bdl.pred.values)
@@ -477,10 +434,55 @@ dl.basic.accuracy.by_class
     #' Z 0.9084507
 }
 
+# Confusion Matrix data suitable for Visualization using the `cvms` package:
+# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
+put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
+using the `cvms` package...")
+dl.basic.conf.mx <- confusion_matrix(as.character(y.test),
+                                     as.character(bdl.pred.values))
+put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
+%1", capture.output(dl.basic.conf.mx))  
+
+### Evaluation Results: Visualization ------------------------------------------
+
+put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
+dl.basic.roc_curves <- calc.roc_curves(y.test,
+                                       bdl.preds,
+                                       y.labels)
+put_log("`BDL MCC` Model Evaluation: The per-class ROC curve calculation 
+has been completed.")
+
+plot(dl.basic.roc_curves[[1]], 
+     main = "ROC Curves for the `Basic Deep Learning Multiclass Classifier` Model")
+for (class.idx in 2:N.classes) {
+  lines(dl.basic.roc_curves[[class.idx]], col = class.idx)
+}
+
+
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(y.labels,
                             dl.basic.accuracy.by_class,
                             title.prefix = "Basic DL Multiclass")
+
+put_log("Plotting the confusion matrix, please wait...")
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+
+dev.off()
+plot_confusion_matrix(dl.basic.conf.mx,
+                      palette = "Greens",
+                      font_counts = font(size = 3,
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
+
+stopCluster(cl)
+stopImplicitCluster()
+put_end_date(start)
+
 put_end_date(start)
 log_close()
 

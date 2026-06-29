@@ -261,25 +261,32 @@ build.dl_basic.model <- function(hp) {
   model
 }
 
-dl.tune.hwr_model <- function(input_shape = c(28, 28),
-                          dropout.rate = 0.2,
-                          learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
-                          min_layers = 2L,
-                          max_layers = 20L,
-                          min_units = 39,
-                          max_units = 784,
-                          units.tune_step = 32,
-                          max_trials = 5,
-                          tune_new_entries = TRUE,
-                          objective = 'val_accuracy',
-                          project_name = 'DL.ModelTuner',
-                          validation_split = 0.2,
-                          validation_data = NULL,
-                          epochs = 5,
-                          dl.build_model,
-                          x_train,
-                          y_train) {
-  dl.tune_model(input_shape,
+dl.tune.hwr_model <- function(dl.build_model,
+                              x_train,
+                              y_train,
+                              tuner_project.dir,
+                              tuner_checkpoints.file,
+                              input_shape = c(28, 28),
+                              dropout.rate = 0.2,
+                              learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
+                              min_layers = 2L,
+                              max_layers = 20L,
+                              min_units = 39,
+                              max_units = 784,
+                              units.tune_step = 32,
+                              max_trials = 5,
+                              tune_new_entries = TRUE,
+                              objective = 'val_accuracy',
+                              project_name = 'DL.ModelTuner',
+                              validation_split = 0.2,
+                              validation_data = NULL,
+                              epochs = 50) {
+  dl.tune_model(dl.build_model,
+                x_train,
+                y_train,
+                tuner_project.dir,
+                tuner_checkpoints.file,
+                input_shape,
                 N.classes,
                 dropout.rate,
                 learning_rate,
@@ -294,13 +301,15 @@ dl.tune.hwr_model <- function(input_shape = c(28, 28),
                 project_name,
                 validation_split,
                 validation_data,
-                epochs,
-                dl.build_model,
-                x_train,
-                y_train)
+                epochs)
 }
 
-dl.tune_model <- function(input_shape = c(28, 28),
+dl.tune_model <- function(dl.build_model,
+                          x_train,
+                          y_train,
+                          tuner_project.dir,
+                          tuner_checkpoints.file,
+                          input_shape = c(28, 28),
                           n.outputs,
                           dropout.rate = 0.2,
                           learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
@@ -315,10 +324,9 @@ dl.tune_model <- function(input_shape = c(28, 28),
                           project_name = 'DL.ModelTuner',
                           validation_split = 0.2,
                           validation_data = NULL,
-                          epochs = 5,
-                          dl.build_model,
-                          x_train,
-                          y_train) {
+                          epochs = 50) {
+  
+  stopifnot(dir.exists(tuner_project.dir))
   hp = HyperParameters()
   
   # Choice of one value among a predefined set of possible values.
@@ -328,6 +336,15 @@ dl.tune_model <- function(input_shape = c(28, 28),
   hp$Int('num_layers', 
          min_layers,
          max_layers)
+  
+  callback_list <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = tuner_checkpoints.file,
+                              monitor = "val_loss",
+                              save_best_only = TRUE,
+                              verbose = 1)
+  )
+  
   
   for (i in seq(max_layers)) {
     hp$Int(paste0("units_", i),
@@ -345,17 +362,19 @@ dl.tune_model <- function(input_shape = c(28, 28),
     hyperparameters = hp,
     tune_new_entries = tune_new_entries,
     objective = objective,
-    directory = mnist_prj.dir,
+    directory = tuner_project.dir,
     project_name = project_name)
   
   if(is.null(validation_data)){
     tuner %>% fit_tuner(x = x_train,
                         y = y_train,
+                        callbacks = callback_list,
                         validation_split = validation_split,
                         epochs = epochs)
   } else {
     tuner %>% fit_tuner(x = x_train,
                         y = y_train,
+                        callbacks = callback_list,
                         validation_data = validation_data,
                         epochs = epochs)
   }

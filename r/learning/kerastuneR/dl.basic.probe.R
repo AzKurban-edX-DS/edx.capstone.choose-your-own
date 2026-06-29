@@ -118,10 +118,11 @@ shape(y_train)
 #                     validation_split = 0.2,  # Uses 20% of the data for validation
 #                     epochs = 5)
                     
-tuner <- dl.tune.hwr_model(project_name = "DL.Basic.Tuner.Probe",
-                           dl.build_model = dl_basic.tunable_model,
+tuner <- dl.tune.hwr_model(dl.build_model = dl_basic.tunable_model,
                            x_train = x_train,
-                           y_train = y_train)
+                           y_train = y_train,
+                           mnist_prj.dir,
+                           project_name = "DL.Basic.Tuner.Probe")
 
 result = kerastuneR::plot_tuner(tuner)
 # the list will show the plot and the data.frame of tuning results

@@ -9,8 +9,8 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-## Loading Split Dataset allocated 20% for the Test set (default) ------------
-open_logfile(".split.20%test.balanced_subset")
+## Prepring Datasets for DL Basic Model Tuning ---------------------------------
+open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
 # stopifnot(file.exists(my_emnist.split.file_path))
 stopifnot(exists("x3d.train_set"))
@@ -20,16 +20,29 @@ stopifnot(exists("x3d.test_set"))
 #                                     my_emnist.split.file_path)
 x.train <- x3d.train_set$x.train
 storage.mode(x.train) <- "integer"
+# x.train <- x.train[seq(1e4),,]
+str(x.train)
+dim(x.train)
 
 x.test <- x3d.test_set$x.test
 storage.mode(x.test) <- "integer"
+dim(x.test)
 
 x.test.files <- x3d.test_set$x.files
 
 y.train.groups <- ds.get_classIDs.grouped(x.train)
-y.train <- y.train.groups$classID
+y_train <- y.train.groups$classID
+# y_train <- y_train[seq(1e4)]
 
-stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
+stopifnot(sum(as.character(y_train) != rownames(x.train)) == 0)
+
+y.train <- as.array(as.integer(y_train) - 1)
+str(y.train)
+dim(y.train)
+
+stopifnot(min(y.train) == 0)
+stopifnot(max(y.train) == 38)
+stopifnot(dim(y.train) == nrow(x.train))
 
 put_log("The Train Set is balanced by set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
@@ -165,7 +178,11 @@ head(y.test.cat)
 
 log_close()
 
-## Init DL Basic Model Paths ---------------------------------------------------
+## Training & Tuning DL Basic Model --------------------------------------------
+open_logfile(".dl.basic-model-tuning")
+start <- put_start_date()
+
+### Init DL Basic Model Tuner Paths --------------------------------------------
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
@@ -190,47 +207,29 @@ dl.basic.keras_tuner.dir <- file.path(dl.basic.tuning.dir, "keras-tuner")
 if(!dir.exists(dl.basic.keras_tuner.dir))
   dir.create(dl.basic.keras_tuner.dir)
 
-dl.basic.checkpoints.dir <- file.path(dl.basic.dir_path,
+dl.basic_tuner.checkpoints.dir <- file.path(dl.basic.keras_tuner.dir,
                                             "checkpoints")
-if(!dir.exists(dl.basic.checkpoints.dir))
-  dir.create(dl.basic.checkpoints.dir)
+if(!dir.exists(dl.basic_tuner.checkpoints.dir))
+  dir.create(dl.basic_tuner.checkpoints.dir)
 
-dl.basic.checkpoint.file_path <- 
-  file.path(dl.basic.checkpoints.dir, 
-            "dl.basic.{epoch:02d}-{val_loss:.2f}.keras")
+dl.basic_tuner.checkpoint.file_path <- 
+  file.path(dl.basic_tuner.checkpoints.dir, 
+            "dl.basic_tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
-dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
-                             "dl.basic.pre-trained.model.keras")
-
-dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
-                             "dl.basic.model.train_history.bak.rds")
-
-## Tuning Basic DL MCC Model ---------------------------------------------------
-# x.cols <- ncol(x.train)
+# dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
+#                              "dl.basic.pre-trained.model.keras")
 # 
-# x.train <- matrix(as.vector(x.train), ncol = x.cols)
-# str(x.train)
-# 
-# x.test <- matrix(as.vector(x.test), ncol = x.cols)
-# str(x.test)
+# dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
+#                              "dl.basic.model.train_history.bak.rds")
 
-hp = HyperParameters()
-hp$Choice('learning_rate', c(1e-1, 1e-3))
-hp$Int('num_layers', 2L, 20L)
+### Tuning Basic DL MCC Model ---------------------------------------------------
 
-dl_basic.tuner = RandomSearch(
-  hypermodel =  dl_basic.model.sequential,
-  max_trials = 5,
-  hyperparameters = hp,
-  tune_new_entries = T,
-  objective = 'val_accuracy',
-  directory = dl.basic.keras_tuner.dir,
-  project_name = 'dl_basic.tuning')
-
-dl_basic.tuner %>% fit_tuner(x = x.train,
-                             y = y.train,
-                             epochs = 5,
-                             validation_data = list(x.test, y.test))
+dl_basic.tuner <- dl.tune.hwr_model(dl_basic.tunable_model,
+                                    x.train,
+                                    y.train,
+                                    dl.basic.keras_tuner.dir,
+                                    dl.basic_tuner.checkpoint.file_path,
+                                    project_name = "DL.Basic.Tuner")
 
 result = kerastuneR::plot_tuner(dl_basic.tuner)
 # the list will show the plot and the data.frame of tuning results
@@ -239,7 +238,8 @@ result
 # best_5_models = tuner %>% get_best_models(5)
 # best_5_models[[1]] %>% plot_keras_model()
 
-### 1 Hidden Layer ----------------------------------------------
+log_close()
+## 1 Hidden Layer ----------------------------------------------
 dl.basic.inputs <- layer_input(shape = c(n.input_shape))
 
 stopifnot(dir.exists(dl.basic.tuning.dir))
