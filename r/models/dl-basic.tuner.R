@@ -9,7 +9,7 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-## Prepring Datasets for DL Basic Model Tuning ---------------------------------
+## Preparing Datasets for DL Basic Model Tuning ---------------------------------
 open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
 # stopifnot(file.exists(my_emnist.split.file_path))
@@ -19,21 +19,22 @@ stopifnot(exists("x3d.test_set"))
 # ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
 #                                     my_emnist.split.file_path)
 x.train <- x3d.train_set$x.train
-storage.mode(x.train) <- "integer"
+# storage.mode(x.train) <- "integer"
+
 # x.train <- x.train[seq(1e4),,]
 str(x.train)
 dim(x.train)
 
 x.test <- x3d.test_set$x.test
-storage.mode(x.test) <- "integer"
+# storage.mode(x.test) <- "integer"
 dim(x.test)
 
 x.test.files <- x3d.test_set$x.files
 
 y.train.groups <- ds.get_classIDs.grouped(x.train)
 y_train <- y.train.groups$classID
-# y_train <- y_train[seq(1e4)]
 
+# y_train <- y_train[seq(1e4)]
 stopifnot(sum(as.character(y_train) != rownames(x.train)) == 0)
 
 y.train <- as.array(as.integer(y_train) - 1)
@@ -181,6 +182,7 @@ log_close()
 ## Training & Tuning DL Basic Model --------------------------------------------
 open_logfile(".dl.basic-model-tuning")
 start <- put_start_date()
+# Log Start Time: 2026-06-29 09:22:51.209273
 
 ### Init DL Basic Model Tuner Paths --------------------------------------------
 
@@ -207,6 +209,22 @@ dl.basic.keras_tuner.dir <- file.path(dl.basic.tuning.dir, "keras-tuner")
 if(!dir.exists(dl.basic.keras_tuner.dir))
   dir.create(dl.basic.keras_tuner.dir)
 
+dl_basic.final_model.file_path <- file.path(dl.basic.keras_tuner.dir, 
+                                      "dl-basic.final-model.keras")
+
+dlb.final_model.train_history.file_path <- file.path(dl.basic.keras_tuner.dir, 
+                                                    "dl_basic.final_model.train_history.rds")
+
+dl.basic_tune.plot_img.dir <- file.path(dl.basic.keras_tuner.dir, "plot.img")
+
+dl.basic.best_model.plot_img.file <- file.path(dl.basic_tune.plot_img.dir, 
+                                               "tuner.best-model.png")
+dl.basic.final_model.plot_img.file <- file.path(dl.basic_tune.plot_img.dir, 
+                                               "tuner.final-model.png")
+
+if(!dir.exists(dl.basic_tune.plot_img.dir))
+  dir.create(dl.basic_tune.plot_img.dir)
+
 dl.basic_tuner.checkpoints.dir <- file.path(dl.basic.keras_tuner.dir,
                                             "checkpoints")
 if(!dir.exists(dl.basic_tuner.checkpoints.dir))
@@ -216,11 +234,14 @@ dl.basic_tuner.checkpoint.file_path <-
   file.path(dl.basic_tuner.checkpoints.dir, 
             "dl.basic_tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
-# dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
-#                              "dl.basic.pre-trained.model.keras")
-# 
-# dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
-#                              "dl.basic.model.train_history.bak.rds")
+dl.basic_best.checkpoints.dir <- file.path(dl.basic.keras_tuner.dir,
+                                            "checkpoints.best")
+if(!dir.exists(dl.basic_best.checkpoints.dir))
+  dir.create(dl.basic_best.checkpoints.dir)
+
+dl.basic_best.checkpoint.file_path <- 
+  file.path(dl.basic_best.checkpoints.dir, 
+            "dl.basic_best.{epoch:02d}-{val_loss:.2f}.keras")
 
 ### Tuning Basic DL MCC Model ---------------------------------------------------
 
@@ -231,273 +252,146 @@ dl_basic.tuner <- dl.tune.hwr_model(dl_basic.tunable_model,
                                     dl.basic_tuner.checkpoint.file_path,
                                     project_name = "DL.Basic.Tuner")
 
-result = kerastuneR::plot_tuner(dl_basic.tuner)
+# Best val_accuracy So Far: 0.8961053490638733
+# Total elapsed time: 03h 38m 12s
+
+dl_basic.tuner
+# <keras_tuner.src.tuners.randomsearch.RandomSearch object at 0x000001F3BD376D90>
+
+class(dl_basic.tuner)
+
+# This prints a summary of the search space and lists the top trial results
+dlb.model_tuner.result = kerastuneR::plot_tuner(dl_basic.tuner)
 # the list will show the plot and the data.frame of tuning results
-result 
-
-# best_5_models = tuner %>% get_best_models(5)
-# best_5_models[[1]] %>% plot_keras_model()
-
-log_close()
-## 1 Hidden Layer ----------------------------------------------
-dl.basic.inputs <- layer_input(shape = c(n.input_shape))
-
-stopifnot(dir.exists(dl.basic.tuning.dir))
-
-hl1.dir <- file.path(dl.basic.tuning.dir,"1-hidden-layer")
-if(!dir.exists(hl1.dir))
-  dir.create(hl1.dir)
-
-dl.model.hl1.tuning_results.file_path <- 
-  file.path(hl1.dir, "1hl.units_tuning.results.rds")
-
-n.hl.units <- c(784, 562, 512, 256, 128, 64)
-
-put_log("Tuning DL Basic Model for 1 Hidden Layer with different number of units...")
-start <- put_start_date()
-
-dl.basic.tuning.result <- lapply(n.hl.units, function(n.units) {
-  stopifnot(dir.exists(hl1.dir))
-  
-  n_units.dir <- file.path(hl1.dir, paste0(n.units, "units"))
-  
-  if(!dir.exists(n_units.dir))
-    dir.create(n_units.dir)
-  
-  model.file_path <- file.path(n_units.dir, "dl.basic.model.keras")
-  
-  model.train_history.file_path <- file.path(n_units.dir, 
-                                             "dl.basic.model.train_history.rds")
-  
-  checkpoints.dir <- file.path(n_units.dir, "checkpoints")
-  
-  if(!dir.exists(checkpoints.dir))
-    dir.create(checkpoints.dir)
-  
-  checkpoints.file_path <- 
-    file.path(checkpoints.dir, 
-              "dl.basic.hl1.{epoch:02d}-{val_loss:.2f}.keras")
-
-  dl.basic.outputs <- dl.basic.inputs |>
-    layer_dense(units = n.units, activation = "relu", 
-                input_shape = c(n.input_shape)) |>
-    layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    # layer_dense(units = n.hl.units, activation = "relu") |>
-    # layer_dropout(rate = 0.25) |> 
-    layer_dense(units = N.classes, activation = "softmax")
-  
-  
-  dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
-  dl.basic.model
-  
-  dl.basic.model |> compile(
-    loss = "sparse_categorical_crossentropy",
-    optimizer = keras3::optimizer_adamax(0.001),
-    metrics = "accuracy"
-  )
-  
-  summary(dl.basic.model)
-
- 
-  model.callbacks <- list(
-    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = checkpoints.file_path,
-                              monitor = "val_loss",
-                              save_best_only = TRUE,
-                              verbose = 1)
-  )
-  
-  ### Training the Basic DL MCC Model ******************************************
-  
-  put_log("Training the BDL MCC Model...")
-  start <- put_start_date()
-  
-  model.train_history <- dl.basic.model |> 
-    fit(x.train, 
-        y.train, 
-        epochs = 50, 
-        # batch_size = 128, 
-        callbacks = model.callbacks,
-        validation_split = 0.2
-    )
-  
-  put_log("Saving pre-trained BDL MCC Model...")
-  save_model(dl.basic.model,
-             filepath = model.file_path,
-             overwrite = TRUE)
-  
-  put_log("The BDL MCC Model has been trained 
-and saved in the following file:
-  %1", model.file_path)
-  
-  put_log("Saving the BDL MCC Model History...")
-  saveRDS(model.train_history,
-          file = model.train_history.file_path)
-  
-  put_log("The BDL MCC Model History has been trained 
-and saved in the following file:
-  %1", model.train_history.file_path)
-  # Time difference of 38.48235 mins
-  
-  put_log("Evaluating DL Model...")
-  eval.result <- dl.basic.model |> evaluate(x.test, y.test)
-  put_log("DL Model evaluation result:
-%1", capture.output(str(eval.result)))
-  # List of 2
-  #  $ accuracy: num 0.907
-  #  $ loss    : num 0.299
-  
-  put_end_date(start)
-  
-  
-  list(model.file_path = model.file_path,
-       train_history = model.train_history,
-       eval.result = eval.result,
-       n.units = n.units)
-  
-})
-
-names(dl.basic.tuning.result) <- as.character(n.hl.units)
-str(dl.basic.tuning.result)
-
-put_log("Saving the BDL MCC Model History...")
-saveRDS(dl.basic.tuning.result,
-        file = dl.model.hl1.tuning_results.file_path)
-
-put_log("The BDL MCC Model History has been trained 
-and saved in the following file:
-  %1", dl.model.hl1.tuning_results.file_path)
-put_end_date(start)
-
-best_tuning.result <- dl.basic.tuning.result$`784`
-str(best_tuning.result)
-
-plot(best_tuning.result$train_history)
-
-## Building Basic DL MCC Model -------------------------------------------------
-
-open_logfile("dl.basic-model")
-
-n.input_shape <- ncol(x.train)
-# 784
-
-if(file.exists(dl.basic.model.file_path)) {
-  put_log("Loading pre-trained BDL MCC Model...")
-  
-  dl.basic.model <- load_model(dl.basic.model.file_path)
-  
-  put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dl.basic.model.file_path)
-  
-  if(file.exists(dl.basic.model.train_history.file_path)){
-    put_log("Loading the BDL MCC Model Train History...")
-    
-    dl.basic.train_history <- readRDS(dl.basic.model.train_history.file_path)
-    
-    put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dl.basic.model.train_history.file_path)
-  } else {
-    warning("The BDL MCC Model backup does not exist:
-", dl.basic.model.train_history.file_path)
-  }
-} else {
-  ### Defining & Compiling the Basic DL MCC Model ******************************
-  
-  n.input_shape <- ncol(x.train)
-  # 784
-  
-  n.hl.units <- 512 # ceiling(n.input_shape*2/3+N.classes)
-                    # 562
-  
-  
-  dl.basic.inputs <- layer_input(shape = c(n.input_shape))
-  
-  dl.basic.outputs <- dl.basic.inputs |>
-    layer_dense(units = n.hl.units, activation = "relu", 
-                input_shape = c(n.input_shape)) |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = n.hl.units, activation = "relu") |>
-    layer_dropout(rate = 0.25) |> 
-    layer_dense(units = N.classes, activation = "softmax")
-  
-  
-  dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
-  dl.basic.model
-  
-  dl.basic.model |> compile(
-    loss = "categorical_crossentropy",
-    optimizer = keras3::optimizer_adamax(0.001),
-    metrics = "accuracy"
-  )
-  
-  summary(dl.basic.model)
-  
-  ### Training the Basic DL MCC Model ******************************************
-  
-  dl.basic.callbacks <- list(
-    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
-                              monitor = "val_loss",
-                              save_best_only = TRUE,
-                              verbose = 1)
-  )
-  
-  
-
-  put_log("Training the BDL MCC Model...")
-  start <- put_start_date()
-  
-  dl.basic.train_history <- dl.basic.model |> 
-    fit(x.train, 
-        y.train, 
-        epochs = 100, 
-        # batch_size = 128, 
-        callbacks = dl.basic.callbacks,
-        validation_split = 0.2
-        )
-
-  put_log("Saving pre-trained BDL MCC Model...")
-  save_model(dl.basic.model,
-             filepath = dl.basic.model.file_path,
-             overwrite = FALSE)
-  
-  put_log("The BDL MCC Model has been trained 
-and saved in the following file:
-  %1", dl.basic.model.file_path)
-
-  put_log("Saving the BDL MCC Model History...")
-  saveRDS(dl.basic.train_history,
-          file = dl.basic.model.train_history.file_path)
-  
-  put_log("The BDL MCC Model History has been trained 
-and saved in the following file:
-  %1", dl.basic.model.train_history.file_path)
-  put_end_date(start)
-  # Time difference of 38.48235 mins
+dlb.model_tuner.result 
+{
+  # [[1]]
+  # 
+  # [[2]]
+  #   message learning_rate num_layers units_1 units_2 units_3 units_4 units_5 units_6
+  # 1      NA         1e-04          9     455     775     551     295     583     199
+  # 2      NA         1e-02          5     359     615     615     359     743     487
+  # 3      NA         1e-03          9     551     679     231     295     391     327
+  # 4      NA         1e-03         14     263     391     647     647     551      71
+  # 5      NA         1e-02          8     199     679     423     583     199     615
+  #   units_7 units_8 units_9 units_10 units_11 units_12 units_13 units_14 sunits_15
+  # 1     743     647     391      103      743      455      583      647      679
+  # 2     679     487     711      327      135      359      679      167      487
+  # 3     391     231      39      391      519      199      775       39      679
+  # 4     391     231     327      359      487      391      199       71      199
+  # 5     519     295     679      199      647      167      583      551      583
+  #   units_16 units_17 units_18 units_19 units_20 best_step     score
+  # 1      359      455      359      263       39        45 0.8933208
+  # 2      391      359      359      295      519        14 0.8550518
+  # 3      519      487       39      743      519        19 0.8961053
+  # 4      103      423      551      359      455        31 0.8862841
+  # 5      231      199      583      263       71        19 0.8117780
 }
 
-put_log("The Basic `DL MCC` Model has been trained with the following results
-%1", dl.basic.model)
+# This prints the top trials, their hyperparameters, and execution details
+dl_basic.tuner |> results_summary(num_trials = 1)
+
+# Retrieve the best model from the search
+dl_basic.best_models <- kerastuneR::get_best_models(tuner = dl_basic.tuner, num_models = 1L)
+dl_basic.best_model <- dl_basic.best_models[[1]]
+dl_basic.best_model
+# View completed epochs of this best model
+# If restore_best_weights = TRUE, this tells you the optimal epoch
+# best_epoch <- dl_basic.best_model$history$params$epochs
+
+dl_basic.best_model |> plot_keras_model(to_file = dl.basic.best_model.plot_img.file,
+                                        show_shapes = TRUE)
+
+dl_basic.tuner.best_trials <- dl_basic.tuner$oracle$get_best_trials(num_trials = 5L)
+dl_basic.best_trial <- dl_basic.tuner.best_trials[[1]]
+dl_basic.best_trial$summary()
 
 
-plot(dl.basic.train_history)
-str(dl.basic.train_history)
+log_close()
+# Log Elapsed Time: 0 03:38:15
+
+### Re-training the Best Model --------------------------------------------------
+
+open_logfile("re-training.best.dl.basic-model")
+
+dl_basic.tuner.best_hp.ls <- tuner$get_best_hyperparameters()
+str(dl_basic.tuner.best_hp.ls)
+
+dl_basic.tuner.best_hp <- dl_basic.tuner.best_hp.ls[[1]]
+
+class(dl_basic.tuner.best_hp)
+# [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
+# [2] "python.builtin.object"        
+
+str(dl_basic.tuner.best_hp)
+# <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
+
+dl_basic.tuner.best_hp$values
+
+# 1. Re-build a clean model structure using the winning hyperparams
+dl_basic.final_model <- tuner$hypermodel$build(dl_basic.tuner.best_hp)
+print(dl_basic.final_model)
+dl_basic.final_model |> plot_keras_model(to_file = dl.basic.final_model.plot_img.file,
+                                         show_shapes = T)
+
+
+#best_models <- tuner |> get_best_models(num_models = 1L)
+# best_5_models[[1]] %>% plot_keras_model()
+
+dl.basic_best.callbacks <- list(
+  callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+  callback_model_checkpoint(filepath = dl.basic_best.checkpoint.file_path,
+                            monitor = "val_loss",
+                            save_best_only = TRUE,
+                            verbose = 1)
+)
+
+
+
+put_log("Training the BDL MCC Model...")
+start <- put_start_date()
+
+dlb.final_model.train_history <- dl_basic.final_model |> 
+  fit(x.train, 
+      y.train, 
+      epochs = 40, 
+      # batch_size = 128, 
+      callbacks = dl.basic_best.callbacks,
+      validation_split = 0.2
+  )
+
+put_log("Saving re-trained final BDL MCC Model...")
+keras3::save_model(dl_basic.final_model,
+           filepath = dl_basic.final_model.file_path,
+           overwrite = TRUE)
+
+put_log("The re-trained final BDL MCC Model has been trained 
+and saved in the following file:
+  %1", dl_basic.final_model.file_path)
+
+put_log("Saving the BDL MCC Model History...")
+saveRDS(dlb.final_model.train_history,
+        file = dlb.final_model.train_history.file_path)
+
+put_log("The re-trained final BDL MCC Model History has been trained 
+and saved in the following file:
+  %1", dlb.final_model.train_history.file_path)
+put_end_date(start)
+# Time difference of 38.48235 mins
+
+put_log("The re-trained `BDL MCC` Model has been trained with the following results
+%1", dl_basic.final_model)
+
+
+
+plot(dlb.final_model.train_history)
+str(dlb.final_model.train_history)
+
+log_close()
 
 ## BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
-bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test)
+bdl.eval.result <- dl_basic.final_model |> evaluate(x.test, y.test)
 put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
 # List of 2
@@ -507,7 +401,7 @@ put_log("DL Model evaluation result:
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-bdl.preds <- dl.basic.model |> predict(x.test) 
+bdl.preds <- dl_basic.final_model |> predict(x.test) 
 put_end_date(start)
 # Time difference of  mins
 

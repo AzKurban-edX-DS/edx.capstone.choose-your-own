@@ -280,7 +280,7 @@ dl.tune.hwr_model <- function(dl.build_model,
                               project_name = 'DL.ModelTuner',
                               validation_split = 0.2,
                               validation_data = NULL,
-                              epochs = 50) {
+                              epochs = 100) {
   dl.tune_model(dl.build_model,
                 x_train,
                 y_train,
@@ -324,7 +324,7 @@ dl.tune_model <- function(dl.build_model,
                           project_name = 'DL.ModelTuner',
                           validation_split = 0.2,
                           validation_data = NULL,
-                          epochs = 50) {
+                          epochs = 100) {
   
   stopifnot(dir.exists(tuner_project.dir))
   hp = HyperParameters()
