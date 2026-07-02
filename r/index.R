@@ -31,7 +31,8 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Load Flatten Dataset --------------------------------------------------------
+### Prepare Training & Testing Sets for DL / CNN Models ------------------------
+### Load Flatten Dataset -------------------------------------------------------
 ds.load_flatten.script.path <- file.path(support_scripts.path, 
                                          "load-flattened-dataset.R")
 
@@ -43,6 +44,41 @@ source(ds.load_flatten.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
+
+start <- put_start_date()
+stopifnot(file.exists(train.img28x28mx.array.file_path))
+
+put_log("Loading the Train 28x28 Image Data Array Set from the backup file...")
+img_mx.set <- readRDS(train.img28x28mx.array.file_path)
+
+put_log("The Train 28x28 Image Data Array Set has been loading from the following file:
+%1", train.img28x28mx.array.file_path)
+
+put_log("The Train 28x28 Image Data Array Set structure:
+%1", capture.output(str(img_mx.set)))
+
+put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+
+set.seed(N.classes)
+split3d.list <- sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
+                                           img_mx.set$img28x28mx.fpath)
+str(split3d.list)
+
+x3d.train_set <- split3d.list$train_set
+put_log("The Train Set has been saved in the object `x3d.train_set`, 
+which contains a training sample stored in the `x.train` variable having the following shape:
+%1", capture.output(shape(x3d.train_set$x.train)))
+# shape(132912, 28, 28)
+
+x3d.test_set <- split3d.list$test_set
+put_log("The Test Set has been saved in the object `x3d.test_set`, 
+which contains a testing sample stored in the `x.test` variable having the following shape:
+%1", capture.output(shape(x3d.test_set$x.test)))
+# shape(33267, 28, 28)
+
+rm(split3d.list)
 
 ## Build kNN+PCA & Random Forest Models ----------------------------------------
 
@@ -104,42 +140,6 @@ data.dl.cnn.multiclass.checkpoints.dir <- file.path(data.dl.cnn.multiclass.dir, 
 
 if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
   dir.create(data.dl.cnn.multiclass.checkpoints.dir)
-
-#### Prepare Training & Testing Sets -----------------------------------------------------
-put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
-
-start <- put_start_date()
-stopifnot(file.exists(train.img28x28mx.array.file_path))
-
-put_log("Loading the Train 28x28 Image Data Array Set from the backup file...")
-img_mx.set <- readRDS(train.img28x28mx.array.file_path)
-
-put_log("The Train 28x28 Image Data Array Set has been loading from the following file:
-%1", train.img28x28mx.array.file_path)
-
-put_log("The Train 28x28 Image Data Array Set structure:
-%1", capture.output(str(img_mx.set)))
-
-put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
-
-set.seed(N.classes)
-split3d.list <- sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
-                                           img_mx.set$img28x28mx.fpath)
-str(split3d.list)
-
-x3d.train_set <- split3d.list$train_set
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
-which contains a training sample stored in the `x.train` variable having the following shape:
-%1", capture.output(shape(x3d.train_set$x.train)))
-# shape(132912, 28, 28)
-
-x3d.test_set <- split3d.list$test_set
-put_log("The Test Set has been saved in the object `x3d.test_set`, 
-which contains a testing sample stored in the `x.test` variable having the following shape:
-%1", capture.output(shape(x3d.test_set$x.test)))
-# shape(33267, 28, 28)
-
-rm(split3d.list)
 
 #### Init File Paths -------------------------------------------------------------
 

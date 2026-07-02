@@ -9,12 +9,15 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-## Preparing Datasets for DL Basic Model Tuning ---------------------------------
+## Preparing Datasets for BDL MCC Model Tuning ---------------------------------
 open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
 # stopifnot(file.exists(my_emnist.split.file_path))
 stopifnot(exists("x3d.train_set"))
 stopifnot(exists("x3d.test_set"))
+
+str(x3d.train_set)
+str(x3d.test_set)
 
 # ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
 #                                     my_emnist.split.file_path)
@@ -45,7 +48,22 @@ stopifnot(min(y.train) == 0)
 stopifnot(max(y.train) == 38)
 stopifnot(dim(y.train) == nrow(x.train))
 
-put_log("The Train Set is balanced by set of Classes:
+y.test.groups <- ds.get_classIDs.grouped(x.test)
+y_test <- y.test.groups$classID
+
+# y_test <- y_test[seq(1e4)]
+stopifnot(sum(as.character(y_test) != rownames(x.test)) == 0)
+
+y.test <- as.array(as.integer(y_test) - 1)
+str(y.test)
+dim(y.test)
+
+stopifnot(min(y.test) == 0)
+stopifnot(max(y.test) == 38)
+stopifnot(dim(y.test) == nrow(x.test))
+
+
+put_log("The Train Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -92,12 +110,7 @@ put_log("The Train Set is balanced by set of Classes:
   # 39 Z        3407
 }
 
-y.test.groups <- ds.get_classIDs.grouped(x.test)
-y.test <- y.test.groups$classID
-
-stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Test Set is balanced by the set of Classes:
 %1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -144,16 +157,18 @@ put_log("The Train Set is balanced by set of Classes:
   # 39 Z         852  
 }
 
-dim(x.train)
 #> [1] 16653   784
 str(x.train)
-
 str(y.train)
-length(y.train)
+
+dim(x.train)
+dim(y.train)
 
 str(x.test)
 str(y.test)
-length(y.test)
+
+dim(x.test)
+dim(y.test)
 #> [1] 817379
 
 
@@ -179,12 +194,14 @@ head(y.test.cat)
 
 log_close()
 
-## Training & Tuning DL Basic Model --------------------------------------------
-open_logfile(".dl.basic-model-tuning")
-start <- put_start_date()
-# Log Start Time: 2026-06-29 09:22:51.209273
+## Tuning the  BDL MCC Model ---------------------------------------------------
+### Open Log File --------------------------------------------------------------
+open_logfile(paste0(".dl-basic-model.tuning_", 
+                    paste0("x.train(",
+                           str_flatten(shape(x.train), 
+                                       collapse = ","),")")))
 
-### Init DL Basic Model Tuner Paths --------------------------------------------
+### Init the Model Tuner Paths --------------------------------------------
 
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
@@ -208,6 +225,9 @@ dl.basic.keras_tuner.dir <- file.path(dl.basic.tuning.dir, "keras-tuner")
 
 if(!dir.exists(dl.basic.keras_tuner.dir))
   dir.create(dl.basic.keras_tuner.dir)
+
+dl_basic.model_tuner.file_path <- file.path(dl.basic.keras_tuner.dir, 
+                                      "dl-basic.model-tuner.rds")
 
 dl_basic.final_model.file_path <- file.path(dl.basic.keras_tuner.dir, 
                                       "dl-basic.final-model.keras")
@@ -243,7 +263,24 @@ dl.basic_best.checkpoint.file_path <-
   file.path(dl.basic_best.checkpoints.dir, 
             "dl.basic_best.{epoch:02d}-{val_loss:.2f}.keras")
 
-### Tuning Basic DL MCC Model ---------------------------------------------------
+### Performing the Model Tuning ------------------------------------------------
+
+# if(file.exists(dl_basic.model_tuner.file_path)) {
+#   put_log("Loading the BDL Model Tuner object...")
+#   
+#   dl_basic.tuner <- readRDS(dl_basic.model_tuner.file_path)
+#   
+#   put_log("The BDL Model Tuner object has been loaded from the backup file:
+# %1", dl_basic.model_tuner.file_path)
+#   
+# } else {
+# }
+
+put_log("Tuning the DL Basic Model on the full Train Dataset (`x.train`) of shape: %1...",
+        paste0("(", str_flatten(shape(x.train), 
+                                collapse = ","),")"))
+start <- put_start_date()
+# Log Start Time: 2026-06-29 09:22:51.209273
 
 dl_basic.tuner <- dl.tune.hwr_model(dl_basic.tunable_model,
                                     x.train,
@@ -252,10 +289,22 @@ dl_basic.tuner <- dl.tune.hwr_model(dl_basic.tunable_model,
                                     dl.basic_tuner.checkpoint.file_path,
                                     project_name = "DL.Basic.Tuner")
 
+put_log("The DL Basic Model Tuning has been completed.")
+put_end_date(start)
+
 # Best val_accuracy So Far: 0.8961053490638733
 # Total elapsed time: 03h 38m 12s
 
-dl_basic.tuner
+put_log("Saving the BDL Model Tuner object...")
+saveRDS(dl_basic.tuner,
+        file = dl_basic.model_tuner.file_path)
+
+put_log("The BDL Model Tuner object has been saved in the following file:
+  %1", dl_basic.model_tuner.file_path)
+put_end_date(start)
+
+dl_basic.tuner$results_summary()
+
 # <keras_tuner.src.tuners.randomsearch.RandomSearch object at 0x000001F3BD376D90>
 
 class(dl_basic.tuner)
@@ -263,7 +312,9 @@ class(dl_basic.tuner)
 # This prints a summary of the search space and lists the top trial results
 dlb.model_tuner.result = kerastuneR::plot_tuner(dl_basic.tuner)
 # the list will show the plot and the data.frame of tuning results
-dlb.model_tuner.result 
+
+put_log("The DL Basic Tuning Results:
+%1", capture.output(dlb.model_tuner.result))
 {
   # [[1]]
   # 
@@ -289,12 +340,45 @@ dlb.model_tuner.result
 }
 
 # This prints the top trials, their hyperparameters, and execution details
-dl_basic.tuner |> results_summary(num_trials = 1)
+dl_basic.tuner |> results_summary(num_trials = 1L)
+{
+  # Results summary
+  # Results in data/models/dl.keras3/dl.basic/tuning/keras-tuner\DL.Basic.Tuner
+  # Showing 1 best trials
+  # Objective(name="val_accuracy", direction="max")
+  # 
+  # Trial 2 summary
+  # Hyperparameters:
+  #   learning_rate: 0.001
+  # num_layers: 9
+  # units_1: 551
+  # units_2: 679
+  # units_3: 231
+  # units_4: 295
+  # units_5: 391
+  # units_6: 327
+  # units_7: 391
+  # units_8: 231
+  # units_9: 39
+  # units_10: 391
+  # units_11: 519
+  # units_12: 199
+  # units_13: 775
+  # units_14: 39
+  # units_15: 679
+  # units_16: 519
+  # units_17: 487
+  # units_18: 39
+  # units_19: 743
+  # units_20: 519
+  # Score: 0.8961053490638733
+}
 
 # Retrieve the best model from the search
 dl_basic.best_models <- kerastuneR::get_best_models(tuner = dl_basic.tuner, num_models = 1L)
 dl_basic.best_model <- dl_basic.best_models[[1]]
-dl_basic.best_model
+
+dl_basic.best_model$summary()
 # View completed epochs of this best model
 # If restore_best_weights = TRUE, this tells you the optimal epoch
 # best_epoch <- dl_basic.best_model$history$params$epochs
@@ -302,151 +386,246 @@ dl_basic.best_model
 dl_basic.best_model |> plot_keras_model(to_file = dl.basic.best_model.plot_img.file,
                                         show_shapes = TRUE)
 
-dl_basic.tuner.best_trials <- dl_basic.tuner$oracle$get_best_trials(num_trials = 5L)
+dl_basic.tuner.best_trials <- dl_basic.tuner$oracle$get_best_trials(num_trials = 1L)
 dl_basic.best_trial <- dl_basic.tuner.best_trials[[1]]
 dl_basic.best_trial$summary()
+dl_basic.best_trial$best_step
+
+dl_basic.best_trial$metrics$get_history('val_accuracy')
 
 
+### Close Log ------------------------------------------------------------------
 log_close()
 # Log Elapsed Time: 0 03:38:15
 
-### Re-training the Best Model --------------------------------------------------
+## Re-training the Best Model --------------------------------------------------
 
 open_logfile("re-training.best.dl.basic-model")
 
-dl_basic.tuner.best_hp.ls <- tuner$get_best_hyperparameters()
-str(dl_basic.tuner.best_hp.ls)
 
-dl_basic.tuner.best_hp <- dl_basic.tuner.best_hp.ls[[1]]
-
-class(dl_basic.tuner.best_hp)
-# [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
-# [2] "python.builtin.object"        
-
-str(dl_basic.tuner.best_hp)
-# <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
-
-dl_basic.tuner.best_hp$values
-
-# 1. Re-build a clean model structure using the winning hyperparams
-dl_basic.final_model <- tuner$hypermodel$build(dl_basic.tuner.best_hp)
-print(dl_basic.final_model)
-dl_basic.final_model |> plot_keras_model(to_file = dl.basic.final_model.plot_img.file,
-                                         show_shapes = T)
-
-
-#best_models <- tuner |> get_best_models(num_models = 1L)
-# best_5_models[[1]] %>% plot_keras_model()
-
-dl.basic_best.callbacks <- list(
-  callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dl.basic_best.checkpoint.file_path,
-                            monitor = "val_loss",
-                            save_best_only = TRUE,
-                            verbose = 1)
-)
-
-
-
-put_log("Training the BDL MCC Model...")
-start <- put_start_date()
-
-dlb.final_model.train_history <- dl_basic.final_model |> 
-  fit(x.train, 
-      y.train, 
-      epochs = 40, 
-      # batch_size = 128, 
-      callbacks = dl.basic_best.callbacks,
-      validation_split = 0.2
+if(file.exists(dl_basic.final_model.file_path)) {
+  put_log("Loading pre-trained BDL MCC Model...")
+  
+  dl_basic.final_model <- keras3::load_model(dl_basic.final_model.file_path)
+  
+  put_log("The BDL MCC Model has been loaded from the backup file:
+%1", dl_basic.final_model.file_path)
+  
+  if(file.exists(dlb.final_model.train_history.file_path)){
+    put_log("Loading the BDL MCC Model Train History...")
+    
+    dlb.final_model.train_history <- readRDS(dlb.final_model.train_history.file_path)
+    
+    put_log("The BDL MCC Model has been loaded from the backup file:
+%1", dlb.final_model.train_history.file_path)
+  } else {
+    warning("The BDL MCC Model backup does not exist:
+", dlb.final_model.train_history.file_path)
+  }
+} else {
+  dl_basic.tuner.best_trial.ls <- dl_basic.tuner$oracle$get_best_trials(num_trials = 10L)
+  str(dl_basic.tuner.best_trial.ls)
+  
+  dl_basic.tuner.best_trial.last_epochs <- sapply(dl_basic.tuner.best_trial.ls, 
+                                                  function(trial){
+                                                    trial$best_step
+                                                  })
+  
+  dl_basic.retrain_epochs <- max(dl_basic.tuner.best_trial.last_epochs)
+  
+  
+  dl_basic.tuner.best_hp.ls <- dl_basic.tuner$get_best_hyperparameters(num_trials = 1L)
+  # str(dl_basic.tuner.best_hp.ls)
+  
+  dl_basic.tuner.best_hp <- dl_basic.tuner.best_hp.ls[[1]]
+  
+  put_log("The best Hyperparameters configuration:
+%1", capture.output(dl_basic.tuner.best_hp$get_config()))
+  
+  class(dl_basic.tuner.best_hp)
+  # [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
+  # [2] "python.builtin.object"        
+  
+  dl_basic.tuner.best_hp
+  # <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
+  
+  put_log("The best Hyperparameters values:
+%1", capture.output(dl_basic.tuner.best_hp$values))
+  
+  # 1. Re-build a clean model structure using the winning hyperparams
+  dl_basic.final_model <- dl_basic.tuner$hypermodel$build(dl_basic.tuner.best_hp)
+  # print(dl_basic.final_model)
+  # dl_basic.final_model$summary()
+  
+  put_log("The Final tuned BDL Model Summary: 
+%1", capture.output(dl_basic.final_model))
+  
+  dl_basic.final_model |> plot_keras_model(to_file = dl.basic.final_model.plot_img.file,
+                                           show_shapes = T)
+  
+  #best_models <- tuner |> get_best_models(num_models = 1L)
+  # best_5_models[[1]] %>% plot_keras_model()
+  
+  dl.basic_best.callbacks <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = dl.basic_best.checkpoint.file_path,
+                              monitor = "val_loss",
+                              save_best_only = TRUE,
+                              verbose = 1)
   )
-
-put_log("Saving re-trained final BDL MCC Model...")
-keras3::save_model(dl_basic.final_model,
-           filepath = dl_basic.final_model.file_path,
-           overwrite = TRUE)
-
-put_log("The re-trained final BDL MCC Model has been trained 
+  
+  put_log("Training the BDL MCC Model...")
+  start <- put_start_date()
+  
+  dlb.final_model.train_history <- dl_basic.final_model |> 
+    fit(x.train, 
+        y.train, 
+        epochs = dl_basic.retrain_epochs, 
+        # batch_size = 128, 
+        callbacks = dl.basic_best.callbacks,
+        validation_split = 0.2
+    )
+  
+  put_log("Saving re-trained final BDL MCC Model...")
+  keras3::save_model(dl_basic.final_model,
+                     filepath = dl_basic.final_model.file_path,
+                     overwrite = TRUE)
+  
+  put_log("The re-trained final BDL MCC Model has been trained 
 and saved in the following file:
   %1", dl_basic.final_model.file_path)
-
-put_log("Saving the BDL MCC Model History...")
-saveRDS(dlb.final_model.train_history,
-        file = dlb.final_model.train_history.file_path)
-
-put_log("The re-trained final BDL MCC Model History has been trained 
+  
+  put_log("Saving the BDL MCC Model History...")
+  saveRDS(dlb.final_model.train_history,
+          file = dlb.final_model.train_history.file_path)
+  
+  put_log("The re-trained final BDL MCC Model History has been trained 
 and saved in the following file:
   %1", dlb.final_model.train_history.file_path)
-put_end_date(start)
-# Time difference of 38.48235 mins
+  put_end_date(start)
+  # Time difference of 38.48235 mins
+}
 
 put_log("The re-trained `BDL MCC` Model has been trained with the following results
 %1", dl_basic.final_model)
-
-
 
 plot(dlb.final_model.train_history)
 str(dlb.final_model.train_history)
 
 log_close()
 
-## BDL MCC Model Evaluation ----------------------------------------------------
+## The Best BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
-bdl.eval.result <- dl_basic.final_model |> evaluate(x.test, y.test)
-put_log("DL Model evaluation result:
-%1", capture.output(str(bdl.eval.result)))
+bdl_best.eval.result <- dl_basic.final_model |> evaluate(x.test, y.test)
+put_log("BDL MCC Bset Model evaluation result:
+%1", capture.output(str(bdl_best.eval.result)))
 # List of 2
-#  $ accuracy: num 0.907
-#  $ loss    : num 0.299
+ # $ accuracy: num 0.9
+ # $ loss    : num 0.374
 
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-bdl.preds <- dl_basic.final_model |> predict(x.test) 
-put_end_date(start)
+bdl_best.preds <- dl_basic.final_model |> predict(x.test)
+str(bdl_best.preds)
+# put_end_date(start)
 # Time difference of  mins
 
-colnames(bdl.preds) <- y.labels
-head(bdl.preds[,1:5])
+colnames(bdl_best.preds) <- y.labels
+head(bdl_best.preds[,1:5])
 #                 #            $            &            @            0
-# [1,] 3.792269e-07 8.851480e-07 2.578369e-08 3.807849e-07 3.528773e-05
-# [2,] 1.730552e-13 6.454766e-15 1.392669e-09 6.399740e-10 3.266690e-07
-# [3,] 9.197757e-16 3.064377e-12 1.566798e-11 5.085300e-16 8.313370e-07
-# [4,] 7.945133e-08 5.979302e-07 3.491478e-08 4.118463e-09 3.721448e-06
-# [5,] 1.046998e-12 9.161977e-15 2.002677e-24 1.114895e-18 6.859786e-13
-# [6,] 4.039502e-14 1.164542e-14 2.524913e-17 2.605324e-14 5.818604e-10
-
-dim(bdl.preds)
+# [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
+# [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
+# [3,] 2.074071e-11 1.434007e-10 3.564378e-09 8.688334e-12 2.087918e-05
+# [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
+# [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
+# [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
+dim(bdl_best.preds)
 #> [1] 33228    39
 
-bdl.preds.ts <- as_tensor(bdl.preds)
-str(bdl.preds.ts)
+bdl_best.preds.ts <- as_tensor(bdl_best.preds)
+str(bdl_best.preds.ts)
 #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
 
-bdl.predictions <- bdl.preds.ts |> op_argmax(2)
-bdl.predictions
+bdl_best.predictions <- bdl_best.preds.ts |> op_argmax(2)
+bdl_best.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(bdl.predictions)
+dim(bdl_best.predictions)
 #> [1] 33228
-# bdl.predictions$numpy()
+# bdl_best.predictions$numpy()
 
 
 # y.test
 # as.integer(y.test)
 
-bdl.pred.values.idx <- bdl.predictions$numpy()
-head(bdl.pred.values.idx)
+bdl_best.pred.values.idx <- bdl_best.predictions$numpy()
+head(bdl_best.pred.values.idx)
+min(bdl_best.pred.values.idx)
+max(bdl_best.pred.values.idx)
 
-bdl.pred.values <- y.labels[bdl.pred.values.idx]
-head(bdl.pred.values)
+bdl_best.pred.values <- y.labels[bdl_best.pred.values.idx]
+head(bdl_best.pred.values)
 
-dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
+y.test.idx <- y.test + 1
+dl.basic.accuracy <- mean(bdl_best.pred.values.idx == y.test.idx)
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
-# 0.906735283495847
+# 0.899963885879379
 
+y_test <- y.labels[y.test.idx]
+
+dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+                                                             y_test,
+                                                             bdl_best.pred.values)
+put_log("The BDL MCC Model Per-Class Accuracy:
+%1", capture.output(dl.basic.accuracy.by_class))
+{
+  #' # 1.0000000
+  #' $ 1.0000000
+  #' & 1.0000000
+  #' @ 1.0000000
+  #' 0 0.9683099
+  #' 1 0.7546948
+  #' 2 0.9061033
+  #' 3 0.9565728
+  #' 4 0.9330986
+  #' 5 0.8873239
+  #' 6 0.9272300
+  #' 7 0.9882629
+  #' 8 0.9143192
+  #' 9 0.9518779
+  #' A 0.8485915
+  #' B 0.8779343
+  #' C 0.9565728
+  #' D 0.9025822
+  #' E 0.9237089
+  #' F 0.9436620
+  #' G 0.6514085
+  #' H 0.9354460
+  #' I 0.7030516
+  #' J 0.9319249
+  #' K 0.9213615
+  #' L 0.4049296
+  #' M 0.9530516
+  #' N 0.9342723
+  #' P 0.9659624
+  #' Q 0.7406103
+  #' R 0.9190141
+  #' S 0.8955399
+  #' T 0.9366197
+  #' U 0.9471831
+  #' V 0.9260563
+  #' W 0.9636150
+  #' X 0.9389671
+  #' Y 0.8814554
+  #' Z 0.9072770
+}
+
+
+### Evaluation Results: Visualization ------------------------------------------
 
 put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
-dl.basic.roc_curves <- calc.roc_curves(y.test,
-                                       bdl.preds,
+dl.basic.roc_curves <- calc.roc_curves(y_test,
+                                       bdl_best.preds,
                                        y.labels)
 put_log("`BDL MCC` Model Evaluation: The per-class ROC curve calculation 
 has been completed.")
@@ -458,89 +637,41 @@ for (class.idx in 2:N.classes) {
 }
 
 
-# Confusion Matrix data suitable for Visualization using the `cvms` package:
-# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
-using the `cvms` package...")
-dl.basic.conf.mx <- confusion_matrix(as.character(y.test),
-                                     as.character(bdl.pred.values))
-put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(dl.basic.conf.mx))  
-
-# put_log("Plotting the confusion matrix, please wait...")
-# start <- put_start_date()
-# cl <- makeCluster(N_pcCores)
-# registerDoParallel(cl)
-#
-# 
-# dev.off()
-# plot_confusion_matrix(dl.basic.conf.mx,
-#                       palette = "Greens",
-#                       font_counts = font(size = 3,
-#                                          color = "red"),
-#                       add_normalized = FALSE,
-#                       add_col_percentages = FALSE,
-#                       add_row_percentages = FALSE)
-# 
-# stopCluster(cl)
-# stopImplicitCluster()
-# put_end_date(start)
-
-dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
-                                                             y.test,
-                                                             bdl.pred.values)
-dl.basic.accuracy.by_class
-{
-#' class  accuracy
-  #' # 1.0000000
-  #' $ 1.0000000
-  #' & 1.0000000
-  #' @ 1.0000000
-  #' 0 0.9671362
-  #' 1 0.8638498
-  #' 2 0.9143192
-  #' 3 0.9565728
-  #' 4 0.9319249
-  #' 5 0.9025822
-  #' 6 0.9284038
-  #' 7 0.9800469
-  #' 8 0.9295775
-  #' 9 0.9507042
-  #' A 0.8791080
-  #' B 0.9025822
-  #' C 0.9589202
-  #' D 0.9295775
-  #' E 0.9495305
-  #' F 0.9577465
-  #' G 0.6725352
-  #' H 0.9237089
-  #' I 0.6525822
-  #' J 0.9272300
-  #' K 0.9272300
-  #' L 0.3967136
-  #' M 0.9659624
-  #' N 0.9389671
-  #' P 0.9683099
-  #' Q 0.7159624
-  #' R 0.9448357
-  #' S 0.9084507
-  #' T 0.9518779
-  #' U 0.9330986
-  #' V 0.9401408
-  #' W 0.9624413
-  #' X 0.9518779
-  #' Y 0.8685446
-  #' Z 0.9096244
-}
-
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(y.labels,
                             dl.basic.accuracy.by_class,
                             title.prefix = "Basic DL Multiclass")
+
+# Confusion Matrix data suitable for Visualization using the `cvms` package:
+# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
+put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
+using the `cvms` package...")
+dl.basic.conf.mx <- confusion_matrix(as.character(y_test),
+                                     as.character(bdl_best.pred.values))
+put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
+%1", capture.output(dl.basic.conf.mx))  
+
+
+put_log("Plotting the confusion matrix, please wait...")
+start <- put_start_date()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+
+dev.off()
+plot_confusion_matrix(dl.basic.conf.mx,
+                      palette = "Greens",
+                      font_counts = font(size = 3,
+                                         color = "red"),
+                      add_normalized = FALSE,
+                      add_col_percentages = FALSE,
+                      add_row_percentages = FALSE)
+
+stopCluster(cl)
+stopImplicitCluster()
 put_end_date(start)
 
-
-
+put_end_date(start)
 log_close()
 
 
