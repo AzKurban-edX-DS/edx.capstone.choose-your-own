@@ -443,20 +443,11 @@ dl.basic.conf.mx <- confusion_matrix(as.character(y.test),
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
 %1", capture.output(dl.basic.conf.mx))  
 
-### Evaluation Results: Visualization ------------------------------------------
+## Evaluation Results: Visualization ------------------------------------------
 
-put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
-dl.basic.roc_curves <- calc.roc_curves(y.test,
-                                       bdl.preds,
-                                       Y.Labels)
-put_log("`BDL MCC` Model Evaluation: The per-class ROC curve calculation 
-has been completed.")
-
-plot(dl.basic.roc_curves[[1]], 
-     main = "ROC Curves for the `Basic Deep Learning Multiclass Classifier` Model")
-for (class.idx in 2:N.classes) {
-  lines(dl.basic.roc_curves[[class.idx]], col = class.idx)
-}
+put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
+dl.basic.roc_curves <- plot.ROC.curves(y.test,
+                                       bdl.preds)
 
 
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")

@@ -571,18 +571,24 @@ dl.basic.accuracy <- mean(bdl_best.pred.values.idx == y.test.idx)
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.899963885879379
 
+
+
+### Evaluation Results: Visualization ------------------------------------------
+
+put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
+dl.basic.roc_curves <- plot.ROC.curves(y.test.cat,
+                                       bdl_best.preds)
 y_test <- Y.Labels[y.test.idx]
 
-dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-                                                             y_test,
-                                                             bdl_best.pred.values)
-put_log("The BDL MCC Model Per-Class Accuracy:
+put_log("Plotting the BDL MCC Model Per-Class Accuracy...")
+dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y.test.cat,
+                                                           bdl_best.pred.values)
+
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
 %1", capture.output(dl.basic.accuracy.by_class))
-{
   #' # 1.0000000
   #' $ 1.0000000
   #' & 1.0000000
-  #' @ 1.0000000
   #' 0 0.9683099
   #' 1 0.7546948
   #' 2 0.9061033
@@ -593,6 +599,7 @@ put_log("The BDL MCC Model Per-Class Accuracy:
   #' 7 0.9882629
   #' 8 0.9143192
   #' 9 0.9518779
+  #' @ 1.0000000
   #' A 0.8485915
   #' B 0.8779343
   #' C 0.9565728
@@ -618,18 +625,10 @@ put_log("The BDL MCC Model Per-Class Accuracy:
   #' X 0.9389671
   #' Y 0.8814554
   #' Z 0.9072770
+# class  accuracy
+{
 }
 
-
-### Evaluation Results: Visualization ------------------------------------------
-put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
-dl.basic.roc_curves <- plot.ROC.curves(y.test.cat,
-                                       bdl_best.preds)
-
-put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(Y.Labels,
-                            dl.basic.accuracy.by_class,
-                            title.prefix = "Basic DL Multiclass")
 
 # Confusion Matrix data suitable for Visualization using the `cvms` package:
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html

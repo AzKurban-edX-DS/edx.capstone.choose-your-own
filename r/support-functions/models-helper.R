@@ -522,6 +522,24 @@ cnn.binclass.get_prediction_values <- function(preds) {
 
 ## Analysis & Visualization ----------------------------------------------------
 
+plot.per_class.accuracy.bars <- function(targets,
+                                         predicted.values){
+  
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(class.labels)) == 0)
+  
+  per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
+                                                       predicted.values,
+                                                       Y.Labels)
+  put_log("Function `plot.per_class.accuracy.bars`: 
+Plotting bar chart of per-class accuracy of the MCC model...")
+  bar_plot <- plot_bars.accuracy.by_class(per_class.accuracy,
+                                          Y.Labels,
+                                          title.prefix = "Basic DL Multiclass")
+  print(bar_plot)
+  return(per_class.accuracy)
+}
+
 plot.ROC.curves <- function(targets,
                             predicted_probabilities) {
 
@@ -548,18 +566,19 @@ Plotting the ROC curves...")
 
 calc.roc_curves <- function(targets,
                             predicted_probabilities,
-                            class_labels) {
+                            class.labels) {
   categorical_targets <- 
-    length(shape(targets)) == 2 && shape(y.test.cat)[2] == N.classes
+    length(shape(targets)) == 2 && 
+    shape(targets)[2] == length(levels(class.labels))
   
-  lapply(class_labels, function(class) {
+  lapply(class.labels, function(class) {
     class.idx <- as.integer(class)
     
     if(categorical_targets) {
       bin_labels <- targets[, class.idx]
     } else {
       stopifnot(class(targets) == "factor" && 
-                  sum(as.character(Y.Labels) == levels(targets)) == N.classes)
+                  sum(levels(targets) != levels(class.labels)) == 0)
       
       bin_labels <- as.integer(targets == class)
     }
@@ -612,8 +631,8 @@ Plotting confusion matrix, please wait...")
   }
 }
 
-plot_bars.accuracy.by_class <- function(classes.factor,
-                                        class.accuracies,
+plot_bars.accuracy.by_class <- function(class.accuracies,
+                                        class.labels,
                                         title.prefix = NULL,
                                         .title = "Classifier Model: Class-wise Evaluation Result",
                                         .color = "black",
@@ -621,7 +640,7 @@ plot_bars.accuracy.by_class <- function(classes.factor,
   if(!is.null(title.prefix))
     .title = paste(title.prefix, .title)
   
-  data.frame(class = classes.factor,
+  data.frame(class = class.labels,
              accuracy = class.accuracies) |>
     ggplot(mapping = aes(x = class,
                          y = accuracy)) +
@@ -638,21 +657,37 @@ plot_bars.accuracy.by_class <- function(classes.factor,
 ## Utility Functions -----------------------------------------------------------
 
 # Multiclass Classifier: Class-wise Accuracy
-MCClassifier.accuracy.by_class <- function(classes.factor,
-                                         y.test,
-                                         predicted.values) {
-  y.test.idx <- seq_len(length(y.test))
+MCClassifier.accuracy.by_class <- function(targets,
+                                           predicted.values,
+                                           class.labels) {
+  stopifnot(class(class.labels) == "factor")
+  
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(class.labels)) == 0)
 
-  sapply(classes.factor, function(class) {
-    idx <- y.test.idx[y.test == class]
+  categorical_targets <- 
+    length(shape(targets)) == 2 && 
+    shape(targets)[2] == length(levels(class.labels))
+  
+  sapply(class.labels, function(class) {
+    if(categorical_targets) {
+      targets.idx <- seq_len(nrow(y.test.cat))      
+      idx <- targets.idx[targets[, as.integer(class)] == 1]
+    } else {
+      stopifnot(class(targets) == "factor" && 
+                  sum(levels(targets) != levels(class.labels)) == 0)
+      
+      targets.idx <- seq_len(length(targets))
+      idx <- targets.idx[targets == class]
+    }
+
     n <- length(idx)
-
     accuracy <- mean(predicted.values[idx] == class)
     
-    put_log("Function `multiclass.accuracy.by_class`:
+    put_log("Function `MCClassifier.accuracy.by_class`:
 Accuracy for the class `%1` (of size %2) is %3.",
             class, n, accuracy) 
     accuracy
-  }) |> matrix(ncol = 1, dimnames = list(class = Y.Labels, "accuracy")) 
+  }) |> matrix(ncol = 1, dimnames = list(class = class.labels, "accuracy")) 
 }
 
