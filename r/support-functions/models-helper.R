@@ -522,29 +522,48 @@ cnn.binclass.get_prediction_values <- function(preds) {
 
 ## Analysis & Visualization ----------------------------------------------------
 
-calc.roc_curves.cnn <- function(targets,
-                                predicted.probs,
-                                classes.factor) {
-  calc.roc_curves(targets, 
-                  predicted.probs,
-                  classes.factor,
-                  is.targets.categorical = TRUE)
+plot.ROC.curves <- function(targets,
+                            predicted_probabilities) {
+
+  put_log("Function `plot.ROC.curves`:
+Calculating a ROC curve for each class of the Multiclass Classifier (MCC)...")
+  roc_curves <- calc.roc_curves(targets,
+                                bdl.preds,
+                                Y.Labels)
+  
+  put_log("Function `plot.ROC.curves`:
+The per-class ROC curve calculation of the MCC has been completed.")
+  
+  put_log("Function `plot.ROC.curves`:
+Plotting the ROC curves...")
+  plot(roc_curves[[1]], 
+       main = "ROC Curves for the `Basic Deep Learning Multiclass Classifier` Model")
+  
+  for (class.idx in 2:N.classes) {
+    lines(roc_curves[[class.idx]], col = class.idx)
+  }
+  
+  return(roc_curves)
 }
 
 calc.roc_curves <- function(targets,
-                            predicted.probs,
-                            classes.factor,
-                            is.targets.categorical = FALSE) {
+                            predicted_probabilities,
+                            class_labels) {
+  categorical_targets <- 
+    length(shape(targets)) == 2 && shape(y.test.cat)[2] == N.classes
   
-  lapply(classes.factor, function(class) {
+  lapply(class_labels, function(class) {
     class.idx <- as.integer(class)
     
-    if(is.targets.categorical) {
+    if(categorical_targets) {
       bin_labels <- targets[, class.idx]
     } else {
+      stopifnot(class(targets) == "factor" && 
+                  sum(as.character(Y.Labels) == levels(targets)) == N.classes)
+      
       bin_labels <- as.integer(targets == class)
     }
-    roc_curve <- roc(bin_labels, predicted.probs[, as.integer(class)])
+    roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
   })
 }
 

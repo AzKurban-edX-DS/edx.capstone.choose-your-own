@@ -622,20 +622,9 @@ put_log("The BDL MCC Model Per-Class Accuracy:
 
 
 ### Evaluation Results: Visualization ------------------------------------------
-
-put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
-dl.basic.roc_curves <- calc.roc_curves(y_test,
-                                       bdl_best.preds,
-                                       Y.Labels)
-put_log("`BDL MCC` Model Evaluation: The per-class ROC curve calculation 
-has been completed.")
-
-plot(dl.basic.roc_curves[[1]], 
-     main = "ROC Curves for the `Basic Deep Learning Multiclass Classifier` Model")
-for (class.idx in 2:N.classes) {
-  lines(dl.basic.roc_curves[[class.idx]], col = class.idx)
-}
-
+put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
+dl.basic.roc_curves <- plot.ROC.curves(y.test.cat,
+                                       bdl_best.preds)
 
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(Y.Labels,
