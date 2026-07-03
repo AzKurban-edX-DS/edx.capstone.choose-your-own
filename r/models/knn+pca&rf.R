@@ -526,7 +526,7 @@ has been loaded from the following backup file:
                                        verbose = TRUE)
   
   k_best.nn_pca.predicted <- predicted_probs2classes(as.matrix(k_best.nn_pca.probs),
-                                                  y.labels)
+                                                  Y.Labels)
   
   #### ROC Curves
   # References:
@@ -536,7 +536,7 @@ has been loaded from the following backup file:
   put_log("Fine-tuned `kNN+PCA MCC` Model: Calculating a ROC curve for each class...")
   k_best.nn_pca.roc_curves <- calc.roc_curves(y.test,
                                               k_best.nn_pca.probs,
-                                              y.labels)
+                                              Y.Labels)
   
   put_log("Fine-tuned `kNN+PCA MCC` Model: The per-class ROC curve calculation has been completed.")
   
@@ -608,7 +608,7 @@ for (class.idx in 2:N.classes) {
 # stopCluster(cl)
 # stopImplicitCluster()
 
-knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
                                                                  y.test,
                                                                  k_best.nn_pca.predicted)
 knn_pca.best.accuracy.by_class
@@ -657,7 +657,7 @@ knn_pca.best.accuracy.by_class
 }
 
 put_log("`kNN+PCA MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             knn_pca.best.accuracy.by_class,
                             title.prefix = "kNN+PCA-based Multiclass")
 put_end_date(start)
@@ -778,7 +778,7 @@ pre-trained with the default `mtry` parameter value, is as follows:
 # [1] 0.8397469
 
 fit_rf.mtry_default.accuracy.by_class <- 
-  MCClassifier.accuracy.by_class(y.labels,
+  MCClassifier.accuracy.by_class(Y.Labels,
                                  y0.9.test,
                                  fit_rf.mtry_default$test$predicted)
 
@@ -830,7 +830,7 @@ with the default `mtry` parameter value, is as follows:
     }
 
 put_log("`RF MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             fit_rf.mtry_default.accuracy.by_class,
                             title.prefix = "Random Forest-based (default `mtry`) Multiclass")
 log_close()
@@ -1227,7 +1227,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
   put_log("Fine-tuned `RF MCC` Model: Calculating a ROC curve for each class...")
   fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y.test,
                                                   fit_rf.mmtry_best$test$votes,
-                                                  y.labels)
+                                                  Y.Labels)
  
   put_log("Fine-tuned `RF MCC` Model: The per-class ROC curve calculation has been completed.")
   
@@ -1291,7 +1291,7 @@ trained with the best `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mmtry_best$test$predicted == y.test))
 # [1] 0.886390995545925
 
-fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
                                                                  y.test,
                                                                  fit_rf.mmtry_best$test$predicted)
 put_log("The per-class prediction accuracy of the fine-tuned 'RF MCC' Model, 
@@ -1342,7 +1342,7 @@ trained with the best `mtry` parameter value, is as follows:
   
 }
 
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             fit_rf.mmtry_best.accuracy.by_class,
                             title.prefix = "Tuned Random Forest-based Multiclass")
 log_close()

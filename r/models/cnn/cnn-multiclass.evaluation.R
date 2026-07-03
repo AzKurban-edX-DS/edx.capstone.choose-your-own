@@ -48,7 +48,7 @@ length(y.test)
 #> [1] 33267
 
 y.test.cat <- to_categorical(y.test)
-colnames(y.test.cat) <- y.labels
+colnames(y.test.cat) <- Y.Labels
 
 put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
 %1", capture.output(dim(y.test.cat)))
@@ -188,7 +188,7 @@ put_log("CNN MCC Model evaluation result:
 
 dim(cnn_multiclass.preds)
 
-colnames(cnn_multiclass.preds) <- y.labels
+colnames(cnn_multiclass.preds) <- Y.Labels
 head(cnn_multiclass.preds[,1:5])
 
 cnn_preds.ts <- as_tensor(cnn_multiclass.preds)
@@ -203,7 +203,7 @@ dim(cnn_multiclass.predictions)
 #> [1] 684467
 cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
 head(cnn.prediction.values.idx)
-cnn_mcc.prediction.values <- y.labels[cnn.prediction.values.idx]
+cnn_mcc.prediction.values <- Y.Labels[cnn.prediction.values.idx]
 head(cnn_mcc.prediction.values)
 
 # Confusion Matrix data suitable for Visualization using the `cvms` package:
@@ -219,7 +219,7 @@ put_log("The confusion matrix based on the `CNN MCC` Model evaluation results ha
 y.test.idx <- seq_len(length(y.test))
 # head(y.test.idx)
 
-cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
+cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
                                                                    y.test,
                                                                    cnn_mcc.prediction.values)
 #### ROC Curves
@@ -230,7 +230,7 @@ cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
 put_log("Calculating a ROC curve for each class...")
 cnn_mcc.roc_curves <- calc.roc_curves.cnn(y.test.cat,
                                           cnn_multiclass.preds,
-                                          y.labels)
+                                          Y.Labels)
 
 cnn_multiclass.accuracy <- mean(cnn_mcc.prediction.values == y.test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.accuracy)
@@ -292,7 +292,7 @@ put_log("The total set of accuracies by class is as follows:
 
 #### Class-wise accuracy
 put_log("`CNN MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             cnn_multiclass.accuracy_by_class[, 1],
                             title.prefix = "CNN-based Multiclass")
 

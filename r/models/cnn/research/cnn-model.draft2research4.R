@@ -67,18 +67,18 @@ hwChar.CNN.binCls.models.backup.path
 cnn.lbl_model_file.base_name <- "cnn.lbl-model"
 
 put_log("Building a set of CNN Binary Classifier Models for the following labels:
-%1", capture.output(as.character(y.labels))) 
+%1", capture.output(as.character(Y.Labels))) 
 
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-cnn.hw_char.models <- lapply(y.labels, function(label) {
+cnn.hw_char.models <- lapply(Y.Labels, function(label) {
   #> Now we define a CNN model with two 2D convolutional layers with max pooling, 
   #> and the 2nd layer with additonal dropout to prevent overfitting. 
   #> Then flatten the output and use two dense layers to connect to the categoires 
   #> of the image. [*]
   
-  #label <- y.labels[which(y.labels == "Z")]
+  #label <- Y.Labels[which(Y.Labels == "Z")]
   label
   
   put_log("Building model for label `%1` (%2)...", as.character(label), label)
@@ -144,7 +144,7 @@ Summary of the model:",
     #> Please be patient while waiting for the results. 
     #> The training time can be significantly reduced if running on GPU. [*]
     
-    set.seed(as.integer(y.labels[y.labels == label]))
+    set.seed(as.integer(Y.Labels[Y.Labels == label]))
     
     lbl.ds.sample.set <- 
       cnn.binclass.sample_sets(x_cnn,
@@ -234,7 +234,7 @@ Summary of the model:",
        y_test = lbl.ds.sample.set$y.test,
        label = label)
 })
-names(cnn.hw_char.models) = as.character(y.labels)
+names(cnn.hw_char.models) = as.character(Y.Labels)
 
 put_log("Saving the set of trained (CNN) Binary Classifier Models info to file...") 
 
@@ -284,7 +284,7 @@ have been loaded from the cache file:
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
 
-  evaluation.results <- lapply(y.labels, function(label) {
+  evaluation.results <- lapply(Y.Labels, function(label) {
     put_log("Processing model evaluation for label `%1`...",label)
     start <- put_start_date()
 
@@ -414,11 +414,11 @@ the handwritten character '%1' is as follows:
          accuracy = accuracy,
          conf.mx)
   })
-  names(evaluation.results) <- as.character(y.labels)
+  names(evaluation.results) <- as.character(Y.Labels)
   
   put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 for each of the following handwritten characters:
-%1", capture.output(as.character(y.labels)))
+%1", capture.output(as.character(Y.Labels)))
   
   stopCluster(cl)
   stopImplicitCluster()
@@ -428,8 +428,8 @@ lbl_models.accuracies <- sapply(evaluation.results, function(result){
   result$accuracy
 })
 
-# names(lbl_models.accuracies) <- as.character(y.labels)
-cnn.bin_models.accuracy <- data.frame(label = y.labels, accuracy = lbl_models.accuracies) 
+# names(lbl_models.accuracies) <- as.character(Y.Labels)
+cnn.bin_models.accuracy <- data.frame(label = Y.Labels, accuracy = lbl_models.accuracies) 
 cnn.bin_models.accuracy
 
   put_log("Saving the CNN-based Binary Classifier Model evaluation results...")
@@ -525,7 +525,7 @@ have been loaded from the cache file:
     
   }
   
-  preds.mx <- sapply(y.labels, function(label) {
+  preds.mx <- sapply(Y.Labels, function(label) {
     #p <- 
     evaluation.results[[label]]$preds[,1]
     #str(p)
@@ -535,7 +535,7 @@ have been loaded from the cache file:
   class(preds.mx)
   dim(preds.mx)
 
-  colnames(preds.mx) <- as.character(y.labels)
+  colnames(preds.mx) <- as.character(Y.Labels)
   str(preds.mx)
   head(preds.mx)
 #               #            $            &            @            0            1
@@ -571,7 +571,7 @@ have been loaded from the cache file:
     as.integer() |> 
     matrix(nrow = nrow(preds.mx))
   
-  colnames(bin_preds.mx) <- as.character(y.labels)
+  colnames(bin_preds.mx) <- as.character(Y.Labels)
   
   class(bin_preds.mx)
   dim(bin_preds.mx)
@@ -666,7 +666,7 @@ have been loaded from the cache file:
   lbl_L.acc
   # 0.9711284
   
-  names(evaluation.results) <- as.character(y.labels)
+  names(evaluation.results) <- as.character(Y.Labels)
   
   avg.accuracy = mean(lbl_models.accuracies)
   avg.accuracy
@@ -680,7 +680,7 @@ have been loaded from the cache file:
   # head(rMaxs, 50)
   
   preds.optimistic <- apply(preds.mx, 1, function(r) {
-    c(label = as.character(y.labels)[which.max(r)], 
+    c(label = as.character(Y.Labels)[which.max(r)], 
       P = max(r))
   }) |> t()
   
@@ -710,16 +710,16 @@ have been loaded from the cache file:
   acc.optimistic
   #> 0.7836793
   
-  y.labels.ext <- y.labels
-  levels(y.labels.ext) <- c(levels(y.labels), "NA")
-  y.labels.ext[40] <- "NA"
-  y.labels.ext
+  Y.Labels.ext <- Y.Labels
+  levels(Y.Labels.ext) <- c(levels(Y.Labels), "NA")
+  Y.Labels.ext[40] <- "NA"
+  Y.Labels.ext
   
   
   preds.norm <- apply(preds.mx, 1, function(r) {
    
     r.max = max(r)
-    label <- as.character(y.labels)[which(r == r.max)]
+    label <- as.character(Y.Labels)[which(r == r.max)]
       
     c(label = ifelse(r.max > 0.5, label, "NA"), 
       P = r.max)
@@ -749,7 +749,7 @@ have been loaded from the cache file:
   preds.pessimistic <- apply(preds.mx, 1, function(r) {
     
     r.max = max(r)
-    label <- as.character(y.labels)[which(r == r.max)]
+    label <- as.character(Y.Labels)[which(r == r.max)]
     
     c(label = ifelse(r.max > 0.75, label, "NA"), 
       P = r.max)

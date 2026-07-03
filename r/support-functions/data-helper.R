@@ -501,7 +501,7 @@ Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
   idx_group.list <- split(y.idx, y)
   # str(idx_group.list)
   
-  idx_group.class_excluded.idx <- idx_group.list[y.labels != class.label]
+  idx_group.class_excluded.idx <- idx_group.list[Y.Labels != class.label]
   
   y.class.idx <- y.idx[y == class.label]
   N.class <- length(y.class.idx) 

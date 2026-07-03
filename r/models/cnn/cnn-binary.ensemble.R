@@ -23,7 +23,7 @@ length(y.test)
 #> [1] 4641
 
 y.test.cat <- to_categorical(y.test)
-colnames(y.test.cat) <- y.labels
+colnames(y.test.cat) <- Y.Labels
 
 put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
 %1", capture.output(dim(y.test.cat)))
@@ -148,7 +148,7 @@ object structure:
   registerDoParallel(cl)
   start <- put_start_date()
   
-  cnn_bcc.ensemble.preds.mx <- sapply(y.labels, function(label) {
+  cnn_bcc.ensemble.preds.mx <- sapply(Y.Labels, function(label) {
     plot(cnn_bin.models.dat[[label]]$train_history)
     bin_model.file_path <- cnn_bin.models.dat[[label]]$saved_model.filepath 
     stopifnot(file.exists(bin_model.file_path))
@@ -186,7 +186,7 @@ put_end_date(start)
 class(cnn_bcc.ensemble.preds.mx)
 dim(cnn_bcc.ensemble.preds.mx)
 
-colnames(cnn_bcc.ensemble.preds.mx) <- as.character(y.labels)
+colnames(cnn_bcc.ensemble.preds.mx) <- as.character(Y.Labels)
 str(cnn_bcc.ensemble.preds.mx)
 head(cnn_bcc.ensemble.preds.mx)
 {  
@@ -232,7 +232,7 @@ head(cnn_bcc.ensemble.preds.mx)
 
 cnn_bcc.ensemble.preds <- apply(cnn_bcc.ensemble.preds.mx, 1, function(r) {
   r.max <- max(r)
-  c(class.id = y.labels[which.max(r)], 
+  c(class.id = Y.Labels[which.max(r)], 
     P = r.max
     #Predicted = cnn.binclass.get_prediction_values(r.max)
     )
@@ -262,12 +262,12 @@ cnn_bcc.ensemble.accuracy <- mean(cnn_bcc.ensemble.predictions == as.integer(y.t
 put_log("CNN-based Binary Classifier Models Ensemble accuracy: %1", cnn_bcc.ensemble.accuracy)
 # 0.87718164188752 
 
-cnn_bcc.ensemble.prediction.values <- y.labels[cnn_bcc.ensemble.predictions]
+cnn_bcc.ensemble.prediction.values <- Y.Labels[cnn_bcc.ensemble.predictions]
 head(cnn_bcc.ensemble.prediction.values)
 # [1] L B $ T 7 K
 # Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 
-cnn_bcc.ensemble.accuracy_by_class <- MCClassifier.accuracy.by_class(y.labels,
+cnn_bcc.ensemble.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
                                                              y.test,
                                                              cnn_bcc.ensemble.prediction.values)
 cnn_bcc.ensemble.accuracy_by_class
@@ -321,7 +321,7 @@ cnn_bcc.ensemble.accuracy_by_class
 put_log("Calculating a ROC curve for each class...")
 cnn_bcc.ensemble.roc_curves <- calc.roc_curves.cnn(y.test.cat,
                                                    cnn_bcc.ensemble.preds.mx,
-                                                   y.labels)
+                                                   Y.Labels)
 
 # Confusion Matrix data suitable for Visualization using the `cvms` package:
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
@@ -342,7 +342,7 @@ for (class.idx in 2:N.classes) {
 
 # Class-wise accuracy visualization
 put_log("CNN BCC-Based Ensemble: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             cnn_bcc.ensemble.accuracy_by_class[, 1],
                             .title = "CNN BCC-Based Ensemble: Class-wise Evaluation Result",
                             )

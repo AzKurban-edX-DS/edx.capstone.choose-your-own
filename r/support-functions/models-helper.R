@@ -634,6 +634,6 @@ MCClassifier.accuracy.by_class <- function(classes.factor,
 Accuracy for the class `%1` (of size %2) is %3.",
             class, n, accuracy) 
     accuracy
-  }) |> matrix(ncol = 1, dimnames = list(class = y.labels, "accuracy")) 
+  }) |> matrix(ncol = 1, dimnames = list(class = Y.Labels, "accuracy")) 
 }
 

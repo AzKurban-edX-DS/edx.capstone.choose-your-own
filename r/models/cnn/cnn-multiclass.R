@@ -23,7 +23,7 @@ length(y.train)
 #> [1] 132912
 
 y.train.cat <- to_categorical(y.train)
-colnames(y.train.cat) <- y.labels
+colnames(y.train.cat) <- Y.Labels
 
 put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
 %1", capture.output(dim(y.train.cat)))

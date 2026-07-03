@@ -23,13 +23,13 @@ if(!exists("my_emnist.set")) {
 put_log("The Flattened Dataset Set (containing the  EMNIST-like dataset) has the following structure:
   %1", capture.output(str(my_emnist.set)))
 
-if(!exists("y.labels")) {
+if(!exists("Y.Labels")) {
   stopifnot(file.exists(classifier.label_list.file_path))
-  y.labels <- readRDS(classifier.label_list.file_path)
+  Y.Labels <- readRDS(classifier.label_list.file_path)
 }
 
 put_log("The Classifier Handwritten Character Class List contains the following labels:
-%1", y.labels, .sep = " ")
+%1", Y.Labels, .sep = " ")
 
 
 x <- my_emnist.set$img.mx

@@ -178,14 +178,14 @@ contained in the training set.",
 
 
 y.train.cat <- to_categorical(y.train)
-colnames(y.train.cat) <- y.labels
+colnames(y.train.cat) <- Y.Labels
 dim(y.train.cat)
 str(y.train.cat)
 head(y.train.cat)
 # max(y.train.cat)
 
 y.test.cat <- to_categorical(y.test)
-colnames(y.test.cat) <- y.labels
+colnames(y.test.cat) <- Y.Labels
 dim(y.test.cat)
 str(y.test.cat)
 head(y.test.cat)
@@ -350,7 +350,7 @@ bdl.preds <- dl.basic.model |> predict(x.test)
 put_end_date(start)
 # Time difference of  mins
 
-colnames(bdl.preds) <- y.labels
+colnames(bdl.preds) <- Y.Labels
 head(bdl.preds[,1:5])
 #                 #            $            &            @            0
 # [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
@@ -380,14 +380,14 @@ dim(bdl.predictions)
 bdl.pred.values.idx <- bdl.predictions$numpy()
 head(bdl.pred.values.idx)
 
-bdl.pred.values <- y.labels[bdl.pred.values.idx]
+bdl.pred.values <- Y.Labels[bdl.pred.values.idx]
 head(bdl.pred.values)
 
 dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.897195136631756
 
-dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(y.labels,
+dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
                                                              y.test,
                                                              bdl.pred.values)
 dl.basic.accuracy.by_class
@@ -448,7 +448,7 @@ put_log("The confusion matrix based on the `BDL MCC` Model evaluation results ha
 put_log("`BDL MCC` Model Evaluation: Calculating a ROC curve for each class...")
 dl.basic.roc_curves <- calc.roc_curves(y.test,
                                        bdl.preds,
-                                       y.labels)
+                                       Y.Labels)
 put_log("`BDL MCC` Model Evaluation: The per-class ROC curve calculation 
 has been completed.")
 
@@ -460,7 +460,7 @@ for (class.idx in 2:N.classes) {
 
 
 put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             dl.basic.accuracy.by_class,
                             title.prefix = "Basic DL Multiclass")
 

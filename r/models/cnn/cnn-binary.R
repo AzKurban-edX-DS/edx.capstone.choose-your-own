@@ -11,7 +11,7 @@ cnn.bin.vld_split <- 0.2
 open_logfile(".build-cnn-binary.model")
 
 put_log("Building a set of CNN Binary Classifier Models for the following classes:
-%1", capture.output(as.character(y.labels)))
+%1", capture.output(as.character(Y.Labels)))
 
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path))
@@ -46,7 +46,7 @@ start_eval_time <- put_start_date()
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-cnn_bin.models.dat <- lapply(y.labels, function(label) {
+cnn_bin.models.dat <- lapply(Y.Labels, function(label) {
 
   label.idx <- as.integer(label)
   label.char <- as.character(label)
@@ -99,7 +99,7 @@ cnn_bin.models.dat <- lapply(y.labels, function(label) {
   } else {
     ### Preparing a Train & Test Sets for the Current Class Model  
     {
-      set.seed(as.integer(y.labels[y.labels == label]))
+      set.seed(as.integer(Y.Labels[Y.Labels == label]))
       
       cnn_bin.ds_sample.set <- 
         binClass.sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
@@ -338,7 +338,7 @@ the handwritten character '%1' is as follows:
        label = label)
 })
 
-names(cnn_bin.models.dat) = as.character(y.labels)
+names(cnn_bin.models.dat) = as.character(Y.Labels)
 
 put_log("Saving the set of trained (CNN) Binary Classifier Models info to file...") 
 
@@ -354,7 +354,7 @@ put_end_date(start)
 
 put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 for each of the following handwritten characters:
-%1", capture.output(as.character(y.labels)))
+%1", capture.output(as.character(Y.Labels)))
 
 # stopCluster(cl)
 # stopImplicitCluster()
@@ -364,8 +364,8 @@ bin_models.accuracies <- sapply(cnn_bin.models.dat, function(result){
   result$accuracy
 })
 
-# names(bin_models.accuracies) <- as.character(y.labels)
-cnn.bin_models.accuracy <- data.frame(label = y.labels, accuracy = bin_models.accuracies) 
+# names(bin_models.accuracies) <- as.character(Y.Labels)
+cnn.bin_models.accuracy <- data.frame(label = Y.Labels, accuracy = bin_models.accuracies) 
 cnn.bin_models.accuracy
 
 # put_log("Saving the CNN-based Binary Classifier Model evaluation results...")
@@ -426,7 +426,7 @@ cnn.bin_models.accuracy |>
             xname = "label", 
             yname = "accuracy")
 
-plot_bars.accuracy.by_class(y.labels,
+plot_bars.accuracy.by_class(Y.Labels,
                             cnn.bin_models.accuracy[, 2],
                             .title = "Evaluation Results of the CNN-based Binary Classifier Models")
 

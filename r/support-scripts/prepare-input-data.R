@@ -107,10 +107,10 @@ if(!file.exists(classifier.label_list.file_path)){
     img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
   }
  
-  y.labels <- img28x28bin.list$label.list
+  Y.Labels <- img28x28bin.list$label.list
   
   put_log("Saving Classifier Label List to the backup file...")
-  saveRDS(y.labels,
+  saveRDS(Y.Labels,
           file = classifier.label_list.file_path)
   put_log("The Classifier Label List has been saved to the following file:
 %1", classifier.label_list.file_path)
@@ -120,17 +120,17 @@ if(!file.exists(classifier.label_list.file_path)){
 and backed up to the following file:
 %1", classifier.label_list.file_path)
   
-  if(!exists("y.labels"))
-    y.labels <- readRDS(classifier.label_list.file_path)
+  if(!exists("Y.Labels"))
+    Y.Labels <- readRDS(classifier.label_list.file_path)
 }
 
-N.classes <- length(y.labels)
+N.classes <- length(Y.Labels)
 
 
 # put_log("The Classifier Label List contains the following labels:
-# %1", capture.output(y.labels))
+# %1", capture.output(Y.Labels))
 put_log("The Classifier Handwritten Character List contains the following labels:
-%1", y.labels, .sep = " ")
+%1", Y.Labels, .sep = " ")
 
 if(!file.exists(train.img28x28mx.list.file_path)){
   if(!exists("img28x28bin.list")) {
@@ -163,7 +163,7 @@ if(!file.exists(train.img28x28mx.list.file_path)){
     list(img.array = img.array,
          file.path = item$fpath.list)
   })
-  names(img28x28mx.list) <- as.character(y.labels)
+  names(img28x28mx.list) <- as.character(Y.Labels)
   
   put_log("A Binary Image 28x28 Matrix list has been created with the following structure:
   %1", capture.output(str(img28x28mx.list)))
@@ -245,7 +245,7 @@ if(!file.exists(my_emnist.file_path)){
     img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
   }
   
-  y.labels <- img28x28bin.list$label.list
+  Y.Labels <- img28x28bin.list$label.list
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
   
@@ -338,7 +338,7 @@ if(!file.exists(final_test.img28x28mx.list.file_path)){
          file.path = item$fpath.list)
   })
   
-  names(ft.img28x28mx.list) <- as.character(y.labels)
+  names(ft.img28x28mx.list) <- as.character(Y.Labels)
   rm(img.nested_list)
   
   put_log("The Final Test Binary Image 28x28 Matrix list has been created with the following structure:
