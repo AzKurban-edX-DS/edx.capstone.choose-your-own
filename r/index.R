@@ -31,8 +31,7 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Prepare Training & Testing Sets for DL / CNN Models ------------------------
-### Load Flatten Dataset -------------------------------------------------------
+### Prepare Flatten Datasets ---------------------------------------------------
 ds.load_flatten.script.path <- file.path(support_scripts.path, 
                                          "load-flattened-dataset.R")
 
@@ -79,6 +78,300 @@ which contains a testing sample stored in the `x.test` variable having the follo
 # shape(33267, 28, 28)
 
 rm(split3d.list)
+
+## Prepare Flatten Datasets ----------------------------------------------------
+### Loading Split Flatten Dataset allocated 10% for the Train Set ---------------
+open_logfile(".split.10%train.balanced_subset")
+start <- put_start_date()
+
+
+if (!exists("ds_flatten.0.1split_list")) {
+  stopifnot(file.exists(my_emnist.0.1split.file_path))
+  
+  put_log("Loading the Split Flattened Dataset from the backup file...")
+  
+  ds_flatten.0.1split_list <- readRDS(my_emnist.0.1split.file_path)
+  
+  put_log("The Split Flattened Dataset has been loaded from the following backup file:
+%1", my_emnist.0.1split.file_path)
+} 
+
+#### Preparing Train Balanced Sample --------------------------------------------
+
+x0.1.train.flatten <- ds_flatten.0.1split_list$train_set$x.train.flatten
+
+y0.1.train.flatten.groups <- ds.get_classIDs.grouped(x0.1.train.flatten)
+y0.1.train.flatten <- y0.1.train.flatten.groups$classID
+
+stopifnot(sum(as.character(y0.1.train.flatten) != rownames(x0.1.train.flatten)) == 0)
+
+str(x0.1.train.flatten)
+dim(x0.1.train.flatten)
+#> [1] 16653   784
+
+str(y0.1.train.flatten)
+length(y0.1.train.flatten)
+
+##### View of the Train Set Grouped by Class ------------------------------------
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(y0.1.train.flatten.groups$groupByClass, n = N.classes)))
+{  
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425
+}
+
+#### Preparing Test Balanced Sample ---------------------------------------------
+
+x0.9.test.flatten <- ds_flatten.0.1split_list$test_set$x.test.flatten
+x0.9.test.flatten.files <- ds_flatten.0.1split_list$test_set$x.files
+
+y0.9.test.flatten.groups <- ds.get_classIDs.grouped(x0.9.test.flatten)
+y0.9.test.flatten <- y0.9.test.flatten.groups$classID
+
+stopifnot(sum(as.character(y0.9.test.flatten) != rownames(x0.9.test.flatten)) == 0)
+
+str(x0.9.test.flatten)
+str(y0.9.test.flatten)
+length(y0.9.test.flatten)
+#> [1] 817379
+
+##### View of the Test Set Grouped by Class -------------------------------------
+put_log("The Test Set is balanced by set of Classes:
+%1", capture.output(print(y0.9.test.flatten.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         852
+  #  2 $         852
+  #  3 &         852
+  #  4 @         852
+  #  5 0         852
+  #  6 1         852
+  #  7 2         852
+  #  8 3         852
+  #  9 4         852
+  # 10 5         852
+  # 11 6         852
+  # 12 7         852
+  # 13 8         852
+  # 14 9         852
+  # 15 A         852
+  # 16 B         852
+  # 17 C         852
+  # 18 D         852
+  # 19 E         852
+  # 20 F         852
+  # 21 G         852
+  # 22 H         852
+  # 23 I         852
+  # 24 J         852
+  # 25 K         852
+  # 26 L         852
+  # 27 M         852
+  # 28 N         852
+  # 29 P         852
+  # 30 Q         852
+  # 31 R         852
+  # 32 S         852
+  # 33 T         852
+  # 34 U         852
+  # 35 V         852
+  # 36 W         852
+  # 37 X         852
+  # 38 Y         852
+  # 39 Z         852  
+}
+
+#### Finalize Preparing Datasets ------------------------------------------------
+rm(ds_flatten.0.1split_list)
+log_close()
+
+### Loading Split Flatten Dataset allocated 20% for the Test set (default) -----
+
+open_logfile(".split.20%test.balanced_subset")
+start <- put_start_date()
+
+if (!exists("ds_flatten.split_list")) {
+  stopifnot(file.exists(my_emnist.split.file_path))
+  
+  put_log("Loading the Split Flattened Dataset from the backup file...")
+  
+  ds_flatten.split_list <- readRDS(my_emnist.split.file_path)
+  
+  put_log("The Split Flattened Dataset has been loaded from the following backup file:
+%1", my_emnist.split.file_path)
+} 
+
+#### Preparing Train Balanced Sample --------------------------------------------
+
+x.train.flatten <- ds_flatten.split_list$x.train.flatten
+
+y.train.flatten.groups <- ds.get_classIDs.grouped(x.train.flatten)
+y.train.flatten <- y.train.flatten.groups$classID
+
+stopifnot(sum(as.character(y.train.flatten) != rownames(x.train.flatten)) == 0)
+
+dim(x.train.flatten)
+#> [1] 16653   784
+str(x.train.flatten)
+
+str(y.train.flatten)
+length(y.train.flatten)
+
+##### View of the Train Set Grouped by Class ------------------------------------
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(y.train.flatten.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #        3407
+  #  2 $        3407
+  #  3 &        3407
+  #  4 @        3407
+  #  5 0        3407
+  #  6 1        3407
+  #  7 2        3407
+  #  8 3        3407
+  #  9 4        3407
+  # 10 5        3407
+  # 11 6        3407
+  # 12 7        3407
+  # 13 8        3407
+  # 14 9        3407
+  # 15 A        3407
+  # 16 B        3407
+  # 17 C        3407
+  # 18 D        3407
+  # 19 E        3407
+  # 20 F        3407
+  # 21 G        3407
+  # 22 H        3407
+  # 23 I        3407
+  # 24 J        3407
+  # 25 K        3407
+  # 26 L        3407
+  # 27 M        3407
+  # 28 N        3407
+  # 29 P        3407
+  # 30 Q        3407
+  # 31 R        3407
+  # 32 S        3407
+  # 33 T        3407
+  # 34 U        3407
+  # 35 V        3407
+  # 36 W        3407
+  # 37 X        3407
+  # 38 Y        3407
+  # 39 Z        3407
+}
+
+#### Preparing Test Balanced Sample --------------------------------------------
+
+x.test.flatten <- ds_flatten.split_list$x.test.flatten
+x.test.flatten.files <- ds_flatten.split_list$x.files
+y.test.flatten.groups <- ds.get_classIDs.grouped(x.test.flatten)
+y.test.flatten <- y.test.flatten.groups$classID
+
+stopifnot(sum(as.character(y.test.flatten) != rownames(x.test.flatten)) == 0)
+
+str(x.test.flatten)
+str(y.test.flatten)
+length(y.test.flatten)
+#> [1] 817379
+
+##### View of the Test Set Grouped by Class ------------------------------------
+put_log("The Test Set is balanced by set of Classes:
+%1", capture.output(print(y.test.flatten.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         852
+  #  2 $         852
+  #  3 &         852
+  #  4 @         852
+  #  5 0         852
+  #  6 1         852
+  #  7 2         852
+  #  8 3         852
+  #  9 4         852
+  # 10 5         852
+  # 11 6         852
+  # 12 7         852
+  # 13 8         852
+  # 14 9         852
+  # 15 A         852
+  # 16 B         852
+  # 17 C         852
+  # 18 D         852
+  # 19 E         852
+  # 20 F         852
+  # 21 G         852
+  # 22 H         852
+  # 23 I         852
+  # 24 J         852
+  # 25 K         852
+  # 26 L         852
+  # 27 M         852
+  # 28 N         852
+  # 29 P         852
+  # 30 Q         852
+  # 31 R         852
+  # 32 S         852
+  # 33 T         852
+  # 34 U         852
+  # 35 V         852
+  # 36 W         852
+  # 37 X         852
+  # 38 Y         852
+  # 39 Z         852  
+}
+
+#### Finalize Preparing Datasets ------------------------------------------------
+rm(ds_flatten.split_list)
+log_close()
 
 ## Build kNN+PCA & Random Forest Models ----------------------------------------
 

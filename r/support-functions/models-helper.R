@@ -522,6 +522,32 @@ cnn.binclass.get_prediction_values <- function(preds) {
 
 ## Analysis & Visualization ----------------------------------------------------
 
+plot.confusion_matrix <- function(cvms.confusion_matrix,
+                                  palette = "Greens",
+                                  font.size = 3,
+                                  font.color = "red",
+                                  add_normalized = FALSE,
+                                  add_col_percentages = FALSE,
+                                  add_row_percentages = FALSE) {
+  start <- put_start_date()
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  dev.off()
+  conf.mx.chart <- plot_confusion_matrix(cvms.confusion_matrix,
+                        palette = "Greens",
+                        font_counts = font(size = font.size,
+                                           color = font.color),
+                        add_normalized = add_normalized,
+                        add_col_percentages = add_col_percentages,
+                        add_row_percentages = add_row_percentages)
+  stopCluster(cl)
+  stopImplicitCluster()
+  put_end_date(start)
+
+  conf.mx.chart
+}
+
 plot.per_class.accuracy.bars <- function(targets,
                                          predicted.values){
   
@@ -584,6 +610,35 @@ calc.roc_curves <- function(targets,
     }
     roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
   })
+}
+
+#> Greats a confusion matrix for Tuned BDL MCC Model in a format suitable 
+#> for visualization using the `cvms` package 
+create.confusion_matrix <- function(targets,
+                                    predicted.values) {
+  
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  categorical_targets <- 
+    length(shape(targets)) == 2 && 
+    shape(targets)[2] == N.classes
+  
+  
+  if(categorical_targets) {
+    y.idx <- sapply(seq_len(nrow(targets)), 
+                    function(i) which(y.test.cat[i,] == 1))
+    
+    y <- Y.Labels[y.idx]
+    
+  } else {
+    stopifnot(class(targets) == "factor" && 
+                sum(levels(targets) == levels(Y.Labels)) == N.classes)
+    y <- targets
+  }
+  
+  confusion_matrix(as.character(y),
+                   as.character(predicted.values))
 }
 
 create_confusion_matrix <- function(targets, 
@@ -652,7 +707,6 @@ plot_bars.accuracy.by_class <- function(class.accuracies,
     scale_y_continuous(labels = scales::label_percent(accuracy = 1),
                        expand = c(0, 0, 0.005, 0))
 }
-
 
 ## Utility Functions -----------------------------------------------------------
 

@@ -5,152 +5,16 @@
 #> k-Nearest Neighbors with Principal Component Analysis (kNN+PCA) and 
 #> Random Forest (RF) Multiclass Classifier Models
 
-## Loading Split Dataset allocated 10% for the Train Set ---------------------
-open_logfile(".split.10%train.balanced_subset")
-start <- put_start_date()
-
-
-if (!exists("ds_flatten.0.1split_list")) {
-  stopifnot(file.exists(my_emnist.0.1split.file_path))
-
-  put_log("Loading the Split Flattened Dataset from the backup file...")
-  
-  ds_flatten.0.1split_list <- readRDS(my_emnist.0.1split.file_path)
-  
-  put_log("The Split Flattened Dataset has been loaded from the following backup file:
-%1", my_emnist.0.1split.file_path)
-} 
-
-
-x0.1.train <- ds_flatten.0.1split_list$train_set$x.train
-x0.9.test <- ds_flatten.0.1split_list$test_set$x.test
-x0.9.test.files <- ds_flatten.0.1split_list$test_set$x.files
-
-
-
-y0.1.train.groups <- ds.get_classIDs.grouped(x0.1.train)
-y0.1.train <- y0.1.train.groups$classID
-
-stopifnot(sum(as.character(y0.1.train) != rownames(x0.1.train)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y0.1.train.groups$groupByClass, n = N.classes)))
-{
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-  #  1 #         425
-  #  2 $         425
-  #  3 &         425
-  #  4 @         425
-  #  5 0         425
-  #  6 1         425
-  #  7 2         425
-  #  8 3         425
-  #  9 4         425
-  # 10 5         425
-  # 11 6         425
-  # 12 7         425
-  # 13 8         425
-  # 14 9         425
-  # 15 A         425
-  # 16 B         425
-  # 17 C         425
-  # 18 D         425
-  # 19 E         425
-  # 20 F         425
-  # 21 G         425
-  # 22 H         425
-  # 23 I         425
-  # 24 J         425
-  # 25 K         425
-  # 26 L         425
-  # 27 M         425
-  # 28 N         425
-  # 29 P         425
-  # 30 Q         425
-  # 31 R         425
-  # 32 S         425
-  # 33 T         425
-  # 34 U         425
-  # 35 V         425
-  # 36 W         425
-  # 37 X         425
-  # 38 Y         425
-  # 39 Z         425
-}
-
-y0.9.test.groups <- ds.get_classIDs.grouped(x0.9.test)
-y0.9.test <- y0.9.test.groups$classID
-
-stopifnot(sum(as.character(y0.9.test) != rownames(x0.9.test)) == 0)
-
-put_log("The Test Set is balanced by set of Classes:
-%1", capture.output(print(y0.9.test.groups$groupByClass, n = N.classes)))
-{
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-#  1 #         852
-#  2 $         852
-#  3 &         852
-#  4 @         852
-#  5 0         852
-#  6 1         852
-#  7 2         852
-#  8 3         852
-#  9 4         852
-# 10 5         852
-# 11 6         852
-# 12 7         852
-# 13 8         852
-# 14 9         852
-# 15 A         852
-# 16 B         852
-# 17 C         852
-# 18 D         852
-# 19 E         852
-# 20 F         852
-# 21 G         852
-# 22 H         852
-# 23 I         852
-# 24 J         852
-# 25 K         852
-# 26 L         852
-# 27 M         852
-# 28 N         852
-# 29 P         852
-# 30 Q         852
-# 31 R         852
-# 32 S         852
-# 33 T         852
-# 34 U         852
-# 35 V         852
-# 36 W         852
-# 37 X         852
-# 38 Y         852
-# 39 Z         852  
-}
-
-dim(x0.1.train)
-#> [1] 16653   784
-str(x0.1.train)
-
-str(y0.1.train)
-length(y0.1.train)
-
-str(x0.9.test)
-str(y0.9.test)
-length(y0.9.test)
-#> [1] 817379
-
-log_close()
-
 ## `kNN+PCA MCC` Model Tuning --------------------------------------------------
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
 ### `kNN+PCA MCC` Model Initial Paths -----------------------------------------------------
-stopifnot(dir.exists(models.path))
+stopifnot(dir.exists(models.path),
+          exists("x0.1.train.flatten"),
+          exists("y0.1.train.flatten"),
+          exists("x0.9.test.flatten"),
+          exists("y0.9.test.flatten"))
+
 knn_pca.path = file.path(models.path, "knn-pca")
 
 if(!dir.exists(knn_pca.path))
@@ -161,13 +25,24 @@ if(!dir.exists(knn_pca.path))
 # Dimension reduction with PCA
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
 
+open_logfile(".pre-train-model.k1-7nn+pca")
+
+stopifnot(exists("x0.1.train.flatten"),
+          exists("y0.1.train.flatten"),
+          exists("x0.9.test.flatten"),
+          exists("y0.9.test.flatten"),
+          exists("x.train.flatten"),
+          exists("y.train.flatten"),
+          exists("x.test.flatten"),
+          exists("y.test.flatten"))
+
+
 knn_pca.path = file.path(models.path, "knn-pca")
 
 if(!dir.exists(knn_pca.path)) {
   dir.create(knn_pca.path)
 }
 
-open_logfile(".pre-train-model.k1-7nn+pca")
 
 #### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Train Set ----
 # (The training takes about half an hour)
@@ -194,7 +69,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  k1_7nn_pca.model <- caret::train(x0.1.train, y0.1.train, method = "knn", 
+  k1_7nn_pca.model <- caret::train(x0.1.train.flatten, y0.1.train.flatten, method = "knn", 
                                 preProcess = "pca",
                                 trControl = trainControl("cv", 
                                                          number = 5, 
@@ -236,11 +111,11 @@ plot(k1_7nn_pca.model,
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
 
-k.1_7.max_accuracy <- k1_7nn_pca.model$results$Accuracy[acc.max.idx]
-k.1_7.max_accuracy
+k1_7nn_pca.max_accuracy <- k1_7nn_pca.model$results$Accuracy[acc.max.idx]
+k1_7nn_pca.max_accuracy
 
-k.best <- k1_7nn_pca.model$results$k[acc.max.idx]
-k.best
+k1_7nn.best <- k1_7nn_pca.model$results$k[acc.max.idx]
+k1_7nn.best
 # 6
 # 
 # k-Nearest Neighbors 
@@ -262,134 +137,6 @@ k.best
 
 # Accuracy was used to select the optimal model using the largest value.
 # The final value used for the model was k = 5.
-
-log_close()
-
-## Loading Split Dataset allocated 20% for the Test set (default) ------------
-open_logfile(".split.20%test.balanced_subset")
-
-start <- put_start_date()
-ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
-                                 my_emnist.split.file_path)
-x.train <- ds_flatten$x.train
-x.test <- ds_flatten$x.test
-x.test.files <- ds_flatten$x.files
-
-y.train.groups <- ds.get_classIDs.grouped(x.train)
-y.train <- y.train.groups$classID
-
-stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #        3407
-  #  2 $        3407
-  #  3 &        3407
-  #  4 @        3407
-  #  5 0        3407
-  #  6 1        3407
-  #  7 2        3407
-  #  8 3        3407
-  #  9 4        3407
-  # 10 5        3407
-  # 11 6        3407
-  # 12 7        3407
-  # 13 8        3407
-  # 14 9        3407
-  # 15 A        3407
-  # 16 B        3407
-  # 17 C        3407
-  # 18 D        3407
-  # 19 E        3407
-  # 20 F        3407
-  # 21 G        3407
-  # 22 H        3407
-  # 23 I        3407
-  # 24 J        3407
-  # 25 K        3407
-  # 26 L        3407
-  # 27 M        3407
-  # 28 N        3407
-  # 29 P        3407
-  # 30 Q        3407
-  # 31 R        3407
-  # 32 S        3407
-  # 33 T        3407
-  # 34 U        3407
-  # 35 V        3407
-  # 36 W        3407
-  # 37 X        3407
-  # 38 Y        3407
-  # 39 Z        3407
-}
-
-y.test.groups <- ds.get_classIDs.grouped(x.test)
-y.test <- y.test.groups$classID
-
-stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #         852
-  #  2 $         852
-  #  3 &         852
-  #  4 @         852
-  #  5 0         852
-  #  6 1         852
-  #  7 2         852
-  #  8 3         852
-  #  9 4         852
-  # 10 5         852
-  # 11 6         852
-  # 12 7         852
-  # 13 8         852
-  # 14 9         852
-  # 15 A         852
-  # 16 B         852
-  # 17 C         852
-  # 18 D         852
-  # 19 E         852
-  # 20 F         852
-  # 21 G         852
-  # 22 H         852
-  # 23 I         852
-  # 24 J         852
-  # 25 K         852
-  # 26 L         852
-  # 27 M         852
-  # 28 N         852
-  # 29 P         852
-  # 30 Q         852
-  # 31 R         852
-  # 32 S         852
-  # 33 T         852
-  # 34 U         852
-  # 35 V         852
-  # 36 W         852
-  # 37 X         852
-  # 38 Y         852
-  # 39 Z         852  
-}
-
-dim(x.train)
-#> [1] 16653   784
-str(x.train)
-
-str(y.train)
-length(y.train)
-
-str(x.test)
-str(y.test)
-length(y.test)
-#> [1] 817379
 
 log_close()
 
@@ -420,8 +167,8 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
   
   #flush.console()
-  k_best.nn_pca.model <- caret::train(x.train, 
-                                      y.train, 
+  k_best.nn_pca.model <- caret::train(x.train.flatten, 
+                                      y.train.flatten, 
                                       method = "knn", 
                                       preProcess = "pca",
                                       trControl = trainControl("cv", 
@@ -430,7 +177,7 @@ has been loaded from the following backup file:
                                                                preProcOptions = list(thresh = 0.9),
                                                                verboseIter = TRUE,
                                                                verbose = TRUE),
-                                      tuneGrid = data.frame(k = k.best)) # *k* = 6
+                                      tuneGrid = data.frame(k = k1_7nn.best)) # *k* = 6
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
@@ -455,13 +202,13 @@ log_close()
 # Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
 
 ##### Constructing Predictions on kNN+PCA (for best *k* Parameter value) ------
-open_logfile(".x.test.predict.k(best)nn+pca")
+open_logfile(".x.test.flatten.predict.k(best)nn+pca")
 
 knn_pca.best.preds.backup0 <-
-  file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions0.rds")
+  file.path(knn_pca.path, "x.test.flatten.k(best)NN+PCA.predictions0.rds")
 
 knn_pca.best.preds.backup <-
-  file.path(knn_pca.path, "x.test.k(best)NN+PCA.predictions.rds")
+  file.path(knn_pca.path, "x.test.flatten.k(best)NN+PCA.predictions.rds")
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
@@ -514,14 +261,14 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
   
   
-  set.seed(nrow(x.test))
+  set.seed(nrow(x.test.flatten))
   
   # k_best.nn_pca.model.predicted <- stats::predict(k_best.nn_pca.model,
-  #                                                 x.test,
+  #                                                 x.test.flatten,
   #                                                 type = "raw")
 
-  k_best.nn_pca.probs <- predict.train(k_best.nn_pca.model, 
-                                       newdata = x.test,
+  k_best.nn_pca.probs <- predict.train.flatten(k_best.nn_pca.model, 
+                                       newdata = x.test.flatten,
                                        type = "prob",
                                        verbose = TRUE)
   
@@ -534,14 +281,14 @@ has been loaded from the following backup file:
   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
   
   put_log("Fine-tuned `kNN+PCA MCC` Model: Calculating a ROC curve for each class...")
-  k_best.nn_pca.roc_curves <- calc.roc_curves(y.test,
+  k_best.nn_pca.roc_curves <- calc.roc_curves(y.test.flatten,
                                               k_best.nn_pca.probs,
                                               Y.Labels)
   
   put_log("Fine-tuned `kNN+PCA MCC` Model: The per-class ROC curve calculation has been completed.")
   
   put_log("Fine-tuned `kNN+PCA MCC` Model: Creating a Confusion Matrix...")
-  k_best.nn_pca.conf.mx <- confusion_matrix(as.character(y.test),
+  k_best.nn_pca.conf.mx <- confusion_matrix(as.character(y.test.flatten),
                                                 as.character(k_best.nn_pca.predicted))
   put_log("Fine-tuned `kNN+PCA MCC` Model: The Confusion Matrix has been created:
 %1", capture.output(k_best.nn_pca.conf.mx))
@@ -556,7 +303,7 @@ has been loaded from the following backup file:
   # diff.idx <- which(k_best.nn_pca.model.predicted != k_best.nn_pca.predicted)
   # k_best.nn_pca.probs[diff.idx,]
 
-  put_log("The (Best *k*) `kNN+PCA MCC` Model: Generating predictions have been completed on `x.test` dataset.")
+  put_log("The (Best *k*) `kNN+PCA MCC` Model: Generating predictions have been completed on `x.test.flatten` dataset.")
   
   put_log("Saving the Fine-tuned `kNN+PCA MCC` Model data...")
   #> [1] 0.8693882
@@ -564,14 +311,14 @@ has been loaded from the following backup file:
   # saveRDS(list(predicted = k_best.nn_pca.model.predicted,
   #              probs = k_best.nn_pca.probs,
   #              accuracy = knn_pca.best.accuracy,
-  #              k_best = k.best),
+  #              k_best = k1_7nn.best),
   #      file = knn_pca.best.preds.backup0)
   
   saveRDS(list(predicted = k_best.nn_pca.predicted,
                probs = k_best.nn_pca.probs,
                confusion.mx = k_best.nn_pca.conf.mx,
                roc.curves = k_best.nn_pca.roc_curves,
-               k_best = k.best),
+               k_best = k1_7nn.best),
        file = knn_pca.best.preds.backup)
   
   put_log("The data of the fine-tuned `kNN+PCA MCC` Model has been saved to the following file:
@@ -579,9 +326,9 @@ has been loaded from the following backup file:
 }
 
 put_log("Validating accuracy of the (Best *k*) `kNN+PCA MCC` Model predictions 
-made on the `x.test` dataset...")
-# knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test)
-knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test)
+made on the `x.test.flatten` dataset...")
+# knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test.flatten)
+knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test.flatten)
 
 put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
@@ -609,7 +356,7 @@ for (class.idx in 2:N.classes) {
 # stopImplicitCluster()
 
 knn_pca.best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-                                                                 y.test,
+                                                                 y.test.flatten,
                                                                  k_best.nn_pca.predicted)
 knn_pca.best.accuracy.by_class
 {
@@ -686,7 +433,7 @@ if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
 ### Train `RF MCC` model with the default mtry value & ntree = 500 ---------------------------
-open_logfile("x0.1.train.fit_rf.mtry_default.ntree500")
+open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
 
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
                              "fit_rf.mtry_default.ntree500.back.rds")
@@ -713,10 +460,10 @@ has been loaded from the following backup file:
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  fit_rf.mtry_default <- randomForest(x0.1.train, 
-                                      y0.1.train,
-                                      x0.9.test,
-                                      y0.9.test,
+  fit_rf.mtry_default <- randomForest(x0.1.train.flatten, 
+                                      y0.1.train.flatten,
+                                      x0.9.test.flatten,
+                                      y0.9.test.flatten,
                                       keep.forest = TRUE,
                                       ntree = 500)
   
@@ -724,7 +471,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   
   put_log("`RF MCC` Model pre-trained with the default `mtry` parameter value: Creating a Confusion Matrix...")
-  rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test),
+  rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test.flatten),
                                               as.character(fit_rf.mtry_default$test$predicted))
   put_log("`RF MCC` Model pre-trained with the default `mtry` parameter value: 
 The Confusion Matrix has been created:
@@ -774,12 +521,12 @@ plot(fit_rf.mtry_default,
 
 put_log("Prediction accuracy of the `RF MCC` Model,
 pre-trained with the default `mtry` parameter value, is as follows:
-%1", mean(fit_rf.mtry_default$test$predicted == y0.9.test))
+%1", mean(fit_rf.mtry_default$test$predicted == y0.9.test.flatten))
 # [1] 0.8397469
 
 fit_rf.mtry_default.accuracy.by_class <- 
   MCClassifier.accuracy.by_class(Y.Labels,
-                                 y0.9.test,
+                                 y0.9.test.flatten,
                                  fit_rf.mtry_default$test$predicted)
 
 put_log("The per-class prediction accuracy of the `RF MCC` Model, pre-trained 
@@ -836,7 +583,7 @@ plot_bars.accuracy.by_class(Y.Labels,
 log_close()
 ### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 #### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
-open_logfile(".x0.1.train.fit_rf.tune_mtry")
+open_logfile(".x0.1.train.flatten.fit_rf.tune_mtry")
 
 fit_rf.mtry_tuned.backup.path <- file.path(models.rf.tune.path, 
                                              "fit_rf.mtry-coarse_tuned.ntree200.back.rds")
@@ -867,8 +614,8 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   registerDoParallel(cl)
   
   set.seed(N.classes)
-  fit_rf.mtry_tuned <- train(x0.1.train, 
-                             y0.1.train,
+  fit_rf.mtry_tuned <- train(x0.1.train.flatten, 
+                             y0.1.train.flatten,
                              method = "rf",
                              ntree = 200,
                              trControl = trainControl(
@@ -947,7 +694,7 @@ ggplot(fit_rf.mtry_tuned)
 log_close()
 
 #### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
-open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
+open_logfile(".x0.1.train.flatten.fit_rf.fine-tune_mtry")
 
 fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
                                              "fit_rf.mtry-fine_tuned.ntree200.back.rds")
@@ -986,7 +733,7 @@ has been loaded from the following backup file:
       method = "cv",
       number = 5,
       verboseIter = TRUE,
-      # index = createFolds(y0.1.train, k = 5),
+      # index = createFolds(y0.1.train.flatten, k = 5),
       savePredictions = "final",
       summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
       classProbs = FALSE
@@ -1010,8 +757,8 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
 
   set.seed(N.classes)
-  fit_rf.mtry.fine_tuned <- train(x0.1.train, 
-                                  y0.1.train,
+  fit_rf.mtry.fine_tuned <- train(x0.1.train.flatten, 
+                                  y0.1.train.flatten,
                                   method = "rf",
                                   ntree = 200,
                                   trControl = custom_control,
@@ -1063,7 +810,7 @@ mtry.fine_tuned.best <- mtry.fine_tune.values[acc.max.idx]
 log_close()
 
 #### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
-open_logfile(".x0.1.train.fit_rf.fine-tune_mtry")
+open_logfile(".x0.1.train.flatten.fit_rf.fine-tune_mtry")
 
 fit_rf.mtry.final_tuned.backup.path <- file.path(models.rf.tune.path, 
                                              "fit_rf.mtry-final_tuned.ntree200.back.rds")
@@ -1104,7 +851,7 @@ has been loaded from the following backup file:
       method = "cv",
       number = 5,
       verboseIter = TRUE,
-      # index = createFolds(y0.1.train, k = 5),
+      # index = createFolds(y0.1.train.flatten, k = 5),
       savePredictions = "final",
       summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
       classProbs = FALSE
@@ -1128,8 +875,8 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
 
   set.seed(N.classes)
-  fit_rf.mtry.final_tuned <- train(x0.1.train, 
-                                  y0.1.train,
+  fit_rf.mtry.final_tuned <- train(x0.1.train.flatten, 
+                                  y0.1.train.flatten,
                                   method = "rf",
                                   ntree = 200,
                                   trControl = custom_control,
@@ -1179,7 +926,7 @@ mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max,
 log_close()
 
 ### Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
-open_logfile("x.train.fit_rf.mtry_best.ntree400")
+open_logfile("x.train.flatten.fit_rf.mtry_best.ntree400")
 
 fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path, 
                                              "fit_rf.mtry_best.ntree400.back.rds")
@@ -1206,12 +953,12 @@ trained with the best `mtry` parameter value, has been loaded from the following
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  set.seed(nrow(x.test))
+  set.seed(nrow(x.test.flatten))
   
-  fit_rf.mmtry_best <- randomForest(x.train, 
-                                    y.train,
-                                    x.test,
-                                    y.test,
+  fit_rf.mmtry_best <- randomForest(x.train.flatten, 
+                                    y.train.flatten,
+                                    x.test.flatten,
+                                    y.test.flatten,
                                     mtry = mtry.best,
                                     ntree = 400)
   
@@ -1225,7 +972,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
   
   put_log("Fine-tuned `RF MCC` Model: Calculating a ROC curve for each class...")
-  fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y.test,
+  fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y.test.flatten,
                                                   fit_rf.mmtry_best$test$votes,
                                                   Y.Labels)
  
@@ -1233,7 +980,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
   
   
   put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
-  fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test),
+  fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y.test.flatten),
                                                 as.character(fit_rf.mmtry_best$test$predicted))
   put_log("Fine-tuned `RF MCC` Model: The Confusion Matrix has been created:
 %1", capture.output(fit_rf.mmtry_best.conf.mx))
@@ -1288,11 +1035,11 @@ for (class.idx in 2:N.classes) {
 
 put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model, 
 trained with the best `mtry` parameter value, is as follows:
-%1", mean(fit_rf.mmtry_best$test$predicted == y.test))
+%1", mean(fit_rf.mmtry_best$test$predicted == y.test.flatten))
 # [1] 0.886390995545925
 
 fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-                                                                 y.test,
+                                                                 y.test.flatten,
                                                                  fit_rf.mmtry_best$test$predicted)
 put_log("The per-class prediction accuracy of the fine-tuned 'RF MCC' Model, 
 trained with the best `mtry` parameter value, is as follows:

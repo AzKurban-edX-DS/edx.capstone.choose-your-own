@@ -12,139 +12,29 @@
 ## Loading Split Dataset allocated 20% for the Test set (default) ------------
 open_logfile(".split.20%test.balanced_subset")
 
+stopifnot(exists("x0.1.train.flatten"),
+          exists("y0.1.train.flatten"),
+          exists("x0.9.test.flatten"),
+          exists("y0.9.test.flatten"))
+
 start <- put_start_date()
-stopifnot(file.exists(my_emnist.split.file_path))
 
-ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
-                                    my_emnist.split.file_path)
-x.train <- ds_flatten$x.train
-storage.mode(x.train) <- "double"
-
-x.test <- ds_flatten$x.test
-storage.mode(x.test) <- "double"
-
-x.test.files <- ds_flatten$x.files
-
-y.train.groups <- ds.get_classIDs.grouped(x.train)
-y.train <- y.train.groups$classID
-
-stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #        3407
-  #  2 $        3407
-  #  3 &        3407
-  #  4 @        3407
-  #  5 0        3407
-  #  6 1        3407
-  #  7 2        3407
-  #  8 3        3407
-  #  9 4        3407
-  # 10 5        3407
-  # 11 6        3407
-  # 12 7        3407
-  # 13 8        3407
-  # 14 9        3407
-  # 15 A        3407
-  # 16 B        3407
-  # 17 C        3407
-  # 18 D        3407
-  # 19 E        3407
-  # 20 F        3407
-  # 21 G        3407
-  # 22 H        3407
-  # 23 I        3407
-  # 24 J        3407
-  # 25 K        3407
-  # 26 L        3407
-  # 27 M        3407
-  # 28 N        3407
-  # 29 P        3407
-  # 30 Q        3407
-  # 31 R        3407
-  # 32 S        3407
-  # 33 T        3407
-  # 34 U        3407
-  # 35 V        3407
-  # 36 W        3407
-  # 37 X        3407
-  # 38 Y        3407
-  # 39 Z        3407
-}
-
-y.test.groups <- ds.get_classIDs.grouped(x.test)
-y.test <- y.test.groups$classID
-
-stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
-
-put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #         852
-  #  2 $         852
-  #  3 &         852
-  #  4 @         852
-  #  5 0         852
-  #  6 1         852
-  #  7 2         852
-  #  8 3         852
-  #  9 4         852
-  # 10 5         852
-  # 11 6         852
-  # 12 7         852
-  # 13 8         852
-  # 14 9         852
-  # 15 A         852
-  # 16 B         852
-  # 17 C         852
-  # 18 D         852
-  # 19 E         852
-  # 20 F         852
-  # 21 G         852
-  # 22 H         852
-  # 23 I         852
-  # 24 J         852
-  # 25 K         852
-  # 26 L         852
-  # 27 M         852
-  # 28 N         852
-  # 29 P         852
-  # 30 Q         852
-  # 31 R         852
-  # 32 S         852
-  # 33 T         852
-  # 34 U         852
-  # 35 V         852
-  # 36 W         852
-  # 37 X         852
-  # 38 Y         852
-  # 39 Z         852  
-}
-
-dim(x.train)
+str(x.train.flatten)
+dim(x.train.flatten)
 #> [1] 16653   784
-str(x.train)
 
-str(y.train)
-length(y.train)
+str(y.train.flatten)
+length(y.train.flatten)
 
-str(x.test)
-str(y.test)
-length(y.test)
+str(x.test.flatten)
+str(y.test.flatten)
+length(y.test.flatten)
 #> [1] 817379
 
-shape(x.train)
+shape(x.train.flatten)
 # shape(132873, 784)
 
-max_img_pixels <- max(rowSums(x.train))
+max_img_pixels <- max(rowSums(x.train.flatten))
 put_log("The maximum number of pixels in the Train Set images is as follows: %1",
         max_img_pixels)
 #> 593
@@ -177,18 +67,18 @@ contained in the training set.",
 # https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
 
 
-y.train.cat <- to_categorical(y.train)
-colnames(y.train.cat) <- Y.Labels
-dim(y.train.cat)
-str(y.train.cat)
-head(y.train.cat)
-# max(y.train.cat)
+y.train.flatten.cat <- to_categorical(y.train.flatten)
+colnames(y.train.flatten.cat) <- Y.Labels
+dim(y.train.flatten.cat)
+str(y.train.flatten.cat)
+head(y.train.flatten.cat)
+# max(y.train.flatten.cat)
 
-y.test.cat <- to_categorical(y.test)
-colnames(y.test.cat) <- Y.Labels
-dim(y.test.cat)
-str(y.test.cat)
-head(y.test.cat)
+y.test.flatten.cat <- to_categorical(y.test.flatten)
+colnames(y.test.flatten.cat) <- Y.Labels
+dim(y.test.flatten.cat)
+str(y.test.flatten.cat)
+head(y.test.flatten.cat)
 
 log_close()
 
@@ -229,14 +119,14 @@ dl.basic.checkpoint.file_path <-
 dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
                              "dl.basic.pre-trained.model.keras")
 
-dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
-                             "dl.basic.model.train_history.bak.rds")
+dl.basic.model.train.flatten_history.file_path <- file.path(dl.basic.dir_path, 
+                             "dl.basic.model.train.flatten_history.bak.rds")
 
 ## Building Basic DL MCC Model -------------------------------------------------
 
 open_logfile("dl.basic-model")
 
-n.input_shape <- ncol(x.train)
+n.input_shape <- ncol(x.train.flatten)
 # 784
 
 if(file.exists(dl.basic.model.file_path)) {
@@ -247,21 +137,21 @@ if(file.exists(dl.basic.model.file_path)) {
   put_log("The BDL MCC Model has been loaded from the backup file:
 %1", dl.basic.model.file_path)
   
-  if(file.exists(dl.basic.model.train_history.file_path)){
+  if(file.exists(dl.basic.model.train.flatten_history.file_path)){
     put_log("Loading the BDL MCC Model Train History...")
     
-    dl.basic.train_history <- readRDS(dl.basic.model.train_history.file_path)
+    dl.basic.train.flatten_history <- readRDS(dl.basic.model.train.flatten_history.file_path)
     
     put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dl.basic.model.train_history.file_path)
+%1", dl.basic.model.train.flatten_history.file_path)
   } else {
     warning("The BDL MCC Model backup does not exist:
-", dl.basic.model.train_history.file_path)
+", dl.basic.model.train.flatten_history.file_path)
   }
 } else {
   ### Defining & Compiling the Basic DL MCC Model ******************************
   
-  n.input_shape <- ncol(x.train)
+  n.input_shape <- ncol(x.train.flatten)
   # 784
   
   dl.basic.inputs <- layer_input(shape = c(n.input_shape))
@@ -298,9 +188,9 @@ if(file.exists(dl.basic.model.file_path)) {
   put_log("Training the BDL MCC Model...")
   start <- put_start_date()
   
-  dl.basic.train_history <- dl.basic.model |> 
-    fit(x.train, 
-        y.train.cat, 
+  dl.basic.train.flatten_history <- dl.basic.model |> 
+    fit(x.train.flatten, 
+        y.train.flatten.cat, 
         epochs = 100, 
         # batch_size = 128, 
         callbacks = dl.basic.callbacks,
@@ -317,12 +207,12 @@ and saved in the following file:
   %1", dl.basic.model.file_path)
 
   put_log("Saving the BDL MCC Model History...")
-  saveRDS(dl.basic.train_history,
-          file = dl.basic.model.train_history.file_path)
+  saveRDS(dl.basic.train.flatten_history,
+          file = dl.basic.model.train.flatten_history.file_path)
   
   put_log("The BDL MCC Model History has been trained 
 and saved in the following file:
-  %1", dl.basic.model.train_history.file_path)
+  %1", dl.basic.model.train.flatten_history.file_path)
   put_end_date(start)
   # Time difference of 38.48235 mins
 }
@@ -331,12 +221,12 @@ put_log("The Basic `DL MCC` Model has been trained with the following results
 %1", dl.basic.model)
 
 
-plot(dl.basic.train_history)
-str(dl.basic.train_history)
+plot(dl.basic.train.flatten_history)
+str(dl.basic.train.flatten_history)
 
 ## BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
-bdl.eval.result <- dl.basic.model |> evaluate(x.test, y.test.cat)
+bdl.eval.result <- dl.basic.model |> evaluate(x.test.flatten, y.test.flatten.cat)
 put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
 # List of 2
@@ -346,7 +236,7 @@ put_log("DL Model evaluation result:
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-bdl.preds <- dl.basic.model |> predict(x.test) 
+bdl.preds <- dl.basic.model |> predict(x.test.flatten) 
 put_end_date(start)
 # Time difference of  mins
 
@@ -374,8 +264,8 @@ dim(bdl.predictions)
 # bdl.predictions$numpy()
 
 
-# y.test
-# as.integer(y.test)
+# y.test.flatten
+# as.integer(y.test.flatten)
 
 bdl.pred.values.idx <- bdl.predictions$numpy()
 head(bdl.pred.values.idx)
@@ -383,12 +273,12 @@ head(bdl.pred.values.idx)
 bdl.pred.values <- Y.Labels[bdl.pred.values.idx]
 head(bdl.pred.values)
 
-dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test))
+dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test.flatten))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.897195136631756
 
 dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-                                                             y.test,
+                                                             y.test.flatten,
                                                              bdl.pred.values)
 dl.basic.accuracy.by_class
 {
@@ -438,7 +328,7 @@ dl.basic.accuracy.by_class
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
 put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
 using the `cvms` package...")
-dl.basic.conf.mx <- confusion_matrix(as.character(y.test),
+dl.basic.conf.mx <- confusion_matrix(as.character(y.test.flatten),
                                      as.character(bdl.pred.values))
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
 %1", capture.output(dl.basic.conf.mx))  
@@ -446,7 +336,7 @@ put_log("The confusion matrix based on the `BDL MCC` Model evaluation results ha
 ## Evaluation Results: Visualization ------------------------------------------
 
 put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
-dl.basic.roc_curves <- plot.ROC.curves(y.test,
+dl.basic.roc_curves <- plot.ROC.curves(y.test.flatten,
                                        bdl.preds)
 
 

@@ -9,6 +9,8 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
+options(timeout = max(300, getOption("timeout")))
+
 ## Preparing Datasets for BDL MCC Model Tuning ---------------------------------
 open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
@@ -19,8 +21,6 @@ stopifnot(exists("x3d.test_set"))
 str(x3d.train_set)
 str(x3d.test_set)
 
-# ds_flatten <- load_flatten_datasets("ds_flatten.split_list", 
-#                                     my_emnist.split.file_path)
 x.train <- x3d.train_set$x.train
 # storage.mode(x.train) <- "integer"
 
@@ -567,25 +567,27 @@ bdl_best.pred.values <- Y.Labels[bdl_best.pred.values.idx]
 head(bdl_best.pred.values)
 
 y.test.idx <- y.test + 1
+# y_test <- Y.Labels[y.test.idx]
+
 dl.basic.accuracy <- mean(bdl_best.pred.values.idx == y.test.idx)
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.899963885879379
 
 
+## Evaluation Results: Visualization ------------------------------------------
 
-### Evaluation Results: Visualization ------------------------------------------
-
-put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
+put_log("Plotting ROC curves for the  Tuned BDL MCC Model...")
 dl.basic.roc_curves <- plot.ROC.curves(y.test.cat,
                                        bdl_best.preds)
-y_test <- Y.Labels[y.test.idx]
 
-put_log("Plotting the BDL MCC Model Per-Class Accuracy...")
+put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
 dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y.test.cat,
                                                            bdl_best.pred.values)
 
 put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
 %1", capture.output(dl.basic.accuracy.by_class))
+{
+# class  accuracy
   #' # 1.0000000
   #' $ 1.0000000
   #' & 1.0000000
@@ -625,41 +627,21 @@ put_log("The following values of the BDL MCC Model Per-Class Accuracy have been 
   #' X 0.9389671
   #' Y 0.8814554
   #' Z 0.9072770
-# class  accuracy
-{
 }
-
 
 # Confusion Matrix data suitable for Visualization using the `cvms` package:
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
+
+put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
 using the `cvms` package...")
-dl.basic.conf.mx <- confusion_matrix(as.character(y_test),
-                                     as.character(bdl_best.pred.values))
+dl.basic.conf.mx <- create.confusion_matrix(y.test.cat,
+                                            bdl_best.pred.values)
+
+put_log("Plotting the confusion matrix, please wait...")
+plot.confusion_matrix(dl.basic.conf.mx)
+
+
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
 %1", capture.output(dl.basic.conf.mx))  
 
-
-put_log("Plotting the confusion matrix, please wait...")
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-
-dev.off()
-plot_confusion_matrix(dl.basic.conf.mx,
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
-
-stopCluster(cl)
-stopImplicitCluster()
-put_end_date(start)
-
-put_end_date(start)
 log_close()
-
-
