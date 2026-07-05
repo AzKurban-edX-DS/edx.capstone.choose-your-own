@@ -61,8 +61,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
                                                          number = 5, 
                                                          p = 0.95,
                                                          preProcOptions = list(thresh = 0.9),
-                                                         verboseIter = TRUE,
-                                                         verbose = TRUE),
+                                                         verboseIter = TRUE),
                                 tuneGrid = data.frame(k = k.values))
   stopCluster(cl)
   stopImplicitCluster()
@@ -91,12 +90,12 @@ for *k* values ranged from 1 to 7 has been backed up in the following file:
   # Time difference of 27.88649 mins
 }
 
-#### The Tuning Results Visualization & Analysis -------------------------------
+##### The Tuning Results Visualization & Analysis -------------------------------
 
 put_log("The pre-trained `kNN+PCA MCC` Model tuned result:
 %1", capture.output(k1_7nn_pca.model))
 
-k-Nearest Neighbors 
+# k-Nearest Neighbors 
 
 # 16575 samples
 # 784 predictor
@@ -160,7 +159,7 @@ k1_7nn.best
 
 log_close()
 
-## Training kNN+PCA Model for best *k% Parameter on the full Train Set ---------
+#### Training kNN+PCA Model for best *k% Parameter on the full Dataset ---------
 # (The training takes about half an hour)
 open_logfile(".pre-train-model.k1-7nn+pca")
 
@@ -195,8 +194,7 @@ has been loaded from the following backup file:
                                                                number = 5, 
                                                                p = 0.95,
                                                                preProcOptions = list(thresh = 0.9),
-                                                               verboseIter = TRUE,
-                                                               verbose = TRUE),
+                                                               verboseIter = TRUE),
                                       tuneGrid = data.frame(k = k1_7nn.best)) # *k* = 5
   stopCluster(cl)
   stopImplicitCluster()
@@ -221,7 +219,7 @@ has been loaded from the following backup file:
 log_close()
 # Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
 
-##### Constructing Predictions on kNN+PCA (for best *k* Parameter value) ------
+#### Constructing Predictions on kNN+PCA (for best *k* Parameter value) ------
 open_logfile(".x.test.flatten.predict.k(best)nn+pca")
 
 knn_pca.best.preds.backup0 <-
