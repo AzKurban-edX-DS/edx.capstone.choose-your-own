@@ -8,23 +8,6 @@
 ## `kNN+PCA MCC` Model Tuning --------------------------------------------------
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
-### `kNN+PCA MCC` Model Initial Paths -----------------------------------------------------
-stopifnot(dir.exists(models.path),
-          exists("x0.1.train.flatten"),
-          exists("y0.1.train.flatten"),
-          exists("x0.9.test.flatten"),
-          exists("y0.9.test.flatten"))
-
-knn_pca.path = file.path(models.path, "knn-pca")
-
-if(!dir.exists(knn_pca.path))
-  dir.create(knn_pca.path)
-
-### Training Model using methods: kNN, PCA -----------------------
-# Reference:
-# Dimension reduction with PCA
-# https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
-
 open_logfile(".pre-train-model.k1-7nn+pca")
 
 stopifnot(exists("x0.1.train.flatten"),
@@ -36,13 +19,16 @@ stopifnot(exists("x0.1.train.flatten"),
           exists("x.test.flatten"),
           exists("y.test.flatten"))
 
-
+### `kNN+PCA MCC` Model Initial Paths -----------------------------------------------------
 knn_pca.path = file.path(models.path, "knn-pca")
 
-if(!dir.exists(knn_pca.path)) {
+if(!dir.exists(knn_pca.path))
   dir.create(knn_pca.path)
-}
 
+### Training Model using methods: kNN, PCA -----------------------
+# Reference:
+# Dimension reduction with PCA
+# https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
 
 #### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Train Set ----
 # (The training takes about half an hour)
