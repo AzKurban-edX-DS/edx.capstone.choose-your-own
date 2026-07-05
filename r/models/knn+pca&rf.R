@@ -66,8 +66,15 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
                                 tuneGrid = data.frame(k = k.values))
   stopCluster(cl)
   stopImplicitCluster()
-  put_end_date(start)
-  # Time difference of 40.88067 mins
+  
+  # Aggregating results
+  # Selecting tuning parameters
+  # Fitting k = 5 on full training set
+  # Warning in pre_process_options(method, column_types) :
+  #   The following pre-processing methods were eliminated: 'pca', 'center', 'scale'  
+
+    put_end_date(start)
+  # Time difference of 27.84693 mins
   
   put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
 
@@ -75,19 +82,44 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
 
     saveRDS(k1_7nn_pca.model, 
           file = k1_7nn_pca.model.backup.path)
-  put_end_date(start)
-  # Time difference of 12.37275 secs
   
   put_log("The Model `kNN+PCA` pre-trained on the 10% size Train Set 
 for *k* values ranged from 1 to 7 has been backed up in the following file:
 `%1`", k1_7nn_pca.model.backup.path)
 
+  put_end_date(start)
+  # Time difference of 27.88649 mins
 }
 
 #### The Tuning Results Visualization & Analysis -------------------------------
 
-put_log("The pre-trained `kNN+PCA MCC` Model trained result:
+put_log("The pre-trained `kNN+PCA MCC` Model tuned result:
 %1", capture.output(k1_7nn_pca.model))
+
+k-Nearest Neighbors 
+
+# 16575 samples
+# 784 predictor
+# 39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
+# 
+# Pre-processing: ignore (784) 
+# Resampling: Cross-Validated (5 fold) 
+# Summary of sample sizes: 13260, 13260, 13260, 13260, 13260 
+# Resampling results across tuning parameters:
+#   
+#   k  Accuracy   Kappa    
+# 1  0.7838914  0.7782043
+# 2  0.7677828  0.7616718
+# 3  0.7923379  0.7868731
+# 4  0.7930015  0.7875542
+# 5  0.7955958  0.7902167
+# 6  0.7931222  0.7876780
+# 7  0.7937255  0.7882972
+# 8  0.7924585  0.7869969
+# 
+# Accuracy was used to select the optimal model using the largest value.
+# The final value used for the model was k = 5.
+
 
 # The Model tuning visualzation:
 trellis.par.set(caretTheme())
@@ -96,13 +128,15 @@ plot(k1_7nn_pca.model,
 
 acc.max.idx <- which.max(k1_7nn_pca.model$results$Accuracy)
 acc.max.idx
+# 5
 
 k1_7nn_pca.max_accuracy <- k1_7nn_pca.model$results$Accuracy[acc.max.idx]
 k1_7nn_pca.max_accuracy
+# 0.7955958
 
 k1_7nn.best <- k1_7nn_pca.model$results$k[acc.max.idx]
 k1_7nn.best
-# 6
+# 5
 # 
 # k-Nearest Neighbors 
 
@@ -126,7 +160,7 @@ k1_7nn.best
 
 log_close()
 
-## Training kNN+PCA Model for best *k% Parameter -----------------------------
+## Training kNN+PCA Model for best *k% Parameter on the full Train Set ---------
 # (The training takes about half an hour)
 open_logfile(".pre-train-model.k1-7nn+pca")
 
@@ -163,7 +197,7 @@ has been loaded from the following backup file:
                                                                preProcOptions = list(thresh = 0.9),
                                                                verboseIter = TRUE,
                                                                verbose = TRUE),
-                                      tuneGrid = data.frame(k = k1_7nn.best)) # *k* = 6
+                                      tuneGrid = data.frame(k = k1_7nn.best)) # *k* = 5
   stopCluster(cl)
   stopImplicitCluster()
   put_end_date(start)
