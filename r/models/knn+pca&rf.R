@@ -159,7 +159,7 @@ k1_7nn.best
 
 log_close()
 
-#### Training kNN+PCA Model for best *k% Parameter on the full Dataset ---------
+#### Re-Training kNN+PCA Model with the best *k% Parameter on the full Dataset ---------
 # (The training takes about half an hour)
 open_logfile(".pre-train-model.k1-7nn+pca")
 
