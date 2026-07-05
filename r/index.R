@@ -96,9 +96,11 @@ if (!exists("ds_flatten.0.1split_list")) {
 %1", my_emnist.0.1split.file_path)
 } 
 
+str(ds_flatten.0.1split_list)
+
 #### Preparing Train Balanced Sample --------------------------------------------
 
-x0.1.train.flatten <- ds_flatten.0.1split_list$train_set$x.train.flatten
+x0.1.train.flatten <- ds_flatten.0.1split_list$train_set$x.train
 
 y0.1.train.flatten.groups <- ds.get_classIDs.grouped(x0.1.train.flatten)
 y0.1.train.flatten <- y0.1.train.flatten.groups$classID
@@ -110,7 +112,8 @@ dim(x0.1.train.flatten)
 #> [1] 16653   784
 
 str(y0.1.train.flatten)
-length(y0.1.train.flatten)
+
+stopifnot(nrow(x0.1.train.flatten) == length(y0.1.train.flatten))
 
 ##### View of the Train Set Grouped by Class ------------------------------------
 put_log("The Train Set is balanced by set of Classes:
@@ -162,7 +165,7 @@ put_log("The Train Set is balanced by set of Classes:
 
 #### Preparing Test Balanced Sample ---------------------------------------------
 
-x0.9.test.flatten <- ds_flatten.0.1split_list$test_set$x.test.flatten
+x0.9.test.flatten <- ds_flatten.0.1split_list$test_set$x.test
 x0.9.test.flatten.files <- ds_flatten.0.1split_list$test_set$x.files
 
 y0.9.test.flatten.groups <- ds.get_classIDs.grouped(x0.9.test.flatten)
@@ -171,9 +174,13 @@ y0.9.test.flatten <- y0.9.test.flatten.groups$classID
 stopifnot(sum(as.character(y0.9.test.flatten) != rownames(x0.9.test.flatten)) == 0)
 
 str(x0.9.test.flatten)
+dim(x0.9.test.flatten)
+# [1] 149526    784
+
 str(y0.9.test.flatten)
-length(y0.9.test.flatten)
-#> [1] 817379
+
+stopifnot(nrow(x0.9.test.flatten) == length(y0.9.test.flatten))
+#> [1] 149526
 
 ##### View of the Test Set Grouped by Class -------------------------------------
 put_log("The Test Set is balanced by set of Classes:
@@ -241,11 +248,13 @@ if (!exists("ds_flatten.split_list")) {
   
   put_log("The Split Flattened Dataset has been loaded from the following backup file:
 %1", my_emnist.split.file_path)
-} 
+}
+
+str(ds_flatten.split_list)
 
 #### Preparing Train Balanced Sample --------------------------------------------
 
-x.train.flatten <- ds_flatten.split_list$x.train.flatten
+x.train.flatten <- ds_flatten.split_list$train_set$x.train
 
 y.train.flatten.groups <- ds.get_classIDs.grouped(x.train.flatten)
 y.train.flatten <- y.train.flatten.groups$classID
@@ -253,11 +262,14 @@ y.train.flatten <- y.train.flatten.groups$classID
 stopifnot(sum(as.character(y.train.flatten) != rownames(x.train.flatten)) == 0)
 
 dim(x.train.flatten)
-#> [1] 16653   784
+#> [1] 132873    784
+
 str(x.train.flatten)
 
 str(y.train.flatten)
-length(y.train.flatten)
+
+stopifnot(nrow(x.train.flatten) == length(y.train.flatten))
+# 132873
 
 ##### View of the Train Set Grouped by Class ------------------------------------
 put_log("The Train Set is balanced by set of Classes:
@@ -309,17 +321,19 @@ put_log("The Train Set is balanced by set of Classes:
 
 #### Preparing Test Balanced Sample --------------------------------------------
 
-x.test.flatten <- ds_flatten.split_list$x.test.flatten
-x.test.flatten.files <- ds_flatten.split_list$x.files
+x.test.flatten <- ds_flatten.split_list$test_set$x.test
+x.test.flatten.files <- ds_flatten.split_list$test_set$x.files
 y.test.flatten.groups <- ds.get_classIDs.grouped(x.test.flatten)
 y.test.flatten <- y.test.flatten.groups$classID
 
 stopifnot(sum(as.character(y.test.flatten) != rownames(x.test.flatten)) == 0)
 
 str(x.test.flatten)
+dim(x.test.flatten)
+
 str(y.test.flatten)
-length(y.test.flatten)
-#> [1] 817379
+stopifnot(nrow(x.test.flatten) == length(y.test.flatten))
+#> [1] 33228
 
 ##### View of the Test Set Grouped by Class ------------------------------------
 put_log("The Test Set is balanced by set of Classes:
