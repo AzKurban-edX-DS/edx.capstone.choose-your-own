@@ -198,9 +198,14 @@ has been loaded from the following backup file:
                                       tuneGrid = data.frame(k = k1_7nn.best)) # *k* = 5
   stopCluster(cl)
   stopImplicitCluster()
+  # Aggregating results
+  # Fitting final model on full training set
+  # Warning: The following pre-processing methods were eliminated: 'pca', 'center', 'scale'
+  
   put_end_date(start)
-  # Time difference of 40.88067 mins
-
+  # Sun Jul 5 08:18:14 2026 
+  # Time difference of 1.875516 hours
+ 
   put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
   
   put_log("Saving `kNN+PCAM`odel in the backup file: `...")
@@ -208,7 +213,7 @@ has been loaded from the following backup file:
   saveRDS(k_best.nn_pca.model, 
           file = k_best.nn_pca.model.backup.path)
   put_end_date(start)
-  # Time difference of 12.37275 secs
+  # Time difference of 1.880165 hours
   
   put_log("The Model `kNN+PCA` trained on the 80% size Train Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
