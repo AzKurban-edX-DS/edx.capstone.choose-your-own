@@ -288,6 +288,21 @@ k_best.nn_pca.predicted <- predicted_probs2classes(as.matrix(k_best.nn_pca.probs
                                                    Y.Labels)
 put_end_date(start)
 
+# put_log("Fine-tuned `kNN+PCA MCC` Model: The per-class ROC curve calculation has been completed.")
+# 
+# put_log("Fine-tuned `kNN+PCA MCC` Model: Creating a Confusion Matrix...")
+# k_best.nn_pca.conf.mx <- confusion_matrix(as.character(y.test.flatten),
+#                                           as.character(k_best.nn_pca.predicted))
+# put_log("Fine-tuned `kNN+PCA MCC` Model: The Confusion Matrix has been created:
+# %1", capture.output(k_best.nn_pca.conf.mx))
+# put_end_date(start)
+# 
+# put_log("The (Best *k*) `kNN+PCA MCC` Model: Generating predictions have been completed on `x.test.flatten` dataset.")
+# 
+# put_log("Validating accuracy of the (Best *k*) `kNN+PCA MCC` Model predictions 
+# made on the `x.test.flatten` dataset...")
+# knn_pca.best.accuracy0 <- mean(k_best.nn_pca.model.predicted == y.test.flatten)
+
 knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test.flatten)
 
 put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
