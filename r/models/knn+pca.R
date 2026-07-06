@@ -309,6 +309,90 @@ put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k*
 %1", knn_pca.best.accuracy)
 #> [1] 0.862555675935958
 
+## Visualizing the Evaluation Results ------------------------------------------
+
+
+
+TEST_SET.TARGETS <- y.test.flatten
+EVAL.PREDICTED_PROBABILITIES <- k_best.nn_pca.probs
+EVAL.PREDICTION_VALUES <- k_best.nn_pca.predicted
+
+stopifnot(file.exists(shared_visualization.script.path))
+start <- put_start_date()
+
+source(shared_visualization.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+knn_pca.best.accuracy.by_class <- CURRENT_MODEL.ACCURACY_BY_CLASS
+
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
+%1", capture.output(knn_pca.best.accuracy.by_class))
+{
+  #' class  accuracy
+  #'     # 1.0000000
+  #'     $ 1.0000000
+  #'     & 1.0000000
+  #'     @ 1.0000000
+  #'     0 0.9753521
+  #'     1 0.7159624
+  #'     2 0.8673709
+  #'     3 0.9553991
+  #'     4 0.8955399
+  #'     5 0.8403756
+  #'     6 0.9096244
+  #'     7 0.9647887
+  #'     8 0.8497653
+  #'     9 0.9002347
+  #'     A 0.8169014
+  #'     B 0.8227700
+  #'     C 0.9436620
+  #'     D 0.8697183
+  #'     E 0.8744131
+  #'     F 0.8697183
+  #'     G 0.5551643
+  #'     H 0.8943662
+  #'     I 0.6549296
+  #'     J 0.9178404
+  #'     K 0.8650235
+  #'     L 0.4730047
+  #'     M 0.9483568
+  #'     N 0.9178404
+  #'     P 0.9366197
+  #'     Q 0.4929577
+  #'     R 0.8591549
+  #'     S 0.8556338
+  #'     T 0.8720657
+  #'     U 0.9154930
+  #'     V 0.9178404
+  #'     W 0.9330986
+  #'     X 0.8849765
+  #'     Y 0.7570423
+  #'     Z 0.8755869  
+}
+
+# Confusion Matrix data suitable for Visualization using the `cvms` package:
+# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
+
+k_best.nn_pca.conf.mx <- CURRENT_MODEL.CONFUSION_MATRIX
+str(k_best.nn_pca.conf.mx)
+
+put_log("The confusion matrix based on the `kNN+PCA MCC` Model evaluation results has been created:
+%1", capture.output(k_best.nn_pca.conf.mx))
+
+put_end_date(start)
+
+rm(TEST_SET.TARGETS,
+   EVAL.PREDICTED_PROBABILITIES,
+   EVAL.PREDICTION_VALUES,
+   CURRENT_MODEL.CONFUSION_MATRIX)
+
+log_close()
+
 ## Visualization & Analysis ----------------------------------------------------
 
 # put_log("Fine-tuned `kNN+PCA MCC` Model: The per-class ROC curve calculation has been completed.")
@@ -335,46 +419,6 @@ put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k*
 # knn_pca.best.accuracy.by_class
 {
   
-#' class  accuracy
-#'     # 1.0000000
-#'     $ 1.0000000
-#'     & 1.0000000
-#'     @ 1.0000000
-#'     0 0.9753521
-#'     1 0.7159624
-#'     2 0.8673709
-#'     3 0.9553991
-#'     4 0.8955399
-#'     5 0.8403756
-#'     6 0.9096244
-#'     7 0.9647887
-#'     8 0.8497653
-#'     9 0.9002347
-#'     A 0.8169014
-#'     B 0.8227700
-#'     C 0.9436620
-#'     D 0.8697183
-#'     E 0.8744131
-#'     F 0.8697183
-#'     G 0.5551643
-#'     H 0.8943662
-#'     I 0.6549296
-#'     J 0.9178404
-#'     K 0.8650235
-#'     L 0.4730047
-#'     M 0.9483568
-#'     N 0.9178404
-#'     P 0.9366197
-#'     Q 0.4929577
-#'     R 0.8591549
-#'     S 0.8556338
-#'     T 0.8720657
-#'     U 0.9154930
-#'     V 0.9178404
-#'     W 0.9330986
-#'     X 0.8849765
-#'     Y 0.7570423
-#'     Z 0.8755869  
 }
 
 # put_log("`kNN+PCA MCC` Model: Plotting bar chart of per-class accuracy...")

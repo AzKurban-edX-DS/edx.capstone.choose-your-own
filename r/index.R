@@ -13,6 +13,10 @@ stopifnot(dir.exists(support_scripts.path))
 setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
+shared_visualization.script.path <- file.path(models_script.path, "model-vusualization.shared.R")
+stopifnot(file.exists(shared_visualization.script.path))
+
+
 source(setup_script.file_path, 
        catch.aborts = TRUE,
        echo = TRUE,

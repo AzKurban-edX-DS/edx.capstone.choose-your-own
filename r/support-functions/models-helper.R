@@ -552,7 +552,7 @@ plot.per_class.accuracy.bars <- function(targets,
                                          predicted.values){
   
   stopifnot(class(predicted.values) == "factor" && 
-              sum(levels(predicted.values) != levels(class.labels)) == 0)
+              sum(levels(predicted.values) != levels(Y.Labels)) == 0)
   
   per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
                                                        predicted.values,

@@ -574,15 +574,26 @@ put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.899963885879379
 
 
-## Evaluation Results: Visualization ------------------------------------------
+## Visualizing the Evaluation Results ------------------------------------------
 
-put_log("Plotting ROC curves for the  Tuned BDL MCC Model...")
-dl.basic.roc_curves <- plot.ROC.curves(y.test.cat,
-                                       bdl_best.preds)
 
-put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
-dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y.test.cat,
-                                                           bdl_best.pred.values)
+
+TEST_SET.TARGETS <- y.test.cat
+EVAL.PREDICTED_PROBABILITIES <- bdl_best.preds
+EVAL.PREDICTION_VALUES <- bdl_best.pred.values
+
+stopifnot(file.exists(shared_visualization.script.path))
+start <- put_start_date()
+
+source(shared_visualization.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+dl.basic.accuracy.by_class <- CURRENT_MODEL.ACCURACY_BY_CLASS
 
 put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
 %1", capture.output(dl.basic.accuracy.by_class))
@@ -629,19 +640,18 @@ put_log("The following values of the BDL MCC Model Per-Class Accuracy have been 
   #' Z 0.9072770
 }
 
-# Confusion Matrix data suitable for Visualization using the `cvms` package:
-# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
 
-put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
-using the `cvms` package...")
-dl.basic.conf.mx <- create.confusion_matrix(y.test.cat,
-                                            bdl_best.pred.values)
-
-put_log("Plotting the confusion matrix, please wait...")
-plot.confusion_matrix(dl.basic.conf.mx)
-
+dl.basic.conf.mx <- CURRENT_MODEL.CONFUSION_MATRIX
+str(dl.basic.conf.mx)
 
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(dl.basic.conf.mx))  
+%1", capture.output(dl.basic.conf.mx))
+
+put_end_date(start)
+
+rm(TEST_SET.TARGETS,
+   EVAL.PREDICTED_PROBABILITIES,
+   EVAL.PREDICTION_VALUES,
+   CURRENT_MODEL.CONFUSION_MATRIX)
 
 log_close()
