@@ -576,8 +576,6 @@ put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
-
-
 TEST_SET.TARGETS <- y.test.cat
 EVAL.PREDICTED_PROBABILITIES <- bdl_best.preds
 EVAL.PREDICTION_VALUES <- bdl_best.pred.values
