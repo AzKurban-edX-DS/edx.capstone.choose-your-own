@@ -640,7 +640,6 @@ put_log("The following values of the BDL MCC Model Per-Class Accuracy have been 
 
 
 dl.basic.conf.mx <- CURRENT_MODEL.CONFUSION_MATRIX
-str(dl.basic.conf.mx)
 
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
 %1", capture.output(dl.basic.conf.mx))

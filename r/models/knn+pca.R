@@ -379,7 +379,6 @@ put_log("The following values of the BDL MCC Model Per-Class Accuracy have been 
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
 
 k_best.nn_pca.conf.mx <- CURRENT_MODEL.CONFUSION_MATRIX
-str(k_best.nn_pca.conf.mx)
 
 put_log("The confusion matrix based on the `kNN+PCA MCC` Model evaluation results has been created:
 %1", capture.output(k_best.nn_pca.conf.mx))
