@@ -10,7 +10,7 @@
 # ref.bib: DL_R3_E2-S7.3
 
 ## Loading Split Dataset allocated 20% for the Test set (default) ------------
-open_logfile(".split.20%test.balanced_subset")
+open_logfile(".dl.basic-model.prepare-ds")
 
 stopifnot(exists("x0.1.train.flatten"),
           exists("y0.1.train.flatten"),
@@ -84,6 +84,8 @@ log_close()
 
 ## Init DL Basic Model Paths ---------------------------------------------------
 
+open_logfile(".dl.basic-model.build")
+
 if(!dir.exists(dl.keras3.path))
   dir.create(dl.keras3.path)
 
@@ -124,7 +126,6 @@ dl.basic.model.train.flatten_history.file_path <- file.path(dl.basic.dir_path,
 
 ## Building Basic DL MCC Model -------------------------------------------------
 
-open_logfile("dl.basic-model")
 
 n.input_shape <- ncol(x.train.flatten)
 # 784
@@ -224,7 +225,11 @@ put_log("The Basic `DL MCC` Model has been trained with the following results
 plot(dl.basic.train.flatten_history)
 str(dl.basic.train.flatten_history)
 
+log_close()
+
 ## BDL MCC Model Evaluation ----------------------------------------------------
+open_logfile(".dl.basic-model.evaluate")
+
 put_log("Evaluating DL Model...")
 bdl.eval.result <- dl.basic.model |> evaluate(x.test.flatten, y.test.flatten.cat)
 put_log("DL Model evaluation result:
@@ -277,94 +282,55 @@ dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test.flatten))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.897195136631756
 
-dl.basic.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-                                                             y.test.flatten,
-                                                             bdl.pred.values)
-dl.basic.accuracy.by_class
+log_close()
+
+## Evaluation Results: Visualization -------------------------------------------
+open_logfile(".dl.basic-model.build")
+
+start <- put_start_date()
+
+put_log("Plotting ROC curves the Model Evaluation Results...")
+dl.basic.roc_curves <- plot.ROC.curves(y.test.flatten,
+                                       bdl.preds)
+Sys.sleep(6)
+
+put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
+dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y.test.flatten,
+                                                           bdl.pred.values)
+
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
+%1", capture.output(dl.basic.accuracy.by_class))
 {
-#' class  accuracy
-    #' # 1.0000000
-    #' $ 1.0000000
-    #' & 1.0000000
-    #' @ 1.0000000
-    #' 0 0.9612676
-    #' 1 0.7605634
-    #' 2 0.8967136
-    #' 3 0.9530516
-    #' 4 0.9131455
-    #' 5 0.8697183
-    #' 6 0.9166667
-    #' 7 0.9753521
-    #' 8 0.9424883
-    #' 9 0.8345070
-    #' A 0.8697183
-    #' B 0.9072770
-    #' C 0.9319249
-    #' D 0.9225352
-    #' E 0.9272300
-    #' F 0.9436620
-    #' G 0.6737089
-    #' H 0.9190141
-    #' I 0.6901408
-    #' J 0.9307512
-    #' K 0.9295775
-    #' L 0.4518779
-    #' M 0.9577465
-    #' N 0.9190141
-    #' P 0.9518779
-    #' Q 0.7523474
-    #' R 0.9295775
-    #' S 0.8908451
-    #' T 0.9190141
-    #' U 0.9401408
-    #' V 0.8920188
-    #' W 0.9671362
-    #' X 0.9366197
-    #' Y 0.9049296
-    #' Z 0.9084507
+  
+  invisible(NULL)
 }
+
+Sys.sleep(5)
 
 # Confusion Matrix data suitable for Visualization using the `cvms` package:
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-put_log("`BDL MCC` Model: Creating a confusion matrix in a format suitable for visualization 
+
+put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
 using the `cvms` package...")
-dl.basic.conf.mx <- confusion_matrix(as.character(y.test.flatten),
-                                     as.character(bdl.pred.values))
+
+dl.basic.conf.mx <- create.confusion_matrix(y.test.flatten,
+                                                          bdl.pred.values)
+
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(dl.basic.conf.mx))  
-
-## Evaluation Results: Visualization ------------------------------------------
-
-put_log("Plotting ROC curves for the Multiclass Classifier (MCC) based on the current model...")
-dl.basic.roc_curves <- plot.ROC.curves(y.test.flatten,
-                                       bdl.preds)
-
-
-put_log("`BDL MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(Y.Labels,
-                            dl.basic.accuracy.by_class,
-                            title.prefix = "Basic DL Multiclass")
+%1", capture.output(dl.basic.conf.mx))
 
 put_log("Plotting the confusion matrix, please wait...")
+dl.basic.conf.mx.chart <- plot.confusion_matrix(dl.basic.conf.mx)
+
 start <- put_start_date()
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-
 dev.off()
-plot_confusion_matrix(dl.basic.conf.mx,
-                      palette = "Greens",
-                      font_counts = font(size = 3,
-                                         color = "red"),
-                      add_normalized = FALSE,
-                      add_col_percentages = FALSE,
-                      add_row_percentages = FALSE)
+print(dl.basic.conf.mx.chart)
 
 stopCluster(cl)
 stopImplicitCluster()
-put_end_date(start)
 
 put_end_date(start)
 log_close()
-
-

@@ -522,32 +522,6 @@ cnn.binclass.get_prediction_values <- function(preds) {
 
 ## Analysis & Visualization ----------------------------------------------------
 
-plot.confusion_matrix <- function(cvms.confusion_matrix,
-                                  palette = "Greens",
-                                  font.size = 3,
-                                  font.color = "red",
-                                  add_normalized = FALSE,
-                                  add_col_percentages = FALSE,
-                                  add_row_percentages = FALSE) {
-  start <- put_start_date()
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-
-  dev.off()
-  conf.mx.chart <- plot_confusion_matrix(cvms.confusion_matrix,
-                        palette = "Greens",
-                        font_counts = font(size = font.size,
-                                           color = font.color),
-                        add_normalized = add_normalized,
-                        add_col_percentages = add_col_percentages,
-                        add_row_percentages = add_row_percentages)
-  stopCluster(cl)
-  stopImplicitCluster()
-  put_end_date(start)
-
-  conf.mx.chart
-}
-
 plot.per_class.accuracy.bars <- function(targets,
                                          predicted.values){
   
@@ -612,7 +586,72 @@ calc.roc_curves <- function(targets,
   })
 }
 
-#> Greats a confusion matrix for Tuned BDL MCC Model in a format suitable 
+plot_bars.accuracy.by_class <- function(class.accuracies,
+                                        class.labels,
+                                        title.prefix = NULL,
+                                        .title = "Classifier Model: Class-wise Evaluation Result",
+                                        .color = "black",
+                                        .fill = "steelblue") {
+  if(!is.null(title.prefix))
+    .title = paste(title.prefix, .title)
+  
+  data.frame(class = class.labels,
+             accuracy = class.accuracies) |>
+    ggplot(mapping = aes(x = class,
+                         y = accuracy)) +
+    geom_col(fill = .fill,
+             color = .color) +
+    labs(x = "Handwritten Character Class",
+         y = "Accuracy",
+         title = .title) +
+    scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+                       expand = c(0, 0, 0.005, 0))
+}
+
+
+#> Plots a confusion matrix created by the custom helper functions defined below.
+plot.confusion_matrix <- function(cvms.confusion_matrix,
+                                  palette = "Greens",
+                                  font.size = 3,
+                                  font.color = "red",
+                                  add_normalized = FALSE,
+                                  add_col_percentages = FALSE,
+                                  add_row_percentages = FALSE,
+                                  export.img_file = NULL) {
+  put_log("Function `plot.confusion_matrix`: 
+Exporting the Confusion Matrix Plot object to image file...")
+  start <- put_start_date()
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  # dev.off()
+  conf.mx.chart <- plot_confusion_matrix(cvms.confusion_matrix,
+                        palette = "Greens",
+                        font_counts = font(size = font.size,
+                                           color = font.color),
+                        add_normalized = add_normalized,
+                        add_col_percentages = add_col_percentages,
+                        add_row_percentages = add_row_percentages)
+  stopCluster(cl)
+  stopImplicitCluster()
+  
+  if(!is.null(export.img_file)) {
+    put_log("Function `plot.confusion_matrix`: 
+Exporting the Confusion Matrix Plot object to image file...")
+    
+    ggsave(filename = export.img_file, 
+           plot = conf.mx.chart)
+    
+    put_log("Function `plot.confusion_matrix`: 
+The Confusion Matrix Plot object has been exported to the following file:
+  %1", export.img_file)
+  }
+
+  put_end_date(start)
+  conf.mx.chart
+}
+
+#> Greats a confusion matrix in a format suitable 
 #> for visualization using the `cvms` package 
 create.confusion_matrix <- function(targets,
                                     predicted.values) {
@@ -686,27 +725,54 @@ Plotting confusion matrix, please wait...")
   }
 }
 
-plot_bars.accuracy.by_class <- function(class.accuracies,
-                                        class.labels,
-                                        title.prefix = NULL,
-                                        .title = "Classifier Model: Class-wise Evaluation Result",
-                                        .color = "black",
-                                        .fill = "steelblue") {
-  if(!is.null(title.prefix))
-    .title = paste(title.prefix, .title)
+create_plot.conf.mx <- function(targets, 
+                                pred.values,
+                                backup.file,
+                                img.file = NULL) {
+  start <- put_start_date()
   
-  data.frame(class = class.labels,
-             accuracy = class.accuracies) |>
-    ggplot(mapping = aes(x = class,
-                         y = accuracy)) +
-    geom_col(fill = .fill,
-             color = .color) +
-    labs(x = "Handwritten Character Class",
-         y = "Accuracy",
-         title = .title) +
-    scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                       expand = c(0, 0, 0.005, 0))
+  put_log("Function `plot.conf.mx`: 
+Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
+using the `cvms` package...")
+  conf.mx <- create.confusion_matrix(targets, pred.values)
+  
+  put_log("Function `plot.conf.mx`: 
+Plotting the confusion matrix, please wait...")
+  plt <- plot.confusion_matrix(conf.mx)
+  
+  "Function `plot.conf.mx`: 
+"  
+  
+  put_log("Function `plot.conf.mx`: 
+Saving the Confusion Matrix Plot object...")
+  
+  saveRDS(plt,
+          file = backup.file)
+  
+  put_log("Function `plot.conf.mx`: 
+The Confusion Matrix Plot object has been saved in the following file:
+  %1", backup.file)
+  
+  if(!is.null(export.img_file)) {
+    put_log("Function `plot.conf.mx`: 
+Exporting the Confusion Matrix Plot object to image file...")
+    
+    ggsave(filename = img.file, 
+           plot = plt)
+    
+    put_log("Function `plot.conf.mx`: 
+The Confusion Matrix Plot object has been exported to the following file:
+  %1", img.file)
+  }
+  
+  # grid::grid.newpage()
+  # grid::grid.draw(ggplotGrob(plt))
+  
+  # print(plt)
+  put_end_date(start)
+  conf.mx
 }
+
 
 ## Utility Functions -----------------------------------------------------------
 
