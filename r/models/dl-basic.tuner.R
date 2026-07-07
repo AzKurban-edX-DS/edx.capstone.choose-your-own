@@ -239,6 +239,9 @@ bdl.final_model.train_history.file_path <- file.path(dl.basic.keras_tuner.dir,
 
 dl.basic_tune.plot_img.dir <- file.path(dl.basic.keras_tuner.dir, "plot.img")
 
+if(!dir.exists(dl.basic_tune.plot_img.dir))
+  dir.create(dl.basic_tune.plot_img.dir)
+
 dl.basic.best_model.plot_img.file <- file.path(dl.basic_tune.plot_img.dir, 
                                                "tuner.best-model.png")
 dl.basic.final_model.plot_img.file <- file.path(dl.basic_tune.plot_img.dir, 
@@ -250,9 +253,6 @@ dl.basic.final.conf_mx.bak <- file.path(dl.basic_tune.plot_img.dir,
 dl.basic.final.conf_mx.img <- file.path(dl.basic_tune.plot_img.dir, 
                                                "tuner-final.confusion-matrix.png")
 
-
-if(!dir.exists(dl.basic_tune.plot_img.dir))
-  dir.create(dl.basic_tune.plot_img.dir)
 
 dl.basic_tuner.checkpoints.dir <- file.path(dl.basic.keras_tuner.dir,
                                             "checkpoints")
@@ -655,8 +655,9 @@ put_log("The confusion matrix based on the `BDL MCC` Model evaluation results ha
 %1", capture.output(bdl_final.conf.mx))
 
 put_log("Plotting the confusion matrix, please wait...")
-bdl_final.conf.mx.chart <- plot.confusion_matrix(bdl_final.conf.mx,
-                      export.img_file = dl.basic.final.conf_mx.img)
+bdl_final.conf.mx.chart <- 
+  plot.confusion_matrix(bdl_final.conf.mx,
+                        export.img_file = dl.basic.final.conf_mx.img)
 
 print(bdl_final.conf.mx.chart)
 

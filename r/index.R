@@ -321,6 +321,7 @@ put_log("The Train Set is balanced by set of Classes:
   # 37 X        3407
   # 38 Y        3407
   # 39 Z        3407
+  invisible(NULL)
 }
 
 #### Preparing Test Balanced Sample --------------------------------------------
@@ -385,6 +386,7 @@ put_log("The Test Set is balanced by set of Classes:
   # 37 X         852
   # 38 Y         852
   # 39 Z         852  
+  invisible(NULL)
 }
 
 #### Finalize Preparing Datasets ------------------------------------------------

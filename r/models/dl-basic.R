@@ -121,8 +121,8 @@ dl.basic.checkpoint.file_path <-
 dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
                              "dl.basic.pre-trained.model.keras")
 
-dl.basic.model.train.flatten_history.file_path <- file.path(dl.basic.dir_path, 
-                             "dl.basic.model.train.flatten_history.bak.rds")
+dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
+                             "dl.basic.model.train_history.bak.rds")
 
 ## Building Basic DL MCC Model -------------------------------------------------
 
@@ -138,16 +138,16 @@ if(file.exists(dl.basic.model.file_path)) {
   put_log("The BDL MCC Model has been loaded from the backup file:
 %1", dl.basic.model.file_path)
   
-  if(file.exists(dl.basic.model.train.flatten_history.file_path)){
+  if(file.exists(dl.basic.model.train_history.file_path)){
     put_log("Loading the BDL MCC Model Train History...")
     
-    dl.basic.train.flatten_history <- readRDS(dl.basic.model.train.flatten_history.file_path)
+    dl.basic.train.flatten_history <- readRDS(dl.basic.model.train_history.file_path)
     
     put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dl.basic.model.train.flatten_history.file_path)
+%1", dl.basic.model.train_history.file_path)
   } else {
     warning("The BDL MCC Model backup does not exist:
-", dl.basic.model.train.flatten_history.file_path)
+", dl.basic.model.train_history.file_path)
   }
 } else {
   ### Defining & Compiling the Basic DL MCC Model ******************************
@@ -209,11 +209,11 @@ and saved in the following file:
 
   put_log("Saving the BDL MCC Model History...")
   saveRDS(dl.basic.train.flatten_history,
-          file = dl.basic.model.train.flatten_history.file_path)
+          file = dl.basic.model.train_history.file_path)
   
   put_log("The BDL MCC Model History has been trained 
 and saved in the following file:
-  %1", dl.basic.model.train.flatten_history.file_path)
+  %1", dl.basic.model.train_history.file_path)
   put_end_date(start)
   # Time difference of 38.48235 mins
 }

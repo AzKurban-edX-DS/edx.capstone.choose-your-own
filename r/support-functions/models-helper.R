@@ -610,7 +610,8 @@ plot_bars.accuracy.by_class <- function(class.accuracies,
 
 
 #> Plots a confusion matrix created by the custom helper functions defined below.
-plot.confusion_matrix <- function(cvms.confusion_matrix,
+plot.confusion_matrix <- function(targets,
+                                  predicted.values,
                                   palette = "Greens",
                                   font.size = 3,
                                   font.color = "red",
@@ -618,37 +619,54 @@ plot.confusion_matrix <- function(cvms.confusion_matrix,
                                   add_col_percentages = FALSE,
                                   add_row_percentages = FALSE,
                                   export.img_file = NULL) {
+  
   put_log("Function `plot.confusion_matrix`: 
-Exporting the Confusion Matrix Plot object to image file...")
+Creating a confusion matrix based on the model evaluation results in a format 
+suitable for visualization using the `cvms` package...")
+  
+  conf.mx <- create.confusion_matrix(targets,
+                                     predicted.values)
+  
+  put_log("Function `plot.confusion_matrix`: 
+The confusion matrix has been created:
+%1", capture.output(k_best.nn_pca.conf.mx))
+
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
 
-  # dev.off()
-  conf.mx.chart <- plot_confusion_matrix(cvms.confusion_matrix,
-                        palette = "Greens",
-                        font_counts = font(size = font.size,
-                                           color = font.color),
-                        add_normalized = add_normalized,
-                        add_col_percentages = add_col_percentages,
-                        add_row_percentages = add_row_percentages)
-  stopCluster(cl)
-  stopImplicitCluster()
-  
+  dev.off()
+  conf.mx.chart <- plot_confusion_matrix(conf.mx,
+                                         palette = "Greens",
+                                         font_counts = font(size = font.size,
+                                                            color = font.color),
+                                         add_normalized = add_normalized,
+                                         add_col_percentages = add_col_percentages,
+                                         add_row_percentages = add_row_percentages)
   if(!is.null(export.img_file)) {
     put_log("Function `plot.confusion_matrix`: 
-Exporting the Confusion Matrix Plot object to image file...")
+Exporting the Confusion Matrix Plot object to an image file...")
     
     ggsave(filename = export.img_file, 
            plot = conf.mx.chart)
     
     put_log("Function `plot.confusion_matrix`: 
-The Confusion Matrix Plot object has been exported to the following file:
+The Confusion Matrix Plot image has been saved to the following file:
   %1", export.img_file)
   }
 
+  assign("conf_mx.chart.tmp", conf.mx.chart, envir = .GlobalEnv)
+  
+  grid::grid.newpage()
+  grid::grid.draw(ggplotGrob(conf_mx.chart.tmp))
+
+  stopCluster(cl)
+  stopImplicitCluster()
+  
+  rm(conf_mx.chart.tmp, pos = .GlobalEnv)
+  
   put_end_date(start)
-  conf.mx.chart
+  conf.mx
 }
 
 #> Greats a confusion matrix in a format suitable 

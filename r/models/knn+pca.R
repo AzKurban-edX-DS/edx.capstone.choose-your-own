@@ -25,11 +25,14 @@ knn_pca.path = file.path(models.path, "knn-pca")
 if(!dir.exists(knn_pca.path))
   dir.create(knn_pca.path)
 
-
-k.values <- seq_len(8)
-
 k1_8nn_pca.model.backup.path <-
   file.path(knn_pca.path, "k1-8nn+pca(0.1train-set).rds")
+
+knn_pca.plot_img.dir <- file.path(knn_pca.path, "plot.img")
+
+if(!dir.exists(knn_pca.plot_img.dir))
+  dir.create(knn_pca.plot_img.dir)
+
 
 if (file.exists(k1_8nn_pca.model.backup.path)) {
   put_log("Loading pre-trained `kNN+PCA MCC` Model 
@@ -49,6 +52,8 @@ if (file.exists(k1_8nn_pca.model.backup.path)) {
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
+k.values <- seq_len(8)
+
 # The model will be tuned by *k* parameter ranging from 1 to 8 on 10% size sample of the Train Set.
 
 # Reference:
@@ -308,10 +313,17 @@ knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y.test.flatten)
 put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
 %1", knn_pca.best.accuracy)
 #> [1] 0.862555675935958
+log_close()
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
+open_logfile(".k(best)nn+pca.eval-results.visualization")
+
+knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
+                                               "knn_pca.eval.confusion-matrix.png")
+
 start <- put_start_date()
+# dev.off()
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
 CURRENT_MODEL.ROC.CURVES <- plot.ROC.curves(y.test.flatten,
@@ -370,24 +382,12 @@ put_log("The following values of the BDL MCC Model Per-Class Accuracy have been 
 
 Sys.sleep(5)
 
-# Confusion Matrix data suitable for Visualization using the `cvms` package:
-# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-
-put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
-using the `cvms` package...")
-
-k_best.nn_pca.conf.mx <- create.confusion_matrix(y.test.flatten,
-                                                          k_best.nn_pca.predicted)
-
-put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(k_best.nn_pca.conf.mx))
-
-put_log("Plotting the confusion matrix, please wait...")
-k_best.nn_pca.conf.mx.chart <- plot.confusion_matrix(k_best.nn_pca.conf.mx)
-
-print(k_best.nn_pca.conf.mx.chart)
-
+put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
+please wait...")
+k_best.nn_pca.conf.mx <- 
+  plot.confusion_matrix(y.test.flatten,
+                        k_best.nn_pca.predicted,
+                        export.img_file = knn_pca.eval.conf.mx.img_file)
 put_end_date(start)
-
 log_close()
 

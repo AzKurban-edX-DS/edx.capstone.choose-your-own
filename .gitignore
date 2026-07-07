@@ -40,24 +40,16 @@ data0/
 r/support-scripts/setup0.R
 log/
 
-bak/
 bak/.venv/.lock
 bak/.venv/
 .positai
 tmp/
 r/draft/
-r/models/bak/
-r/models/cnn/bak/
-r/models/cnn/img/
 r/models/cnn/research/bak
-r/support-functions/bak/
-r/support-scripts/bsk/
 .vs/
 /r/draft/bak/bak000.zip
 /r/draft/models/knn+pca&rf.R
 /r/draft/research/data.explore.R
-/r/models/bak/knn+pca&rf.bak000.R
-/r/models/bak/knn+pca&rf.bak001.R
 /r/models/cnn/bak/cnn-binary.bak000.R
 /r/models/cnn/bak/cnn-binary.bak001.R
 /r/models/cnn/bak/cnn-binary.bak002.R
@@ -94,3 +86,4 @@ r/support-scripts/bsk/
 *.keras
 *.RDataTmp1
 r/learning/kerastuneR/kt.mnist/mnist-prj/
+r/support-scripts/setup-env/bak/

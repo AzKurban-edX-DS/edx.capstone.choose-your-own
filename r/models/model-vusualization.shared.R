@@ -4,7 +4,6 @@
 
 ## Evaluation Results: Visualization ------------------------------------------
 start <- put_start_date()
-
 put_log("Plotting ROC curves the Model Evaluation Results...")
 CURRENT_MODEL.ROC.CURVES <- plot.ROC.curves(TEST_SET.TARGETS,
                                             EVAL.PREDICTED_PROBABILITIES)
