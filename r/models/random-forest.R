@@ -98,13 +98,14 @@ and testing on the remaining 90% of the `Train Set` are as follows:
 put_end_date(start)
 # Time difference of 6.260901 hours
 
+dev.off()
 plot(fit_rf.mtry_default, 
      main = "`RF MCC` Model Pre-trained with the Default `mtry` Parameter Value")
 
 put_log("Prediction accuracy of the `RF MCC` Model,
 pre-trained with the default `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mtry_default$test$predicted == y0.9.test.flatten))
-# [1] 0.8397469
+# [1] 0.839746933643647
 
 log_close()
 
@@ -200,6 +201,7 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
   # 
   # Accuracy was used to select the optimal model using the largest value.
   # The final value used for the model was mtry = 44.
+  invisible(NULL)
 }
 put_end_date(start)
 
