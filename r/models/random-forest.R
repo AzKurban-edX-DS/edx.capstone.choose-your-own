@@ -7,7 +7,9 @@
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#random-forest
 
 # library(randomForest)
-open_logfile("x.random-forest.init")
+
+## Train `RF MCC` model with the default mtry value & ntree = 500 --------------
+open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
 
 stopifnot(exists("x0.1.train.flatten"),
           exists("y0.1.train.flatten"),
@@ -18,7 +20,7 @@ stopifnot(exists("x0.1.train.flatten"),
           exists("x.test.flatten"),
           exists("y.test.flatten"))
 
-## `Random Forest (RF) MCC` Model Initial Paths -------------------------------
+### `Random Forest (RF) MCC` Model Initial Paths *******************************
 
 models.random_forest.path <- file.path(models.path, "random-forest")
 
@@ -30,12 +32,9 @@ models.rf.tune.path = file.path(models.random_forest.path, "tune")
 if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
-## Train `RF MCC` model with the default mtry value & ntree = 500 --------------
-open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
-
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
-
+# ******************************************************************************
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry_default.backup.path)) {
@@ -172,6 +171,7 @@ with the default `mtry` parameter value, is as follows:
   #'     X 0.8821075
   #'     Y 0.8004695
   #'     Z 0.8802817
+  invisible(NULL)
 }
 
 put_log("`RF MCC` Model: Plotting bar chart of per-class accuracy...")
