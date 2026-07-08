@@ -9,14 +9,18 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-options(timeout = max(300, getOption("timeout")))
-
 ## Preparing Datasets for BDL MCC Model Tuning ---------------------------------
 open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
 # stopifnot(file.exists(my_emnist.split.file_path))
 stopifnot(exists("x3d.train_set"))
 stopifnot(exists("x3d.test_set"))
+
+# Disable the elapsed time limit for expressions
+options(timeout = max(1000, getOption("timeout")))
+options(expressions = 50000) # Increases nesting limit if needed
+
+if(!is.null(dev.list())) dev.off()
 
 str(x3d.train_set)
 str(x3d.test_set)

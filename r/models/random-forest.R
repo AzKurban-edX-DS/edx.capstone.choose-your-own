@@ -20,6 +20,12 @@ stopifnot(exists("x0.1.train.flatten"),
           exists("x.test.flatten"),
           exists("y.test.flatten"))
 
+# Disable the elapsed time limit for expressions
+options(timeout = max(1000, getOption("timeout")))
+options(expressions = 50000) # Increases nesting limit if needed
+
+if(!is.null(dev.list())) dev.off()
+
 ### `Random Forest (RF) MCC` Model Initial Paths *******************************
 
 models.random_forest.path <- file.path(models.path, "random-forest")
@@ -207,18 +213,6 @@ put_end_date(start)
 
 confusionMatrix(fit_rf.mtry_tuned)
 ggplot(fit_rf.mtry_tuned)
-
-# plot(mtry14_56, fit_rf.mtry14_56.accuracy)
-# 
-# max.idx <- which.max(fit_rf.mtry14_56.accuracy)
-# 
-# max_accuracy <- max(fit_rf.mtry14_56.accuracy)
-# max_accuracy
-# # [1] 0.88136
-# 
-# best_mtry <- mtry14_56[[max.idx]]
-# best_mtry
-# [1] 18
 
 log_close()
 

@@ -3,9 +3,6 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Disable the elapsed time limit for expressions
-options(timeout = 1000) 
-options(expressions = 50000) # Increases nesting limit if needed
-
 #> k-Nearest Neighbors with Principal Component Analysis (kNN+PCA) and 
 #> Random Forest (RF) Multiclass Classifier Models
 
@@ -23,6 +20,11 @@ stopifnot(exists("x0.1.train.flatten"),
           exists("y.train.flatten"),
           exists("x.test.flatten"),
           exists("y.test.flatten"))
+
+options(timeout = max(1000, getOption("timeout")))
+options(expressions = 50000) # Increases nesting limit if needed
+
+if(!is.null(dev.list())) dev.off()
 
 knn_pca.path = file.path(models.path, "knn-pca")
 
