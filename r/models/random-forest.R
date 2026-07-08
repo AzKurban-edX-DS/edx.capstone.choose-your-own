@@ -101,84 +101,13 @@ put_end_date(start)
 plot(fit_rf.mtry_default, 
      main = "`RF MCC` Model Pre-trained with the Default `mtry` Parameter Value")
 
-# cl <- makeCluster(N_pcCores)
-# registerDoParallel(cl)
-# 
-# dev.off()
-# plot_confusion_matrix(rf_conf.mx.mtry_default,
-#                       plot_title = caption,
-#                       palette = "Greens",
-#                       font_counts = font(size = 3,
-#                                          color = "red"),
-#                       add_normalized = FALSE,
-#                       add_col_percentages = FALSE,
-#                       add_row_percentages = FALSE)
-# stopCluster(cl)
-# stopImplicitCluster()
-
 put_log("Prediction accuracy of the `RF MCC` Model,
 pre-trained with the default `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mtry_default$test$predicted == y0.9.test.flatten))
 # [1] 0.8397469
 
-fit_rf.mtry_default.accuracy.by_class <- 
-  MCClassifier.accuracy.by_class(Y.Labels,
-                                 y0.9.test.flatten,
-                                 fit_rf.mtry_default$test$predicted)
-
-put_log("The per-class prediction accuracy of the `RF MCC` Model, pre-trained 
-with the default `mtry` parameter value, is as follows:
-%1",capture.output(fit_rf.mtry_default.accuracy.by_class))
-{
-  
-  #' class  accuracy
-  #'     # 1.0000000
-  #'     $ 1.0000000
-  #'     & 1.0000000
-  #'     @ 0.9994784
-  #'     0 0.9530516
-  #'     1 0.6966615
-  #'     2 0.7509129
-  #'     3 0.9259259
-  #'     4 0.8495044
-  #'     5 0.7996870
-  #'     6 0.8928013
-  #'     7 0.9405321
-  #'     8 0.8012520
-  #'     9 0.9183620
-  #'     A 0.7712572
-  #'     B 0.8252478
-  #'     C 0.8969744
-  #'     D 0.7793427
-  #'     E 0.8724570
-  #'     F 0.8557642
-  #'     G 0.4718310
-  #'     H 0.8510694
-  #'     I 0.6165884
-  #'     J 0.8763693
-  #'     K 0.8638498
-  #'     L 0.4783516
-  #'     M 0.9381847
-  #'     N 0.8774126
-  #'     P 0.9170579
-  #'     Q 0.5670318
-  #'     R 0.8341158
-  #'     S 0.8281168
-  #'     T 0.8286385
-  #'     U 0.8823683
-  #'     V 0.8839332
-  #'     W 0.9431403
-  #'     X 0.8821075
-  #'     Y 0.8004695
-  #'     Z 0.8802817
-  invisible(NULL)
-}
-
-put_log("`RF MCC` Model: Plotting bar chart of per-class accuracy...")
-plot_bars.accuracy.by_class(Y.Labels,
-                            fit_rf.mtry_default.accuracy.by_class,
-                            title.prefix = "Random Forest-based (default `mtry`) Multiclass")
 log_close()
+
 ## Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
 open_logfile(".x0.1.train.flatten.fit_rf.tune_mtry")
