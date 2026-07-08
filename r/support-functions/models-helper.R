@@ -631,11 +631,16 @@ suitable for visualization using the `cvms` package...")
 The confusion matrix has been created:
 %1", capture.output(k_best.nn_pca.conf.mx))
 
+  # Clear any stuck graphics devices
+  graphics.off() 
+  
+  # Open a clean external window (use windows() on Windows, x11() on Linux/Mac)
+  dev.new()
+  
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
 
-  dev.off()
   conf.mx.chart <- plot_confusion_matrix(conf.mx,
                                          palette = "Greens",
                                          font_counts = font(size = font.size,

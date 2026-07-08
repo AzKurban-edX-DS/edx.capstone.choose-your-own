@@ -2,6 +2,10 @@
 # kNN+PCA Multiclass Classifier (MCC) Model 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+# Disable the elapsed time limit for expressions
+options(timeout = 1000) 
+options(expressions = 50000) # Increases nesting limit if needed
+
 #> k-Nearest Neighbors with Principal Component Analysis (kNN+PCA) and 
 #> Random Forest (RF) Multiclass Classifier Models
 
@@ -323,10 +327,9 @@ knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
                                                "knn_pca.eval.confusion-matrix.png")
 
 start <- put_start_date()
-# dev.off()
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
-CURRENT_MODEL.ROC.CURVES <- plot.ROC.curves(y.test.flatten,
+Cknn_pca.eval.roc_curves <- plot.ROC.curves(y.test.flatten,
                                             k_best.nn_pca.probs)
 Sys.sleep(6)
 
@@ -384,6 +387,9 @@ Sys.sleep(5)
 
 put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
 please wait...")
+
+# if(!is.null(dev.list())) dev.off()
+
 k_best.nn_pca.conf.mx <- 
   plot.confusion_matrix(y.test.flatten,
                         k_best.nn_pca.predicted,
