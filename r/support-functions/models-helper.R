@@ -631,12 +631,16 @@ suitable for visualization using the `cvms` package...")
 The confusion matrix has been created:
 %1", capture.output(k_best.nn_pca.conf.mx))
 
-  # Clear any stuck graphics devices
-  graphics.off() 
+  # # Clear any stuck graphics devices
+  # graphics.off() 
+  # 
+  # # Open a clean external window (use windows() on Windows, x11() on Linux/Mac)
+  # dev.new()
   
-  # Open a clean external window (use windows() on Windows, x11() on Linux/Mac)
-  dev.new()
-  
+  while(!is.null(dev.list())) dev.off()
+  # gc()
+  # Sys.sleep(6)
+
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
@@ -672,6 +676,11 @@ The Confusion Matrix Plot image has been saved to the following file:
   
   put_end_date(start)
   conf.mx
+}
+
+print_confusioin_matrix <- function(confusion_matrix.plot) {
+  while(!is.null(dev.list())) dev.off()
+  print(confusion_matrix.plot)
 }
 
 #> Greats a confusion matrix in a format suitable 

@@ -24,7 +24,8 @@ stopifnot(exists("x0.1.train.flatten"),
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit if needed
 
-if(!is.null(dev.list())) dev.off()
+# if(!is.null(dev.list())) dev.off()
+graphics.off()
 
 knn_pca.path = file.path(models.path, "knn-pca")
 
@@ -329,6 +330,8 @@ knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
                                                "knn_pca.eval.confusion-matrix.png")
 
 start <- put_start_date()
+while(!is.null(dev.list())) dev.off()
+gc()
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
 Cknn_pca.eval.roc_curves <- plot.ROC.curves(y.test.flatten,
@@ -390,12 +393,26 @@ Sys.sleep(5)
 put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
 please wait...")
 
-# if(!is.null(dev.list())) dev.off()
+while(!is.null(dev.list())) dev.off()
+gc()
+# Sys.sleep(6)
+# 1
+# Sys.sleep(1)
+# 2
+# Sys.sleep(1)
+# 3
+# Sys.sleep(1)
+# 4
+# Sys.sleep(1)
+# 5
+# Sys.sleep(1)
 
 k_best.nn_pca.conf.mx <- 
   plot.confusion_matrix(y.test.flatten,
                         k_best.nn_pca.predicted,
                         export.img_file = knn_pca.eval.conf.mx.img_file)
+
+# print_confusioin_matrix(conf.mx.chart)
 put_end_date(start)
 log_close()
 

@@ -24,7 +24,8 @@ stopifnot(exists("x0.1.train.flatten"),
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit if needed
 
-if(!is.null(dev.list())) dev.off()
+#if(!is.null(dev.list())) dev.off()
+graphics.off()
 
 ### `Random Forest (RF) MCC` Model Initial Paths *******************************
 
