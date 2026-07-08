@@ -13,10 +13,6 @@ stopifnot(dir.exists(support_scripts.path))
 setup_script.file_path <- file.path(support_scripts.path, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
-shared_visualization.script.path <- file.path(models_script.path, "model-vusualization.shared.R")
-stopifnot(file.exists(shared_visualization.script.path))
-
-
 source(setup_script.file_path, 
        catch.aborts = TRUE,
        echo = TRUE,
@@ -393,12 +389,24 @@ put_log("The Test Set is balanced by set of Classes:
 rm(ds_flatten.split_list)
 log_close()
 
-## Build kNN+PCA & Random Forest Models ----------------------------------------
+## Build kNN+PCA Model ---------------------------------------------------------
 
-knn_pca.rf.script.path <- file.path(models_script.path, "knn+pca&rf.R")
-stopifnot(file.exists(knn_pca.rf.script.path))
+knn_pca.script.path <- file.path(models_script.path, "knn+pca.R")
+stopifnot(file.exists(knn_pca.script.path))
 
-source(knn_pca.rf.script.path, 
+source(knn_pca.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+## Build Random Forest Model --------------------------------------------------
+
+random_forest.script.path <- file.path(models_script.path, "random-forest.R")
+stopifnot(file.exists(random_forest.script.path))
+
+source(random_forest.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
