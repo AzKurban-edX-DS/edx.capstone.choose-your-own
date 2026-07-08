@@ -87,3 +87,7 @@ r/models/cnn/research/bak
 *.RDataTmp1
 r/learning/kerastuneR/kt.mnist/mnist-prj/
 r/support-scripts/setup-env/bak/
+r/models/cnn/bak/tmp.R
+r/models/bak/tmp.R
+r/support-functions/bak/tmp.R
+r/support-scripts/bsk/tmp.R
