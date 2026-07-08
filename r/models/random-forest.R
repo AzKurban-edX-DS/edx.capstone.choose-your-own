@@ -7,6 +7,16 @@
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#random-forest
 
 # library(randomForest)
+open_logfile("x.random-forest.init")
+
+stopifnot(exists("x0.1.train.flatten"),
+          exists("y0.1.train.flatten"),
+          exists("x0.9.test.flatten"),
+          exists("y0.9.test.flatten"),
+          exists("x.train.flatten"),
+          exists("y.train.flatten"),
+          exists("x.test.flatten"),
+          exists("y.test.flatten"))
 
 ## `Random Forest (RF) MCC` Model Initial Paths -------------------------------
 
@@ -515,15 +525,6 @@ log_close()
 
 ## Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
 open_logfile("x.train.flatten.fit_rf.mtry_best.ntree400")
-
-stopifnot(exists("x0.1.train.flatten"),
-          exists("y0.1.train.flatten"),
-          exists("x0.9.test.flatten"),
-          exists("y0.9.test.flatten"),
-          exists("x.train.flatten"),
-          exists("y.train.flatten"),
-          exists("x.test.flatten"),
-          exists("y.test.flatten"))
 
 fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path, 
                                            "fit_rf.mtry_best.ntree400.back.rds")
