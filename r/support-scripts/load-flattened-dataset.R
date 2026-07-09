@@ -109,7 +109,7 @@ print(y.chars, n = length(y.chars$classID))
 ###
 
 ## Split the Flatten Dataset into a Train & Test Sets with 20% Test Ratio ------
-my_emnist.split.file_path <- file.path(train.data.path, "my_emnist.20%test-split.rds")
+my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
 
 
 put_log("Splitting the Flattened Training Dataset into a Train and Test Sets with 20% Test Ratio...")
@@ -129,7 +129,7 @@ put_log("The backup copy of a split dataset has been saved in the following file
 %1", my_emnist.split.file_path)
 
 ## Split the Dataset into Sets with 90% Test Ratio (10% for Train Set) ---------
-my_emnist.0.1split.file_path <- file.path(train.data.path, "my_emnist-split(10%train-set).rds")
+my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
 
 put_log("Splitting the Flattened Training Dataset into a Train and Test Sets 
 with 90% Test Ratio (10% for Train Set)...")

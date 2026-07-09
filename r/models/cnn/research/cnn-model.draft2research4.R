@@ -13,17 +13,17 @@ image(lbl.img.flat_ls[1:400,])
 #### Init CNN Directories -------------------------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
-data.cnn.binary.models.dir <- file.path(cnn.train.data.path, "lbl-models")
+data.cnn.binary.models.dir <- file.path(cnn.train.data.dir, "lbl-models")
 
 if(!dir.exists(data.cnn.binary.models.dir))
   dir.create(data.cnn.binary.models.dir)
 
-cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
+cnn.eval.cache.path <- file.path(cnn.train.data.dir, "evaluation")
 
 if(!dir.exists(cnn.eval.cache.path))
   dir.create(cnn.eval.cache.path)
 
-cnn.callbacks.path <- file.path(cnn.train.data.path, "callbacks")
+cnn.callbacks.path <- file.path(cnn.train.data.dir, "callbacks")
 
 if(!dir.exists(cnn.callbacks.path))
   dir.create(cnn.callbacks.path)
@@ -44,7 +44,7 @@ cnn.callbacks.checkpoints.path <- file.path(cnn.callbacks.path, "checkpoints")
 if(!dir.exists(cnn.callbacks.checkpoints.path))
   dir.create(cnn.callbacks.checkpoints.path)
 
-cnn_binary.ensemble.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-models.ensemble.RData")
+cnn_binary.ensemble.backup.path <- file.path(cnn.train.data.dir,"cnn.lbl-models.ensemble.RData")
 cnn_binary.ensemble.backup.path
 
 #### Define a few parameters to be used in the CNN model --------------------------
@@ -61,7 +61,7 @@ open_logfile(".build-cnn-model")
 
 ##### Define a CNN model structure ***
 
-hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.rds") 
+hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.dir,"cnn.lbl-model.list.rds") 
 hwChar.CNN.binCls.models.backup.path
 
 cnn.lbl_model_file.base_name <- "cnn.lbl-model"
@@ -254,7 +254,7 @@ log_close()
 open_logfile(".evaluate-cnn-model")
 #### Evaluating CNN Model ----------------------------------------------
 
-cnn_models.eval.cache_file.path <- file.path(cnn.train.data.path,
+cnn_models.eval.cache_file.path <- file.path(cnn.train.data.dir,
                                              "cnn.lbl-models.evaluation.RData")
 cnn_models.eval.cache_file.path
 

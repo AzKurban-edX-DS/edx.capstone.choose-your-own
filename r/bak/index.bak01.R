@@ -4,13 +4,13 @@
 
 ## Setup -----------------------------------------------------------------------
 
-scripts.path <- "r"
-stopifnot(dir.exists(scripts.path))
+r_scripts.dir <- "r"
+stopifnot(dir.exists(r_scripts.dir))
 
-support_scripts.path <-  file.path(scripts.path, "support-scripts")
-stopifnot(dir.exists(support_scripts.path))
+support_scripts.dir <-  file.path(r_scripts.dir, "support-scripts")
+stopifnot(dir.exists(support_scripts.dir))
 
-setup_script.file_path <- file.path(support_scripts.path, "setup.R")
+setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
 source(setup_script.file_path, 
@@ -21,7 +21,7 @@ source(setup_script.file_path,
        keep.source = TRUE)
 
 ## Prepare Input Datasets ------------------------------------------------------
-prepare_ds.script.path <- file.path(support_scripts.path, "prepare-input-data.R")
+prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 
 source(prepare_ds.script.path, 
@@ -32,7 +32,7 @@ source(prepare_ds.script.path,
        keep.source = TRUE)
 
 ### Prepare Flatten Datasets ---------------------------------------------------
-ds.load_flatten.script.path <- file.path(support_scripts.path, 
+ds.load_flatten.script.path <- file.path(support_scripts.dir, 
                                          "load-flattened-dataset.R")
 
 stopifnot(file.exists(ds.load_flatten.script.path))
@@ -416,13 +416,13 @@ source(random_forest.script.path,
 
 ## Basic Deep Learning Model --------------------------------------------------
 
-dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
+dl_basic.r_scripts.dir <- file.path(models_script.path, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
 dir.create(dl.keras3.path)
 
-stopifnot(file.exists(dl_basic.scripts.path))
+stopifnot(file.exists(dl_basic.r_scripts.dir))
 
-source(dl_basic.scripts.path, 
+source(dl_basic.r_scripts.dir, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -444,11 +444,11 @@ if(!dir.exists(data.dl.cnn.dir))
 
 open_logfile(".ds.prepare.train&test.balanced_sets")
 
-cnn_multiclass.script.path <- file.path(models.cnn_script.path, 
+cnn_multiclass.script.path <- file.path(models.cnn_scripts.dir, 
                                          "cnn-multiclass.R")
 stopifnot(file.exists(cnn_multiclass.script.path))
 
-cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
+cnn_multiclass.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
                                                    "cnn-multiclass.evaluation.R")
 stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
 
@@ -503,8 +503,8 @@ source(cnn_multiclass.evaluation.script.path,
 
 ### CNN-based Binary Classifier Models -----------------------------------------
 
-cnn_binary.scripts.path <- file.path(models.cnn_script.path, "cnn-binary.R")
-stopifnot(file.exists(cnn_binary.scripts.path))
+cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
+stopifnot(file.exists(cnn_binary.r_scripts.dir))
 
 data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
 
@@ -527,7 +527,7 @@ data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir,
 if(!dir.exists(data.cnn.binary.models.evaluation.dir))
   dir.create(data.cnn.binary.models.evaluation.dir)
 
-source(cnn_binary.scripts.path, 
+source(cnn_binary.r_scripts.dir, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -577,7 +577,7 @@ log_close()
 
 ### Final Testing of CNN BCC-Based Ensemble ------------------------------------
 
-cnn_binary.ensemble.script.path <- file.path(models.cnn_script.path, 
+cnn_binary.ensemble.script.path <- file.path(models.cnn_scripts.dir, 
                                               "cnn-binary.ensemble.R")
 stopifnot(file.exists(cnn_binary.ensemble.script.path))
 

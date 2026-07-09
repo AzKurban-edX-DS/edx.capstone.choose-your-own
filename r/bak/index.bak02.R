@@ -81,6 +81,145 @@ source(ds.load_flatten.script.path,
 
 
 ## Prepare Flattened Datasets --------------------------------------------------
+### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+
+#### Preparing Train Balanced Sample -------------------------------------------
+
+ds0.1.fl <- list()
+
+ds.fl$x0.1.train <- ds.flattened.0.1split_list$train_set$x.train
+
+ds.fl$y0.1.train.groups <- ds.get_classIDs.grouped(ds.fl$x0.1.train)
+ds.fl$y0.1.train <- ds.fl$y0.1.train.groups$classID
+
+stopifnot(sum(as.character(ds.fl$y0.1.train) != rownames(ds.fl$x0.1.train)) == 0)
+
+str(ds.fl$x0.1.train)
+dim(ds.fl$x0.1.train)
+#> [1] 16653   784
+
+str(ds.fl$y0.1.train)
+
+stopifnot(nrow(ds.fl$x0.1.train) == length(ds.fl$y0.1.train))
+
+##### View of the Train Set Grouped by Class ------------------------------------
+put_log("The Train Set is balanced by set of Classes:
+%1", capture.output(print(ds.fl$y0.1.train.groups$groupByClass, n = N.classes)))
+{  
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425
+}
+
+#### Preparing Test Balanced Sample ---------------------------------------------
+
+ds.fl$x0.9.test <- ds.flattened.0.1split_list$test_set$x.test
+ds.fl$x0.9.test.files <- ds.flattened.0.1split_list$test_set$x.files
+
+ds.fl$y0.9.test.groups <- ds.get_classIDs.grouped(ds.fl$x0.9.test)
+ds.fl$y0.9.test <- ds.fl$y0.9.test.groups$classID
+
+stopifnot(sum(as.character(ds.fl$y0.9.test) != rownames(ds.fl$x0.9.test)) == 0)
+
+str(ds.fl$x0.9.test)
+dim(ds.fl$x0.9.test)
+# [1] 149526    784
+
+str(ds.fl$y0.9.test)
+
+stopifnot(nrow(ds.fl$x0.9.test) == length(ds.fl$y0.9.test))
+#> [1] 149526
+
+##### View of the Test Set Grouped by Class -------------------------------------
+put_log("The Test Set is balanced by set of Classes:
+%1", capture.output(print(ds.fl$y0.9.test.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         852
+  #  2 $         852
+  #  3 &         852
+  #  4 @         852
+  #  5 0         852
+  #  6 1         852
+  #  7 2         852
+  #  8 3         852
+  #  9 4         852
+  # 10 5         852
+  # 11 6         852
+  # 12 7         852
+  # 13 8         852
+  # 14 9         852
+  # 15 A         852
+  # 16 B         852
+  # 17 C         852
+  # 18 D         852
+  # 19 E         852
+  # 20 F         852
+  # 21 G         852
+  # 22 H         852
+  # 23 I         852
+  # 24 J         852
+  # 25 K         852
+  # 26 L         852
+  # 27 M         852
+  # 28 N         852
+  # 29 P         852
+  # 30 Q         852
+  # 31 R         852
+  # 32 S         852
+  # 33 T         852
+  # 34 U         852
+  # 35 V         852
+  # 36 W         852
+  # 37 X         852
+  # 38 Y         852
+  # 39 Z         852  
+}
+
+#### Finalize Preparing Datasets ------------------------------------------------
+rm(ds.flattened.0.1split_list)
+log_close()
 
 ### Loading Split Flattened Dataset allocated 20% for the Test set (default) ----
 
@@ -238,12 +377,10 @@ log_close()
 
 ## Build & Tune kNN+PCA Model ---------------------------------------------------------
 
-knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
-                                 "1.knn+pca.build&tune.R")
+knn_pca.script.path <- file.path(model_scripts.dir, "knn+pca.build&tune.R")
+stopifnot(file.exists(knn_pca.script.path))
 
-stopifnot(file.exists(knn_pca.tune.script.path))
-
-source(knn_pca.tune.script.path, 
+source(knn_pca.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -251,12 +388,12 @@ source(knn_pca.tune.script.path,
        keep.source = TRUE)
 
 ## Re-Train kNN+PCA Model with the Best `k` Value ------------------------------
-knn_pca.retrain.best_k.script.path <- file.path(models.knn_pca_scripts.dir, 
-                                                "2.knn+pca.re-train.best-k.R")
+knn_pca.scripts.dir <- file.path(model_scripts.dir, "")
 
-stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
+knn_pca.script.path <- file.path(model_scripts.dir, "knn+pca.re-train.best-k.R")
+stopifnot(file.exists(knn_pca.script.path))
 
-source(knn_pca.retrain.best_k.script.path, 
+source(knn_pca.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -265,9 +402,7 @@ source(knn_pca.retrain.best_k.script.path,
 
 ## Build Random Forest Model --------------------------------------------------
 
-random_forest.script.path <- file.path(models.rf_scripts.dir, 
-                                       "random-forest.R")
-
+random_forest.script.path <- file.path(model_scripts.dir, "random-forest.R")
 stopifnot(file.exists(random_forest.script.path))
 
 source(random_forest.script.path, 
@@ -280,20 +415,13 @@ source(random_forest.script.path,
 
 ## Basic Deep Learning Model --------------------------------------------------
 
-dl_basic.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.R")
-stopifnot(file.exists(dl_basic.script.path))
+dl_basic.r_scripts.dir <- file.path(model_scripts.dir, "dl-basic.R")
+dl.keras3.path <- file.path(models.path, "dl.keras3")
+dir.create(dl.keras3.path)
 
-source(dl_basic.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+stopifnot(file.exists(dl_basic.r_scripts.dir))
 
-dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.tuner.R")
-stopifnot(file.exists(dl_basic.tuner.script.path))
-
-source(dl_basic.tuner.script.path, 
+source(dl_basic.r_scripts.dir, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -303,7 +431,7 @@ source(dl_basic.tuner.script.path,
 ## CNN-Based Classifier Models -------------------------------------------------
 
 ### Initial Paths --------------------------------------------------------------
-data.dl.cnn.dir <- file.path(dl.keras3.dir, "cnn")
+data.dl.cnn.dir <- file.path(dl.keras3.path, "cnn")
 
 if(!dir.exists(data.dl.cnn.dir))
   dir.create(data.dl.cnn.dir)

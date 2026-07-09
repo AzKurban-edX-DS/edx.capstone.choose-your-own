@@ -86,10 +86,7 @@ log_close()
 
 open_logfile(".dl.basic-model.build")
 
-if(!dir.exists(dl.keras3.path))
-  dir.create(dl.keras3.path)
-
-dl.basic.dir_path <- file.path(dl.keras3.path, "dl.basic")
+dl.basic.dir_path <- file.path(dl.keras3.dir, "dl.basic")
 
 if(!dir.exists(dl.basic.dir_path))
   dir.create(dl.basic.dir_path)

@@ -20,7 +20,7 @@ stopifnot(exists("x0.1.train.flatten"),
           exists("y.test.flatten"))
 
 ### `kNN+PCA MCC` Model Initial Paths -----------------------------------------------------
-knn_pca.path = file.path(models.path, "knn-pca")
+knn_pca.path = file.path(models_data.dir, "knn-pca")
 
 if(!dir.exists(knn_pca.path))
   dir.create(knn_pca.path)
@@ -447,7 +447,7 @@ log_close()
 
 ### `Random Forest (RF) MCC` Model Initial Paths -------------------------------
 
-models.random_forest.path <- file.path(models.path, "random-forest")
+models.random_forest.path <- file.path(models_data.dir, "random-forest")
 
 if(!dir.exists(models.random_forest.path))
   dir.create(models.random_forest.path)

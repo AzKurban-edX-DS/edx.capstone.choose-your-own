@@ -3,18 +3,18 @@
 #%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Data loading ----------------------------------------------------------------
-kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
+kaggle_cli.download <- function(dataset.dir, data.local_path, unzip = FALSE) {
   if (system("kaggle --version", ignore.stdout = TRUE, ignore.stderr = TRUE) != 0) {
     stop("Kaggle CLI is not installed or not in the PATH.")
   }
   
   if (system(trimws(paste("kaggle datasets download", kaggle_dataset, "--path", 
                           data.local_path, ifelse(unzip, "--unzip", "")))) != 0) {
-    stop(str.build("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.path))
+    stop(str.build("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.dir))
   }
   
   if(!dir.exists(data.local_path)) {
-    stop(str.build("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.path))
+    stop(str.build("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.dir))
   }
 }
 

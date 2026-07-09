@@ -46,12 +46,12 @@ r.path <- "r"
 # support_scripts.folder <- "support-scripts"
 support_functions.folder <- "support-functions"
 
-# support_scripts.path <- file.path(r.src.path, support_scripts.folder)
-support_functions.path <- file.path(r.path, support_functions.folder)
+# support_scripts.dir <- file.path(r.src.path, support_scripts.folder)
+support_functions.dir <- file.path(r.path, support_functions.folder)
 
 
 ### Define Logging Functions ---------------------------------------------------
-log_func_script.file_path <- file.path(support_functions.path, "logging-functions.R")
+log_func_script.file_path <- file.path(support_functions.dir, "logging-functions.R")
 
 source(log_func_script.file_path, 
        catch.aborts = TRUE,

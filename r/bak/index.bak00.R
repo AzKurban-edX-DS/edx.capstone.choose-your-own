@@ -6,56 +6,56 @@ Main (Index) Script
 # r.path <- "r"
 # draft_scripts.path <- file.path(r.path, "draft")
 # support_scripts.folder <- "support-scripts"
-# support_scripts.path <-  file.path(r.path, support_scripts.folder)
+# support_scripts.dir <-  file.path(r.path, support_scripts.folder)
 
-support_scripts.path <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
-stopifnot(dir.exists(support_scripts.path))
+support_scripts.dir <-  "r/support-scripts"# file.path(r.path, support_scripts.folder)
+stopifnot(dir.exists(support_scripts.dir))
 
-scripts.path <- "r"
-stopifnot(dir.exists(scripts.path))
+r_scripts.dir <- "r"
+stopifnot(dir.exists(r_scripts.dir))
 
-model_scripts.dir <- file.path(scripts.path, "models")
+model_scripts.dir <- file.path(r_scripts.dir, "models")
 stopifnot(dir.exists(model_scripts.dir))
 model_scripts.dir
 
-models.cnn_script.path <- file.path(model_scripts.dir, "cnn")
+models.cnn_scripts.dir <- file.path(model_scripts.dir, "cnn")
 stopifnot(dir.exists(model_scripts.dir))
-models.cnn_script.path
+models.cnn_scripts.dir
 
 support_functions.folder <- "support-functions"
 
-support_functions.path <- file.path(r.path, support_functions.folder)
-stopifnot(dir.exists(support_functions.path))
+support_functions.dir <- file.path(r.path, support_functions.folder)
+stopifnot(dir.exists(support_functions.dir))
 
-setup_script.file_path <- file.path(support_scripts.path, "setup.R")
+setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 
-data.path <- "data"
-raw_data.path <- file.path(data.path, "raw")
-raw_data.path
+data.dir <- "data"
+raw_data.dir <- file.path(data.dir, "raw")
+raw_data.dir
 
 raw_data.folder_name <- "Vaibs.HW-Chars"
-raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
-raw_data.chars.path
+raw_data.chars.dir <- file.path(raw_data.dir, raw_data.folder_name)
+raw_data.chars.dir
 
-img.train.root_path <- file.path(raw_data.chars.path, "Train")
-img.train.root_path
+img.train_root.dir <- file.path(raw_data.chars.dir, "Train")
+img.train_root.dir
 
-img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
-img.validation.root_path
+img.validation_root.dir <- file.path(raw_data.chars.dir, "Validation")
+img.validation_root.dir
 
-dataset.path <- file.path(data.path, "dataset")
-dir.create(dataset.path)
-dataset.path
+dataset.dir <- file.path(data.dir, "dataset")
+dir.create(dataset.dir)
+dataset.dir
 
-train.data.path <- file.path(dataset.path, "train")
-dir.create(train.data.path)
-train.data.path
+train.data.dir <- file.path(dataset.dir, "train")
+dir.create(train.data.dir)
+train.data.dir
 
-final_test.data.path <- file.path(dataset.path, "final_test")
-dir.create(final_test.data.path)
-final_test.data.path
+final_test.data.dir <- file.path(dataset.dir, "final_test")
+dir.create(final_test.data.dir)
+final_test.data.dir
 
-models.path <- file.path(data.path, "models")
+models.path <- file.path(data.dir, "models")
 dir.create(models.path)
 models.path
 
@@ -69,7 +69,7 @@ source(setup_script.file_path,
 
 
 ### Deep Learning Models-related paths ----------------------------------------
-dl_basic.scripts.path <- file.path(model_scripts.dir, "dl-basic.R")
+dl_basic.r_scripts.dir <- file.path(model_scripts.dir, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
 dir.create(dl.keras3.path)
 
@@ -84,11 +84,11 @@ if(!dir.exists(data.dl.cnn.dir))
 ##### CNN-Based Multiclass Classifier Model Directories ------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
-cnn_multiclass.script.path <- file.path(models.cnn_script.path, 
+cnn_multiclass.script.path <- file.path(models.cnn_scripts.dir, 
                                          "cnn-multiclass.R")
 stopifnot(file.exists(cnn_multiclass.script.path))
 
-cnn_multiclass.evaluation.script.path <- file.path(models.cnn_script.path, 
+cnn_multiclass.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
                                                    "cnn-multiclass.evaluation.R")
 stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
 
@@ -104,8 +104,8 @@ if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
 
 
 ##### CNN-Based Binary Models Directories -----------------------------------
-cnn_binary.scripts.path <- file.path(models.cnn_script.path, "cnn-binary.R")
-stopifnot(file.exists(cnn_binary.scripts.path))
+cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
+stopifnot(file.exists(cnn_binary.r_scripts.dir))
 
 data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
 
@@ -129,7 +129,7 @@ if(!dir.exists(data.cnn.binary.models.evaluation.dir))
   dir.create(data.cnn.binary.models.evaluation.dir)
 
 ## Prepare Input Datasets ------------------------------------------------------
-prepare_ds.script.path <- file.path(support_scripts.path, "prepare-input-data.R")
+prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 
 source(prepare_ds.script.path, 
@@ -140,7 +140,7 @@ source(prepare_ds.script.path,
        keep.source = TRUE)
 
 ## Load Flatten Dataset --------------------------------------------------------
-ds.load_flatten.script.path <- file.path(support_scripts.path, 
+ds.load_flatten.script.path <- file.path(support_scripts.dir, 
                                          "load-flattened-dataset.R")
 
 stopifnot(file.exists(ds.load_flatten.script.path))
@@ -166,9 +166,9 @@ source(knn_pca.rf.script.path,
 
 
 ## Basic Deep Learning Model --------------------------------------------------
-stopifnot(file.exists(dl_basic.scripts.path))
+stopifnot(file.exists(dl_basic.r_scripts.dir))
 
-source(dl_basic.scripts.path, 
+source(dl_basic.r_scripts.dir, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -232,7 +232,7 @@ source(cnn_multiclass.evaluation.script.path,
 
 ## CNN-based Binary Classifier Models ------------------------------------------
 ## Build & Train a CNN-based Binary Classifier Models --------------------------
-source(cnn_binary.scripts.path, 
+source(cnn_binary.r_scripts.dir, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -289,17 +289,17 @@ source(cnn_multiclass.evaluation.script.path,
 
 ## Ensemble based on CNN-based Binary Classifier Models ------------------------
 ### Init CNN-Based Ensemble Model Directories ----------------------------------
-cnn_binary.ensemble.scripts.path <- file.path(models.cnn_script.path, 
+cnn_binary.ensemble.r_scripts.dir <- file.path(models.cnn_scripts.dir, 
                                               "cnn-binary.ensemble.R")
-stopifnot(file.exists(cnn_binary.ensemble.scripts.path))
-cnn_binary.ensemble.scripts.path
+stopifnot(file.exists(cnn_binary.ensemble.r_scripts.dir))
+cnn_binary.ensemble.r_scripts.dir
 
-cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,
+cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.dir,
                                                  "cnn.lbl-models.ensemble.RData")
 cnn_models.ensemble.cache_file.path
 
 ### Final Test for CNN-Based Ensemble Model ------------------------------------
-source(cnn_binary.ensemble.scripts.path, 
+source(cnn_binary.ensemble.r_scripts.dir, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

@@ -209,10 +209,10 @@ open_logfile(paste0(".dl-basic-model.tuning_",
 
 ### Init the Model Tuner Paths --------------------------------------------
 
-if(!dir.exists(dl.keras3.path))
-  dir.create(dl.keras3.path)
+if(!dir.exists(dl.keras3.dir))
+  dir.create(dl.keras3.dir)
 
-dl.basic.dir_path <- file.path(dl.keras3.path, "dl.basic")
+dl.basic.dir_path <- file.path(dl.keras3.dir, "dl.basic")
 
 if(!dir.exists(dl.basic.dir_path))
   dir.create(dl.basic.dir_path)

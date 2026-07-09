@@ -29,7 +29,7 @@ graphics.off()
 
 ### RF MCC Model Initial Paths -------------------------------------------------
 
-models.random_forest.path <- file.path(models.path, "random-forest")
+models.random_forest.path <- file.path(models_data.dir, "random-forest")
 
 if(!dir.exists(models.random_forest.path))
   dir.create(models.random_forest.path)

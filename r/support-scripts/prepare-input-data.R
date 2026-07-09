@@ -13,22 +13,22 @@ kaggle_dataset <- "vaibhao/handwritten-characters"
 open_logfile(".download-kaggle-dataset")
 start.download <- put_start_date()
 
-if(!dir.exists(raw_data.chars.path)) {
+if(!dir.exists(raw_data.chars.dir)) {
   print_log1("Downloading dataset `%1` ...", kaggle_dataset)
-  kaggle_cli.download(kaggle_dataset, raw_data.chars.path, unzip = TRUE)
+  kaggle_cli.download(kaggle_dataset, raw_data.chars.dir, unzip = TRUE)
   print_log1("The Kaggle image files have been downloaded 
 and unziped to the following directory: 
-`%1`", raw_data.chars.path)
+`%1`", raw_data.chars.dir)
 } else {
   warning(str.build("The Kaggle image files have already been downloaded 
 and saved to the following directory: 
 `%1`.
 If you need to rerun the download, delete the root folder and rerun this script.", 
-                   raw_data.chars.path))
+                   raw_data.chars.dir))
 }
 
 # Remove duplicate files:
-dir.to_remove <- file.path(raw_data.chars.path, "dataset")
+dir.to_remove <- file.path(raw_data.chars.dir, "dataset")
 dir.to_remove
 
 if (dir.exists(dir.to_remove)) {
@@ -47,30 +47,30 @@ log_close()
 
 ## Init Backup File Path -------------------------------------
 
-classifier.label_list.file_path <- file.path(dataset.path, "classifier.label-list.rds")
+classifier.label_list.file_path <- file.path(dataset.dir, "classifier.label-list.rds")
 classifier.label_list.file_path
 
 ### Init Train Backup File Paths ----------------------------------------------
-train.img28x28bin.list.file_path <- file.path(train.data.path, "train.img28x28bin.list.rds")
+train.img28x28bin.list.file_path <- file.path(train.data.dir, "train.img28x28bin.list.rds")
 train.img28x28bin.list.file_path
 
-train.img28x28mx.list.file_path <- file.path(train.data.path, "train.img28x28mx.list.rds")
+train.img28x28mx.list.file_path <- file.path(train.data.dir, "train.img28x28mx.list.rds")
 train.img28x28mx.list.file_path
 
-train.img28x28mx.array.file_path <- file.path(train.data.path, "train.img28x28mx.array.rds")
+train.img28x28mx.array.file_path <- file.path(train.data.dir, "train.img28x28mx.array.rds")
 train.img28x28mx.array.file_path
 
-my_emnist.file_path <- file.path(train.data.path, "my_emnist.rds")
+my_emnist.file_path <- file.path(train.data.dir, "my_emnist.rds")
 my_emnist.file_path
 
 ### Init Final Test Backup File Paths -----------------------------------------
-final_test.img28x28bin.list.file_path <- file.path(final_test.data.path, "final_test.img28x28bin.list.rds")
+final_test.img28x28bin.list.file_path <- file.path(final_test.data.dir, "final_test.img28x28bin.list.rds")
 final_test.img28x28bin.list.file_path
 
-final_test.img28x28mx.list.file_path <- file.path(final_test.data.path, "final_test.img28x28mx.list.rds")
+final_test.img28x28mx.list.file_path <- file.path(final_test.data.dir, "final_test.img28x28mx.list.rds")
 final_test.img28x28mx.list.file_path
 
-final_test.img28x28mx.array.file_path <- file.path(final_test.data.path, "final_test.img28x28mx.array.rds")
+final_test.img28x28mx.array.file_path <- file.path(final_test.data.dir, "final_test.img28x28mx.array.rds")
 final_test.img28x28mx.array.file_path
 
 ## Prepare Train Data ------------------------------------------------------------
@@ -81,9 +81,9 @@ start <- put_start_date()
 if (!file.exists(train.img28x28bin.list.file_path)) {
   put_log("Creating a Binary Image 28x28 list from the raw data files 
 stored in the following root directory: %1,
-Please wait...", img.train.root_path)
+Please wait...", img.train_root.dir)
   #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  img28x28bin.list <- img.load.bin28x28mx.list(img.train.root_path)
+  img28x28bin.list <- img.load.bin28x28mx.list(img.train_root.dir)
   
   put_log("The Binary Image 28x28 list has been created with the following structure:
 %1", capture.output(str(img28x28bin.list)))
@@ -282,9 +282,9 @@ start <- put_start_date()
 if (!file.exists(final_test.img28x28bin.list.file_path)) {
   put_log("Creating the Final Test Binary Image 28x28 list from the raw data files 
 stored in the following root directory: %1,
-Please wait...", img.validation.root_path)
+Please wait...", img.validation_root.dir)
   #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  ft.img28x28bin.list <- img.load.bin28x28mx.list(img.validation.root_path)
+  ft.img28x28bin.list <- img.load.bin28x28mx.list(img.validation_root.dir)
   put_end_date(start)
   
   put_log("The Final Test Binary Image 28x28 list has been created with the following structure:

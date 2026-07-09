@@ -1,5 +1,9 @@
-# Setup -----------------------------------------------------------------------
-options(timeout = max(300, getOption("timeout")))
+# %%%%%########%
+# Project Setup
+# %%%%%########%
+
+options(timeout = max(1000, getOption("timeout")))
+options(expressions = 50000) # Increases nesting limit
 
 ## Install Packages ------------------------------------------------------------
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
@@ -157,53 +161,115 @@ N_pcCores
 n.img_rows <- 28
 n.img_cols <- 28
 
-## Init Project Paths ----------------------------------------------------------
+## Init Project Directories ----------------------------------------------------
 
-model_scripts.dir <- file.path(scripts.path, "models")
+put_log("Root directory for the `R` scripts:
+%1", r_scripts.dir)
+
+put_log("Root directory for the support scripts:
+%1", support_scripts.dir)
+
+model_scripts.dir <- file.path(r_scripts.dir, "models")
 stopifnot(dir.exists(model_scripts.dir))
-model_scripts.dir
 
-models.cnn_script.path <- file.path(model_scripts.dir, "cnn")
+put_log("Root directory for the project models' scripts:
+%1", model_scripts.dir)
+
+models.knn_pca_scripts.dir <- file.path(model_scripts.dir, "kNN+PCA")
+stopifnot(dir.exists(models.knn_pca_scripts.dir))
+
+put_log("Root directory for the `kNN+PCA MCC` models' scripts:
+%1", models.knn_pca_scripts.dir)
+
+models.rf_scripts.dir <- file.path(model_scripts.dir, "random-forest")
+stopifnot(dir.exists(models.rf_scripts.dir))
+
+put_log("Root directory for the `RF MCC` model's scripts:
+%1", models.rf_scripts.dir)
+
+models.dl_basic.scripts.dir <- file.path(model_scripts.dir, "dl-basic")
+stopifnot(dir.exists(models.dl_basic.scripts.dir))
+
+put_log("Root directory for the Basic DL-Based model's scripts:
+%1", models.dl_basic.scripts.dir)
+
+models.cnn_scripts.dir <- file.path(model_scripts.dir, "cnn")
 stopifnot(dir.exists(model_scripts.dir))
-models.cnn_script.path
 
-support_functions.folder <- "support-functions"
+put_log("Root directory for the `CNN-Based MCC` model's scripts:
+%1", models.cnn_scripts.dir)
 
-support_functions.path <- file.path(scripts.path, support_functions.folder)
-stopifnot(dir.exists(support_functions.path))
+support_functions.dir <- file.path(r_scripts.dir, "support-functions")
+stopifnot(dir.exists(support_functions.dir))
 
-data.path <- "data"
-raw_data.path <- file.path(data.path, "raw")
-raw_data.path
+put_log("Root directory for the custom functions definition scripts:
+%1", support_functions.dir)
 
-raw_data.folder_name <- "Vaibs.HW-Chars"
-raw_data.chars.path <- file.path(raw_data.path, raw_data.folder_name)
-raw_data.chars.path
 
-img.train.root_path <- file.path(raw_data.chars.path, "Train")
-img.train.root_path
+data.dir <- "data"
+raw_data.dir <- file.path(data.dir, "raw")
 
-img.validation.root_path <- file.path(raw_data.chars.path, "Validation")
-img.validation.root_path
+put_log("Root directory for the raw image data:
+%1", raw_data.dir)
 
-dataset.path <- file.path(data.path, "dataset")
-dir.create(dataset.path)
-dataset.path
 
-train.data.path <- file.path(dataset.path, "train")
-dir.create(train.data.path)
-train.data.path
+raw_data.chars.dir <- file.path(raw_data.dir, "Vaibs.HW-Chars")
 
-final_test.data.path <- file.path(dataset.path, "final_test")
-dir.create(final_test.data.path)
-final_test.data.path
+put_log("Root directory for the raw image data:
+%1", raw_data.chars.dir)
 
-models.path <- file.path(data.path, "models")
-dir.create(models.path)
-models.path
+img.train_root.dir <- file.path(raw_data.chars.dir, "Train")
+
+put_log("Root directory for the Train raw image data:
+%1", img.train_root.dir)
+
+
+img.validation_root.dir <- file.path(raw_data.chars.dir, "Validation")
+
+put_log("Root directory for the Validation raw image data:
+%1", img.validation_root.dir)
+
+
+dataset.dir <- file.path(data.dir, "dataset")
+if(!dir.exists(dataset.dir))
+  dir.create(dataset.dir)
+
+put_log("Root directory for the project Dataset:
+%1", dataset.dir)
+
+
+train.data.dir <- file.path(dataset.dir, "train")
+if(!dir.exists(train.data.dir))
+  dir.create(train.data.dir)
+
+put_log("Root directory for the Train data:
+%1", train.data.dir)
+
+
+final_test.data.dir <- file.path(dataset.dir, "final_test")
+if(!dir.exists(final_test.data.dir))
+  dir.create(final_test.data.dir)
+
+put_log("Root directory for the Final Test data:
+%1", final_test.data.dir)
+
+
+models_data.dir <- file.path(data.dir, "models")
+if(!dir.exists(models_data.dir))
+  dir.create(models_data.dir)
+
+put_log("Root directory for the project models data:
+%1", models_data.dir)
+
+dl.keras3.dir <- file.path(models_data.dir, "dl.keras3")
+
+if(!dir.exists(dl.keras3.dir))
+  dir.create(dl.keras3.dir)
+
+
 
 ## Load Logging Helper Functions ---------------------------------------------------
-log_func_script.file_path <- file.path(support_functions.path, "logging-helper.R")
+log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
 
 source(log_func_script.file_path, 
        catch.aborts = TRUE,
@@ -213,7 +279,7 @@ source(log_func_script.file_path,
        keep.source = TRUE)
 
 ## Load Common Helper Functions --------------------------------------------------
-common_helper.funcs.file_path <- file.path(support_functions.path, "common-helper.R")
+common_helper.funcs.file_path <- file.path(support_functions.dir, "common-helper.R")
 
 
 source(common_helper.funcs.file_path, 
@@ -226,7 +292,7 @@ source(common_helper.funcs.file_path,
 
 
 ## Load Data Helper Functions --------------------------------------------------
-data_helper.funcs.file_path <- file.path(support_functions.path, "data-helper.R")
+data_helper.funcs.file_path <- file.path(support_functions.dir, "data-helper.R")
 
 
 source(data_helper.funcs.file_path, 
@@ -238,7 +304,7 @@ source(data_helper.funcs.file_path,
 
 
 ## Load Model Helper Functions --------------------------------------------------
-model_helper.funcs.file_path <- file.path(support_functions.path, "models-helper.R")
+model_helper.funcs.file_path <- file.path(support_functions.dir, "models-helper.R")
 
 
 source(model_helper.funcs.file_path, 

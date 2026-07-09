@@ -92,7 +92,7 @@ open_logfile(".pre-train-model.k1-8nn+pca")
 # if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-knn_pca.path = file.path(models.path, "knn-pca")
+knn_pca.path = file.path(models_data.dir, "knn-pca")
 
 if(!dir.exists(knn_pca.path))
   dir.create(knn_pca.path)
