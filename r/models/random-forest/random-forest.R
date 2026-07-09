@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%
-# Random Forest Model 
-#%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Random Forest Multiclass Classifier (RF MCC) Model 
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Reference:
 # 3.6 Random Forest
@@ -8,7 +8,7 @@
 
 # library(randomForest)
 
-## Train `RF MCC` model with the default mtry value & ntree = 500 --------------
+## Building the RF MCC Model ---------------------------------------------------
 open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
 
 stopifnot(exists("x0.1.train.flatten"),
@@ -21,13 +21,13 @@ stopifnot(exists("x0.1.train.flatten"),
           exists("y.test.flatten"))
 
 # Disable the elapsed time limit for expressions
-options(timeout = max(1000, getOption("timeout")))
-options(expressions = 50000) # Increases nesting limit if needed
+# options(timeout = max(1000, getOption("timeout")))
+# options(expressions = 50000) # Increases nesting limit if needed
 
 #if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-### `Random Forest (RF) MCC` Model Initial Paths *******************************
+### RF MCC Model Initial Paths -------------------------------------------------
 
 models.random_forest.path <- file.path(models.path, "random-forest")
 
@@ -41,7 +41,9 @@ if(!dir.exists(models.rf.tune.path))
 
 fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
-# ******************************************************************************
+
+### Train RF MC` model with the default mtry value & ntree = 500 ---------------
+
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry_default.backup.path)) {
@@ -116,7 +118,7 @@ pre-trained with the default `mtry` parameter value, is as follows:
 
 log_close()
 
-## Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
+### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
 open_logfile(".x0.1.train.flatten.fit_rf.tune_mtry")
 
@@ -449,7 +451,7 @@ mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max,
 # 44
 log_close()
 
-## Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
+### Re-Train `RF MCC` model on full-scaled database with the best mtry value & ntree = 400 ---------------------------
 open_logfile("x.train.flatten.fit_rf.mtry_best.ntree400")
 
 fit_rf.mmtry_best.backup.path <- file.path(models.rf.tune.path, 

@@ -31,19 +31,6 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Prepare Flatten Datasets ---------------------------------------------------
-ds.load_flatten.script.path <- file.path(support_scripts.path, 
-                                         "load-flattened-dataset.R")
-
-stopifnot(file.exists(ds.load_flatten.script.path))
-
-source(ds.load_flatten.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
 put_log("Preparing Train and Test Sets for training a CNN-based Multiclass Classifier Model...")
 
 start <- put_start_date()
@@ -79,45 +66,45 @@ which contains a testing sample stored in the `x.test` variable having the follo
 
 rm(split3d.list)
 
-## Prepare Flatten Datasets ----------------------------------------------------
-### Loading Split Flatten Dataset allocated 10% for the Train Set ---------------
-open_logfile(".split.10%train.balanced_subset")
-start <- put_start_date()
+### Prepare Flatten Datasets ---------------------------------------------------
+ds.load_flatten.script.path <- file.path(support_scripts.path, 
+                                         "load-flattened-dataset.R")
+
+stopifnot(file.exists(ds.load_flatten.script.path))
+
+source(ds.load_flatten.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 
-if (!exists("ds_flatten.0.1split_list")) {
-  stopifnot(file.exists(my_emnist.0.1split.file_path))
-  
-  put_log("Loading the Split Flattened Dataset from the backup file...")
-  
-  ds_flatten.0.1split_list <- readRDS(my_emnist.0.1split.file_path)
-  
-  put_log("The Split Flattened Dataset has been loaded from the following backup file:
-%1", my_emnist.0.1split.file_path)
-} 
+## Prepare Flattened Datasets --------------------------------------------------
+### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
 
-str(ds_flatten.0.1split_list)
+#### Preparing Train Balanced Sample -------------------------------------------
 
-#### Preparing Train Balanced Sample --------------------------------------------
+ds0.1.fl <- list()
 
-x0.1.train.flatten <- ds_flatten.0.1split_list$train_set$x.train
+ds.fl$x0.1.train <- ds.flattened.0.1split_list$train_set$x.train
 
-y0.1.train.flatten.groups <- ds.get_classIDs.grouped(x0.1.train.flatten)
-y0.1.train.flatten <- y0.1.train.flatten.groups$classID
+ds.fl$y0.1.train.groups <- ds.get_classIDs.grouped(ds.fl$x0.1.train)
+ds.fl$y0.1.train <- ds.fl$y0.1.train.groups$classID
 
-stopifnot(sum(as.character(y0.1.train.flatten) != rownames(x0.1.train.flatten)) == 0)
+stopifnot(sum(as.character(ds.fl$y0.1.train) != rownames(ds.fl$x0.1.train)) == 0)
 
-str(x0.1.train.flatten)
-dim(x0.1.train.flatten)
+str(ds.fl$x0.1.train)
+dim(ds.fl$x0.1.train)
 #> [1] 16653   784
 
-str(y0.1.train.flatten)
+str(ds.fl$y0.1.train)
 
-stopifnot(nrow(x0.1.train.flatten) == length(y0.1.train.flatten))
+stopifnot(nrow(ds.fl$x0.1.train) == length(ds.fl$y0.1.train))
 
 ##### View of the Train Set Grouped by Class ------------------------------------
 put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y0.1.train.flatten.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(ds.fl$y0.1.train.groups$groupByClass, n = N.classes)))
 {  
   # A tibble: 39 × 2
   #    classID     n
@@ -165,26 +152,26 @@ put_log("The Train Set is balanced by set of Classes:
 
 #### Preparing Test Balanced Sample ---------------------------------------------
 
-x0.9.test.flatten <- ds_flatten.0.1split_list$test_set$x.test
-x0.9.test.flatten.files <- ds_flatten.0.1split_list$test_set$x.files
+ds.fl$x0.9.test <- ds.flattened.0.1split_list$test_set$x.test
+ds.fl$x0.9.test.files <- ds.flattened.0.1split_list$test_set$x.files
 
-y0.9.test.flatten.groups <- ds.get_classIDs.grouped(x0.9.test.flatten)
-y0.9.test.flatten <- y0.9.test.flatten.groups$classID
+ds.fl$y0.9.test.groups <- ds.get_classIDs.grouped(ds.fl$x0.9.test)
+ds.fl$y0.9.test <- ds.fl$y0.9.test.groups$classID
 
-stopifnot(sum(as.character(y0.9.test.flatten) != rownames(x0.9.test.flatten)) == 0)
+stopifnot(sum(as.character(ds.fl$y0.9.test) != rownames(ds.fl$x0.9.test)) == 0)
 
-str(x0.9.test.flatten)
-dim(x0.9.test.flatten)
+str(ds.fl$x0.9.test)
+dim(ds.fl$x0.9.test)
 # [1] 149526    784
 
-str(y0.9.test.flatten)
+str(ds.fl$y0.9.test)
 
-stopifnot(nrow(x0.9.test.flatten) == length(y0.9.test.flatten))
+stopifnot(nrow(ds.fl$x0.9.test) == length(ds.fl$y0.9.test))
 #> [1] 149526
 
 ##### View of the Test Set Grouped by Class -------------------------------------
 put_log("The Test Set is balanced by set of Classes:
-%1", capture.output(print(y0.9.test.flatten.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(ds.fl$y0.9.test.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -231,49 +218,48 @@ put_log("The Test Set is balanced by set of Classes:
 }
 
 #### Finalize Preparing Datasets ------------------------------------------------
-rm(ds_flatten.0.1split_list)
+rm(ds.flattened.0.1split_list)
 log_close()
 
-### Loading Split Flatten Dataset allocated 20% for the Test set (default) -----
+### Loading Split Flattened Dataset allocated 20% for the Test set (default) ----
 
 open_logfile(".split.20%test.balanced_subset")
 start <- put_start_date()
 
-if (!exists("ds_flatten.split_list")) {
+if (!exists("ds.flattened.split_list")) {
   stopifnot(file.exists(my_emnist.split.file_path))
   
   put_log("Loading the Split Flattened Dataset from the backup file...")
   
-  ds_flatten.split_list <- readRDS(my_emnist.split.file_path)
+  ds.flattened.split_list <- readRDS(my_emnist.split.file_path)
   
   put_log("The Split Flattened Dataset has been loaded from the following backup file:
 %1", my_emnist.split.file_path)
 }
 
-str(ds_flatten.split_list)
+str(ds.flattened.split_list)
 
-#### Preparing Train Balanced Sample --------------------------------------------
+#### Preparing Train Balanced Sample ------------------------
+ds.fl <- list()
 
-x.train.flatten <- ds_flatten.split_list$train_set$x.train
+ds.fl$x.train <- ds.flattened.split_list$train_set$x.train
 
-y.train.flatten.groups <- ds.get_classIDs.grouped(x.train.flatten)
-y.train.flatten <- y.train.flatten.groups$classID
+ds.fl$y.train.groups <- ds.get_classIDs.grouped(ds.fl$x.train)
+ds.fl$y.train <- ds.fl$y.train.groups$classID
 
-stopifnot(sum(as.character(y.train.flatten) != rownames(x.train.flatten)) == 0)
+stopifnot(sum(as.character(ds.fl$y.train) != rownames(ds.fl$x.train)) == 0)
 
-dim(x.train.flatten)
+dim(ds.fl$x.train)
 #> [1] 132873    784
 
-str(x.train.flatten)
-
-str(y.train.flatten)
-
-stopifnot(nrow(x.train.flatten) == length(y.train.flatten))
+stopifnot(nrow(ds.fl$x.train) == length(ds.fl$y.train))
 # 132873
+
+str(ds.fl)
 
 ##### View of the Train Set Grouped by Class ------------------------------------
 put_log("The Train Set is balanced by set of Classes:
-%1", capture.output(print(y.train.flatten.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(ds.fl$y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -322,23 +308,23 @@ put_log("The Train Set is balanced by set of Classes:
 
 #### Preparing Test Balanced Sample --------------------------------------------
 
-x.test.flatten <- ds_flatten.split_list$test_set$x.test
-x.test.flatten.files <- ds_flatten.split_list$test_set$x.files
-y.test.flatten.groups <- ds.get_classIDs.grouped(x.test.flatten)
-y.test.flatten <- y.test.flatten.groups$classID
+ds.fl$x.test <- ds.flattened.split_list$test_set$x.test
+ds.fl$x.test.files <- ds.flattened.split_list$test_set$x.files
+ds.fl$y.test.groups <- ds.get_classIDs.grouped(ds.fl$x.test)
+ds.fl$y.test <- y.test.groups$classID
 
-stopifnot(sum(as.character(y.test.flatten) != rownames(x.test.flatten)) == 0)
+stopifnot(sum(as.character(ds.fl$y.test) != rownames(ds.fl$x.test)) == 0)
 
-str(x.test.flatten)
-dim(x.test.flatten)
+dim(ds.fl$x.test)
 
-str(y.test.flatten)
-stopifnot(nrow(x.test.flatten) == length(y.test.flatten))
+stopifnot(nrow(ds.fl$x.test) == length(ds.fl$y.test))
 #> [1] 33228
+
+str(ds.fl)
 
 ##### View of the Test Set Grouped by Class ------------------------------------
 put_log("The Test Set is balanced by set of Classes:
-%1", capture.output(print(y.test.flatten.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(ds.fl$y.test.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -386,12 +372,25 @@ put_log("The Test Set is balanced by set of Classes:
 }
 
 #### Finalize Preparing Datasets ------------------------------------------------
-rm(ds_flatten.split_list)
+rm(ds.flattened.split_list)
 log_close()
 
-## Build kNN+PCA Model ---------------------------------------------------------
+## Build & Tune kNN+PCA Model ---------------------------------------------------------
 
-knn_pca.script.path <- file.path(models_script.path, "knn+pca.R")
+knn_pca.script.path <- file.path(model_scripts.dir, "knn+pca.build&tune.R")
+stopifnot(file.exists(knn_pca.script.path))
+
+source(knn_pca.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+## Re-Train kNN+PCA Model with the Best `k` Value ------------------------------
+knn_pca.scripts.dir <- file.path(model_scripts.dir, "")
+
+knn_pca.script.path <- file.path(model_scripts.dir, "knn+pca.re-train.best-k.R")
 stopifnot(file.exists(knn_pca.script.path))
 
 source(knn_pca.script.path, 
@@ -403,7 +402,7 @@ source(knn_pca.script.path,
 
 ## Build Random Forest Model --------------------------------------------------
 
-random_forest.script.path <- file.path(models_script.path, "random-forest.R")
+random_forest.script.path <- file.path(model_scripts.dir, "random-forest.R")
 stopifnot(file.exists(random_forest.script.path))
 
 source(random_forest.script.path, 
@@ -416,7 +415,7 @@ source(random_forest.script.path,
 
 ## Basic Deep Learning Model --------------------------------------------------
 
-dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
+dl_basic.scripts.path <- file.path(model_scripts.dir, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
 dir.create(dl.keras3.path)
 

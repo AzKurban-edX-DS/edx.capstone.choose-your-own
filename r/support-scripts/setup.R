@@ -159,12 +159,12 @@ n.img_cols <- 28
 
 ## Init Project Paths ----------------------------------------------------------
 
-models_script.path <- file.path(scripts.path, "models")
-stopifnot(dir.exists(models_script.path))
-models_script.path
+model_scripts.dir <- file.path(scripts.path, "models")
+stopifnot(dir.exists(model_scripts.dir))
+model_scripts.dir
 
-models.cnn_script.path <- file.path(models_script.path, "cnn")
-stopifnot(dir.exists(models_script.path))
+models.cnn_script.path <- file.path(model_scripts.dir, "cnn")
+stopifnot(dir.exists(model_scripts.dir))
 models.cnn_script.path
 
 support_functions.folder <- "support-functions"

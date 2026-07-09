@@ -14,12 +14,12 @@ stopifnot(dir.exists(support_scripts.path))
 scripts.path <- "r"
 stopifnot(dir.exists(scripts.path))
 
-models_script.path <- file.path(scripts.path, "models")
-stopifnot(dir.exists(models_script.path))
-models_script.path
+model_scripts.dir <- file.path(scripts.path, "models")
+stopifnot(dir.exists(model_scripts.dir))
+model_scripts.dir
 
-models.cnn_script.path <- file.path(models_script.path, "cnn")
-stopifnot(dir.exists(models_script.path))
+models.cnn_script.path <- file.path(model_scripts.dir, "cnn")
+stopifnot(dir.exists(model_scripts.dir))
 models.cnn_script.path
 
 support_functions.folder <- "support-functions"
@@ -69,7 +69,7 @@ source(setup_script.file_path,
 
 
 ### Deep Learning Models-related paths ----------------------------------------
-dl_basic.scripts.path <- file.path(models_script.path, "dl-basic.R")
+dl_basic.scripts.path <- file.path(model_scripts.dir, "dl-basic.R")
 dl.keras3.path <- file.path(models.path, "dl.keras3")
 dir.create(dl.keras3.path)
 
@@ -154,7 +154,7 @@ source(ds.load_flatten.script.path,
 
 ## Build kNN+PCA & Random Forest Models ----------------------------------------
 
-knn_pca.rf.script.path <- file.path(models_script.path, "knn+pca&rf.R")
+knn_pca.rf.script.path <- file.path(model_scripts.dir, "knn+pca&rf.R")
 stopifnot(file.exists(knn_pca.rf.script.path))
 
 source(knn_pca.rf.script.path, 
