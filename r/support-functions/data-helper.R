@@ -78,7 +78,7 @@ The `%1` object exists.", object.name)
 }
 
 image.load_bin.shape28x28 <- function(file_path) {
-  img0 <- image_read(file_path)
+  img0 <- magick::image_read(file_path)
   # plot(img0)
   
   img0.mx <- magick_img2matrix(img0)
@@ -313,6 +313,12 @@ print.image_grid <- function(err.table,
   print(img_grid)
   # dev.off()
   img_grid
+}
+
+plot_image <- function(image_file) {
+
+  img <- magick::image_read(image_file)
+  plot(img)
 }
 
 ## Data processing -------------------------------------------------------------

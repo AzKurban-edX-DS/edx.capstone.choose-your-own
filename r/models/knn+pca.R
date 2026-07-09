@@ -329,6 +329,9 @@ open_logfile(".k(best)nn+pca.eval-results.visualization")
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
                                                "knn_pca.eval.confusion-matrix.png")
 
+knn_pca.eval.conf.mx.obj_file <- file.path(knn_pca.plot_img.dir,
+                                               "knn_pca.eval.confusion-matrix.rds")
+
 start <- put_start_date()
 while(!is.null(dev.list())) dev.off()
 gc()
@@ -393,26 +396,22 @@ Sys.sleep(5)
 put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
 please wait...")
 
-while(!is.null(dev.list())) dev.off()
-gc()
-# Sys.sleep(6)
-# 1
-# Sys.sleep(1)
-# 2
-# Sys.sleep(1)
-# 3
-# Sys.sleep(1)
-# 4
-# Sys.sleep(1)
-# 5
-# Sys.sleep(1)
-
-k_best.nn_pca.conf.mx <- 
+k_best.nn_pca.conf_mx.set <- 
   plot.confusion_matrix(y.test.flatten,
                         k_best.nn_pca.predicted,
-                        export.img_file = knn_pca.eval.conf.mx.img_file)
+                        # print.plot_object = T,
+                        export.img_file = knn_pca.eval.conf.mx.img_file,
+                        backup.file = knn_pca.eval.conf.mx.obj_file)
 
-# print_confusioin_matrix(conf.mx.chart)
+# str(k_best.nn_pca.conf_mx.set)
+
+# knn_pca.eval.conf.mx.img <- magick::image_read(knn_pca.eval.conf.mx.img_file)
+# plot(knn_pca.eval.conf.mx.img)
+
+plot_image(knn_pca.eval.conf.mx.img_file)
+
+# print_confusioin_matrix(k_best.nn_pca.conf_mx.set$cm.chart)
+
 put_end_date(start)
 log_close()
 

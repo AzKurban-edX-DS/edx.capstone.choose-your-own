@@ -1,3 +1,9 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%
+# Models Helper Functions 
+#%%%%%%%%%%%%%%%%%%%%%%%%
+
+## Building Machine Learnign Models --------------------------------------------
+
 train.kNN_PCA <- function(x, 
                           y, 
                           k.values, 
@@ -618,7 +624,9 @@ plot.confusion_matrix <- function(targets,
                                   add_normalized = FALSE,
                                   add_col_percentages = FALSE,
                                   add_row_percentages = FALSE,
-                                  export.img_file = NULL) {
+                                  print.plot_object = FALSE,
+                                  export.img_file = NULL,
+                                  backup.file = NULL) {
   
   put_log("Function `plot.confusion_matrix`: 
 Creating a confusion matrix based on the model evaluation results in a format 
@@ -630,16 +638,6 @@ suitable for visualization using the `cvms` package...")
   put_log("Function `plot.confusion_matrix`: 
 The confusion matrix has been created:
 %1", capture.output(k_best.nn_pca.conf.mx))
-
-  # # Clear any stuck graphics devices
-  # graphics.off() 
-  # 
-  # # Open a clean external window (use windows() on Windows, x11() on Linux/Mac)
-  # dev.new()
-  
-  while(!is.null(dev.list())) dev.off()
-  # gc()
-  # Sys.sleep(6)
 
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)
@@ -663,19 +661,43 @@ Exporting the Confusion Matrix Plot object to an image file...")
 The Confusion Matrix Plot image has been saved to the following file:
   %1", export.img_file)
   }
+  
+  
+  if (!is.null(backup.file)) {
+    put_log("Saving the confusion matrix plot object in the backup file...")
+    
+    saveRDS(conf.mx.chart, 
+            file = backup.file)
+    
+    put_log("The confusion matrix plot object has been backed up in the following file:
+`%1`", backup.file)
+  }
 
-  assign("conf_mx.chart.tmp", conf.mx.chart, envir = .GlobalEnv)
-  
-  grid::grid.newpage()
-  grid::grid.draw(ggplotGrob(conf_mx.chart.tmp))
+  if(print.plot_object) {
+    # # Clear any stuck graphics devices
+    while(!is.null(dev.list())) dev.off()
+    # graphics.off() 
+    # gc()
+    # 
+    # # Open a clean external window (use windows() on Windows, x11() on Linux/Mac)
+    # dev.new()
+    # Sys.sleep(6)
 
-  stopCluster(cl)
-  stopImplicitCluster()
-  
-  rm(conf_mx.chart.tmp, pos = .GlobalEnv)
-  
+    assign("conf_mx.chart.tmp", conf.mx.chart, envir = .GlobalEnv)
+    
+    grid::grid.newpage()
+    grid::grid.draw(ggplotGrob(conf_mx.chart.tmp))
+    
+    stopCluster(cl)
+    stopImplicitCluster()
+    
+    rm(conf_mx.chart.tmp, pos = .GlobalEnv)
+  }
+
   put_end_date(start)
-  conf.mx
+  
+  list(cm = conf.mx,
+       cm.chart = conf.mx.chart)
 }
 
 print_confusioin_matrix <- function(confusion_matrix.plot) {
