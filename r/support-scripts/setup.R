@@ -268,7 +268,7 @@ if(!dir.exists(dl.keras3.dir))
 
 
 
-## Load Logging Helper Functions ---------------------------------------------------
+## Load Logging Helper Functions -----------------------------------------------
 log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
 
 source(log_func_script.file_path, 
@@ -278,7 +278,7 @@ source(log_func_script.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Load Common Helper Functions --------------------------------------------------
+## Load Common Helper Functions ------------------------------------------------
 common_helper.funcs.file_path <- file.path(support_functions.dir, "common-helper.R")
 
 

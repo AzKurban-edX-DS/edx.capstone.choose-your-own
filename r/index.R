@@ -232,11 +232,11 @@ put_log("The Test Set is balanced by set of Classes:
   invisible(NULL)
 }
 
-#### Finalize Preparing Datasets ------------------------------------------------
+#### Finalize Preparing Datasets -----------------------------------------------
 rm(ds.flattened.split_list)
 log_close()
 
-## Build & Tune kNN+PCA Model ---------------------------------------------------------
+## Build & Tune kNN+PCA Model --------------------------------------------------
 
 knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
                                  "1.knn+pca.build&tune.R")
@@ -263,7 +263,7 @@ source(knn_pca.retrain.best_k.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Build Random Forest Model --------------------------------------------------
+## Build Random Forest Model ---------------------------------------------------
 
 random_forest.script.path <- file.path(models.rf_scripts.dir, 
                                        "random-forest.R")
@@ -278,7 +278,7 @@ source(random_forest.script.path,
        keep.source = TRUE)
 
 
-## Basic Deep Learning Model --------------------------------------------------
+## Basic Deep Learning Model ---------------------------------------------------
 
 dl_basic.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.R")
 stopifnot(file.exists(dl_basic.script.path))
@@ -333,7 +333,7 @@ data.dl.cnn.multiclass.checkpoints.dir <- file.path(data.dl.cnn.multiclass.dir, 
 if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
   dir.create(data.dl.cnn.multiclass.checkpoints.dir)
 
-#### Init File Paths -------------------------------------------------------------
+#### Init File Paths -----------------------------------------------------------
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 
