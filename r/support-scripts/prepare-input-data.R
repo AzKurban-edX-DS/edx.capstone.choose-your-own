@@ -168,6 +168,7 @@ if(!file.exists(train.img28x28mx.list.file_path)){
          file.path = item$fpath.list)
   })
   names(img28x28mx.list) <- as.character(Y.Labels)
+  rm(img.nested_list)
   
   put_log("A Binary Image 28x28 Matrix list has been created with the following structure:
   %1", capture.output(str(img28x28mx.list)))
@@ -176,6 +177,9 @@ if(!file.exists(train.img28x28mx.list.file_path)){
   put_log("Saving Binary Image 28x28 Matrix list to the backup file...")
   saveRDS(img28x28mx.list,
           file = train.img28x28mx.list.file_path)
+  
+  # rm(img28x28mx.list)
+  
   put_log("Binary Image 28x28 Matrix list has been saved to the following file:
 %1", train.img28x28mx.list.file_path)
 
@@ -222,7 +226,7 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   
   names(img28x28mx.fpath) <- rownames(img28x28mx.array)
   
-# rm(img28x28mx.list)
+  rm(img28x28mx.list)
   
   stopifnot(length(img28x28mx.fpath) == nrow(img28x28mx.array))
   
@@ -248,6 +252,8 @@ if(!file.exists(train.img28x28mx.array.file_path)){
 and backed up to the following file:
 %1", train.img28x28mx.array.file_path)
 }
+
+if (exists("img28x28mx.list")) rm(img28x28mx.list)
 
 ### Preparing Split Datasets for Training the NN-Based Models ------------------
 
@@ -433,9 +439,9 @@ if(!file.exists(final_test.img28x28mx.list.file_path)){
     list(img.array = img.array,
          file.path = item$fpath.list)
   })
+  rm(img.nested_list)
   
   names(ft.img28x28mx.list) <- as.character(Y.Labels)
-  rm(img.nested_list)
   
   put_log("The Final Test Binary Image 28x28 Matrix list has been created with the following structure:
   %1", capture.output(str(ft.img28x28mx.list)))
