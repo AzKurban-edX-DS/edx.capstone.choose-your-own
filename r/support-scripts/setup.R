@@ -161,6 +161,16 @@ N_pcCores
 n.img_rows <- 28
 n.img_cols <- 28
 
+## Load Logging Helper Functions -----------------------------------------------
+log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
+
+source(log_func_script.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 ## Init Project Directories ----------------------------------------------------
 
 put_log("Root directory for the `R` scripts:
@@ -168,6 +178,9 @@ put_log("Root directory for the `R` scripts:
 
 put_log("Root directory for the support scripts:
 %1", support_scripts.dir)
+
+put_log("Root directory for the custom functions definition scripts:
+%1", support_functions.dir)
 
 model_scripts.dir <- file.path(r_scripts.dir, "models")
 stopifnot(dir.exists(model_scripts.dir))
@@ -198,13 +211,6 @@ stopifnot(dir.exists(model_scripts.dir))
 
 put_log("Root directory for the `CNN-Based MCC` model's scripts:
 %1", models.cnn_scripts.dir)
-
-support_functions.dir <- file.path(r_scripts.dir, "support-functions")
-stopifnot(dir.exists(support_functions.dir))
-
-put_log("Root directory for the custom functions definition scripts:
-%1", support_functions.dir)
-
 
 data.dir <- "data"
 raw_data.dir <- file.path(data.dir, "raw")
@@ -267,16 +273,6 @@ if(!dir.exists(dl.keras3.dir))
   dir.create(dl.keras3.dir)
 
 
-
-## Load Logging Helper Functions -----------------------------------------------
-log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
-
-source(log_func_script.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
 
 ## Load Common Helper Functions ------------------------------------------------
 common_helper.funcs.file_path <- file.path(support_functions.dir, "common-helper.R")

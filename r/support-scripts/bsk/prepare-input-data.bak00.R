@@ -45,6 +45,18 @@ It has already been deleted or moved.",
 put_end_date(start.download)
 log_close()
 
+## Init Backup File Path -------------------------------------
+
+### Init Final Test Backup File Paths -----------------------------------------
+final_test.img28x28bin.list.file_path <- file.path(final_test.data.dir, "final_test.img28x28bin.list.rds")
+final_test.img28x28bin.list.file_path
+
+final_test.img28x28mx.list.file_path <- file.path(final_test.data.dir, "final_test.img28x28mx.list.rds")
+final_test.img28x28mx.list.file_path
+
+final_test.img28x28mx.array.file_path <- file.path(final_test.data.dir, "final_test.img28x28mx.array.rds")
+final_test.img28x28mx.array.file_path
+
 ## Prepare Train Data ------------------------------------------------------------
 
 open_logfile(".prepare-train-data")
@@ -52,13 +64,8 @@ start <- put_start_date()
 
 ### Preparing a List of Binary 28x28-size Image Presentation Objects -----------
 
-put_log("Preparing a List of Binary 28x28-size Image Presentation Objects...")
-
-train.img28x28bin.list.file_path <- file.path(train.data.dir, 
-                                              "train.img28x28bin.list.rds")
-
-put_log("The path for the backup file to save the Binary 28x28-size Image Object list:
-%1", train.img28x28bin.list.file_path)
+train.img28x28bin.list.file_path <- file.path(train.data.dir, "train.img28x28bin.list.rds")
+train.img28x28bin.list.file_path
 
 if (!file.exists(train.img28x28bin.list.file_path)) {
   put_log("Creating a Binary Image 28x28 list from the raw data files 
@@ -85,22 +92,13 @@ and backed up to the following file:
 
 ### Preparing the Multiclass Classifier Class Label List -----------------------
 
-put_log("Preparing the Project Multiclass Classifier Class Label List...")
-
-classifier.label_list.file_path <- file.path(dataset.dir, 
-                                             "classifier.label-list.rds")
-
-put_log("The path for the backup file to save the list of the Multiclass Classifier Class Labels:
-%1", classifier.label_list.file_path)
+classifier.label_list.file_path <- file.path(dataset.dir, "classifier.label-list.rds")
+classifier.label_list.file_path
 
 if(!file.exists(classifier.label_list.file_path)){
   if(!exists("img28x28bin.list")) {
     stopifnot(file.exists(train.img28x28bin.list.file_path))
-    
-    put_log("Loading the Binary Image 28x28 list from the backup file...")
     img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
-    put_log("The Binary Image 28x28 list has been loaded from the following file:
-%1", train.img28x28bin.list.file_path)
   }
  
   Y.Labels <- img28x28bin.list$label.list
@@ -129,12 +127,8 @@ put_log("The Classifier Handwritten Character List contains the following labels
 
 ### Preparing a List of Binary 28x28-size Image  Matrix ------------------------
 
-put_log("Preparing a List of the Binary 28x28-size Image  Matrix...")
-
 train.img28x28mx.list.file_path <- file.path(train.data.dir, "train.img28x28mx.list.rds")
-
-put_log("The path for the backup file to save the Binary 28x28-size Image  Matrix object:
-%1", train.img28x28mx.list.file_path)
+train.img28x28mx.list.file_path
 
 if(!file.exists(train.img28x28mx.list.file_path)){
   if(!exists("img28x28bin.list")) {
@@ -185,14 +179,10 @@ and backed up to the following file:
 %1", train.img28x28mx.list.file_path)
 }
 
-### Preparing an Array of the Binary 28x28-size Image  Matrix ------------------
-
-put_log("Preparing an Array of the Binary 28x28-size Image  Matrix...")
+### Preparing the Array of Binary 28x28-size Image  Matrix ---------------------
 
 train.img28x28mx.array.file_path <- file.path(train.data.dir, "train.img28x28mx.array.rds")
-
-put_log("The path for the backup file to save the Array of the Binary Image  Matrix:
-%1", train.img28x28mx.array.file_path)
+train.img28x28mx.array.file_path
 
 if(!file.exists(train.img28x28mx.array.file_path)){
   if(!exists("img28x28mx.list")) {
@@ -213,7 +203,7 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   img28x28mx.file.list <- lapply(img28x28mx.list, function(item) {
     item$file.path
   })
-
+  
   img28x28mx.array <- abind(img28x28mx.array.list, along = 1)
   rm(img28x28mx.array.list)
   
@@ -243,6 +233,9 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   put_log("The Binary Image 28x28 array set has been saved to the following file:
 %1", train.img28x28mx.array.file_path)
   put_end_date(start)
+  
+  # rm(img28x28mx.array)
+  # rm(img28x28mx.fpath)
 } else {
   put_log("The Binary Image 28x28 array has already been constructed 
 and backed up to the following file:
@@ -259,53 +252,54 @@ put_log("The path for the backup file to save the list of the Split Datasets:
 %1", split3d.list.backup.file)
 
 start <- put_start_date()
+# stopifnot(file.exists(train.img28x28mx.array.file_path))
+# 
+# put_log("Loading the Train 28x28 Image Data Array Set from the backup file...")
+# img_mx.set <- readRDS(train.img28x28mx.array.file_path)
+# 
+# put_log("The Train 28x28 Image Data Array Set has been loading from the following file:
+# %1", train.img28x28mx.array.file_path)
+# 
+# put_log("The Train 28x28 Image Data Array Set structure:
+# %1", capture.output(str(img_mx.set)))
 
-if(!file.exists(split3d.list.backup.file)) {
-  if(!exists("img28x28mx.array")||
-     !exists("img28x28mx.fpath")){
-    stopifnot(file.exists(train.img28x28mx.array.file_path))
-  }
-  
-  put_log("Loading the Binary Image 28x28 array set from the backup file...")
-  img28x28mx.set <- readRDS(train.img28x28mx.array.file_path)
-  put_log("The Binary Image 28x28 array set has been loaded from the following file:
-%1", train.img28x28mx.array.file_path)
-  
-  img28x28mx.array <- img28x28mx.set$img28x28mx.array
-  img28x28mx.fpath <- img28x28mx.set$img28x28mx.fpath
-  
-  rm(img28x28mx.set)
-  
-  put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
-  
-  set.seed(N.classes)
-  split3d.list <- sample_train_test_sets.x3d(img28x28mx.array,
-                                             img28x28mx.fpath)
-  put_log("The Result Split Dataset object structure:
+put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+
+set.seed(N.classes)
+split3d.list <- sample_train_test_sets.x3d(img28x28mx.array,
+                                           img28x28mx.fpath)
+put_log("The Result Split Dataset object structure:
 %1", capture.output(str(split3d.list)))
-  
-  rm(img28x28mx.array)
-  rm(img28x28mx.fpath)
-  
-  put_log("Saving the Split Dataset List object in the backup file...")
-  
-  saveRDS(split3d.list, 
-          file = split3d.list.backup.file)
-  
-  rm(split3d.list)
-  
-  put_log("The Split Dataset List object has been backed up in the following file:
+
+rm(img28x28mx.array)
+rm(img28x28mx.fpath)
+
+put_log("Saving the Split Dataset List object in the backup file...")
+
+saveRDS(split3d.list, 
+        file = split3d.list.backup.file)
+
+put_log("The Split Dataset List object has been backed up in the following file:
 `%1`", split3d.list.backup.file)
-} else {
-  put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
-has already been constructed and backed up to the following file:
-%1", split3d.list.backup.file)
-}
+
+rm(split3d.list)
+
+# x3d.train_set <- split3d.list$train_set
+# put_log("The Train Set has been saved in the object `x3d.train_set`, 
+# which contains a training sample stored in the `x.train` variable having the following shape:
+# %1", capture.output(shape(x3d.train_set$x.train)))
+# # shape(132912, 28, 28)
+# 
+# x3d.test_set <- split3d.list$test_set
+# put_log("The Test Set has been saved in the object `x3d.test_set`, 
+# which contains a testing sample stored in the `x.test` variable having the following shape:
+# %1", capture.output(shape(x3d.test_set$x.test)))
+# # shape(33267, 28, 28)
 
 put_end_date(start)
 log_close()
 
-### Preparing the Flattened EMNIST-Like Dataset --------------------------------
+### Preparing the Flattened EMNIST-Like Dataset ---------------------------------
 
 put_log("Preparing the Flattened EMNIST-Like Dataset for the DL-Based Basic and Non-NN-Based Models...")
 
@@ -334,11 +328,9 @@ if(!file.exists(my_emnist.file_path)){
   
   put_log("Saving flatten training dataset to the backup file: 
 %1", my_emnist.file_path)
+  # start <- put_start_date()
   saveRDS(my_emnist.set,
        file = my_emnist.file_path)
-  
-  rm(my_emnist.set)
-  
   put_log("The flatten training dataset has been saved to the backup file:
 %1", my_emnist.file_path)
   put_end_date(start)
@@ -353,27 +345,6 @@ and backed up to the following file:
 
 open_logfile(".prepare-final_test-data")
 start <- put_start_date()
-
-final_test.img28x28bin.list.file_path <- file.path(final_test.data.dir, 
-                                                   "final_test.img28x28bin.list.rds")
-
-put_log("The path for the backup file to save the Final Test
-List of Binary 28x28-size Image Objects:
-%1", final_test.img28x28bin.list.file_path)
-
-final_test.img28x28mx.list.file_path <- file.path(final_test.data.dir, 
-                                                  "final_test.img28x28mx.list.rds")
-
-put_log("The path for the backup file to save the Final Test 
-List of Binary 28x28-size Image  Matrix:
-%1", final_test.img28x28mx.list.file_path)
-
-final_test.img28x28mx.array.file_path <- file.path(final_test.data.dir, 
-                                                   "final_test.img28x28mx.array.rds")
-
-put_log("The path for the backup file to save the Final Test 
-Array of the Binary 28x28-size Image  Matrix:
-%1", final_test.img28x28mx.array.file_path)
 
 if (!file.exists(final_test.img28x28bin.list.file_path)) {
   put_log("Creating the Final Test Binary Image 28x28 list from the raw data files 

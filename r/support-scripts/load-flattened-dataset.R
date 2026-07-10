@@ -58,6 +58,7 @@ y.chars$classID[which.min(y.chars$n)]
 #> Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 
 print(y.chars, n = length(y.chars$classID))
+{
 # A tibble: 39 × 2
 # classID     n
 # <fct> <int>
@@ -100,6 +101,8 @@ print(y.chars, n = length(y.chars$classID))
 # 37 X      5106
 # 38 Y      6762
 # 39 Z      4866
+invisible(NULL)
+}
 
 # clean up Environment
 
@@ -138,6 +141,7 @@ set.seed(N.classes)
 ds_flatten.0.1split_list <- sample_train_test_sets.mx(x, 
                                                       my_emnist.set$img.file_path,
                                                       test.ratio = 0.9)
+rm(x)
 
 put_log("The Flattened Training Dataset has been split into a Train and Test Sets 
 with 90% Test Ration (10% for Train Set):
