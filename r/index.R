@@ -35,12 +35,12 @@ source(prepare_ds.script.path,
        keep.source = TRUE)
 
 ### Load Flatten Datasets ---------------------------------------------------
-ds.load_flatten.script.path <- file.path(support_scripts.dir, 
-                                         "load-flattened-dataset.R")
+ds.prepare_flattened.script.path <- file.path(support_scripts.dir, 
+                                         "prepare-flattened-datasets.R")
 
-stopifnot(file.exists(ds.load_flatten.script.path))
+stopifnot(file.exists(ds.prepare_flattened.script.path))
 
-source(ds.load_flatten.script.path, 
+source(ds.prepare_flattened.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
