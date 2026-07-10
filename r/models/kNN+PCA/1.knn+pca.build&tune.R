@@ -26,8 +26,7 @@ put_log("Loading the Split Flattened Dataset from the backup file...")
 ds <- load_datasets(my_emnist.0.1split.file_path)
 str(ds)
 
-x <- list()
-x_train <- ds$train
+x_train <- ds$train$x
 
 put_log("The Train set is balanced with respect to the set of classes:
 %1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
@@ -77,34 +76,27 @@ put_log("The Train set is balanced with respect to the set of classes:
   invisible(NULL)
 }
 
-
 y_train <- ds$train$class_groups$classID
-
-stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
-stopifnot(nrow(x_train) == length(y_train))
 
 rm(ds)
 
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(nrow(x_train) == length(y_train))
 log_close()
+
 ## Model Building & Tuning -----------------------------------------------------
 open_logfile(".pre-train-model.k1-8nn+pca")
 
 # if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-knn_pca.path = file.path(models_data.dir, "knn-pca")
+knn_pca.dir = file.path(models_data.dir, "knn-pca")
 
-if(!dir.exists(knn_pca.path))
-  dir.create(knn_pca.path)
+if(!dir.exists(knn_pca.dir))
+  dir.create(knn_pca.dir)
 
 k1_8nn_pca.model.backup.path <-
-  file.path(knn_pca.path, "k1-8nn+pca(0.1train-set).rds")
-
-knn_pca.plot_img.dir <- file.path(knn_pca.path, "plot.img")
-
-if(!dir.exists(knn_pca.plot_img.dir))
-  dir.create(knn_pca.plot_img.dir)
-
+  file.path(knn_pca.dir, "k1-8nn+pca(0.1train-set).rds")
 
 if (file.exists(k1_8nn_pca.model.backup.path)) {
   put_log("Loading pre-trained `kNN+PCA MCC` Model 
@@ -140,6 +132,9 @@ k.values <- seq_len(8)
                                                          preProcOptions = list(thresh = 0.9),
                                                          verboseIter = TRUE),
                                 tuneGrid = data.frame(k = k.values))
+  rm(x_train)
+  rm(y_train)
+  
   stopCluster(cl)
   stopImplicitCluster()
   
@@ -149,9 +144,6 @@ k.values <- seq_len(8)
   # Fitting k = 5 on full training set
   # Warning in pre_process_options(method, column_types) :
   #   The following pre-processing methods were eliminated: 'pca', 'center', 'scale'  
-
-  rm(x_train)
-  rm(y_train)
     
   put_end_date(start)
   # Time difference of 27.84693 mins

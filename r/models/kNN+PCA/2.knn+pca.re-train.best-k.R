@@ -147,12 +147,16 @@ log_close()
 
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
+knn_pca.plot_img.dir <- file.path(knn_pca.dir, "plot.img")
+
+if(!dir.exists(knn_pca.plot_img.dir))
+  dir.create(knn_pca.plot_img.dir)
+
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
                                            "knn_pca.eval.confusion-matrix.png")
 
 knn_pca.eval.conf.mx.obj_file <- file.path(knn_pca.plot_img.dir,
                                            "knn_pca.eval.confusion-matrix.rds")
-
 start <- put_start_date()
 while(!is.null(dev.list())) dev.off()
 gc()
