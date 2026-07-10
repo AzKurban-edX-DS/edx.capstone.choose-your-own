@@ -5,8 +5,10 @@
 ## Open log: Load Input Data ---------------------------------------------------
 open_logfile(".load-input-data")
 ## Load Flatten Dataset --------------------------------------------------------
-start <- put_start_date()
 
+stopifnot(file.exists(my_emnist.file_path))
+start <- put_start_date()
+          
 if(!exists("my_emnist.set")) {
   stopifnot(file.exists(my_emnist.file_path),
             file.exists(classifier.label_list.file_path))
