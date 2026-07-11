@@ -147,7 +147,7 @@ log_close()
 
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-knn_pca.plot_img.dir <- file.path(knn_pca.dir, "plot.img")
+knn_pca.plot_img.dir <- file.path(knn_pca.data.dir, "plot.img")
 
 if(!dir.exists(knn_pca.plot_img.dir))
   dir.create(knn_pca.plot_img.dir)

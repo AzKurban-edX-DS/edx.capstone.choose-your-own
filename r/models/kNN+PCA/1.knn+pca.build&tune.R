@@ -90,13 +90,13 @@ open_logfile(".pre-train-model.k1-8nn+pca")
 # if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-knn_pca.dir = file.path(models_data.dir, "knn-pca")
+knn_pca.data.dir = file.path(models_data.dir, "knn-pca")
 
-if(!dir.exists(knn_pca.dir))
-  dir.create(knn_pca.dir)
+if(!dir.exists(knn_pca.data.dir))
+  dir.create(knn_pca.data.dir)
 
 k1_8nn_pca.model.backup.path <-
-  file.path(knn_pca.dir, "k1-8nn+pca(0.1train-set).rds")
+  file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
 
 if (file.exists(k1_8nn_pca.model.backup.path)) {
   put_log("Loading pre-trained `kNN+PCA MCC` Model 
