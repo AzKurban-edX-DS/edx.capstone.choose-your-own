@@ -16,15 +16,16 @@
 
 stopifnot(file.exists(my_emnist.0.1split.file_path))
 
-open_logfile(".load-split.10%train.balanced_sample")
+open_logfile(".knn+pca.load-split.10%train.balanced_sample")
 start <- put_start_date()
 
 ### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
 
-put_log("Loading the Split Flattened Dataset from the backup file...")
+put_log("The Split Flattened Dataset has been loaded from the folowing file:
+%1", my_emnist.0.1split.file_path)
 
-ds <- load_datasets(my_emnist.0.1split.file_path)
-str(ds)
+put_log("The Split Flattened Dataset has the follwoing structure:
+%1", capture.output(str(ds)))
 
 x_train <- ds$train$x
 

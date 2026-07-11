@@ -8,26 +8,150 @@
 
 # library(randomForest)
 
-## Building the RF MCC Model ---------------------------------------------------
-open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
-
-stopifnot(exists("x0.1.train.flatten"),
-          exists("y0.1.train.flatten"),
-          exists("x0.9.test.flatten"),
-          exists("y0.9.test.flatten"),
-          exists("x.train.flatten"),
-          exists("y.train.flatten"),
-          exists("x.test.flatten"),
-          exists("y.test.flatten"))
-
 # Disable the elapsed time limit for expressions
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
 
+## Prepare Input Datasets ------------------------------------------------------
+
+stopifnot(file.exists(my_emnist.0.1split.file_path))
+
+open_logfile(".rf.load-split.10%train.balanced_sample")
+start <- put_start_date()
+
+### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+
+put_log("Loading the Split Flattened Dataset from the backup file...")
+
+ds <- load_datasets(my_emnist.0.1split.file_path)
+
+put_log("The Split Flattened Dataset has been loaded from the folowing file:
+%1", my_emnist.0.1split.file_path)
+
+put_log("The Split Flattened Dataset has the follwoing structure:
+%1", capture.output(str(ds)))
+
+x_train <- ds$train$x
+
+put_log("The Train set is balanced with respect to the set of classes:
+%1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425  
+  invisible(NULL)
+}
+
+y_train <- ds$train$class_groups$classID
+
+
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(nrow(x_train) == length(y_train))
+
+x_test <- ds$test$x
+
+put_log("The Test set is balanced with respect to the set of classes:
+%1", capture.output(print(ds$test$class_groups$groupByClass, n = N.classes)))
+{
+  # # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #        3834
+  #  2 $        3834
+  #  3 &        3834
+  #  4 @        3834
+  #  5 0        3834
+  #  6 1        3834
+  #  7 2        3834
+  #  8 3        3834
+  #  9 4        3834
+  # 10 5        3834
+  # 11 6        3834
+  # 12 7        3834
+  # 13 8        3834
+  # 14 9        3834
+  # 15 A        3834
+  # 16 B        3834
+  # 17 C        3834
+  # 18 D        3834
+  # 19 E        3834
+  # 20 F        3834
+  # 21 G        3834
+  # 22 H        3834
+  # 23 I        3834
+  # 24 J        3834
+  # 25 K        3834
+  # 26 L        3834
+  # 27 M        3834
+  # 28 N        3834
+  # 29 P        3834
+  # 30 Q        3834
+  # 31 R        3834
+  # 32 S        3834
+  # 33 T        3834
+  # 34 U        3834
+  # 35 V        3834
+  # 36 W        3834
+  # 37 X        3834
+  # 38 Y        3834
+  # 39 Z        3834
+  invisible(NULL)
+}
+
+y_test <- ds$test$class_groups$classID
+
+stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
+stopifnot(nrow(x_test) == length(y_test))
+rm(ds)
+
+log_close()
+
+## Building the RF MCC Model ---------------------------------------------------
+open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
+
 #if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-### RF MCC Model Initial Paths -------------------------------------------------
+## Model Building & Tuning -----------------------------------------------------
 
 models.random_forest.path <- file.path(models_data.dir, "random-forest")
 
@@ -66,10 +190,10 @@ has been loaded from the following backup file:
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
-  fit_rf.mtry_default <- randomForest(x0.1.train.flatten, 
-                                      y0.1.train.flatten,
-                                      x0.9.test.flatten,
-                                      y0.9.test.flatten,
+  fit_rf.mtry_default <- randomForest(x_train, 
+                                      y_train,
+                                      x_test,
+                                      y_test,
                                       keep.forest = TRUE,
                                       ntree = 500)
   
@@ -77,7 +201,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   
   put_log("`RF MCC` Model pre-trained with the default `mtry` parameter value: Creating a Confusion Matrix...")
-  rf_conf.mx.mtry_default <- confusion_matrix(as.character(y0.9.test.flatten),
+  rf_conf.mx.mtry_default <- confusion_matrix(as.character(y_test),
                                               as.character(fit_rf.mtry_default$test$predicted))
   put_log("`RF MCC` Model pre-trained with the default `mtry` parameter value: 
 The Confusion Matrix has been created:
@@ -107,13 +231,13 @@ and testing on the remaining 90% of the `Train Set` are as follows:
 put_end_date(start)
 # Time difference of 6.260901 hours
 
-dev.off()
+# dev.off()
 plot(fit_rf.mtry_default, 
      main = "`RF MCC` Model Pre-trained with the Default `mtry` Parameter Value")
 
 put_log("Prediction accuracy of the `RF MCC` Model,
 pre-trained with the default `mtry` parameter value, is as follows:
-%1", mean(fit_rf.mtry_default$test$predicted == y0.9.test.flatten))
+%1", mean(fit_rf.mtry_default$test$predicted == y_test))
 # [1] 0.839746933643647
 
 log_close()
@@ -151,8 +275,8 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   registerDoParallel(cl)
   
   set.seed(N.classes)
-  fit_rf.mtry_tuned <- train(x0.1.train.flatten, 
-                             y0.1.train.flatten,
+  fit_rf.mtry_tuned <- train(x_train, 
+                             y_train,
                              method = "rf",
                              ntree = 200,
                              trControl = trainControl(
@@ -259,7 +383,7 @@ has been loaded from the following backup file:
       method = "cv",
       number = 5,
       verboseIter = TRUE,
-      # index = createFolds(y0.1.train.flatten, k = 5),
+      # index = createFolds(y_train, k = 5),
       savePredictions = "final",
       summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
       classProbs = FALSE
@@ -283,8 +407,8 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
   
   set.seed(N.classes)
-  fit_rf.mtry.fine_tuned <- train(x0.1.train.flatten, 
-                                  y0.1.train.flatten,
+  fit_rf.mtry.fine_tuned <- train(x_train, 
+                                  y_train,
                                   method = "rf",
                                   ntree = 200,
                                   trControl = custom_control,
@@ -377,7 +501,7 @@ has been loaded from the following backup file:
       method = "cv",
       number = 5,
       verboseIter = TRUE,
-      # index = createFolds(y0.1.train.flatten, k = 5),
+      # index = createFolds(y_train, k = 5),
       savePredictions = "final",
       summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
       classProbs = FALSE
@@ -401,8 +525,8 @@ has been loaded from the following backup file:
   registerDoParallel(cl)
   
   set.seed(N.classes)
-  fit_rf.mtry.final_tuned <- train(x0.1.train.flatten, 
-                                   y0.1.train.flatten,
+  fit_rf.mtry.final_tuned <- train(x_train, 
+                                   y_train,
                                    method = "rf",
                                    ntree = 200,
                                    trControl = custom_control,
