@@ -16,7 +16,7 @@
 
 stopifnot(file.exists(my_emnist.0.1split.file_path))
 
-open_logfile(".split.10%train.balanced_subset")
+open_logfile(".load-split.10%train.balanced_sample")
 start <- put_start_date()
 
 ### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
@@ -232,4 +232,4 @@ k1_8nn.best
 
 rm(k1_8nn_pca.model)
 log_close()
-
+# Log Elapsed Time: 0 00:29:13

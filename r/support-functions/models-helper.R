@@ -552,7 +552,7 @@ plot.ROC.curves <- function(targets,
   put_log("Function `plot.ROC.curves`:
 Calculating a ROC curve for each class of the Multiclass Classifier (MCC)...")
   roc_curves <- calc.roc_curves(targets,
-                                bdl.preds,
+                                predicted_probabilities,
                                 Y.Labels)
   
   put_log("Function `plot.ROC.curves`:
@@ -637,7 +637,7 @@ suitable for visualization using the `cvms` package...")
   
   put_log("Function `plot.confusion_matrix`: 
 The confusion matrix has been created:
-%1", capture.output(k_best.nn_pca.conf.mx))
+%1", capture.output(conf.mx))
 
   start <- put_start_date()
   cl <- makeCluster(N_pcCores)

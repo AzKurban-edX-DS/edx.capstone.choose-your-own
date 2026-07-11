@@ -11,7 +11,7 @@
 
 stopifnot(file.exists(my_emnist.split.file_path))
 
-open_logfile(".split.10%train.balanced_subset")
+open_logfile(".split.80%train.balanced_subset")
 start <- put_start_date()
 
 ### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
@@ -139,7 +139,7 @@ log_close()
 
 ## Re-Train kNN+PCA Model with the best *k% Parameter on the full Dataset ---------
 # (The training takes about half an hour)
-open_logfile(".re-train-model.k1-8nn+pca")
+open_logfile(".re-train-model.k5(best)nn+pca")
 
 k_best.nn_pca.model.backup.path <-
   file.path(knn_pca.data.dir, "k_best.nn+pca.rds")
@@ -202,7 +202,7 @@ has been loaded from the following backup file:
 
 
 log_close()
-# Log Elapsed Time for training & tuning `kNN+PCA`: 03:21:28
+# Log Elapsed Time: 0 01:51:26
 
 ## Constructing Predictions on kNN+PCA (for best *k* Parameter value) --------
 open_logfile(".x.test.flatten.predict.k(best)nn+pca")
@@ -275,6 +275,7 @@ put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k*
 %1", knn_pca.best.accuracy)
 #> [1] 0.862555675935958
 log_close()
+# Log Elapsed Time: 0 02:15:36
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
