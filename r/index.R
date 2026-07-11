@@ -47,8 +47,8 @@ source(ds.prepare_flattened.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-
-## Build & Tune kNN+PCA Model --------------------------------------------------
+## kNN+PCA MCC Model -----------------------------------------------------------
+### Build & Tune the kNN+PCA Model ---------------------------------------------
 
 knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
                                  "1.knn+pca.build&tune.R")
@@ -62,7 +62,7 @@ source(knn_pca.tune.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Re-Train kNN+PCA Model with the Best `k` Value ------------------------------
+### Re-Train kNN+PCA Model with the Best `k` Value ------------------------------
 knn_pca.retrain.best_k.script.path <- file.path(models.knn_pca_scripts.dir, 
                                                 "2.knn+pca.re-train.best-k.R")
 

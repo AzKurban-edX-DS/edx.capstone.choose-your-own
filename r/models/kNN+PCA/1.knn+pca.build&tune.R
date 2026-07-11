@@ -137,7 +137,7 @@ k.values <- seq_len(8)
   
   stopCluster(cl)
   stopImplicitCluster()
-  
+  rm(cl)
   
   # Aggregating results
   # Selecting tuning parameters
@@ -230,5 +230,6 @@ k1_8nn.best
 # Accuracy was used to select the optimal model using the largest value.
 # The final value used for the model was k = 5.
 
+rm(k1_8nn_pca.model)
 log_close()
 
