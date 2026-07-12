@@ -145,8 +145,8 @@ rm(ds)
 
 log_close()
 
-## Model Building & Tuning -----------------------------------------------------
-open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
+## Pre-Train RF MC` model with the default mtry value & ntree = 500 ------------
+open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 
 #if(!is.null(dev.list())) dev.off()
 graphics.off()
@@ -165,7 +165,6 @@ if(!dir.exists(models.rf.tune.path))
 fit_rf.mtry_default.backup.path <- file.path(models.random_forest.dir, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
 
-### Pre-Train RF MC` model with the default mtry value & ntree = 500 ---------------
 
 start <- put_start_date()
 
@@ -240,25 +239,25 @@ pre-trained with the default `mtry` parameter value, is as follows:
 log_close()
 # Log Elapsed Time: 0 00:10:43
 
-### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
+## Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
-open_logfile(".x0.1.train.flatten.fit_rf.tune_mtry")
+open_logfile(".fit_rf.coarse_tune.mtry.step1")
 
-fit_rf.mtry_tuned.backup.path <- file.path(models.rf.tune.path, 
+fit_rf.mtry.coarse_tuned.backup.path <- file.path(models.rf.tune.path, 
                                            "fit_rf.mtry-coarse_tuned.ntree200.back.rds")
 
 start <- put_start_date()
 
-if(file.exists(fit_rf.mtry_tuned.backup.path)) {
+if(file.exists(fit_rf.mtry.coarse_tuned.backup.path)) {
   put_log("Loading the `RF MCC` model tuned by `mtry` parameter values from the backup file...")
   
-  fit.bak <- readRDS(fit_rf.mtry_tuned.backup.path)
-  fit_rf.mtry_tuned <- fit.bak$fit
-  mtry.tune_values <- fit.bak$mtry
+  fit.bak <- readRDS(fit_rf.mtry.coarse_tuned.backup.path)
+  fit_rf.mtry.coarse_tuned <- fit.bak$fit
+  mtry.coarse_tune.values <- fit.bak$mtry
   rm(fit.bak)
   
   put_log("The `RF MCC` model, tuned `mtry` parameter values, has been loaded from the following backup file:
-%1", fit_rf.mtry_tuned.backup.path)
+%1", fit_rf.mtry.coarse_tuned.backup.path)
   put_end_date(start)
 } else {
   put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
@@ -266,14 +265,14 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   #> Since p = n.img_cols * n.img_rows = n.img_cols^2 = 28^2
   #> sqrt(p) = n.img_cols = 28
   
-  mtry.tune_values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
+  mtry.coarse_tune.values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
   start <- put_start_date()
   
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
   set.seed(N.classes)
-  fit_rf.mtry_tuned <- train(x_train, 
+  fit_rf.mtry.coarse_tuned <- train(x_train, 
                              y_train,
                              method = "rf",
                              ntree = 200,
@@ -282,7 +281,7 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
                                number = 5,             # 5 folds
                                verboseIter = TRUE      # <--- This activates the progress output
                              ),
-                             tuneGrid = data.frame(mtry = mtry.tune_values))
+                             tuneGrid = data.frame(mtry = mtry.coarse_tune.values))
   stopCluster(cl)
   stopImplicitCluster()
   
@@ -291,12 +290,12 @@ if(file.exists(fit_rf.mtry_tuned.backup.path)) {
   # Time difference of 27.74778 mins
   
   put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(list(fit = fit_rf.mtry_tuned,
-               mtry = mtry.tune_values),
-          file = fit_rf.mtry_tuned.backup.path)
+  saveRDS(list(fit = fit_rf.mtry.coarse_tuned,
+               mtry = mtry.coarse_tune.values),
+          file = fit_rf.mtry.coarse_tuned.backup.path)
   put_log("The `RF MCC` model trained with the default `mtry` parameter value 
 has been saved to the following backup file:
-%1", fit_rf.mtry_tuned.backup.path)
+%1", fit_rf.mtry.coarse_tuned.backup.path)
   put_end_date(start)
   # Time difference of 32.83442 mins
   
@@ -305,7 +304,7 @@ has been saved to the following backup file:
 
 put_log("Results of the coarse tuning of the model by `mtry` parameter values, 
 trained using the `Random Forest` method on a 10% sample of the`Train Set` dataset:
-%1", capture.output(fit_rf.mtry_tuned))
+%1", capture.output(fit_rf.mtry.coarse_tuned))
 
 {
   # 16575 samples
@@ -337,14 +336,33 @@ trained using the `Random Forest` method on a 10% sample of the`Train Set` datas
 put_end_date(start)
 
 put_log("Confusion matrix obtained from the pre-trained model evaluation following coarse tuning:
-%1", capture.output(confusionMatrix(fit_rf.mtry_tuned)))
+%1", capture.output(confusionMatrix(fit_rf.mtry.coarse_tuned)))
 
-ggplot(fit_rf.mtry_tuned)
+ggplot(fit_rf.mtry.coarse_tuned)
+
+acc.coarse_tuned.max <- max(fit_rf.mtry.coarse_tuned$results$Accuracy)
+
+put_log("The best accuracy obtained from the evaluation of the coarse tuned model:
+%1", capture.output(acc.coarse_tuned.max))
+# 0.8306486
+
+acc.coarse_tuned.max.idx <- which.max(fit_rf.mtry.coarse_tuned$results$Accuracy)
+# 6
+mtry.coarse_tuned.best <- mtry.coarse_tune.values[acc.max.idx]
+# 44
+
+stopifnot(mtry.coarse_tuned.best == fit_rf.mtry.coarse_tuned$bestTune)
+
+put_log("The best parameter value obtained as a result of the coarse tuning:
+%1", capture.output(fit_rf.mtry.coarse_tuned$bestTune))
+ # mtry
+ #   44
 
 log_close()
+# Log Elapsed Time: 0 00:27:05
 
 ### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
-open_logfile(".x0.1.train.flatten.fit_rf.fine-tune_mtry")
+open_logfile(".fit_rf.fine-tune_mtry.step2")
 
 fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
                                                 "fit_rf.mtry-fine_tuned.ntree200.back.rds")
@@ -366,9 +384,9 @@ has been loaded from the following backup file:
 } else {
   put_log("Fine-Tuning the `RF MCC` model by `mtry` parameter values...")
   
-  acc.max.idx <- which.max(fit_rf.mtry_tuned$results$Accuracy)
-  mtry.fine_tune.values <- seq(mtry.tune_values[acc.max.idx-1], 
-                               mtry.tune_values[acc.max.idx+1], 
+  acc.max.idx <- which.max(fit_rf.mtry.coarse_tuned$results$Accuracy)
+  mtry.fine_tune.values <- seq(mtry.coarse_tune.values[acc.max.idx-1], 
+                               mtry.coarse_tune.values[acc.max.idx+1], 
                                3) # 38:50, step = 3
   start <- put_start_date()
   
@@ -444,6 +462,7 @@ trained using the `Random Forest` method on a 10% sample of the`Train Set` datas
   # 3   44 0.8312519 0.8268111
   # 4   47 0.8288386 0.8243344
   # 5   50 0.8302262 0.8257585
+  invisible(NULL)
 }
 put_end_date(start)
 
@@ -453,16 +472,28 @@ put_log("Confusion matrix obtained from the evaluation of the fine-tuned model:
 ggplot(fit_rf.mtry.fine_tuned)
 
 acc.fine_tuned.max <- max(fit_rf.mtry.fine_tuned$results$Accuracy)
+
+put_log("The best accuracy obtained from the evaluation of the fine-tuned model:
+%1", capture.output(acc.fine_tuned.max))
 # 0.8312519
+
 acc.fine_tuned.max.idx <- which.max(fit_rf.mtry.fine_tuned$results$Accuracy)
 # 3
-mtry.fine_tuned.best <- mtry.fine_tune.values[acc.max.idx]
+mtry.fine_tuned.best <- mtry.fine_tune.values[acc.fine_tuned.max.idx]
 # 44
 
+stopifnot(mtry.fine_tuned.best == fit_rf.mtry.fine_tuned$bestTune)
+
+put_log("The best parameter value obtained as a result of the coarse tuning:
+%1", capture.output(fit_rf.mtry.coarse_tuned$bestTune))
+# mtry
+#   44
+
 log_close()
+# Log Elapsed Time: 0 00:19:10
 
 ### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
-open_logfile(".x0.1.train.flatten.fit_rf.fine-tune_mtry")
+open_logfile(".fit_rf.final-tune_mtry.step3")
 
 fit_rf.mtry.final_tuned.backup.path <- file.path(models.rf.tune.path, 
                                                  "fit_rf.mtry-final_tuned.ntree200.back.rds")
@@ -558,6 +589,14 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 %1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
 
 {
+  #   mtry  Accuracy     Kappa
+  # 1   42 0.8299246 0.8254489
+  # 2   43 0.8302262 0.8257585
+  # 3   45 0.8301056 0.8256347
+  # 4   46 0.8293816 0.8248916
+  # 5   48 0.8299849 0.8255108
+  # 6   49 0.8298643 0.8253870
+  invisible(NULL)
 }
 put_end_date(start)
 
@@ -567,15 +606,26 @@ put_log("Confusion matrix obtained from the evaluation of the finally tuned mode
 ggplot(fit_rf.mtry.final_tuned)
 
 acc.final_tuned.max <- max(fit_rf.mtry.final_tuned$results$Accuracy)
+
+put_log("The best accuracy obtained from the evaluation of the fine-tuned model:
+%1", capture.output(acc.final_tuned.max))
 # 0.8302262
+
 acc.final_tuned.max.idx <- which.max(fit_rf.mtry.final_tuned$results$Accuracy)
 # 2
-mtry.final_tuned.best <- mtry.final_tune.values[acc.max.idx]
-# 45
+mtry.final_tuned.best <- mtry.final_tune.values[acc.final_tuned.max.idx]
+# 43
 
-mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max, 
+stopifnot(mtry.final_tuned.best == fit_rf.mtry.final_tuned$bestTune)
+
+fit_rf.mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max, 
                     mtry.final_tuned.best,
                     mtry.fine_tuned.best)
+
+put_log("The best parameter value obtained as a result of the RF Model tuning:
+%1", capture.output(fit_rf.mtry.best))
 # 44
+
 log_close()
+# Log Elapsed Time: 0 00:21:16
 
