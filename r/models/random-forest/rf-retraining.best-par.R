@@ -179,7 +179,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
                                     y_train,
                                     x_test,
                                     y_test,
-                                    mtry = mtry.best,
+                                    mtry = fit_rf.mtry.best,
                                     ntree = 400)
   
   put_log("The `RF MCC` Model has been trained with the best `mtry` parameter value.")
