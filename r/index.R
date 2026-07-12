@@ -90,7 +90,7 @@ source(rf_tuning.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### RF Tuning ------------------------------------------------------------------
+### RF Re-Training with the Best Parameters ------------------------------------
 rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir, 
                                        "rf-retraining.best-par.R")
 
