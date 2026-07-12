@@ -210,10 +210,10 @@ trained with the best `mtry` parameter value, has been loaded from the following
   stopImplicitCluster()
   
   put_log("Saving the fine-tuned `RF MCC` Model data...")
-  saveRDS(list(fit = fit_rf.mmtry_best,
-               confusion.mx = fit_rf.mmtry_best.conf.mx,
-               roc.curves = fit_rf.mmtry_best.roc_curves),
+  
+  saveRDS(fit_rf.mmtry_best,
           file = fit_rf.mmtry_best.backup.path)
+  
   put_log("The data of the fine-tuned `RF MCC` Model has been saved to the following file:
 %1", fit_rf.mmtry_best.backup.path)
   put_end_date(start)
@@ -256,7 +256,7 @@ plot(fit_rf.mmtry_best,
 put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model, 
 trained with the best `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mmtry_best$test$predicted == y_test))
-# [1] 0.886390995545925
+# 0.886029854339713
 
 # fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
 #                                                                       y_test,
@@ -311,7 +311,7 @@ trained with the best `mtry` parameter value, is as follows:
 #                             fit_rf.mmtry_best.accuracy.by_class,
 #                             title.prefix = "Tuned Random Forest-based Multiclass")
 log_close()
-
+# Log Elapsed Time: 0 01:37:25
 
 
 
