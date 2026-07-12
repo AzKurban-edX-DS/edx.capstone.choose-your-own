@@ -148,23 +148,19 @@ log_close()
 
 open_logfile(".fit_rf.re-train.mtry_best.ntree400")
 
-fit_rf.mmtry_best.backup.path <- file.path(data.models.random_forest.dir, 
+fit_rf.mtry_best.backup.path <- file.path(data.models.random_forest.dir, 
                                            "fit_rf.mtry_best.ntree400.back.rds")
 
 start <- put_start_date()
 
-if(file.exists(fit_rf.mmtry_best.backup.path)) {
+if(file.exists(fit_rf.mtry_best.backup.path)) {
   put_log("Loading data of the fine-tuned `RF MCC` Model by the `mtry` parameter...")
   
-  fit.set <- readRDS(fit_rf.mmtry_best.backup.path)
-  fit_rf.mmtry_best <- fit.set$fit
-  fit_rf.mmtry_best.conf.mx <- fit.set$confusion.mx
-  fit_rf.mmtry_best.roc_curves <- fit.set$roc.curves
-  rm(fit.set)
-  
+  fit_rf.mtry_best <- readRDS(fit_rf.mtry_best.backup.path)
+
   put_log("The data of the fine-tuned `RF MCC` Model, 
 trained with the best `mtry` parameter value, has been loaded from the following backup file:
-%1", fit_rf.mmtry_best.backup.path)
+%1", fit_rf.mtry_best.backup.path)
   put_end_date(start)
 } else {
   put_log("Training the `RF MCC` model with the best `mtry` parameter value...")
@@ -175,47 +171,29 @@ trained with the best `mtry` parameter value, has been loaded from the following
   
   set.seed(nrow(x_test))
   
-  fit_rf.mmtry_best <- randomForest(x_train, 
-                                    y_train,
-                                    x_test,
-                                    y_test,
-                                    mtry = fit_rf.mtry.best,
-                                    ntree = 400)
+  fit_rf.mtry_best <- randomForest(x_train, 
+                                   y_train,
+                                   x_test,
+                                   y_test,
+                                   mtry = fit_rf.mtry.best,
+                                   ntree = 400)
+  rm(x_train, 
+     y_train,
+     x_test)
   
   put_log("The `RF MCC` Model has been trained with the best `mtry` parameter value.")
   put_end_date(start)
-  # Time difference of the last iteration 19.8342 mins
 
-#   ### ROC Curves
-#   # References:
-#   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
-#   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
-#   
-  # put_log("Fine-tuned `RF MCC` Model: Calculating a ROC curve for each class...")
-  # fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y_test,
-  #                                                 fit_rf.mmtry_best$test$votes,
-  #                                                 Y.Labels)
-
-#   put_log("Fine-tuned `RF MCC` Model: The per-class ROC curve calculation has been completed.")
-#   
-#   
-#   put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
-#   fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y_test),
-#                                                 as.character(fit_rf.mmtry_best$test$predicted))
-#   put_log("Fine-tuned `RF MCC` Model: The Confusion Matrix has been created:
-# %1", capture.output(fit_rf.mmtry_best.conf.mx))
-#   put_end_date(start)
-  
   stopCluster(cl)
   stopImplicitCluster()
   
   put_log("Saving the fine-tuned `RF MCC` Model data...")
   
-  saveRDS(fit_rf.mmtry_best,
-          file = fit_rf.mmtry_best.backup.path)
+  saveRDS(fit_rf.mtry_best,
+          file = fit_rf.mtry_best.backup.path)
   
   put_log("The data of the fine-tuned `RF MCC` Model has been saved to the following file:
-%1", fit_rf.mmtry_best.backup.path)
+%1", fit_rf.mtry_best.backup.path)
   put_end_date(start)
   # Time difference of  mins
 }
@@ -223,95 +201,128 @@ trained with the best `mtry` parameter value, has been loaded from the following
 put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
 on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
 are as follows:
-%1", capture.output(fit_rf.mmtry_best))
+%1", capture.output(fit_rf.mtry_best))
 put_end_date(start)
 # Time difference of 6.260901 hours
 
-plot(fit_rf.mmtry_best,
+plot(fit_rf.mtry_best,
      main = "Fine-tuning Results of the `RF MCC` Model by the `mtry` Parameter")
-
-# plot(fit_rf.mmtry_best.roc_curves[[1]], 
-#      main = "ROC Curves for the Fine-tuned `RF MCC` Model by the `mtry` Parameter")
-# for (class.idx in 2:N.classes) {
-#   lines(fit_rf.mmtry_best.roc_curves[[class.idx]], col = class.idx)
-# }
-# 
-
-# cl <- makeCluster(N_pcCores)
-# registerDoParallel(cl)
-#
-# dev.off()
-# plot_confusion_matrix(fit_rf.mmtry_best.conf.mx,
-#                       palette = "Greens",
-#                       font_counts = font(size = 3,
-#                                          color = "red"),
-#                       add_normalized = FALSE,
-#                       add_col_percentages = FALSE,
-#                       add_row_percentages = FALSE)
-# 
-# stopCluster(cl)
-# stopImplicitCluster()
-
 
 put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model, 
 trained with the best `mtry` parameter value, is as follows:
-%1", mean(fit_rf.mmtry_best$test$predicted == y_test))
+%1", mean(fit_rf.mtry_best$test$predicted == y_test))
 # 0.886029854339713
 
-# fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-#                                                                       y_test,
-#                                                                       fit_rf.mmtry_best$test$predicted)
-# put_log("The per-class prediction accuracy of the fine-tuned 'RF MCC' Model, 
-# trained with the best `mtry` parameter value, is as follows:
-# %1", capture.output(fit_rf.mmtry_best.accuracy.by_class))
+log_close()
+# Log Elapsed Time: 0 01:37:25
+
+## Visualizing the Evaluation Results ------------------------------------------
+
+open_logfile(".k(best)nn+pca.eval-results.visualization")
+
+data.models.plot_img.dir <- file.path(data.models.random_forest.dir, "plot.img")
+
+if(!dir.exists(data.models.plot_img.dir))
+  dir.create(data.models.plot_img.dir)
+
+rf_best.eval.conf.mx.obj_file <- file.path(data.dir,
+                                           "rf-final.eval.confusion-matrix.rds")
+rf_best.eval.conf.mx.img_file <- file.path(data.models.plot_img.dir,
+                                           "rf-final.eval.confusion-matrix.png")
+
+start <- put_start_date()
+while(!is.null(dev.list())) dev.off()
+gc()
+
+### ROC Curves
+# References:
+# https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+# https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
+
+put_log("Plotting ROC curves the Model Evaluation Results...")
+eval.roc_curves <- plot.ROC.curves(y_test,
+                                   fit_rf.mtry_best$test$votes)
+Sys.sleep(6)
+
+put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
+
+fit_rf.mtry_best.accuracy.by_class <- 
+  plot.per_class.accuracy.bars(y_test,
+                               fit_rf.mtry_best$test$predicted)
+
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
+%1", capture.output(fit_rf.mtry_best.accuracy.by_class))
 {
   #' class  accuracy
   #'     # 1.0000000
   #'     $ 1.0000000
   #'     & 1.0000000
   #'     @ 1.0000000
-  #'     0 0.9659624
-  #'     1 0.7300469
-  #'     2 0.8521127
-  #'     3 0.9448357
+  #'     0 0.9636150
+  #'     1 0.7347418
+  #'     2 0.8556338
+  #'     3 0.9436620
   #'     4 0.9049296
-  #'     5 0.8544601
-  #'     6 0.9072770
-  #'     7 0.9636150
-  #'     8 0.8791080
-  #'     9 0.9178404
-  #'     A 0.8673709
-  #'     B 0.8896714
-  #'     C 0.9483568
-  #'     D 0.8873239
-  #'     E 0.9131455
-  #'     F 0.9201878
-  #'     G 0.6173709
-  #'     H 0.9084507
-  #'     I 0.6830986
+  #'     5 0.8556338
+  #'     6 0.9002347
+  #'     7 0.9624413
+  #'     8 0.8755869
+  #'     9 0.9225352
+  #'     A 0.8650235
+  #'     B 0.8943662
+  #'     C 0.9448357
+  #'     D 0.8814554
+  #'     E 0.9143192
+  #'     F 0.9260563
+  #'     G 0.6068075
+  #'     H 0.9143192
+  #'     I 0.6819249
   #'     J 0.9154930
-  #'     K 0.9084507
-  #'     L 0.5422535
-  #'     M 0.9483568
-  #'     N 0.9143192
-  #'     P 0.9553991
-  #'     Q 0.6713615
-  #'     R 0.9002347
-  #'     S 0.8638498
-  #'     T 0.9178404
-  #'     U 0.9237089
-  #'     V 0.9178404
-  #'     W 0.9636150
-  #'     X 0.9248826
-  #'     Y 0.8392019
-  #'     Z 0.9072770
+  #'     K 0.9131455
+  #'     L 0.5375587
+  #'     M 0.9518779
+  #'     N 0.9190141
+  #'     P 0.9483568
+  #'     Q 0.6572770
+  #'     R 0.9072770
+  #'     S 0.8685446
+  #'     T 0.9154930
+  #'     U 0.9260563
+  #'     V 0.9166667
+  #'     W 0.9647887
+  #'     X 0.9260563
+  #'     Y 0.8380282
+  #'     Z 0.9014085
+  invisible(NULL)
 }
 
-# plot_bars.accuracy.by_class(Y.Labels,
-#                             fit_rf.mmtry_best.accuracy.by_class,
-#                             title.prefix = "Tuned Random Forest-based Multiclass")
+Sys.sleep(6)
+
+put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
+please wait...")
+
+rf_best.eval.conf_mx.set <- 
+  plot.confusion_matrix(y_test,
+                        fit_rf.mtry_best$test$predicted,
+                        # print.plot_object = T,
+                        export.img_file = rf_best.eval.conf.mx.img_file,
+                        backup.file = rf_best.eval.conf.mx.obj_file)
+rm(y_test)
+
+put_log("Summary of the object containing computing results to plot the confusion matrix:
+%1", capture.output(summary(rf_best.eval.conf_mx.set)))
+
+# rf_best.eval.conf.mx.img <- magick::image_read(rf_best.eval.conf.mx.img_file)
+# plot(rf_best.eval.conf.mx.img)
+
+plot_image(rf_best.eval.conf.mx.img_file)
+
+# print_confusioin_matrix(rf_best.eval.conf_mx.set$cm.chart)
+
+put_end_date(start)
 log_close()
-# Log Elapsed Time: 0 01:37:25
+
+
 
 
 
