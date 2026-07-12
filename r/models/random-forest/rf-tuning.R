@@ -153,17 +153,17 @@ graphics.off()
 
 ## Model Building & Tuning -----------------------------------------------------
 
-models.random_forest.path <- file.path(models_data.dir, "random-forest")
+models.random_forest.dir <- file.path(models_data.dir, "random-forest")
 
-if(!dir.exists(models.random_forest.path))
-  dir.create(models.random_forest.path)
+if(!dir.exists(models.random_forest.dir))
+  dir.create(models.random_forest.dir)
 
-models.rf.tune.path = file.path(models.random_forest.path, "tune")
+models.rf.tune.path = file.path(models.random_forest.dir, "tune")
 
 if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
-fit_rf.mtry_default.backup.path <- file.path(models.rf.tune.path, 
+fit_rf.mtry_default.backup.path <- file.path(models.random_forest.dir, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
 
 ### Train RF MC` model with the default mtry value & ntree = 500 ---------------

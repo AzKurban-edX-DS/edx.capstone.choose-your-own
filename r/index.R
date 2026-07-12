@@ -75,14 +75,28 @@ source(knn_pca.retrain.best_k.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Build Random Forest Model ---------------------------------------------------
+## Random Forest (RF) Model ----------------------------------------------------
 
-random_forest.script.path <- file.path(models.rf_scripts.dir, 
-                                       "random-forest.R")
+### RF Tuning ------------------------------------------------------------------
+rf_tuning.script.path <- file.path(models.rf_scripts.dir, 
+                                       "rf-tuning.R")
 
-stopifnot(file.exists(random_forest.script.path))
+stopifnot(file.exists(rf_tuning.script.path))
 
-source(random_forest.script.path, 
+source(rf_tuning.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+### RF Tuning ------------------------------------------------------------------
+rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir, 
+                                       "rf-retraining.best-par.R")
+
+stopifnot(file.exists(rf_retraining.best_par.script.path))
+
+source(rf_retraining.best_par.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
