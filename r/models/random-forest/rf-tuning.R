@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Random Forest Multiclass Classifier (RF MCC) Model 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Random Forest Multiclass Classifier (RF MCC) Model: Tuning
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Reference:
 # 3.6 Random Forest
@@ -152,17 +152,17 @@ open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 graphics.off()
 
 
-models.random_forest.dir <- file.path(models_data.dir, "random-forest")
+data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
 
-if(!dir.exists(models.random_forest.dir))
-  dir.create(models.random_forest.dir)
+if(!dir.exists(data.models.random_forest.dir))
+  dir.create(data.models.random_forest.dir)
 
-models.rf.tune.path = file.path(models.random_forest.dir, "tune")
+models.rf.tune.path = file.path(data.models.random_forest.dir, "tune")
 
 if(!dir.exists(models.rf.tune.path))
   dir.create(models.rf.tune.path)
 
-fit_rf.mtry_default.backup.path <- file.path(models.random_forest.dir, 
+fit_rf.mtry_default.backup.path <- file.path(data.models.random_forest.dir, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
 
 
@@ -348,7 +348,7 @@ put_log("The best accuracy obtained from the evaluation of the coarse tuned mode
 
 acc.coarse_tuned.max.idx <- which.max(fit_rf.mtry.coarse_tuned$results$Accuracy)
 # 6
-mtry.coarse_tuned.best <- mtry.coarse_tune.values[acc.max.idx]
+mtry.coarse_tuned.best <- mtry.coarse_tune.values[acc.coarse_tuned.max.idx]
 # 44
 
 stopifnot(mtry.coarse_tuned.best == fit_rf.mtry.coarse_tuned$bestTune)

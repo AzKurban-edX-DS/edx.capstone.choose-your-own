@@ -17,7 +17,7 @@ setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
 source(setup_script.file_path, 
-       catch.aborts = TRUE,
+       catch.aborts = TRUE,''
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,

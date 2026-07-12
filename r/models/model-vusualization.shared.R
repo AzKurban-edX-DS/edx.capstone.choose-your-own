@@ -6,18 +6,82 @@
 
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
-                                           "knn_pca.eval.confusion-matrix.png")
+plot_img.dir <- file.path(data.dir, "plot.img")
 
-knn_pca.eval.conf.mx.obj_file <- file.path(knn_pca.plot_img.dir,
-                                           "knn_pca.eval.confusion-matrix.rds")
+if(!dir.exists(plot_img.dir))
+  dir.create(plot_img.dir)
+
+eval.conf.mx.obj_file <- file.path(data.dir,
+                                   "eval.confusion-matrix.rds")
+eval.conf.mx.img_file <- file.path(plot_img.dir,
+                                   "eval.confusion-matrix.png")
 
 start <- put_start_date()
 while(!is.null(dev.list())) dev.off()
 gc()
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
-Cknn_pca.eval.roc_curves <- plot.ROC.curves(y.test.flatten,
+eval.roc_curves <- plot.ROC.curves(y_test,
+                                   k_best.nn_pca.probs)
+Sys.sleep(6)
+
+put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
+k_best.nn_pca.acc_by_class <- plot.per_class.accuracy.bars(y_test,
+                                                           k_best.nn_pca.predicted)
+
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
+%1", capture.output(k_best.nn_pca.acc_by_class))
+{
+  
+  
+  
+  invisible(NULL)
+}
+
+Sys.sleep(6)
+
+put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
+please wait...")
+
+k_best.nn_pca.conf_mx.set <- 
+  plot.confusion_matrix(y_test,
+                        k_best.nn_pca.predicted,
+                        # print.plot_object = T,
+                        export.img_file = eval.conf.mx.img_file,
+                        backup.file = eval.conf.mx.obj_file)
+rm(y_test)
+
+put_log("Summary of the object containing computing results to plot the confusion matrix:
+%1", capture.output(summary(k_best.nn_pca.conf_mx.set)))
+
+# eval.conf.mx.img <- magick::image_read(eval.conf.mx.img_file)
+# plot(eval.conf.mx.img)
+
+plot_image(eval.conf.mx.img_file)
+
+# print_confusioin_matrix(k_best.nn_pca.conf_mx.set$cm.chart)
+
+put_end_date(start)
+log_close()
+
+
+
+## Visualizing the Evaluation Results00 ------------------------------------------
+
+open_logfile(".k(best)nn+pca.eval-results.visualization")
+
+conf.mx.img_file <- file.path(plot_img.dir,
+                                           "eval.confusion-matrix.png")
+
+eval.conf.mx.obj_file <- file.path(plot_img.dir,
+                                           "eval.confusion-matrix.rds")
+
+start <- put_start_date()
+while(!is.null(dev.list())) dev.off()
+gc()
+
+put_log("Plotting ROC curves the Model Evaluation Results...")
+eval.roc_curves <- plot.ROC.curves(y.test.flatten,
                                             k_best.nn_pca.probs)
 Sys.sleep(6)
 
@@ -41,12 +105,12 @@ k_best.nn_pca.conf_mx.set <-
                         k_best.nn_pca.predicted,
                         # print.plot_object = T,
                         export.img_file = conf.mx.img_file,
-                        backup.file = knn_pca.eval.conf.mx.obj_file)
+                        backup.file = eval.conf.mx.obj_file)
 
 # str(k_best.nn_pca.conf_mx.set)
 
-# knn_pca.eval.conf.mx.img <- magick::image_read(conf.mx.img_file)
-# plot(knn_pca.eval.conf.mx.img)
+# eval.conf.mx.img <- magick::image_read(conf.mx.img_file)
+# plot(eval.conf.mx.img)
 
 plot_image(conf.mx.img_file)
 

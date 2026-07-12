@@ -296,7 +296,7 @@ while(!is.null(dev.list())) dev.off()
 gc()
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
-Cknn_pca.eval.roc_curves <- plot.ROC.curves(y_test,
+knn_pca.eval.roc_curves <- plot.ROC.curves(y_test,
                                             k_best.nn_pca.probs)
 Sys.sleep(6)
 

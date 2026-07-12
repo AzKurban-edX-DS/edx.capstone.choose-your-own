@@ -185,26 +185,26 @@ trained with the best `mtry` parameter value, has been loaded from the following
   put_log("The `RF MCC` Model has been trained with the best `mtry` parameter value.")
   put_end_date(start)
   # Time difference of the last iteration 19.8342 mins
-
-#   ### ROC Curves
-#   # References:
-#   # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
-#   # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
-#   
-  # put_log("Fine-tuned `RF MCC` Model: Calculating a ROC curve for each class...")
-  # fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y_test,
-  #                                                 fit_rf.mmtry_best$test$votes,
-  #                                                 Y.Labels)
-
-#   put_log("Fine-tuned `RF MCC` Model: The per-class ROC curve calculation has been completed.")
-#   
-#   
-#   put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
-#   fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y_test),
-#                                                 as.character(fit_rf.mmtry_best$test$predicted))
-#   put_log("Fine-tuned `RF MCC` Model: The Confusion Matrix has been created:
-# %1", capture.output(fit_rf.mmtry_best.conf.mx))
-#   put_end_date(start)
+  
+  ### ROC Curves
+  # References:
+  # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+  # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
+  
+  put_log("Fine-tuned `RF MCC` Model: Calculating a ROC curve for each class...")
+  fit_rf.mmtry_best.roc_curves <- calc.roc_curves(y_test,
+                                                  fit_rf.mmtry_best$test$votes,
+                                                  Y.Labels)
+  
+  put_log("Fine-tuned `RF MCC` Model: The per-class ROC curve calculation has been completed.")
+  
+  
+  put_log("Fine-tuned `RF MCC` Model: Creating a Confusion Matrix...")
+  fit_rf.mmtry_best.conf.mx <- confusion_matrix(as.character(y_test),
+                                                as.character(fit_rf.mmtry_best$test$predicted))
+  put_log("Fine-tuned `RF MCC` Model: The Confusion Matrix has been created:
+%1", capture.output(fit_rf.mmtry_best.conf.mx))
+  put_end_date(start)
   
   stopCluster(cl)
   stopImplicitCluster()
@@ -230,12 +230,12 @@ put_end_date(start)
 plot(fit_rf.mmtry_best,
      main = "Fine-tuning Results of the `RF MCC` Model by the `mtry` Parameter")
 
-# plot(fit_rf.mmtry_best.roc_curves[[1]], 
-#      main = "ROC Curves for the Fine-tuned `RF MCC` Model by the `mtry` Parameter")
-# for (class.idx in 2:N.classes) {
-#   lines(fit_rf.mmtry_best.roc_curves[[class.idx]], col = class.idx)
-# }
-# 
+plot(fit_rf.mmtry_best.roc_curves[[1]], 
+     main = "ROC Curves for the Fine-tuned `RF MCC` Model by the `mtry` Parameter")
+for (class.idx in 2:N.classes) {
+  lines(fit_rf.mmtry_best.roc_curves[[class.idx]], col = class.idx)
+}
+
 
 # cl <- makeCluster(N_pcCores)
 # registerDoParallel(cl)
@@ -258,12 +258,12 @@ trained with the best `mtry` parameter value, is as follows:
 %1", mean(fit_rf.mmtry_best$test$predicted == y_test))
 # [1] 0.886390995545925
 
-# fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-#                                                                       y_test,
-#                                                                       fit_rf.mmtry_best$test$predicted)
-# put_log("The per-class prediction accuracy of the fine-tuned 'RF MCC' Model, 
-# trained with the best `mtry` parameter value, is as follows:
-# %1", capture.output(fit_rf.mmtry_best.accuracy.by_class))
+fit_rf.mmtry_best.accuracy.by_class <- MCClassifier.accuracy.by_class(Y.Labels,
+                                                                      y_test,
+                                                                      fit_rf.mmtry_best$test$predicted)
+put_log("The per-class prediction accuracy of the fine-tuned 'RF MCC' Model, 
+trained with the best `mtry` parameter value, is as follows:
+%1", capture.output(fit_rf.mmtry_best.accuracy.by_class))
 {
   #' class  accuracy
   #'     # 1.0000000
@@ -307,9 +307,9 @@ trained with the best `mtry` parameter value, is as follows:
   #'     Z 0.9072770
 }
 
-# plot_bars.accuracy.by_class(Y.Labels,
-#                             fit_rf.mmtry_best.accuracy.by_class,
-#                             title.prefix = "Tuned Random Forest-based Multiclass")
+plot_bars.accuracy.by_class(Y.Labels,
+                            fit_rf.mmtry_best.accuracy.by_class,
+                            title.prefix = "Tuned Random Forest-based Multiclass")
 log_close()
 
 
