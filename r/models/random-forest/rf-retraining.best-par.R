@@ -154,6 +154,11 @@ fit_rf.mtry_best.backup.path <- file.path(data.models.random_forest.dir,
 start <- put_start_date()
 
 if(file.exists(fit_rf.mtry_best.backup.path)) {
+  # No longer needed since the pre-trained model will be loaded from the backup file
+  rm(x_train, 
+     y_train,
+     x_test)
+  
   put_log("Loading data of the fine-tuned `RF MCC` Model by the `mtry` parameter...")
   
   fit_rf.mtry_best <- readRDS(fit_rf.mtry_best.backup.path)
@@ -225,8 +230,12 @@ data.models.plot_img.dir <- file.path(data.models.random_forest.dir, "plot.img")
 if(!dir.exists(data.models.plot_img.dir))
   dir.create(data.models.plot_img.dir)
 
+rf_best.eval_plots.file <- file.path(data.dir,
+                                     "rf_best.eval_plots.rds")
+
 rf_best.eval.conf.mx.obj_file <- file.path(data.dir,
                                            "rf-final.eval.confusion-matrix.rds")
+
 rf_best.eval.conf.mx.img_file <- file.path(data.models.plot_img.dir,
                                            "rf-final.eval.confusion-matrix.png")
 
@@ -242,6 +251,10 @@ gc()
 put_log("Plotting ROC curves the Model Evaluation Results...")
 eval.roc_curves <- plot.ROC.curves(y_test,
                                    fit_rf.mtry_best$test$votes)
+eval.roc_curves <- plot_ROC(y_test,
+                            fit_rf.mtry_best$test$votes)
+plot_ROC(eval.roc_curves)
+
 Sys.sleep(6)
 
 put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")

@@ -546,15 +546,11 @@ Plotting bar chart of per-class accuracy of the MCC model...")
   return(per_class.accuracy)
 }
 
-plot.ROC.curves <- function(targets,
-                            predicted_probabilities) {
+plot_ROC <- function(x, ...) {
+  UseMethod("plot_ROC")
+}
 
-  put_log("Function `plot.ROC.curves`:
-Calculating a ROC curve for each class of the Multiclass Classifier (MCC)...")
-  roc_curves <- calc.roc_curves(targets,
-                                predicted_probabilities,
-                                Y.Labels)
-  
+plot_ROC.curves <- function(roc_curves, ...) {
   put_log("Function `plot.ROC.curves`:
 The per-class ROC curve calculation of the MCC has been completed.")
   
@@ -566,6 +562,23 @@ Plotting the ROC curves...")
   for (class.idx in 2:N.classes) {
     lines(roc_curves[[class.idx]], col = class.idx)
   }
+}
+
+plot_ROC.default <- function(targets,
+                             predicted_probabilities) {
+  plot.ROC.curves(targets,
+                  predicted_probabilities)
+}
+
+plot.ROC.curves <- function(targets,
+                            predicted_probabilities) {
+
+  put_log("Function `plot.ROC.curves`:
+Calculating a ROC curve for each class of the Multiclass Classifier (MCC)...")
+  roc_curves <- calc.roc_curves(targets,
+                                predicted_probabilities,
+                                Y.Labels)
+  plot_ROC(roc_curves)
   
   return(roc_curves)
 }
@@ -577,7 +590,7 @@ calc.roc_curves <- function(targets,
     length(shape(targets)) == 2 && 
     shape(targets)[2] == length(levels(class.labels))
   
-  lapply(class.labels, function(class) {
+  roc_curves <- lapply(class.labels, function(class) {
     class.idx <- as.integer(class)
     
     if(categorical_targets) {
@@ -590,6 +603,7 @@ calc.roc_curves <- function(targets,
     }
     roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
   })
+  return(structure(roc_curves, class = "curves"))
 }
 
 plot_bars.accuracy.by_class <- function(class.accuracies,
