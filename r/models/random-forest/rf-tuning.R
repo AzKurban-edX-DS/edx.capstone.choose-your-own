@@ -145,13 +145,12 @@ rm(ds)
 
 log_close()
 
-## Building the RF MCC Model ---------------------------------------------------
+## Model Building & Tuning -----------------------------------------------------
 open_logfile("x0.1.train.flatten.fit_rf.mtry_default.ntree500")
 
 #if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-## Model Building & Tuning -----------------------------------------------------
 
 models.random_forest.dir <- file.path(models_data.dir, "random-forest")
 
@@ -166,7 +165,7 @@ if(!dir.exists(models.rf.tune.path))
 fit_rf.mtry_default.backup.path <- file.path(models.random_forest.dir, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
 
-### Train RF MC` model with the default mtry value & ntree = 500 ---------------
+### Pre-Train RF MC` model with the default mtry value & ntree = 500 ---------------
 
 start <- put_start_date()
 
@@ -229,9 +228,7 @@ put_log("The results of pre-training the `RF MCC` Model
 and testing on the remaining 90% of the `Train Set` are as follows:
 %1", capture.output(fit_rf.mtry_default))
 put_end_date(start)
-# Time difference of 6.260901 hours
 
-# dev.off()
 plot(fit_rf.mtry_default, 
      main = "`RF MCC` Model Pre-trained with the Default `mtry` Parameter Value")
 
@@ -241,6 +238,7 @@ pre-trained with the default `mtry` parameter value, is as follows:
 # [1] 0.839746933643647
 
 log_close()
+# Log Elapsed Time: 0 00:10:43
 
 ### Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
@@ -305,8 +303,8 @@ has been saved to the following backup file:
 }
 
 
-put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+put_log("Results of the coarse tuning of the model by `mtry` parameter values, 
+trained using the `Random Forest` method on a 10% sample of the`Train Set` dataset:
 %1", capture.output(fit_rf.mtry_tuned))
 
 {
@@ -338,7 +336,9 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 }
 put_end_date(start)
 
-confusionMatrix(fit_rf.mtry_tuned)
+put_log("Confusion matrix obtained from the pre-trained model evaluation following coarse tuning:
+%1", capture.output(confusionMatrix(fit_rf.mtry_tuned)))
+
 ggplot(fit_rf.mtry_tuned)
 
 log_close()
@@ -433,8 +433,8 @@ has been saved to the following backup file:
 }
 
 
-put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+put_log("Results of the fine-tuning of the model by `mtry` parameter values, 
+trained using the `Random Forest` method on a 10% sample of the`Train Set` dataset:
 %1", capture.output(fit_rf.mtry.fine_tuned$results[,1:3]))
 
 {
@@ -447,7 +447,9 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 }
 put_end_date(start)
 
-confusionMatrix(fit_rf.mtry.fine_tuned)
+put_log("Confusion matrix obtained from the evaluation of the fine-tuned model:
+%1", capture.output(confusionMatrix(fit_rf.mtry.fine_tuned)))
+
 ggplot(fit_rf.mtry.fine_tuned)
 
 acc.fine_tuned.max <- max(fit_rf.mtry.fine_tuned$results$Accuracy)
@@ -559,7 +561,9 @@ trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
 }
 put_end_date(start)
 
-confusionMatrix(fit_rf.mtry.final_tuned)
+put_log("Confusion matrix obtained from the evaluation of the finally tuned model:
+%1", capture.output(confusionMatrix(fit_rf.mtry.final_tuned)))
+
 ggplot(fit_rf.mtry.final_tuned)
 
 acc.final_tuned.max <- max(fit_rf.mtry.final_tuned$results$Accuracy)
