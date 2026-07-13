@@ -17,14 +17,13 @@ setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
 source(setup_script.file_path, 
-       catch.aborts = TRUE,''
+       catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
 ## Prepare Input Datasets ------------------------------------------------------
-prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 
 source(prepare_ds.script.path, 
@@ -49,10 +48,6 @@ source(ds.prepare_flattened.script.path,
 
 ## kNN+PCA MCC Model -----------------------------------------------------------
 ### Build & Tune the kNN+PCA Model ---------------------------------------------
-
-knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
-                                 "1.knn+pca.build&tune.R")
-
 stopifnot(file.exists(knn_pca.tune.script.path))
 
 source(knn_pca.tune.script.path, 
@@ -78,10 +73,19 @@ source(knn_pca.retrain.best_k.script.path,
 ## Random Forest (RF) Model ----------------------------------------------------
 
 ### RF Tuning ------------------------------------------------------------------
-rf_tuning.script.path <- file.path(models.rf_scripts.dir, 
-                                       "rf-tuning.R")
-
 stopifnot(file.exists(rf_tuning.script.path))
+
+data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
+
+if(!dir.exists(data.models.random_forest.dir))
+  dir.create(data.models.random_forest.dir)
+
+data.models.rf.plots.dat.dir <- file.path(data.models.random_forest.dir, 
+                                          "plots.dat")
+
+if(!dir.exists(data.models.rf.plots.dat.dir))
+  dir.create(data.models.rf.plots.dat.dir)
+
 
 source(rf_tuning.script.path, 
        catch.aborts = TRUE,
@@ -91,9 +95,6 @@ source(rf_tuning.script.path,
        keep.source = TRUE)
 
 ### RF Re-Training with the Best Parameters ------------------------------------
-rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir, 
-                                       "rf-retraining.best-par.R")
-
 stopifnot(file.exists(rf_retraining.best_par.script.path))
 
 source(rf_retraining.best_par.script.path, 
@@ -103,10 +104,7 @@ source(rf_retraining.best_par.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-
 ## Basic Deep Learning Model ---------------------------------------------------
-
-dl_basic.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.R")
 stopifnot(file.exists(dl_basic.script.path))
 
 source(dl_basic.script.path, 
@@ -116,7 +114,6 @@ source(dl_basic.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.tuner.R")
 stopifnot(file.exists(dl_basic.tuner.script.path))
 
 source(dl_basic.tuner.script.path, 
@@ -128,26 +125,12 @@ source(dl_basic.tuner.script.path,
 
 ## CNN-Based Classifier Models -------------------------------------------------
 
-### Initial Paths --------------------------------------------------------------
-data.dl.cnn.dir <- file.path(dl.keras3.dir, "cnn")
-
-if(!dir.exists(data.dl.cnn.dir))
-  dir.create(data.dl.cnn.dir)
-
 ### CNN-based Multiclass Classifier (CNN MCC) Model ----------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
 #### Initial Paths -------------------------------------------------------------
 
 open_logfile(".ds.prepare.train&test.balanced_sets")
-
-cnn_multiclass.script.path <- file.path(models.cnn_scripts.dir, 
-                                         "cnn-multiclass.R")
-stopifnot(file.exists(cnn_multiclass.script.path))
-
-cnn_multiclass.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
-                                                   "cnn-multiclass.evaluation.R")
-stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
 
 data.dl.cnn.multiclass.dir <- file.path(data.dl.cnn.dir, "multiclass")
 
@@ -181,6 +164,7 @@ cnn_multiclass.checkpoint.file_path <-
 log_close()
 
 #### Build CNN-Based Multiclass Classifier (CNN MCC) Model ---------------------
+stopifnot(file.exists(cnn_multiclass.script.path))
 
 source(cnn_multiclass.script.path, 
        catch.aborts = TRUE,
@@ -190,6 +174,7 @@ source(cnn_multiclass.script.path,
        keep.source = TRUE)
 
 #### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
+stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
 
 source(cnn_multiclass.evaluation.script.path, 
        catch.aborts = TRUE,
@@ -199,8 +184,6 @@ source(cnn_multiclass.evaluation.script.path,
        keep.source = TRUE)
 
 ### CNN-based Binary Classifier Models -----------------------------------------
-
-cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
 
 data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
@@ -273,10 +256,8 @@ which contains a testing sample stored in the `x.test` variable having the follo
 log_close()
 
 ### Final Testing of CNN BCC-Based Ensemble ------------------------------------
-
-cnn_binary.ensemble.script.path <- file.path(models.cnn_scripts.dir, 
-                                              "cnn-binary.ensemble.R")
 stopifnot(file.exists(cnn_binary.ensemble.script.path))
+
 
 source(cnn_binary.ensemble.script.path, 
        catch.aborts = TRUE,
@@ -286,14 +267,12 @@ source(cnn_binary.ensemble.script.path,
        keep.source = TRUE)
 
 ### Final Testing of the CNN-Based Multiclass Classifier Model -----------------
+stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
 
 x3d.test_set <- ft.x3d.test_set
 rm(ft.x3d.test_set)
 
-cnn_multiclass.model.eval.file_path <- file.path(data.dl.cnn.multiclass.dir, 
-                                                 "cnn.multiclass.model.final-test.RData")
-
-source(cnn_multiclass.evaluation.script.path, 
+source(cnn_mcc.model.final_test.file_path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

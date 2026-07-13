@@ -225,23 +225,35 @@ log_close()
 
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-data.models.plot_img.dir <- file.path(data.models.random_forest.dir, "plot.img")
 
-if(!dir.exists(data.models.plot_img.dir))
-  dir.create(data.models.plot_img.dir)
+stopifnot(file.exists())
 
-rf_best.eval_plots.file <- file.path(data.dir,
-                                     "rf_best.eval_plots.rds")
-
-rf_best.eval.conf.mx.obj_file <- file.path(data.dir,
-                                           "rf-final.eval.confusion-matrix.rds")
-
-rf_best.eval.conf.mx.img_file <- file.path(data.models.plot_img.dir,
+rf_best.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                            "rf-final.eval.confusion-matrix.png")
+
+model.eval.plots_dat.file <- file.path(data.models.random_forest.dir,
+                                     "rf_best.eval.plots_dat.rds")
+
+if(file.exists(model.eval.plots_dat.file)) {
+  put_log("Loading the model-related plots input data object from the backup file...")
+  plots.args <- readRDS(model.eval.plots_dat.file)
+  
+  put_log("The model-related plots input data object has been loaded from the following file:
+%1", model.eval.plots_dat.file)
+} else {
+  
+  
+  plot.args <- list(targets = y_test,
+                    pred_probs = fit_rf.mtry_best$test$votes,
+                    pred_values = fit_rf.mtry_best$test$predicted,
+                    cm.export_img.file = rf_best.eval.conf.mx.img_file)
+}
+
 
 start <- put_start_date()
 while(!is.null(dev.list())) dev.off()
 gc()
+
 
 ### ROC Curves
 # References:
@@ -251,15 +263,15 @@ gc()
 put_log("Plotting ROC curves the Model Evaluation Results...")
 eval.roc_curves <- plot.ROC.curves(y_test,
                                    fit_rf.mtry_best$test$votes)
-eval.roc_curves <- plot_ROC(y_test,
+roc_curves <- plot_ROC(y_test,
                             fit_rf.mtry_best$test$votes)
-plot_ROC(eval.roc_curves)
+# plot_ROC(eval.roc_curves)
 
 Sys.sleep(6)
 
 put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
 
-fit_rf.mtry_best.accuracy.by_class <- 
+accuracy.by_class <- 
   plot.per_class.accuracy.bars(y_test,
                                fit_rf.mtry_best$test$predicted)
 
@@ -314,13 +326,13 @@ Sys.sleep(6)
 put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
 please wait...")
 
-rf_best.eval.conf_mx.set <- 
+conf_mx <- 
   plot.confusion_matrix(y_test,
                         fit_rf.mtry_best$test$predicted,
                         # print.plot_object = T,
                         export.img_file = rf_best.eval.conf.mx.img_file,
                         backup.file = rf_best.eval.conf.mx.obj_file)
-rm(y_test)
+# rm(y_test)
 
 put_log("Summary of the object containing computing results to plot the confusion matrix:
 %1", capture.output(summary(rf_best.eval.conf_mx.set)))
@@ -335,6 +347,9 @@ plot_image(rf_best.eval.conf.mx.img_file)
 put_end_date(start)
 log_close()
 
+if(file.exists(rf_best.eval_plots.file)) {
+  
+}
 
 
 

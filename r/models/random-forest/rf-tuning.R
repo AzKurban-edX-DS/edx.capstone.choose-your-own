@@ -152,11 +152,6 @@ open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 graphics.off()
 
 
-data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
-
-if(!dir.exists(data.models.random_forest.dir))
-  dir.create(data.models.random_forest.dir)
-
 models.rf.tune.path = file.path(data.models.random_forest.dir, "tune")
 
 if(!dir.exists(models.rf.tune.path))

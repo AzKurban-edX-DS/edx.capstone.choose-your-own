@@ -267,12 +267,57 @@ if(!dir.exists(models_data.dir))
 put_log("Root directory for the project models data:
 %1", models_data.dir)
 
+
+
 dl.keras3.dir <- file.path(models_data.dir, "dl.keras3")
 
 if(!dir.exists(dl.keras3.dir))
   dir.create(dl.keras3.dir)
 
+data.dl.cnn.dir <- file.path(dl.keras3.dir, "cnn")
 
+if(!dir.exists(data.dl.cnn.dir))
+  dir.create(data.dl.cnn.dir)
+
+
+## Init Project Script Paths ---------------------------------------------------
+prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
+stopifnot(file.exists(prepare_ds.script.path))
+
+knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
+                                      "1.knn+pca.build&tune.R")
+stopifnot(file.exists(knn_pca.tune.script.path))
+
+rf_tuning.script.path <- file.path(models.rf_scripts.dir, "rf-tuning.R")
+stopifnot(file.exists(rf_tuning.script.path))
+
+rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir, 
+                                                "rf-retraining.best-par.R")
+stopifnot(file.exists(rf_retraining.best_par.script.path))
+
+dl_basic.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.R")
+stopifnot(file.exists(dl_basic.script.path))
+
+dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.tuner.R")
+stopifnot(file.exists(dl_basic.tuner.script.path))
+
+cnn_multiclass.script.path <- file.path(models.cnn_scripts.dir, "cnn-multiclass.R")
+stopifnot(file.exists(cnn_multiclass.script.path))
+
+cnn_multiclass.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
+                                                   "cnn-multiclass.evaluation.R")
+stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
+
+cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
+stopifnot(file.exists(cnn_binary.r_scripts.dir))
+
+cnn_binary.ensemble.script.path <- file.path(models.cnn_scripts.dir, 
+                                              "cnn-binary.ensemble.R")
+stopifnot(file.exists(cnn_binary.ensemble.script.path))
+
+cnn_mcc.model.final_test.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+                                                 "cnn.multiclass.model.final-test.RData")
+stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
 
 ## Load Common Helper Functions ------------------------------------------------
 common_helper.funcs.file_path <- file.path(support_functions.dir, "common-helper.R")

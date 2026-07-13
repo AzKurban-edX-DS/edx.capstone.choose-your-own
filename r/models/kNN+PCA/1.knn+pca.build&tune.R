@@ -21,6 +21,10 @@ start <- put_start_date()
 
 ### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
 
+put_log("Loading the Split Flattened Dataset from the backup file...")
+
+ds <- load_datasets(my_emnist.0.1split.file_path)
+
 put_log("The Split Flattened Dataset has been loaded from the folowing file:
 %1", my_emnist.0.1split.file_path)
 

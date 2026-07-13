@@ -2,7 +2,7 @@
 # Models Helper Functions 
 #%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Building Machine Learning Models --------------------------------------------
+## Building Machine Learnign Models --------------------------------------------
 
 train.kNN_PCA <- function(x, 
                           y, 
@@ -537,8 +537,9 @@ plot_ROC <- function(x) {
 }
 
 plot_ROC.plotsDat <- function(x) {
+  put_log("Function `plot_ROC.plotsDat`:
+The per-class ROC curve calculation of the MCC has been completed.")
   plot_ROC(x$ROC)
-  return(x$ROC)
 }
 
 plot_ROC.default <- function(x) {
@@ -596,58 +597,23 @@ calc.roc_curves <- function(targets,
 }
 
 ### Plotting Bars Representing Accuracy By Class -------------------------------
-barPlot.accuracy_by_class <- function(x, ...) {
-  UseMethod("barPlot.accuracy_by_class")
-}
 
-barPlot.accuracy_by_class.plotsDat <- 
-  function(x,
-           title.prefix = NULL,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
-  barPlot.accuracy_by_class(x$PCA,
-                            title.prefix,
-                            .title,
-                            .color,
-                            .fill)
-}
-
-barPlot.accuracy_by_class.default <- 
-  function(x, 
-           title.prefix = NULL,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
+plot.per_class.accuracy.bars <- function(targets,
+                                         predicted.values){
   
-  stopifnot(class(x$pred_values) == "factor" && 
-              sum(levels(x$pred_values) != levels(Y.Labels)) == 0)
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(Y.Labels)) == 0)
   
-  per_class.accuracy <- MCClassifier.accuracy.by_class(x$targets,
-                                                       x$pred_values,
+  per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
+                                                       predicted.values,
                                                        Y.Labels)
-  class(per_class.accuracy) <- "perClassAccValues"
-  barPlot.accuracy_by_class(per_class.accuracy)
-}
-
-barPlot.accuracy_by_class.perClassAccValues <- 
-  function(x, 
-           title.prefix = NULL,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
-    
-  put_log("Function `barPlot.accuracy_by_class.perClassAccValues`: 
+  put_log("Function `plot.per_class.accuracy.bars`: 
 Plotting bar chart of per-class accuracy of the MCC model...")
-  bar_plot <- plot_bars.accuracy.by_class(x,
+  bar_plot <- plot_bars.accuracy.by_class(per_class.accuracy,
                                           Y.Labels,
-                                          title.prefix,
-                                          .title,
-                                          .color,
-                                          .fill)
+                                          title.prefix = "Basic DL Multiclass")
   print(bar_plot)
-  return(x)
-  
+  return(per_class.accuracy)
 }
 
 plot_bars.accuracy.by_class <- function(class.accuracies,
@@ -671,29 +637,6 @@ plot_bars.accuracy.by_class <- function(class.accuracies,
     scale_y_continuous(labels = scales::label_percent(accuracy = 1),
                        expand = c(0, 0, 0.005, 0))
 }
-
-### Obsolete: To Remove Soon!!! ----------------------------------------------- 
-
-
-plot.per_class.accuracy.bars <- function(targets,
-                                         predicted.values){
-  
-  stopifnot(class(predicted.values) == "factor" && 
-              sum(levels(predicted.values) != levels(Y.Labels)) == 0)
-  
-  per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
-                                                       predicted.values,
-                                                       Y.Labels)
-  put_log("Function `plot.per_class.accuracy.bars`: 
-Plotting bar chart of per-class accuracy of the MCC model...")
-  bar_plot <- plot_bars.accuracy.by_class(per_class.accuracy,
-                                          Y.Labels,
-                                          title.prefix = "Basic DL Multiclass")
-  print(bar_plot)
-  return(per_class.accuracy)
-}
-
-### Plotting Configuration Matrix ----------------------------------------------
 
 
 #> Plots a confusion matrix created by the custom helper functions defined below.
