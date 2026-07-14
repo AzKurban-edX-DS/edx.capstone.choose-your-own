@@ -84,7 +84,7 @@ put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation r
 please wait...")
 
 rf_best.eval.conf_mx.set <- 
-  plot.confusion_matrix(y_test,
+  plot.conf.mx(y_test,
                         fit_rf.mtry_best$test$predicted,
                         # print.plot_object = T,
                         export.img_file = rf_best.eval.conf.mx.img_file,

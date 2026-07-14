@@ -317,7 +317,7 @@ put_log("The confusion matrix based on the `BDL MCC` Model evaluation results ha
 %1", capture.output(dl.basic.conf.mx))
 
 put_log("Plotting the confusion matrix, please wait...")
-dl.basic.conf.mx.chart <- plot.confusion_matrix(dl.basic.conf.mx)
+dl.basic.conf.mx.chart <- plot.conf.mx(dl.basic.conf.mx)
 
 start <- put_start_date()
 cl <- makeCluster(N_pcCores)

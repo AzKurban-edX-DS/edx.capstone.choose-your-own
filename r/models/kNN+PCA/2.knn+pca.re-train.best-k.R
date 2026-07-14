@@ -356,7 +356,7 @@ put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation r
 please wait...")
 
 k_best.nn_pca.conf_mx.set <- 
-  plot.confusion_matrix(y_test,
+  plot.conf.mx(y_test,
                         k_best.nn_pca.predicted,
                         # print.plot_object = T,
                         export.img_file = knn_pca.eval.conf.mx.img_file,

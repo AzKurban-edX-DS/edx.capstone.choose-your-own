@@ -14,6 +14,7 @@ plot.args <- list(ROC = list(targets = y_test,
 plot.args <- list(targets = y_test,
                   pred_probs = fit_rf.mtry_best$test$votes,
                   pred_values = fit_rf.mtry_best$test$predicted,
+                  # cm_data.backup.file = NULL,
                   cm.export_img.file = rf_best.eval.conf.mx.img_file)
 
 str(plot.args)
@@ -40,6 +41,7 @@ put_log("Plotting ROC curves of the Multiclass Classifier Evaluation Results..."
 plots.dat$ROC <- plot_ROC(plot.args)
 plots.dat$ROC <- plot_ROC(plots.dat)
 class(plots.dat$ROC)
+summary(plots.dat$ROC)
 
 Sys.sleep(6)
 
@@ -57,12 +59,16 @@ Sys.sleep(6)
 put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
 please wait...")
 
+plots.dat$CM <- plot.confusion_matrix(plot.args)
+plots.dat$CM <- plot.confusion_matrix(plots.dat)
+class(plots.dat$CM)
+
 .conf_mx.set <- 
-  plot.confusion_matrix(y.test,
-                        .predicted,
-                        # print.plot_object = T,
-                        export.img_file = .eval.conf.mx.img_file,
-                        backup.file = .eval.conf.mx.obj_file)
+  plot.conf.mx(y.test,
+               .predicted,
+               # print.plot_object = T,
+               export.img_file = .eval.conf.mx.img_file,
+               backup.file = .eval.conf.mx.obj_file)
 
 put_log("Summary of the object containing computing results to plot the confusion matrix:
 %1", capture.output(summary(k_best.nn_pca.conf_mx.set)))
