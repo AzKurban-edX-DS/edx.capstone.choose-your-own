@@ -527,6 +527,8 @@ cnn.binclass.get_prediction_values <- function(preds) {
 }
 
 ## Analysis & Visualization ----------------------------------------------------
+
+# Returns an object of the `modelEvalResultPlotArgs` class
 create.plot_args <- function(targets,
                              predicted.probabilities,
                              predicted.values,
@@ -729,6 +731,7 @@ Plotting bar chart of per-class accuracy of the MCC model...")
 
 ### Plotting Configuration Matrix ----------------------------------------------
 
+# Returns an object of the `ConfMxPlotArgs` class
 plot.cm.create_args <- function(targets,
                                 predicted.values,
                                 palette = "Greens",
@@ -761,11 +764,67 @@ plot.cm.create_args <- function(targets,
   return(structure(args, class = "ConfMxPlotArgs"))
 }
 
+# Returns an object of the `ConfMxDat` class
+build_confusion_matrix.plot_data <- function(targets,
+                                             predicted.values,
+                                             .palette = "Greens",
+                                             font.size = 3,
+                                             font.color = "red",
+                                             add_normalized = FALSE,
+                                             add_col_percentages = FALSE,
+                                             add_row_percentages = FALSE,
+                                             print.plot_object = FALSE,
+                                             export.img_file = NULL,
+                                             backup.file = NULL) {
+
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  cm <- create.confusion_matrix(x$targets,
+                                x$pred_values)
+
+  return(structure(list(cm = cm,
+                        palette = .palette,
+                        font.size = font.size,
+                        font.color = font.color,
+                        add_normalized = add_normalized,
+                        add_col_percentages = add_col_percentages,
+                        add_row_percentages = add_row_percentages,
+                        print.plot_object = print.plot_object,
+                        export.img_file = export.img_file,
+                        backup.file = backup.file), 
+                   class = "ConfMxDat"))
+}
+
 #### S3 Method Dispatch: Generic function `plot.confusion_matrix` --------------
 plot.confusion_matrix <- function(x, ...) {
   UseMethod("plot.confusion_matrix")
 }
 
+#> Uses the S3 Method Dispatch internally 
+#> to call the `plot.confusion_matrix.default()` function.
+plot.confusion_matrix.modelEvalResultPlotArgs <- function(x) {
+  
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  put_log("Using S3 Method Dispatch
+to call the `plot.confusion_matrix.default()` function...")
+  plot.confusion_matrix(targets = x$targets,
+                        pred_values = x$predicted.values,
+                        palette = x$cm.palette,
+                        font.size = x$cm.font.size,
+                        font.color = x$cm.font.color,
+                        add_normalized = x$cm.add_normalized,
+                        add_col_percentages = x$cm.add_col_percentages,
+                        add_row_percentages = x$cm.add_row_percentages,
+                        print.plot_object = x$cm.print.plot_object,
+                        export.img_file = x$cm.export.img_file,
+                        backup.file = x$cm.backup.file)
+}
+
+#> Uses the S3 Method Dispatch internally 
+#> to call the `plot.confusion_matrix.ConfMxPlotArgs()` function.
 plot.confusion_matrix.default <- function(targets,
                                           predicted.values,
                                           .palette = "Greens",
@@ -777,9 +836,12 @@ plot.confusion_matrix.default <- function(targets,
                                           print.plot_object = FALSE,
                                           export.img_file = NULL,
                                           backup.file = NULL) {
+
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
   
-  put_log("Function `plot.confusion_matrix.default`: 
-Creating argument list for `Plot Confusion Matrix` helper function...")
+  put_log("Creating an object of the `ConfMxPlotArgs` class, 
+representing the argument list for the helper function that plots the confusion matrix...")
   args <- plot.cm.create_args(targets = targets,
                               pred_values = predicted.values,
                               palette = .palette,
@@ -792,27 +854,9 @@ Creating argument list for `Plot Confusion Matrix` helper function...")
                               export.img_file = export.img_file,
                               backup.file = backup.file)
   
+  put_log("Using S3 Method Dispatch
+to call the `plot.confusion_matrix.ConfMxPlotArgs()` function...")
   plot.confusion_matrix(args)
-}
-
-plot.confusion_matrix.modelEvalResultPlotArgs <- function(x) {
-  
-  put_log("Creating an object of class `ConfMxPlotArgs`...")
-  cm.args <- plot.cm.create_args(targets = x$targets,
-                                 pred_values = x$predicted.values,
-                                 palette = x$cm.palette,
-                                 font.size = x$cm.font.size,
-                                 font.color = x$cm.font.color,
-                                 add_normalized = x$cm.add_normalized,
-                                 add_col_percentages = x$cm.add_col_percentages,
-                                 add_row_percentages = x$cm.add_row_percentages,
-                                 print.plot_object = x$cm.print.plot_object,
-                                 export.img_file = x$cm.export.img_file,
-                                 backup.file = x$cm.backup.file)
-  
-  # call `plot.confusion_matrix.ConfMxPlotArgs`
-  put_log("Using S3 Method Dispatch to call the `plot.confusion_matrix.ConfMxPlotArgs()` function...")
-  plot.confusion_matrix(cm.args)
 }
 
 plot.confusion_matrix.ConfMxPlotArgs <- function(x) {
@@ -820,32 +864,24 @@ plot.confusion_matrix.ConfMxPlotArgs <- function(x) {
 Creating a confusion matrix based on the model evaluation results in a format 
 suitable for visualization using the `cvms` package...")
   
-  cm.dat <- create.confusion_matrix(x$targets,
-                                x$pred_values)
-  class(cm) <- "ConfMxDat"
-  plot.confusion_matrix(cm.dat,
-                        palette = x$palette,
-                        font.size = x$font.size,
-                        font.color = x$font.color,
-                        add_normalized = x$add_normalized,
-                        add_col_percentages = x$add_col_percentages,
-                        add_row_percentages = x$add_row_percentages,
-                        print.plot_object = x$print.plot_object,
-                        export.img_file = x$export.img_file,
-                        backup.file = x$cm_data.backup.file)
+  cm.dat <- build_confusion_matrix.plot_data(x$targets,
+                                             x$pred_values,
+                                             palette = x$palette,
+                                             font.size = x$font.size,
+                                             font.color = x$font.color,
+                                             add_normalized = x$add_normalized,
+                                             add_col_percentages = x$add_col_percentages,
+                                             add_row_percentages = x$add_row_percentages,
+                                             print.plot_object = x$print.plot_object,
+                                             export.img_file = x$export.img_file,
+                                             backup.file = x$cm_data.backup.file)
+  put_log("Using S3 Method Dispatch
+to call the `plot.confusion_matrix.ConfMxDat()` function...")
+  plot.confusion_matrix(cm.dat)
   
 }
 
-plot.confusion_matrix.ConfMxDat <- function(x,
-                                            palette = "Greens",
-                                            font.size = 3,
-                                            font.color = "red",
-                                            add_normalized = FALSE,
-                                            add_col_percentages = FALSE,
-                                            add_row_percentages = FALSE,
-                                            print.plot_object = FALSE,
-                                            export.img_file = NULL,
-                                            backup.file = NULL) {
+plot.confusion_matrix.ConfMxDat <- function(x) {
 
   put_log("Function `plot.confusion_matrix.ConfMxDat`: 
 The confusion matrix has been created:
