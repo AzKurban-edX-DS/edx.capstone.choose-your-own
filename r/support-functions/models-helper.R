@@ -557,7 +557,7 @@ create.plot_args <- function(targets,
                cm.export.img_file = export.img_file,
                cm.backup.file = cm.backup.file)
   
-  return(structure(args, class = "ConfMxPlotArgs"))
+  return(structure(args, class = "modelEvalResultPlotArgs"))
 }
 
 ### Plotting ROC Curves --------------------------------------------------------
