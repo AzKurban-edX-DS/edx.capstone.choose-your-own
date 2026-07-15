@@ -527,6 +527,39 @@ cnn.binclass.get_prediction_values <- function(preds) {
 }
 
 ## Analysis & Visualization ----------------------------------------------------
+create.plot_args <- function(targets,
+                             predicted.probabilities,
+                             predicted.values,
+                             cm.palette = "Greens",
+                             cm.font.size = 3,
+                             cm.font.color = "red",
+                             cm.add_normalized = FALSE,
+                             cm.add_col_percentages = FALSE,
+                             cm.add_row_percentages = FALSE,
+                             cm.print.plot_object = FALSE,
+                             cm.print.image = FALSE,
+                             cm.export.img_file = NULL,
+                             cm.backup.file = NULL) {
+  
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+
+  args <- list(targets = targets,
+               pred_values = predicted.values,
+               palette = cm.palette,
+               cm.font.size = cm.font.size,
+               cm.font.color = cm.font.color,
+               cm.add_normalized = cm.add_normalized,
+               cm.add_col_percentages = cm.add_col_percentages,
+               cm.add_row_percentages = cm.add_row_percentages,
+               cm.print.plot_object = cm.print.plot_object,
+               cm.print.image = cm.print.image,
+               cm.export.img_file = export.img_file,
+               cm.backup.file = cm.backup.file)
+  
+  return(structure(args, class = "ConfMxPlotArgs"))
+}
+
 ### Plotting ROC Curves --------------------------------------------------------
 # References:
 # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
@@ -707,6 +740,9 @@ plot.cm.create_args <- function(targets,
                                 export.img_file = NULL,
                                 backup.file = NULL) {
   
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+
   args <- list(targets = targets,
                pred_values = predicted.values,
                palette = .palette,
@@ -893,8 +929,8 @@ plot.confusion_matrix. <- function(x) {
 create.confusion_matrix <- function(targets,
                                     predicted.values) {
   
-  stopifnot(class(predicted.values) == "factor" && 
-              sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
   
   categorical_targets <- 
     length(shape(targets)) == 2 && 
