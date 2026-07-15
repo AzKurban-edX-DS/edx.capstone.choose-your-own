@@ -11,11 +11,11 @@ plot.args <- list(ROC = list(targets = y_test,
                             # print.plot = T,
                             export.img_file = rf_best.eval.conf.mx.img_file))
 
-plot.args <- list(targets = y_test,
-                  pred_probs = fit_rf.mtry_best$test$votes,
-                  pred_values = fit_rf.mtry_best$test$predicted,
-                  # cm_data.backup.file = NULL,
-                  cm.export_img.file = rf_best.eval.conf.mx.img_file)
+plot.args <- create.plot_args(targets = y_test,
+                              predicted.probabilities = fit_rf.mtry_best$test$votes,
+                              predicted.values = fit_rf.mtry_best$test$predicted,
+                              cm.export_img.file = rf_best.eval.conf.mx.img_file,
+                              cm.print.image = T)
 
 str(plot.args)
 class(plot.args)
