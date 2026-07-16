@@ -661,7 +661,7 @@ put_log("The confusion matrix based on the `BDL MCC` Model evaluation results ha
 put_log("Plotting the confusion matrix, please wait...")
 bdl_final.conf.mx.chart <- 
   plot.conf.mx(bdl_final.conf.mx,
-                        export.img_file = dl.basic.final.conf_mx.img)
+                        cm.export.img_file = dl.basic.final.conf_mx.img)
 
 print(bdl_final.conf.mx.chart)
 

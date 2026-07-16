@@ -358,9 +358,9 @@ please wait...")
 k_best.nn_pca.conf_mx.set <- 
   plot.conf.mx(y_test,
                         k_best.nn_pca.predicted,
-                        # print.plot_object = T,
-                        export.img_file = knn_pca.eval.conf.mx.img_file,
-                        backup.file = knn_pca.eval.conf.mx.obj_file)
+                        # cm.print.plot_object = T,
+                        cm.export.img_file = knn_pca.eval.conf.mx.img_file,
+                        cm.backup.file = knn_pca.eval.conf.mx.obj_file)
 rm(y_test)
 
 put_log("Summary of the object containing computing results to plot the confusion matrix:

@@ -329,9 +329,9 @@ please wait...")
 conf_mx <- 
   plot.conf.mx(y_test,
                         fit_rf.mtry_best$test$predicted,
-                        # print.plot_object = T,
-                        export.img_file = rf_best.eval.conf.mx.img_file,
-                        backup.file = rf_best.eval.conf.mx.obj_file)
+                        # cm.print.plot_object = T,
+                        cm.export.img_file = rf_best.eval.conf.mx.img_file,
+                        cm.backup.file = rf_best.eval.conf.mx.obj_file)
 # rm(y_test)
 
 put_log("Summary of the object containing computing results to plot the confusion matrix:

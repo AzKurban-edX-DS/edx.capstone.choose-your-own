@@ -9,7 +9,7 @@ plot.args <- list(ROC = list(targets = y_test,
                   cm = list(targets = y_test,
                             pred_values = fit_rf.mtry_best$test$predicted,
                             # print.plot = T,
-                            export.img_file = rf_best.eval.conf.mx.img_file))
+                            cm.export.img_file = rf_best.eval.conf.mx.img_file))
 
 plot.args <- create.plot_args(targets = y_test,
                               predicted.probabilities = fit_rf.mtry_best$test$votes,
@@ -66,9 +66,9 @@ class(plots.dat$CM)
 .conf_mx.set <- 
   plot.conf.mx(y.test,
                .predicted,
-               # print.plot_object = T,
-               export.img_file = .eval.conf.mx.img_file,
-               backup.file = .eval.conf.mx.obj_file)
+               # cm.print.plot_object = T,
+               cm.export.img_file = .eval.conf.mx.img_file,
+               cm.backup.file = .eval.conf.mx.obj_file)
 
 put_log("Summary of the object containing computing results to plot the confusion matrix:
 %1", capture.output(summary(k_best.nn_pca.conf_mx.set)))

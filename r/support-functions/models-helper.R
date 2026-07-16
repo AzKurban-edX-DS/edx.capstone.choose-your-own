@@ -546,6 +546,9 @@ create.plot_args <- function(targets,
   stopifnot(class(predicted.values) == "factor", 
             sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
 
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
+  
   args <- list(targets = targets,
                pred_probs = predicted.probabilities,
                pred_values = predicted.values,
@@ -557,7 +560,7 @@ create.plot_args <- function(targets,
                cm.add_row_percentages = cm.add_row_percentages,
                cm.print.plot_object = cm.print.plot_object,
                cm.print.image = cm.print.image,
-               cm.export.img_file = export.img_file,
+               cm.export.img_file = cm.export.img_file,
                cm.backup.file = cm.backup.file)
   
   return(structure(args, class = "modelEvalResultPlotArgs"))
@@ -742,13 +745,16 @@ plot.cm.create_args <- function(targets,
                                 add_normalized = FALSE,
                                 add_col_percentages = FALSE,
                                 add_row_percentages = FALSE,
-                                print.plot_object = FALSE,
-                                print.cm.image = FALSE,
-                                export.img_file = NULL,
-                                backup.file = NULL) {
+                                cm.print.plot_object = FALSE,
+                                cm.print.image = FALSE,
+                                cm.export.img_file = NULL,
+                                cm.backup.file = NULL) {
   
   stopifnot(class(predicted.values) == "factor", 
             sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
 
   args <- list(targets = targets,
                pred_values = predicted.values,
@@ -758,10 +764,10 @@ plot.cm.create_args <- function(targets,
                add_normalized = add_normalized,
                add_col_percentages = add_col_percentages,
                add_row_percentages = add_row_percentages,
-               print.plot_object = print.plot_object,
-               print.cm.image = print.cm.image,
-               export.img_file = export.img_file,
-               backup.file = backup.file)
+               cm.print.plot_object = cm.print.plot_object,
+               cm.print.image = cm.print.image,
+               cm.export.img_file = cm.export.img_file,
+               cm.backup.file = cm.backup.file)
   
   return(structure(args, class = "ConfMxPlotArgs"))
 }
@@ -775,12 +781,16 @@ build_confusion_matrix.plot_data <- function(targets,
                                              add_normalized = FALSE,
                                              add_col_percentages = FALSE,
                                              add_row_percentages = FALSE,
-                                             print.plot_object = FALSE,
-                                             export.img_file = NULL,
-                                             backup.file = NULL) {
+                                             cm.print.plot_object = FALSE,
+                                             cm.print.image = FALSE,
+                                             cm.export.img_file = NULL,
+                                             cm.backup.file = NULL) {
 
   stopifnot(class(predicted.values) == "factor", 
             sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
   
   put_log("Function `build_confusion_matrix.plot_data`:
 Creating a confusion matrix object from the model evaluation results 
@@ -795,9 +805,9 @@ suitable for visualization using the `cvms` package...")
                         add_normalized = add_normalized,
                         add_col_percentages = add_col_percentages,
                         add_row_percentages = add_row_percentages,
-                        print.plot_object = print.plot_object,
-                        export.img_file = export.img_file,
-                        backup.file = backup.file), 
+                        cm.print.plot_object = cm.print.plot_object,
+                        cm.export.img_file = cm.export.img_file,
+                        cm.backup.file = cm.backup.file), 
                    class = "ConfMxDat"))
 }
 
@@ -833,8 +843,6 @@ using the `cvms` package...")
                    as.character(predicted.values))
 }
 
-
-
 #> Accepts the `ConfMxDat` class object in its only argument 
 #> and returns an object of the `ConfMxPlot` class.
 build.ConfMxPlot.object <- function(x) {
@@ -856,9 +864,18 @@ Creating a visual representation of the confusion matrix using the `cvms` packag
   put_end_date(start)
   return(structure(list(cm.chart = cm.chart,
                         cm.dat = x,
-                        print.plot_object = print.plot_object,
-                        export.img_file = export.img_file,
-                        backup.file = backup.file), class = "ConfMxPlot"))
+                        cm.print.plot_object = cm.print.plot_object,
+                        cm.export.img_file = cm.export.img_file,
+                        cm.backup.file = cm.backup.file), class = "ConfMxPlot"))
+}
+
+cm.export2image.validate <- function(cm.print.image,
+                                     cm.export.img_file){
+  if(cm.print.image && is.null(cm.export.img_file))
+    stop("Confusion Matrix image cannot be printed since the image file path
+is not provided: 
+`cm.print.image` is `TRUE` but `cm.export.img_file` is `NULL`!")
+  
 }
 
 ##### S3 Method Dispatch: Generic function `plot.confusion_matrix` --------------
@@ -883,9 +900,9 @@ Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function.
                         add_normalized = x$cm.add_normalized,
                         add_col_percentages = x$cm.add_col_percentages,
                         add_row_percentages = x$cm.add_row_percentages,
-                        print.plot_object = x$cm.print.plot_object,
-                        export.img_file = x$cm.export.img_file,
-                        backup.file = x$cm.backup.file)
+                        cm.print.plot_object = x$cm.print.plot_object,
+                        cm.export.img_file = x$cm.export.img_file,
+                        cm.backup.file = x$cm.backup.file)
 }
 
 #> Uses the S3 Method Dispatch internally 
@@ -898,12 +915,15 @@ plot.confusion_matrix.default <- function(targets,
                                           add_normalized = FALSE,
                                           add_col_percentages = FALSE,
                                           add_row_percentages = FALSE,
-                                          print.plot_object = FALSE,
-                                          export.img_file = NULL,
-                                          backup.file = NULL) {
+                                          cm.print.plot_object = FALSE,
+                                          cm.export.img_file = NULL,
+                                          cm.backup.file = NULL) {
 
   stopifnot(class(predicted.values) == "factor", 
             sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
   
   put_log("Function `plot.confusion_matrix.default`:
 Creating an object of the `ConfMxPlotArgs` class, 
@@ -916,9 +936,9 @@ representing the argument list for the helper function that plots the confusion 
                               add_normalized = add_normalized,
                               add_col_percentages = add_col_percentages,
                               add_row_percentages = add_row_percentages,
-                              print.plot_object = print.plot_object,
-                              export.img_file = export.img_file,
-                              backup.file = backup.file)
+                              cm.print.plot_object = cm.print.plot_object,
+                              cm.export.img_file = cm.export.img_file,
+                              cm.backup.file = cm.backup.file)
   
   put_log("Function ``:
 Using S3 Method Dispatch
@@ -941,9 +961,9 @@ using the `cvms` package...")
                                              add_normalized = x$add_normalized,
                                              add_col_percentages = x$add_col_percentages,
                                              add_row_percentages = x$add_row_percentages,
-                                             print.plot_object = x$print.plot_object,
-                                             export.img_file = x$export.img_file,
-                                             backup.file = x$cm_data.backup.file)
+                                             cm.print.plot_object = x$cm.print.plot_object,
+                                             cm.export.img_file = x$cm.export.img_file,
+                                             cm.backup.file = x$cm_data.backup.file)
   put_log("Using S3 Method Dispatch
 to call the `plot.confusion_matrix.ConfMxDat()` function...")
   plot.confusion_matrix(cm.dat)
@@ -968,31 +988,31 @@ to call the `plot.confusion_matrix.ConfMxPlot()` function...")
 #> to call the `plot.confusion_matrix.()` function.
 plot.confusion_matrix.ConfMxPlot <- function(x) {
   
-  if(!is.null(x$export.img_file)) {
+  if(!is.null(x$cm.export.img_file)) {
     put_log("Function `plot.confusion_matrix.ConfMxPlot`: 
 Exporting the Confusion Matrix Plot object to an image file...")
     
-    ggsave(filename = x$export.img_file, 
+    ggsave(filename = x$cm.export.img_file, 
            plot = x$cm.chart)
     
     put_log("Function `plot.confusion_matrix.ConfMxPlot`: 
 The Confusion Matrix Plot image has been saved to the following file:
-  %1", export.img_file)
+  %1", cm.export.img_file)
   }
   
-  if (!is.null(x$backup.file)) {
+  if (!is.null(x$cm.backup.file)) {
     put_log("Function `plot.confusion_matrix.ConfMxPlot`: 
 Saving the confusion matrix plot object in the backup file...")
     
     saveRDS(x$cm.chart, 
-            file = x$backup.file)
+            file = x$cm.backup.file)
     
     put_log("Function `plot.confusion_matrix.ConfMxPlot`: 
 The confusion matrix plot object has been backed up in the following file:
-`%1`", x$backup.file)
+`%1`", x$cm.backup.file)
   }
   
-  if(x$print.plot_object) {
+  if(x$cm.print.plot_object) {
     # # Clear any stuck graphics devices
     while(!is.null(dev.list())) dev.off()
     # graphics.off() 
@@ -1025,9 +1045,13 @@ plot.confusion_matrix.plotsDat <- function(x,
                                            add_normalized = FALSE,
                                            add_col_percentages = FALSE,
                                            add_row_percentages = FALSE,
-                                           print.plot_object = FALSE,
-                                           export.img_file = NULL,
-                                           backup.file = NULL) {
+                                           cm.print.plot_object = FALSE,
+                                           cm.export.img_file = NULL,
+                                           cm.backup.file = NULL) {
+
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
+  
   plot.confusion_matrix(x$CM)
                                              
   
@@ -1060,9 +1084,16 @@ plot.conf.mx <- function(targets,
                          add_normalized = FALSE,
                          add_col_percentages = FALSE,
                          add_row_percentages = FALSE,
-                         print.plot_object = FALSE,
-                         export.img_file = NULL,
-                         backup.file = NULL) {
+                         cm.print.plot_object = FALSE,
+                         cm.export.img_file = NULL,
+                         cm.backup.file = NULL) {
+  
+  
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
   
   put_log("Function `plot.conf.mx`: 
 Creating a confusion matrix based on the model evaluation results in a format 
@@ -1086,30 +1117,30 @@ The confusion matrix has been created:
                                          add_normalized = add_normalized,
                                          add_col_percentages = add_col_percentages,
                                          add_row_percentages = add_row_percentages)
-  if(!is.null(export.img_file)) {
+  if(!is.null(cm.export.img_file)) {
     put_log("Function `plot.conf.mx`: 
 Exporting the Confusion Matrix Plot object to an image file...")
     
-    ggsave(filename = export.img_file, 
+    ggsave(filename = cm.export.img_file, 
            plot = conf.mx.chart)
     
     put_log("Function `plot.conf.mx`: 
 The Confusion Matrix Plot image has been saved to the following file:
-  %1", export.img_file)
+  %1", cm.export.img_file)
   }
   
   
-  if (!is.null(backup.file)) {
+  if (!is.null(cm.backup.file)) {
     put_log("Saving the confusion matrix plot object in the backup file...")
     
     saveRDS(conf.mx.chart, 
-            file = backup.file)
+            file = cm.backup.file)
     
     put_log("The confusion matrix plot object has been backed up in the following file:
-`%1`", backup.file)
+`%1`", cm.backup.file)
   }
 
-  if(print.plot_object) {
+  if(cm.print.plot_object) {
     # # Clear any stuck graphics devices
     while(!is.null(dev.list())) dev.off()
     # graphics.off() 
@@ -1142,7 +1173,7 @@ print_confusioin_matrix <- function(confusion_matrix.plot) {
 }
 
 create_confusion_matrix <- function(targets, 
-                                    predictions,
+                                    predicted.values,
                                     create_plot = FALSE,
                                     palette = "Greens",
                                     font_counts = font(size = 3,
@@ -1150,6 +1181,10 @@ create_confusion_matrix <- function(targets,
                                     add_normalized = FALSE,
                                     add_col_percentages = FALSE,
                                     add_row_percentages = FALSE) {
+
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
   put_log("Function `create_confusion_matrix`:
 Creating confusion matrix...")
   start <- put_start_date()
@@ -1158,7 +1193,7 @@ Creating confusion matrix...")
   registerDoParallel(cl)
 
   conf.mx <- confusion_matrix(as.character(targets),
-                                           as.character(predictions))
+                                           as.character(predicted.values))
   put_log("Function `create_confusion_matrix`:
 The confution matrix has been created:
 %1", capture.output(conf.mx))
@@ -1188,7 +1223,7 @@ Plotting confusion matrix, please wait...")
 
 create_plot.conf.mx <- function(targets, 
                                 pred.values,
-                                backup.file,
+                                cm.backup.file,
                                 img.file = NULL) {
   start <- put_start_date()
   
@@ -1208,13 +1243,13 @@ Plotting the confusion matrix, please wait...")
 Saving the Confusion Matrix Plot object...")
   
   saveRDS(plt,
-          file = backup.file)
+          file = cm.backup.file)
   
   put_log("Function `create_plot.conf.mx`: 
 The Confusion Matrix Plot object has been saved in the following file:
-  %1", backup.file)
+  %1", cm.backup.file)
   
-  if(!is.null(export.img_file)) {
+  if(!is.null(cm.export.img_file)) {
     put_log("Function `create_plot.conf.mx`: 
 Exporting the Confusion Matrix Plot object to image file...")
     
