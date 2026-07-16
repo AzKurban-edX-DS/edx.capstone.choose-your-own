@@ -63,15 +63,15 @@ plots.dat$CM <- plot.confusion_matrix(plot.args)
 plots.dat$CM <- plot.confusion_matrix(plots.dat)
 class(plots.dat$CM)
 
-.conf_mx.set <- 
-  plot.conf.mx(y.test,
-               .predicted,
-               # cm.print.plot_object = T,
-               cm.export.img_file = .eval.conf.mx.img_file,
-               cm.backup.file = .eval.conf.mx.obj_file)
-
-put_log("Summary of the object containing computing results to plot the confusion matrix:
-%1", capture.output(summary(k_best.nn_pca.conf_mx.set)))
+# .conf_mx.set <- 
+#   plot.conf.mx(y.test,
+#                .predicted,
+#                # cm.print.plot_object = T,
+#                cm.export.img_file = .eval.conf.mx.img_file,
+#                cm.backup.file = .eval.conf.mx.obj_file)
+# 
+# put_log("Summary of the object containing computing results to plot the confusion matrix:
+# %1", capture.output(summary(k_best.nn_pca.conf_mx.set)))
 
 # .eval.conf.mx.img <- magick::image_read(.eval.conf.mx.img_file)
 # plot(.eval.conf.mx.img)

@@ -949,7 +949,7 @@ representing the argument list for the helper function that plots the confusion 
                               cm.export.img_file = cm.export.img_file,
                               cm.backup.file = cm.backup.file)
   
-  put_log("Function ``:
+  put_log("Function `plot.confusion_matrix.default`:
 Using S3 Method Dispatch
 to call the `plot.confusion_matrix.ConfMxPlotArgs()` function...")
   plot.confusion_matrix(args)
@@ -995,8 +995,7 @@ to call the `plot.confusion_matrix.ConfMxPlot()` function...")
   plot.confusion_matrix(cm.plot)
 }
 
-#' Uses the S3 Method Dispatch internally 
-#' to call the `plot.confusion_matrix.()` function.
+#' Optionally plots the Confusion Matrix and saves it to the backup file. 
 #' @param x An object of the `ConfMxPlot` class.
 plot.confusion_matrix.ConfMxPlot <- function(x) {
   
@@ -1043,6 +1042,9 @@ The confusion matrix plot object has been backed up in the following file:
     stopImplicitCluster()
     
     rm(conf_mx.chart.tmp, pos = .GlobalEnv)
+  } else if(x$cm.print.image) {
+    stopifnot(file.exists(x$cm.export.img_file))
+    plot_image(x$cm.export.img_file)
   }
   
   return(x)
@@ -1050,39 +1052,15 @@ The confusion matrix plot object has been backed up in the following file:
 
 #' Uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.()` function.
-plot.confusion_matrix.plotsDat <- function(x,
-                                           palette = "Greens",
-                                           font.size = 3,
-                                           font.color = "red",
-                                           add_normalized = FALSE,
-                                           add_col_percentages = FALSE,
-                                           add_row_percentages = FALSE,
-                                           cm.print.plot_object = FALSE,
-                                           cm.export.img_file = NULL,
-                                           cm.backup.file = NULL) {
+#' @param x An object of the `plotsDat` class.
+plot.confusion_matrix.plotsDat <- function(x) {
 
   cm.export2image.validate(cm.print.image,
                            cm.export.img_file)
-  
+  put_log("Function `plot.confusion_matrix.plotsDat`:
+Using S3 Method Dispatch
+to call the `plot.confusion_matrix.ConfMxPlot()` function...")
   plot.confusion_matrix(x$CM)
-                                             
-  
-  
-}
-
-
-#' Uses the S3 Method Dispatch internally 
-#' to call the `plot.confusion_matrix.()` function.
-plot.confusion_matrix. <- function(x) {
-  
-  
-}
-
-#' Uses the S3 Method Dispatch internally 
-#' to call the `plot.confusion_matrix.()` function.
-plot.confusion_matrix. <- function(x) {
-  
-  
 }
 
 #### Other Helper Functions ----------------------------------------------------
