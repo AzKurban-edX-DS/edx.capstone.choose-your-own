@@ -806,6 +806,7 @@ suitable for visualization using the `cvms` package...")
                         add_col_percentages = add_col_percentages,
                         add_row_percentages = add_row_percentages,
                         cm.print.plot_object = cm.print.plot_object,
+                        cm.print.image = cm.print.image,
                         cm.export.img_file = cm.export.img_file,
                         cm.backup.file = cm.backup.file), 
                    class = "ConfMxDat"))
@@ -863,10 +864,12 @@ Creating a visual representation of the confusion matrix using the `cvms` packag
                                     add_row_percentages = x$add_row_percentages)
   put_end_date(start)
   return(structure(list(cm.chart = cm.chart,
-                        cm.dat = x,
-                        cm.print.plot_object = cm.print.plot_object,
-                        cm.export.img_file = cm.export.img_file,
-                        cm.backup.file = cm.backup.file), class = "ConfMxPlot"))
+                        cm.dat = x$cm,
+                        cm.print.plot_object = x$cm.print.plot_object,
+                        cm.print.image = x$cm.print.image,
+                        cm.export.img_file = x$cm.export.img_file,
+                        cm.backup.file = x$cm.backup.file), 
+                   class = "ConfMxPlot"))
 }
 
 cm.export2image.validate <- function(cm.print.image,
