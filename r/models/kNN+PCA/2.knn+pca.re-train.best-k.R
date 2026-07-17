@@ -297,11 +297,11 @@ init.plots_args(targets = y_test,
                 cm.export.img_file = knn_pca.eval.conf.mx.img_file,
                 cm.print.image = T)
 
-# source(model_vusualization.shared.script.path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
+source(model_vusualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 log_close()
