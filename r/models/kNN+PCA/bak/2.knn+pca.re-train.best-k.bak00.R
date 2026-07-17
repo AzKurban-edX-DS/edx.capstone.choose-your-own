@@ -281,27 +281,98 @@ log_close()
 
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-stopifnot(file.exists(model_vusualization.shared.script.path))
+knn_pca.plot_img.dir <- file.path(knn_pca.data.dir, "plot.img")
 
-knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
+if(!dir.exists(knn_pca.plot_img.dir))
+  dir.create(knn_pca.plot_img.dir)
+
+knn_pca.eval.conf.mx.obj_file <- file.path(knn_pca.data.dir,
+                                           "knn_pca.eval.confusion-matrix.rds")
+knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.plot_img.dir,
                                            "knn_pca.eval.confusion-matrix.png")
 
-model.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
-                            "knn_pca.eval.plots_dat.rds")
+start <- put_start_date()
+while(!is.null(dev.list())) dev.off()
+gc()
 
+put_log("Plotting ROC curves the Model Evaluation Results...")
+knn_pca.eval.roc_curves <- plot.ROC.curves(y_test,
+                                            k_best.nn_pca.probs)
+Sys.sleep(6)
 
-init.plots_args(targets = y_test,
-                predicted.probabilities = k_best.nn_pca.probs,
-                predicted.values = k_best.nn_pca.predicted,
-                plots_dat.file = plots_dat.file,
-                cm.export.img_file = knn_pca.eval.conf.mx.img_file,
-                cm.print.image = T)
+put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
+k_best.nn_pca.acc_by_class <- plot.per_class.accuracy.bars(y_test,
+                                                           k_best.nn_pca.predicted)
 
-# source(model_vusualization.shared.script.path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
+%1", capture.output(k_best.nn_pca.acc_by_class))
+{
+  #' class  accuracy
+  #'     # 1.0000000
+  #'     $ 1.0000000
+  #'     & 1.0000000
+  #'     @ 1.0000000
+  #'     0 0.9718310
+  #'     1 0.7042254
+  #'     2 0.8615023
+  #'     3 0.9553991
+  #'     4 0.8955399
+  #'     5 0.8356808
+  #'     6 0.8990610
+  #'     7 0.9636150
+  #'     8 0.8521127
+  #'     9 0.8920188
+  #'     A 0.8239437
+  #'     B 0.8251174
+  #'     C 0.9448357
+  #'     D 0.8744131
+  #'     E 0.8779343
+  #'     F 0.8685446
+  #'     G 0.5669014
+  #'     H 0.9014085
+  #'     I 0.6467136
+  #'     J 0.9107981
+  #'     K 0.8744131
+  #'     L 0.4671362
+  #'     M 0.9483568
+  #'     N 0.9237089
+  #'     P 0.9366197
+  #'     Q 0.5117371
+  #'     R 0.8673709
+  #'     S 0.8650235
+  #'     T 0.8802817
+  #'     U 0.9178404
+  #'     V 0.9272300
+  #'     W 0.9377934
+  #'     X 0.8802817
+  #'     Y 0.7570423
+  #'     Z 0.8732394
+  invisible(NULL)
+}
 
+Sys.sleep(6)
+
+put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
+please wait...")
+
+k_best.nn_pca.conf_mx.set <- 
+  plot.conf.mx(y_test,
+                        k_best.nn_pca.predicted,
+                        # cm.print.plot_object = T,
+                        cm.export.img_file = knn_pca.eval.conf.mx.img_file,
+                        cm.backup.file = knn_pca.eval.conf.mx.obj_file)
+rm(y_test)
+
+put_log("Summary of the object containing computing results to plot the confusion matrix:
+%1", capture.output(summary(k_best.nn_pca.conf_mx.set)))
+
+# knn_pca.eval.conf.mx.img <- magick::image_read(knn_pca.eval.conf.mx.img_file)
+# plot(knn_pca.eval.conf.mx.img)
+
+plot_image(knn_pca.eval.conf.mx.img_file)
+
+# print_confusioin_matrix(k_best.nn_pca.conf_mx.set$cm.chart)
+
+put_end_date(start)
 log_close()
+

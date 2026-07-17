@@ -222,28 +222,139 @@ log_close()
 # Log Elapsed Time: 0 01:37:25
 
 ## Visualizing the Evaluation Results ------------------------------------------
+
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-stopifnot(file.exists(model_vusualization.shared.script.path))
+
+stopifnot(file.exists())
 
 rf_best.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                            "rf-final.eval.confusion-matrix.png")
 
-plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
-                            "rf_best.eval.plots_dat.rds")
+model.eval.plots_dat.file <- file.path(data.models.random_forest.dir,
+                                     "rf_best.eval.plots_dat.rds")
 
-init.plots_args(targets = y_test,
-                predicted.probabilities = fit_rf.mtry_best$test$votes,
-                predicted.values = fit_rf.mtry_best$test$predicted,
-                plots_dat.file = plots_dat.file,
-                cm.export.img_file = rf_best.eval.conf.mx.img_file,
-                cm.print.image = T)
+if(file.exists(model.eval.plots_dat.file)) {
+  put_log("Loading the model-related plots input data object from the backup file...")
+  plots.args <- readRDS(model.eval.plots_dat.file)
+  
+  put_log("The model-related plots input data object has been loaded from the following file:
+%1", model.eval.plots_dat.file)
+} else {
+  
+  
+  plot.args <- list(targets = y_test,
+                    pred_probs = fit_rf.mtry_best$test$votes,
+                    pred_values = fit_rf.mtry_best$test$predicted,
+                    cm.export_img.file = rf_best.eval.conf.mx.img_file)
+}
 
-# source(model_vusualization.shared.script.path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
 
+start <- put_start_date()
+while(!is.null(dev.list())) dev.off()
+gc()
+
+
+### ROC Curves
+# References:
+# https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+# https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
+
+put_log("Plotting ROC curves the Model Evaluation Results...")
+eval.roc_curves <- plot.ROC.curves(y_test,
+                                   fit_rf.mtry_best$test$votes)
+roc_curves <- plot_ROC(y_test,
+                            fit_rf.mtry_best$test$votes)
+# plot_ROC(eval.roc_curves)
+
+Sys.sleep(6)
+
+put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
+
+accuracy.by_class <- 
+  plot.per_class.accuracy.bars(y_test,
+                               fit_rf.mtry_best$test$predicted)
+
+put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
+%1", capture.output(fit_rf.mtry_best.accuracy.by_class))
+{
+  #' class  accuracy
+  #'     # 1.0000000
+  #'     $ 1.0000000
+  #'     & 1.0000000
+  #'     @ 1.0000000
+  #'     0 0.9636150
+  #'     1 0.7347418
+  #'     2 0.8556338
+  #'     3 0.9436620
+  #'     4 0.9049296
+  #'     5 0.8556338
+  #'     6 0.9002347
+  #'     7 0.9624413
+  #'     8 0.8755869
+  #'     9 0.9225352
+  #'     A 0.8650235
+  #'     B 0.8943662
+  #'     C 0.9448357
+  #'     D 0.8814554
+  #'     E 0.9143192
+  #'     F 0.9260563
+  #'     G 0.6068075
+  #'     H 0.9143192
+  #'     I 0.6819249
+  #'     J 0.9154930
+  #'     K 0.9131455
+  #'     L 0.5375587
+  #'     M 0.9518779
+  #'     N 0.9190141
+  #'     P 0.9483568
+  #'     Q 0.6572770
+  #'     R 0.9072770
+  #'     S 0.8685446
+  #'     T 0.9154930
+  #'     U 0.9260563
+  #'     V 0.9166667
+  #'     W 0.9647887
+  #'     X 0.9260563
+  #'     Y 0.8380282
+  #'     Z 0.9014085
+  invisible(NULL)
+}
+
+Sys.sleep(6)
+
+put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
+please wait...")
+
+conf_mx <- 
+  plot.conf.mx(y_test,
+                        fit_rf.mtry_best$test$predicted,
+                        # cm.print.plot_object = T,
+                        cm.export.img_file = rf_best.eval.conf.mx.img_file,
+                        cm.backup.file = rf_best.eval.conf.mx.obj_file)
+# rm(y_test)
+
+put_log("Summary of the object containing computing results to plot the confusion matrix:
+%1", capture.output(summary(rf_best.eval.conf_mx.set)))
+
+# rf_best.eval.conf.mx.img <- magick::image_read(rf_best.eval.conf.mx.img_file)
+# plot(rf_best.eval.conf.mx.img)
+
+plot_image(rf_best.eval.conf.mx.img_file)
+
+# print_confusioin_matrix(rf_best.eval.conf_mx.set$cm.chart)
+
+put_end_date(start)
 log_close()
+
+if(file.exists(rf_best.eval_plots.file)) {
+  
+}
+
+
+
+
+
+
+
+

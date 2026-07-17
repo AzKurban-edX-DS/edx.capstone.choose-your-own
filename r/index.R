@@ -47,6 +47,20 @@ source(ds.prepare_flattened.script.path,
        keep.source = TRUE)
 
 ## kNN+PCA MCC Model -----------------------------------------------------------
+
+knn_pca.data.dir = file.path(models_data.dir, "knn-pca")
+
+if(!dir.exists(knn_pca.data.dir))
+  dir.create(knn_pca.data.dir)
+
+knn_pca.data.plots.dat.dir <- file.path(knn_pca.data.dir, 
+                                          "plots.dat")
+
+if(!dir.exists(knn_pca.data.plots.dat.dir))
+  dir.create(knn_pca.data.plots.dat.dir)
+
+
+
 ### Build & Tune the kNN+PCA Model ---------------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path))
 
@@ -58,9 +72,6 @@ source(knn_pca.tune.script.path,
        keep.source = TRUE)
 
 ### Re-Train kNN+PCA Model with the Best `k` Value ------------------------------
-knn_pca.retrain.best_k.script.path <- file.path(models.knn_pca_scripts.dir, 
-                                                "2.knn+pca.re-train.best-k.R")
-
 stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
 
 source(knn_pca.retrain.best_k.script.path, 
@@ -71,10 +82,6 @@ source(knn_pca.retrain.best_k.script.path,
        keep.source = TRUE)
 
 ## Random Forest (RF) Model ----------------------------------------------------
-
-### RF Tuning ------------------------------------------------------------------
-stopifnot(file.exists(rf_tuning.script.path))
-
 data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
 
 if(!dir.exists(data.models.random_forest.dir))
@@ -86,6 +93,8 @@ data.models.rf.plots.dat.dir <- file.path(data.models.random_forest.dir,
 if(!dir.exists(data.models.rf.plots.dat.dir))
   dir.create(data.models.rf.plots.dat.dir)
 
+### RF Tuning ------------------------------------------------------------------
+stopifnot(file.exists(rf_tuning.script.path))
 
 source(rf_tuning.script.path, 
        catch.aborts = TRUE,
@@ -272,6 +281,10 @@ stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
 x3d.test_set <- ft.x3d.test_set
 rm(ft.x3d.test_set)
 
+cnn_mcc.model.final_test.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+                                                "cnn.multiclass.model.final-test.RData")
+stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
+saaaaaaaaaaaaaaaaaaaaaaaaaasssssssss
 source(cnn_mcc.model.final_test.file_path, 
        catch.aborts = TRUE,
        echo = TRUE,

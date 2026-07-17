@@ -95,11 +95,6 @@ open_logfile(".pre-train-model.k1-8nn+pca")
 # if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-knn_pca.data.dir = file.path(models_data.dir, "knn-pca")
-
-if(!dir.exists(knn_pca.data.dir))
-  dir.create(knn_pca.data.dir)
-
 k1_8nn_pca.model.backup.path <-
   file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
 

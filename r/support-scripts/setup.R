@@ -284,9 +284,17 @@ if(!dir.exists(data.dl.cnn.dir))
 prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 
+model_vusualization.shared.script.path <- file.path(model_scripts.dir, 
+                                                    "model-vusualization.shared.R")
+stopifnot(file.exists(model_vusualization.shared.script.path))
+
 knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
                                       "1.knn+pca.build&tune.R")
 stopifnot(file.exists(knn_pca.tune.script.path))
+
+knn_pca.retrain.best_k.script.path <- file.path(models.knn_pca_scripts.dir, 
+                                                "2.knn+pca.re-train.best-k.R")
+stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
 
 rf_tuning.script.path <- file.path(models.rf_scripts.dir, "rf-tuning.R")
 stopifnot(file.exists(rf_tuning.script.path))
@@ -314,10 +322,6 @@ stopifnot(file.exists(cnn_binary.r_scripts.dir))
 cnn_binary.ensemble.script.path <- file.path(models.cnn_scripts.dir, 
                                               "cnn-binary.ensemble.R")
 stopifnot(file.exists(cnn_binary.ensemble.script.path))
-
-cnn_mcc.model.final_test.file_path <- file.path(data.dl.cnn.multiclass.dir, 
-                                                 "cnn.multiclass.model.final-test.RData")
-stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
 
 ## Load Common Helper Functions ------------------------------------------------
 common_helper.funcs.file_path <- file.path(support_functions.dir, "common-helper.R")
