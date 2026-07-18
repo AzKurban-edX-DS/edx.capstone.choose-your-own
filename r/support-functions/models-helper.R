@@ -528,10 +528,19 @@ cnn.binclass.get_prediction_values <- function(preds) {
 
 ## Analysis & Visualization ----------------------------------------------------
 ### Init Plot Args -------------------------------------------------------------
+
+#' Creates the `plots.args` object of the `modelEvalResultPlotArgs` class 
+#' in the `.GlobalEnv` environment to use as input data for plots by the following script:
+#' [Shared  Model Evaluation Results Visualization](r/models/model-visualization.shared.R)
 init.plots_args <- function(targets,
                             predicted.probabilities,
                             predicted.values,
                             plots_dat.file,
+                            model_type = "Multiclass Classifier Model",
+                            alg_name = NULL,
+                            roc.plot_title = NULL,
+                            abc.plot_title = NULL,
+                            cm.plot_title = NULL,
                             cm.palette = "Greens",
                             cm.font.size = 3,
                             cm.font.color = "red",
@@ -556,7 +565,12 @@ The model-related plots input data object has been loaded from the following fil
     plots_args <- create.plot_args(targets = targets,
                                    predicted.probabilities = predicted.probabilities,
                                    predicted.values = predicted.values,
-                                   cm.palette = cm.palette,
+                                   model_type = model_type,
+                                   alg_name = alg_name,
+                                   roc.plot_title = roc.plot_title,
+                                   abc.plot_title = abc.plot_title,
+                                   cm.plot_title = cm.plot_title,
+                                    cm.palette = cm.palette,
                                    cm.font.size = cm.font.size,
                                    cm.font.color = cm.font.color,
                                    cm.add_normalized = cm.add_normalized,
@@ -577,6 +591,11 @@ The model-related plots input data object has been loaded from the following fil
 create.plot_args <- function(targets,
                              predicted.probabilities,
                              predicted.values,
+                             model_type = "Multiclass Classifier Model",
+                             alg_name = NULL,
+                             roc.plot_title = NULL,
+                             abc.plot_title = NULL,
+                             cm.plot_title = NULL,
                              cm.palette = "Greens",
                              cm.font.size = 3,
                              cm.font.color = "red",
@@ -597,6 +616,11 @@ create.plot_args <- function(targets,
   args <- list(targets = targets,
                pred_probs = predicted.probabilities,
                pred_values = predicted.values,
+               model_type = model_type,
+               alg_name = alg_name,
+               roc.plot_title = roc.plot_title,
+               abc.plot_title = abc.plot_title,
+               cm.plot_title = cm.plot_title,
                cm.palette = cm.palette,
                cm.font.size = cm.font.size,
                cm.font.color = cm.font.color,
@@ -616,44 +640,106 @@ create.plot_args <- function(targets,
 # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
 # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
 
-plot_ROC <- function(x) {
-  UseMethod("plot_ROC")
-}
+#### S3 Method Dispatch Approach -----------------------------------------------
 
-plot_ROC.plotsDat <- function(x) {
-  plot_ROC(x$ROC)
-  return(x$ROC)
+#' Generic method for plotting `ROC Curves` based on the model evaluation results 
+#' passed as the function arguments.
+plot.ROC_curves <- function(x, ...) {
+  UseMethod("plot.ROC_curves")
 }
+# plot.ROC_curves <- function(x) {
+# }
 
-plot_ROC.default <- function(x) {
+
+#' @details
+#'   Plots `ROC Curves` based on the model evaluation results passed 
+#' as the `modelEvalResultPlotArgs` class object in the `x` argument.
+#' Note: The function uses the S3 Method Dispatch internally 
+#' to call the `plot.ROC_curves.default()` function.
+#' @param x An object of the `modelEvalResultPlotArgs` class 
+#' representing the model evaluation results.
+#' @returns An object of the `rocCurvesDat` class representing the `ROC Curves` data.
+plot.ROC_curves.modelEvalResultPlotArgs <- function(x) {
+  
+  put_log("Function `plot.ROC_curves.modelEvalResultPlotArgs`:
+Using S3 Method Dispatch
+to call the `plot.ROC_curves.default()` function...")
+  # Plots `ROC Curves` and returns an object of the `rocCurvesDat` class
   plot.ROC_curves(x$targets,
                   x$pred_probs)
 }
 
-plot.ROC_curves <- function(targets,
-                            predicted_probabilities) {
+#' @details
+#' Plots `ROC Curves` based on the visual representation data of the model 
+#' evaluation results passed as the `plotsDat` class object in the `x` argument.
+#' Note: The function uses the S3 Method Dispatch internally 
+#' to call the `plot.ROC_curves.rocCurvesDat()` function.
+#' @param x An object of the `plotsDat` class.
+#' @returns An object of the `rocCurvesDat` class representing the `ROC Curves` data.
+plot.ROC_curves.plotsDat <- function(x) {
+  
+  put_log("Function `plot.ROC_curves.plotsDat`:
+Using S3 Method Dispatch to call the `plot.ROC_curves.rocCurvesDat()` function...")
+  plot.ROC_curves(x$ROC)
+  
+  # An object of the `rocCurvesDat` class. 
+  return(x$ROC)
+}
 
-  put_log("Function `plot.ROC.curves`:
+#' @details
+#' Plots `ROC Curves` based on the model evaluation result values 
+#' passed as the function arguments.
+#' Note: The function uses the S3 Method Dispatch internally 
+#' to call the `plot.ROC_curves.rocCurvesDat()` function.
+#' @param targets Values of the target classes.
+#' @param predicted_probabilities Predicted probabilities  
+#' @returns An object of the `rocCurvesDat` class representing the `ROC Curves` data.
+plot.ROC_curves.default <- function(targets,
+                                    predicted_probabilities) {
+  put_log("Function `plot.ROC_curves.default`:
 Calculating a ROC curve for each class of the Multiclass Classifier (MCC)...")
   roc_curves <- calc.roc_curves(targets,
                                 predicted_probabilities,
                                 Y.Labels)
-  plot_ROC(roc_curves)
   
+  put_log("Function `plot.ROC_curves.default`:
+Using S3 Method Dispatch
+to call the `plot.ROC_curves.rocCurvesDat()` function...")
+  plot.ROC_curves(roc_curves)
+ 
+  # An object of the `rocCurvesDat` class. 
   return(roc_curves)
 }
 
-plot_ROC.rocCurves <- function(x) {
-  put_log("Function `plot_ROC.rocCurves`:
+#' @details
+#' Plots `ROC Curves` based on the visual representation data of the model 
+#' evaluation results passed as the `rocCurvesDat` class object in the `x` argument.
+#' @param x An object of the `rocCurvesDat` class.
+plot.ROC_curves.rocCurvesDat <- function(x) {
+  if(is.null(plot_title)) {
+    plot_title <- "ROC Curves for the"
+    
+    if(!is.null(alg_name))
+      plot_title <- paste(plot_title,
+                          model_name,
+                          str.build("Based on `%1` Algorithm", 
+                                    alg_name))
+  }
+    
+  put_log("Function `plot.ROC_curves.rocCurvesDat`:
 Plotting the ROC curves...")
   plot(x[[1]], 
-       main = "ROC Curves for the `Basic Deep Learning Multiclass Classifier` Model")
+       main = plot_title)
   
   for (label.idx in 2:N.classes) {
     lines(x[[label.idx]], col = label.idx)
   }
 }
 
+#' Calculates the `ROC Curves` data based on the model evaluation result values 
+#' passed in the function arguments.
+#' @returns An object of the `rocCurvesDat` class 
+#' representing the `ROC Curves` data.
 calc.roc_curves <- function(targets,
                             predicted_probabilities,
                             class.labels) {
@@ -662,6 +748,8 @@ calc.roc_curves <- function(targets,
     length(shape(targets)) == 2 && 
     shape(targets)[2] == length(levels(class.labels))
   
+  put_log("Function `calc.roc_curves`:
+Calculating the ROC curves data...")
   roc_curves <- lapply(class.labels, function(class) {
     class.idx <- as.integer(class)
     
@@ -676,7 +764,7 @@ calc.roc_curves <- function(targets,
     roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
   })
   
-  return(structure(roc_curves, class = "rocCurves"))
+  return(structure(roc_curves, class = "rocCurvesDat"))
 }
 
 ### Plotting Bars Representing Accuracy By Class -------------------------------
@@ -778,8 +866,7 @@ Plotting bar chart of per-class accuracy of the MCC model...")
 }
 
 ### Plotting Confusion Matrix --------------------------------------------------
-#### Using S3 Method Dispatch Approach -----------------------------------------
-##### Build Confusion Matrix Data ----------------------------------------------
+#### Build Confusion Matrix Data ----------------------------------------------
 
 #' @returns An object of the `ConfMxPlotArgs` class
 plot.cm.create_args <- function(targets,
@@ -932,12 +1019,14 @@ is not provided:
   
 }
 
-##### S3 Method Dispatch: Generic function `plot.confusion_matrix` --------------
+#### S3 Method Dispatch Approach ----------------------------------------------
+
+#' Generic method
 plot.confusion_matrix <- function(x, ...) {
   UseMethod("plot.confusion_matrix")
 }
 
-#' Uses the S3 Method Dispatch internally 
+#' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.default()` function.
 plot.confusion_matrix.modelEvalResultPlotArgs <- function(x) {
   
@@ -960,7 +1049,7 @@ Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function.
                         cm.backup.file = x$cm.backup.file)
 }
 
-#' Uses the S3 Method Dispatch internally 
+#' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.ConfMxPlotArgs()` function.
 plot.confusion_matrix.default <- function(targets,
                                           pred_values,
@@ -1003,7 +1092,7 @@ to call the `plot.confusion_matrix.ConfMxPlotArgs()` function...")
   plot.confusion_matrix(args)
 }
 
-#' Uses the S3 Method Dispatch internally 
+#' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.ConfMxDat()` function.
 #' @param x An object of the `ConfMxPlotArgs` class.
 plot.confusion_matrix.ConfMxPlotArgs <- function(x) {
@@ -1029,7 +1118,7 @@ to call the `plot.confusion_matrix.ConfMxDat()` function...")
   
 }
 
-#' Uses the S3 Method Dispatch internally 
+#' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.ConfMxPlot()` function.
 #' @param x An object of the `ConfMxDat` class.
 plot.confusion_matrix.ConfMxDat <- function(x) {
@@ -1099,7 +1188,7 @@ The confusion matrix plot object has been backed up in the following file:
   return(x)
 }
 
-#' Uses the S3 Method Dispatch internally 
+#' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.()` function.
 #' @param x An object of the `plotsDat` class.
 plot.confusion_matrix.plotsDat <- function(x) {

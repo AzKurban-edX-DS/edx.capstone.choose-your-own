@@ -284,9 +284,9 @@ if(!dir.exists(data.dl.cnn.dir))
 prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 
-model_vusualization.shared.script.path <- file.path(model_scripts.dir, 
-                                                    "model-vusualization.shared.R")
-stopifnot(file.exists(model_vusualization.shared.script.path))
+model_visualization.shared.script.path <- file.path(model_scripts.dir, 
+                                                    "model-visualization.shared.R")
+stopifnot(file.exists(model_visualization.shared.script.path))
 
 knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
                                       "1.knn+pca.build&tune.R")

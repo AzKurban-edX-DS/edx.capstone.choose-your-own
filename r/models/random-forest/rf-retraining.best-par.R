@@ -224,7 +224,7 @@ log_close()
 ## Visualizing the Evaluation Results ------------------------------------------
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-stopifnot(file.exists(model_vusualization.shared.script.path))
+stopifnot(file.exists(model_visualization.shared.script.path))
 
 rf_best.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                            "rf-final.eval.confusion-matrix.png")
@@ -239,7 +239,7 @@ init.plots_args(targets = y_test,
                 cm.export.img_file = rf_best.eval.conf.mx.img_file,
                 cm.print.image = T)
 
-# source(model_vusualization.shared.script.path, 
+# source(model_visualization.shared.script.path, 
 #        catch.aborts = TRUE,
 #        echo = TRUE,
 #        spaced = TRUE,

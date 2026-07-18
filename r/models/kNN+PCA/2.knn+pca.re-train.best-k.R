@@ -281,7 +281,7 @@ log_close()
 
 open_logfile(".k(best)nn+pca.eval-results.visualization")
 
-stopifnot(file.exists(model_vusualization.shared.script.path))
+stopifnot(file.exists(model_visualization.shared.script.path))
 
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
                                            "knn_pca.eval.confusion-matrix.png")
@@ -297,7 +297,7 @@ init.plots_args(targets = y_test,
                 cm.export.img_file = knn_pca.eval.conf.mx.img_file,
                 cm.print.image = T)
 
-source(model_vusualization.shared.script.path,
+source(model_visualization.shared.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
