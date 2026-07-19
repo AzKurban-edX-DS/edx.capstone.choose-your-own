@@ -293,15 +293,15 @@ model.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
 init.plots_args(targets = y_test,
                 predicted.probabilities = k_best.nn_pca.probs,
                 predicted.values = k_best.nn_pca.predicted,
-                plots_dat.file = plots_dat.file,
+                plots_dat.file = model.eval.plots_dat.file,
                 cm.export.img_file = knn_pca.eval.conf.mx.img_file,
                 cm.print.image = T)
 
-source(model_visualization.shared.script.path,
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+# source(model_visualization.shared.script.path,
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 log_close()

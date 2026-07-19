@@ -541,8 +541,8 @@ init.plots_args <- function(targets,
                             alg_name = NULL,
                             roc.plot_name = "ROC Curves",
                             roc.plot_title = NULL,
-                            abc.plot_name = "Per Class Accuracy",
-                            abc.plot_title = NULL,
+                            pca.plot_name = "Per Class Accuracy",
+                            pca.plot_title = NULL,
                             cm.plot_name = "Confusion Matrix",
                             cm.plot_title = NULL,
                             cm.palette = "Greens",
@@ -574,8 +574,8 @@ The model-related plots input data object has been loaded from the following fil
                                    alg_name = alg_name,
                                    roc.plot_name = roc.plot_name,
                                    roc.plot_title = roc.plot_title,
-                                   abc.plot_name = abc.plot_name,
-                                   abc.plot_title = abc.plot_title,
+                                   pca.plot_name = pca.plot_name,
+                                   pca.plot_title = pca.plot_title,
                                    cm.plot_name = cm.plot_name,
                                    cm.plot_title = cm.plot_title,
                                    cm.palette = cm.palette,
@@ -591,6 +591,11 @@ The model-related plots input data object has been loaded from the following fil
   }
   
   assign("plots.args", plots_args, envir = .GlobalEnv)
+  
+  put_log("An object of the class `%1` has been assigned to the  `plots.args` variable 
+in the `.GlobalEnv` environment with the following structure:
+%2", class(plots.args), capture.output(summary(plots.args)))
+  
   invisible(NULL)
 }
 
@@ -605,8 +610,10 @@ create.plot_args <- function(targets,
                              alg_name = NULL,
                              roc.plot_name = "ROC Curves",
                              roc.plot_title = NULL,
-                             abc.plot_name = "Per Class Accuracy",
-                             abc.plot_title = NULL,
+                             pca.plot_name = "Class-wise Evaluation Result",
+                             pca.plot_title = NULL,
+                             pca.color = "black",
+                             pca.fill = "steelblue",
                              cm.plot_name = "Confusion Matrix",
                              cm.plot_title = NULL,
                              cm.palette = "Greens",
@@ -625,31 +632,30 @@ create.plot_args <- function(targets,
 
   cm.export2image.validate(cm.print.image,
                            cm.export.img_file)
-  
-  args <- list(targets = targets,
-               predicted.probabilities = predicted.probabilities,
-               predicted.values = predicted.values,
-               model_name = model_name,
-               model_type = model_type,
-               alg_name = alg_name,
-               roc.plot_name = roc.plot_name,
-               roc.plot_title = roc.plot_title,
-               abc.plot_name = abc.plot_name,
-               abc.plot_title = abc.plot_title,
-               cm.plot_name = cm.plot_name,
-               cm.plot_title = cm.plot_title,
-               cm.palette = cm.palette,
-               cm.font.size = cm.font.size,
-               cm.font.color = cm.font.color,
-               cm.add_normalized = cm.add_normalized,
-               cm.add_col_percentages = cm.add_col_percentages,
-               cm.add_row_percentages = cm.add_row_percentages,
-               cm.print.plot_object = cm.print.plot_object,
-               cm.print.image = cm.print.image,
-               cm.export.img_file = cm.export.img_file,
-               cm.backup.file = cm.backup.file)
-  
-  return(structure(args, class = "modelEvalResultPlotArgs"))
+
+  return (structure(list(targets = targets,
+                         predicted.probabilities = predicted.probabilities,
+                         predicted.values = predicted.values,
+                         model_name = model_name,
+                         model_type = model_type,
+                         alg_name = alg_name,
+                         roc.plot_name = roc.plot_name,
+                         roc.plot_title = roc.plot_title,
+                         pca.plot_name = pca.plot_name,
+                         pca.plot_title = pca.plot_title,
+                         cm.plot_name = cm.plot_name,
+                         cm.plot_title = cm.plot_title,
+                         cm.palette = cm.palette,
+                         cm.font.size = cm.font.size,
+                         cm.font.color = cm.font.color,
+                         cm.add_normalized = cm.add_normalized,
+                         cm.add_col_percentages = cm.add_col_percentages,
+                         cm.add_row_percentages = cm.add_row_percentages,
+                         cm.print.plot_object = cm.print.plot_object,
+                         cm.print.image = cm.print.image,
+                         cm.export.img_file = cm.export.img_file,
+                         cm.backup.file = cm.backup.file), 
+                    class = "modelEvalResultPlotArgs"))
 }
 
 ### Plotting ROC Curves --------------------------------------------------------
@@ -669,7 +675,7 @@ plot.ROC_curves <- function(x, ...) {
 
 
 #' @details
-#'   Plots `ROC Curves` based on the model evaluation results passed 
+#' Plots `ROC Curves` based on the model evaluation results passed 
 #' as the `modelEvalResultPlotArgs` class object in the `x` argument.
 #' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.ROC_curves.default()` function.
@@ -683,7 +689,8 @@ Using S3 Method Dispatch
 to call the `plot.ROC_curves.default()` function...")
   # Plots `ROC Curves` and returns an object of the `rocCurvesDat` class
   plot.ROC_curves(x$targets,
-                  x$pred_probs)
+                  x$predicted.probabilities,
+                  )
 }
 
 #' @details
@@ -790,50 +797,54 @@ barPlot.accuracy_by_class <- function(x, ...) {
 }
 
 barPlot.accuracy_by_class.plotsDat <- 
-  function(x,
-           title.prefix = NULL,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
-  barPlot.accuracy_by_class(x$PCA,
-                            title.prefix,
-                            .title,
-                            .color,
-                            .fill)
+  function(x) {
+  
+    barPlot.accuracy_by_class(x$PCA)
 }
 
-barPlot.accuracy_by_class.default <- 
-  function(x, 
-           title.prefix = NULL,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
+
+barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
   
-  stopifnot(class(x$pred_values) == "factor" && 
-              sum(levels(x$pred_values) != levels(Y.Labels)) == 0)
+  stopifnot(class(x$predicted.values) == "factor" && 
+              sum(levels(x$predicted.values) != levels(Y.Labels)) == 0)
   
-  per_class.accuracy <- MCClassifier.accuracy.by_class(x$targets,
-                                                       x$pred_values,
+  barPlot.accuracy_by_class()
+}
+
+barPlot.accuracy_by_class.default <- function(targets,
+                                              predicted.values,
+                                              model_name = "Classifier Model",
+                                              model_type = "Multiclass",
+                                              alg_name = NULL,
+                                              plot_name = "Class-wise Evaluation Result",
+                                              plot_title = NULL,
+                                              color = "black",
+                                              fill = "steelblue") {
+  
+  stopifnot(class(x$predicted.values) == "factor" && 
+              sum(levels(x$predicted.values) != levels(Y.Labels)) == 0)
+  
+  per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
+                                                       predicted.values,
                                                        Y.Labels)
-  class(per_class.accuracy) <- "perClassAccValues"
-  barPlot.accuracy_by_class(per_class.accuracy)
+  x <- structure(list(acc.by_class = per_class.accuracy,
+                      title = title,
+                      color = color,
+                      fill = fill),
+                 class = "perClassAccValues")
+  
+  barPlot.accuracy_by_class(x)
 }
 
-barPlot.accuracy_by_class.perClassAccValues <- 
-  function(x, 
-           title.prefix = NULL,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
+barPlot.accuracy_by_class.perClassAccValues <- function(x) {
     
   put_log("Function `barPlot.accuracy_by_class.perClassAccValues`: 
 Plotting bar chart of per-class accuracy of the MCC model...")
-  bar_plot <- plot_bars.accuracy.by_class(x,
+  bar_plot <- plot_bars.accuracy.by_class(x$acc.by_class,
                                           Y.Labels,
-                                          title.prefix,
-                                          .title,
-                                          .color,
-                                          .fill)
+                                          .title = x$title,
+                                          .color = x$color,
+                                          .fill = x$fill)
   print(bar_plot)
   return(x)
   
@@ -841,7 +852,6 @@ Plotting bar chart of per-class accuracy of the MCC model...")
 
 plot_bars.accuracy.by_class <- function(class.accuracies,
                                         class.labels,
-                                        title.prefix = NULL,
                                         .title = "Classifier Model: Class-wise Evaluation Result",
                                         .color = "black",
                                         .fill = "steelblue") {
@@ -1053,7 +1063,7 @@ plot.confusion_matrix.modelEvalResultPlotArgs <- function(x) {
   put_log("Function `plot.confusion_matrix.modelEvalResultPlotArgs`:
 Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function...")
   plot.confusion_matrix(targets = x$targets,
-                        pred_values = x$pred_values,
+                        pred_values = x$predicted.values,
                         palette = x$cm.palette,
                         font.size = x$cm.font.size,
                         font.color = x$cm.font.color,
