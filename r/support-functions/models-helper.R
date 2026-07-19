@@ -536,8 +536,8 @@ init.plots_args <- function(targets,
                             predicted.probabilities,
                             predicted.values,
                             plots_dat.file,
-                            model_name = "Classifier Model",
                             model_type = "Multiclass",
+                            model_name = "Classifier Model",
                             alg_name = NULL,
                             roc.plot_name = "ROC Curves",
                             roc.plot_title = NULL,
@@ -569,8 +569,8 @@ The model-related plots input data object has been loaded from the following fil
     plots_args <- create.plot_args(targets = targets,
                                    predicted.probabilities = predicted.probabilities,
                                    predicted.values = predicted.values,
-                                   model_name = model_name,
                                    model_type = model_type,
+                                   model_name = model_name,
                                    alg_name = alg_name,
                                    roc.plot_name = roc.plot_name,
                                    roc.plot_title = roc.plot_title,
@@ -605,8 +605,8 @@ create.plot_args <- function(targets,
                              predicted.probabilities,
                              predicted.values,
                              plots_dat.file,
-                             model_name = "Classifier Model",
                              model_type = "Multiclass",
+                             model_name = "Classifier Model",
                              alg_name = NULL,
                              roc.plot_name = "ROC Curves",
                              roc.plot_title = NULL,
@@ -636,8 +636,8 @@ create.plot_args <- function(targets,
   return (structure(list(targets = targets,
                          predicted.probabilities = predicted.probabilities,
                          predicted.values = predicted.values,
-                         model_name = model_name,
                          model_type = model_type,
+                         model_name = model_name,
                          alg_name = alg_name,
                          roc.plot_name = roc.plot_name,
                          roc.plot_title = roc.plot_title,
@@ -719,20 +719,35 @@ Using S3 Method Dispatch to call the `plot.ROC_curves.rocCurvesDat()` function..
 #' @param predicted_probabilities Predicted probabilities  
 #' @returns An object of the `rocCurvesDat` class representing the `ROC Curves` data.
 plot.ROC_curves.default <- function(targets,
-                                    predicted_probabilities) {
+                                    predicted_probabilities,
+                                    plot_title = NULL,
+                                    plot_name = "ROC Curves",
+                                    model_type = "Multiclass",
+                                    model_name = "Classifier Model",
+                                    alg_name = NULL,
+) {
+  plot_title <- build.plot_title(plot_title ,
+                                 plot_name,
+                                 model_type,
+                                 model_name,
+                                 alg_name)
+  
   put_log("Function `plot.ROC_curves.default`:
 Calculating a ROC curve for each class of the Multiclass Classifier (MCC)...")
   roc_curves <- calc.roc_curves(targets,
                                 predicted_probabilities,
                                 Y.Labels)
   
+  roc_curves.dat <- structure(list(roc_curves = roc_curves,
+                                   title = plot_title), class = "rocCurvesDat")
+  
   put_log("Function `plot.ROC_curves.default`:
 Using S3 Method Dispatch
 to call the `plot.ROC_curves.rocCurvesDat()` function...")
-  plot.ROC_curves(roc_curves)
+  plot.ROC_curves(roc_curves.dat)
  
   # An object of the `rocCurvesDat` class. 
-  return(roc_curves)
+  return(roc_curves.dat)
 }
 
 #' @details
@@ -774,7 +789,7 @@ calc.roc_curves <- function(targets,
   
   put_log("Function `calc.roc_curves`:
 Calculating the ROC curves data...")
-  roc_curves <- lapply(class.labels, function(class) {
+  lapply(class.labels, function(class) {
     class.idx <- as.integer(class)
     
     if(categorical_targets) {
@@ -787,8 +802,6 @@ Calculating the ROC curves data...")
     }
     roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
   })
-  
-  return(structure(roc_curves, class = "rocCurvesDat"))
 }
 
 ### Plotting Bars Representing Accuracy By Class -------------------------------
@@ -813,16 +826,22 @@ barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
 
 barPlot.accuracy_by_class.default <- function(targets,
                                               predicted.values,
-                                              model_name = "Classifier Model",
-                                              model_type = "Multiclass",
-                                              alg_name = NULL,
-                                              plot_name = "Class-wise Evaluation Result",
                                               plot_title = NULL,
+                                              plot_name = "Class-wise Evaluation Result",
+                                              model_type = "Multiclass",
+                                              model_name = "Classifier Model",
+                                              alg_name = NULL,
                                               color = "black",
                                               fill = "steelblue") {
   
   stopifnot(class(x$predicted.values) == "factor" && 
               sum(levels(x$predicted.values) != levels(Y.Labels)) == 0)
+  
+  plot_title <- build.plot_title(plot_title ,
+                                 plot_name,
+                                 model_type,
+                                 model_name,
+                                 alg_name)
   
   per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
                                                        predicted.values,
@@ -1094,6 +1113,12 @@ plot.confusion_matrix.default <- function(targets,
   stopifnot(class(pred_values) == "factor", 
             sum(levels(pred_values) == levels(Y.Labels)) == N.classes)
   
+  # plot_title <- build.plot_title(plot_title ,
+  #                                plot_name,
+  #                                model_type,
+  #                                model_name,
+  #                                alg_name)
+
   cm.export2image.validate(cm.print.image,
                            cm.export.img_file)
   
@@ -1423,7 +1448,29 @@ The Confusion Matrix Plot object has been exported to the following file:
 }
 
 
-## Utility Functions -----------------------------------------------------------
+### Utility Functions -----------------------------------------------------------
+
+build.plot_title <- function(plot_title = NULL,
+                             plot_name = "Visualization",
+                             model_type = "Multiclass",
+                             model_name = "Classifier",
+                             alg_name = NULL) {
+  if(is.null(plot_title)){
+    plot_title <- paste(plot_name,
+                        "for the",
+                        model_type,
+                        model_name,
+                        "Model")
+
+    if(!is.null(alg_name)){
+      plot_title <- paste(plot_title,
+                          str.build("Based on the %1 Algorithm", 
+                                    alg_name))
+    }
+  }
+  plot_title
+}
+
 
 # Multiclass Classifier: Class-wise Accuracy
 MCClassifier.accuracy.by_class <- function(targets,
