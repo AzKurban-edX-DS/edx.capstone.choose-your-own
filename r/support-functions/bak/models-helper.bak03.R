@@ -663,39 +663,6 @@ create.plot_args <- function(targets,
 # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
 # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
 
-#' Calculates the `ROC Curves` data based on the model evaluation result values 
-#' passed in the function arguments.
-#' @returns An object of the `rocCurvesDat` class 
-#' representing the `ROC Curves` data.
-calc.roc_curves <- function(targets,
-                            predicted_probabilities,
-                            class.labels) {
-  targets
-  categorical_targets <- 
-    length(shape(targets)) == 2 && 
-    shape(targets)[2] == length(levels(class.labels))
-  
-  put_log("Function `calc.roc_curves`:
-Calculating the ROC curves data...")
-  lapply(class.labels, function(class) {
-    class.idx <- as.integer(class)
-    
-    if(categorical_targets) {
-      bin_labels <- targets[, class.idx]
-    } else {
-      stopifnot(class(targets) == "factor" && 
-                  sum(levels(targets) != levels(class.labels)) == 0)
-      
-      bin_labels <- as.integer(targets == class)
-    }
-    roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
-  })
-}
-
-#### `plot.ROC_curves` Generic Function ----------------------------------------
-#' (Using `S3 Method Dispatch` Mechanism)
-
-
 #' Generic method for plotting `ROC Curves` based on the model evaluation results 
 #' passed as the function arguments.
 plot.ROC_curves <- function(x, ...) {
@@ -810,74 +777,36 @@ Plotting the ROC curves...")
   }
 }
 
-### Plotting Per Class Accuracy (PCA) Bar Charts -------------------------------
-
-#' Calculates PCA values as a part of the Multiclass Classifier (MCC) model's 
-#' evaluation results.
-#' @param targets description
-#' @param predicted.values description
-#' @param class.labels Multiclass Classifier Class Labels   
-#' @returns List of PCA values for the MCC model being evaluated. 
-MCClassifier.accuracy.by_class <- function(targets,
-                                           predicted.values,
-                                           class.labels) {
-  stopifnot(class(class.labels) == "factor")
-  
-  stopifnot(class(predicted.values) == "factor" && 
-              sum(levels(predicted.values) != levels(class.labels)) == 0)
-
+#' Calculates the `ROC Curves` data based on the model evaluation result values 
+#' passed in the function arguments.
+#' @returns An object of the `rocCurvesDat` class 
+#' representing the `ROC Curves` data.
+calc.roc_curves <- function(targets,
+                            predicted_probabilities,
+                            class.labels) {
+  targets
   categorical_targets <- 
     length(shape(targets)) == 2 && 
     shape(targets)[2] == length(levels(class.labels))
   
-  sapply(class.labels, function(class) {
+  put_log("Function `calc.roc_curves`:
+Calculating the ROC curves data...")
+  lapply(class.labels, function(class) {
+    class.idx <- as.integer(class)
+    
     if(categorical_targets) {
-      targets.idx <- seq_len(nrow(y.test.cat))      
-      idx <- targets.idx[targets[, as.integer(class)] == 1]
+      bin_labels <- targets[, class.idx]
     } else {
       stopifnot(class(targets) == "factor" && 
                   sum(levels(targets) != levels(class.labels)) == 0)
       
-      targets.idx <- seq_len(length(targets))
-      idx <- targets.idx[targets == class]
+      bin_labels <- as.integer(targets == class)
     }
-
-    n <- length(idx)
-    accuracy <- mean(predicted.values[idx] == class)
-    
-    put_log("Function `MCClassifier.accuracy.by_class`:
-Accuracy for the class `%1` (of size %2) is %3.",
-            class, n, accuracy) 
-    accuracy
-  }) |> matrix(ncol = 1, dimnames = list(class = class.labels, "accuracy")) 
+    roc_curve <- roc(bin_labels, predicted_probabilities[, as.integer(class)])
+  })
 }
 
-#' Plots `PCA Bar Chart` based on the model's 
-#' per class accuracy values.
-#' @param class.accuracies Model's per class accuracy values
-#' @param class.labels Multiclass Classifier Class Labels   
-plot_bars.accuracy.by_class <- 
-  function(class.accuracies,
-           class.labels,
-           .title = "Classifier Model: Class-wise Evaluation Result",
-           .color = "black",
-           .fill = "steelblue") {
-    
-    data.frame(class = class.labels,
-               accuracy = class.accuracies) |>
-      ggplot(mapping = aes(x = class,
-                           y = accuracy)) +
-      geom_col(fill = .fill,
-               color = .color) +
-      labs(x = "Handwritten Character Class",
-           y = "Accuracy",
-           title = .title) +
-      scale_y_continuous(labels = scales::label_percent(accuracy = 1),
-                         expand = c(0, 0, 0.005, 0))
-  }
-
-#### `barPlot.accuracy_by_class` Generic Function ------------------------------
-#' (Using `S3 Method Dispatch` Mechanism)
+### Plotting PCA Bar Charts Using S3 Method Dispatch Approach ----
 
 #' Generic method for plotting `Per Class Accuracy (PCA) Bar Charts` based on the 
 #' model evaluation results passed as the function arguments.
@@ -984,7 +913,53 @@ Plotting a bar chart of the model's per-class accuracies...")
   return(x)
 }
 
+#' Plots `PCA Bar Chart` based on the model's 
+#' per class accuracy values.
+#' @param class.accuracies Model's per class accuracy values
+#' @param class.labels Multiclass Classifier Class Labels   
+plot_bars.accuracy.by_class <- 
+  function(class.accuracies,
+           class.labels,
+           .title = "Classifier Model: Class-wise Evaluation Result",
+           .color = "black",
+           .fill = "steelblue") {
+    
+  data.frame(class = class.labels,
+             accuracy = class.accuracies) |>
+    ggplot(mapping = aes(x = class,
+                         y = accuracy)) +
+    geom_col(fill = .fill,
+             color = .color) +
+    labs(x = "Handwritten Character Class",
+         y = "Accuracy",
+         title = .title) +
+    scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+                       expand = c(0, 0, 0.005, 0))
+}
+
+#### Obsolete: To Remove Soon!!! ----------------------------------------------- 
+
+
+plot.per_class.accuracy.bars <- function(targets,
+                                         predicted.values){
+  
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(Y.Labels)) == 0)
+  
+  per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
+                                                       predicted.values,
+                                                       Y.Labels)
+  put_log("Function `plot.per_class.accuracy.bars`: 
+Plotting bar chart of per-class accuracy of the MCC model...")
+  bar_plot <- plot_bars.accuracy.by_class(per_class.accuracy,
+                                          Y.Labels,
+                                          title.prefix = "Basic DL Multiclass")
+  print(bar_plot)
+  return(per_class.accuracy)
+}
+
 ### Plotting Confusion Matrix --------------------------------------------------
+#### Build Confusion Matrix Data ----------------------------------------------
 
 #' @returns An object of the `ConfMxPlotArgs` class
 plot.cm.create_args <- function(targets,
@@ -1143,8 +1118,7 @@ is not provided:
   
 }
 
-#### `plot.confusion_matrix` Generic Function ------------------------------
-#' (Using `S3 Method Dispatch` Mechanism)
+#### S3 Method Dispatch Approach ----------------------------------------------
 
 #' Generic method
 plot.confusion_matrix <- function(x, ...) {
@@ -1342,6 +1316,203 @@ to call the `plot.confusion_matrix.ConfMxPlot()` function...")
   plot.confusion_matrix(x$CM)
 }
 
+#### Obsolete: Other Helper Functions ----------------------------------------------------
+
+
+plot.conf.mx <- function(targets,
+                         predicted.values,
+                         .palette = "Greens",
+                         font.size = 3,
+                         font.color = "red",
+                         add_normalized = FALSE,
+                         add_col_percentages = FALSE,
+                         add_row_percentages = FALSE,
+                         cm.print.plot_object = FALSE,
+                         cm.export.img_file = NULL,
+                         cm.backup.file = NULL) {
+  
+  
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  cm.export2image.validate(cm.print.image,
+                           cm.export.img_file)
+  
+  put_log("Function `plot.conf.mx`: 
+Creating a confusion matrix based on the model evaluation results in a format 
+suitable for visualization using the `cvms` package...")
+  
+  conf.mx <- create.confusion_matrix(targets,
+                                     predicted.values)
+  
+  put_log("Function `plot.conf.mx`: 
+The confusion matrix has been created:
+%1", capture.output(conf.mx))
+
+  start <- put_start_date()
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  conf.mx.chart <- plot_confusion_matrix(conf.mx,
+                                         palette = .palette,
+                                         font_counts = font(size = font.size,
+                                                            color = font.color),
+                                         add_normalized = add_normalized,
+                                         add_col_percentages = add_col_percentages,
+                                         add_row_percentages = add_row_percentages)
+  if(!is.null(cm.export.img_file)) {
+    put_log("Function `plot.conf.mx`: 
+Exporting the Confusion Matrix Plot object to an image file...")
+    
+    ggsave(filename = cm.export.img_file, 
+           plot = conf.mx.chart)
+    
+    put_log("Function `plot.conf.mx`: 
+The Confusion Matrix Plot image has been saved to the following file:
+  %1", cm.export.img_file)
+  }
+  
+  
+  if (!is.null(cm.backup.file)) {
+    put_log("Saving the confusion matrix plot object in the backup file...")
+    
+    saveRDS(conf.mx.chart, 
+            file = cm.backup.file)
+    
+    put_log("The confusion matrix plot object has been backed up in the following file:
+`%1`", cm.backup.file)
+  }
+
+  if(cm.print.plot_object) {
+    # # Clear any stuck graphics devices
+    while(!is.null(dev.list())) dev.off()
+    # graphics.off() 
+    # gc()
+    # 
+    # # Open a clean external window (use windows() on Windows, x11() on Linux/Mac)
+    # dev.new()
+    # Sys.sleep(6)
+
+    assign("conf_mx.chart.tmp", conf.mx.chart, envir = .GlobalEnv)
+    
+    grid::grid.newpage()
+    grid::grid.draw(ggplotGrob(conf_mx.chart.tmp))
+    
+    stopCluster(cl)
+    stopImplicitCluster()
+    
+    rm(conf_mx.chart.tmp, pos = .GlobalEnv)
+  }
+
+  put_end_date(start)
+  
+  list(cm = conf.mx,
+       cm.chart = conf.mx.chart)
+}
+
+print_confusioin_matrix <- function(confusion_matrix.plot) {
+  while(!is.null(dev.list())) dev.off()
+  print(confusion_matrix.plot)
+}
+
+create_confusion_matrix <- function(targets, 
+                                    predicted.values,
+                                    create_plot = FALSE,
+                                    palette = "Greens",
+                                    font_counts = font(size = 3,
+                                                       color = "red"),
+                                    add_normalized = FALSE,
+                                    add_col_percentages = FALSE,
+                                    add_row_percentages = FALSE) {
+
+  stopifnot(class(predicted.values) == "factor", 
+            sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
+  
+  put_log("Function `create_confusion_matrix`:
+Creating confusion matrix...")
+  start <- put_start_date()
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+
+  conf.mx <- confusion_matrix(as.character(targets),
+                                           as.character(predicted.values))
+  put_log("Function `create_confusion_matrix`:
+The confution matrix has been created:
+%1", capture.output(conf.mx))
+
+  if(create_plot){
+    put_log("Function `create_confusion_matrix`:
+Plotting confusion matrix, please wait...")
+    plot.mx <- plot_confusion_matrix(conf.mx,
+                                     palette = palette,
+                                     font_counts = font_counts,
+                                     add_normalized = add_normalized,
+                                     add_col_percentages = add_col_percentages,
+                                     add_row_percentages = add_row_percentages)
+  }
+
+  stopCluster(cl)
+  stopImplicitCluster()
+  put_end_date(start)
+  
+  if(create_plot) {
+    list(conf.mx = conf.mx,
+         mx.plot = plot.mx)
+  } else {
+    conf.mx
+  }
+}
+
+create_plot.conf.mx <- function(targets, 
+                                pred.values,
+                                cm.backup.file,
+                                img.file = NULL) {
+  start <- put_start_date()
+  
+  put_log("Function `create_plot.conf.mx`: 
+Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
+using the `cvms` package...")
+  conf.mx <- create.confusion_matrix(targets, pred.values)
+  
+  put_log("Function `create_plot.conf.mx`: 
+Plotting the confusion matrix, please wait...")
+  plt <- plot.conf.mx(conf.mx)
+  
+  "Function `create_plot.conf.mx`: 
+"  
+  
+  put_log("Function `create_plot.conf.mx`: 
+Saving the Confusion Matrix Plot object...")
+  
+  saveRDS(plt,
+          file = cm.backup.file)
+  
+  put_log("Function `create_plot.conf.mx`: 
+The Confusion Matrix Plot object has been saved in the following file:
+  %1", cm.backup.file)
+  
+  if(!is.null(cm.export.img_file)) {
+    put_log("Function `create_plot.conf.mx`: 
+Exporting the Confusion Matrix Plot object to image file...")
+    
+    ggsave(filename = img.file, 
+           plot = plt)
+    
+    put_log("Function `create_plot.conf.mx`: 
+The Confusion Matrix Plot object has been exported to the following file:
+  %1", img.file)
+  }
+  
+  # grid::grid.newpage()
+  # grid::grid.draw(ggplotGrob(plt))
+  
+  # print(plt)
+  put_end_date(start)
+  conf.mx
+}
+
+
 ### Utility Functions -----------------------------------------------------------
 
 build.plot_title <- function(plot_title = NULL,
@@ -1365,4 +1536,39 @@ build.plot_title <- function(plot_title = NULL,
   plot_title
 }
 
+
+# Multiclass Classifier: Class-wise Accuracy
+MCClassifier.accuracy.by_class <- function(targets,
+                                           predicted.values,
+                                           class.labels) {
+  stopifnot(class(class.labels) == "factor")
+  
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(class.labels)) == 0)
+
+  categorical_targets <- 
+    length(shape(targets)) == 2 && 
+    shape(targets)[2] == length(levels(class.labels))
+  
+  sapply(class.labels, function(class) {
+    if(categorical_targets) {
+      targets.idx <- seq_len(nrow(y.test.cat))      
+      idx <- targets.idx[targets[, as.integer(class)] == 1]
+    } else {
+      stopifnot(class(targets) == "factor" && 
+                  sum(levels(targets) != levels(class.labels)) == 0)
+      
+      targets.idx <- seq_len(length(targets))
+      idx <- targets.idx[targets == class]
+    }
+
+    n <- length(idx)
+    accuracy <- mean(predicted.values[idx] == class)
+    
+    put_log("Function `MCClassifier.accuracy.by_class`:
+Accuracy for the class `%1` (of size %2) is %3.",
+            class, n, accuracy) 
+    accuracy
+  }) |> matrix(ncol = 1, dimnames = list(class = class.labels, "accuracy")) 
+}
 
