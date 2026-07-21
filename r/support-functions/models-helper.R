@@ -421,6 +421,7 @@ dl_basic.tunable_model <- function(hp,
   return(model)
 }
 
+#' @param class.labels Multiclass Classifier Class Labels   
 predict.dl_basic.model <- function(model,
                              x.test,
                              class.labels) {
@@ -515,6 +516,7 @@ cnn.create_model <- function(img.width,
     layer_dense(units = output.classes, activation = output.activation)
 }
 
+#' @param class.labels Multiclass Classifier Class Labels   
 predicted_probs2classes <- function(x, class.labels) {
   sapply(seq(nrow(x)), function(i) {
     class.labels[which.max(x[i,])]
@@ -532,17 +534,35 @@ cnn.binclass.get_prediction_values <- function(preds) {
 #' Creates the `plots.args` object of the `modelEvalResultPlotArgs` class 
 #' in the `.GlobalEnv` environment to use as input data for plots by the following script:
 #' [Shared  Model Evaluation Results Visualization](r/models/model-visualization.shared.R)
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted.probabilities Predicted probability values 
+#' obtained as a result of the model's evaluation.
+#' @param predicted.values Predicted values obtained as a result 
+#' of the model's evaluation.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
+#' @param roc.plot_title `ROC Curves` Plot title.
+#' @param roc.plot_name `ROC Curves` Plot name
+#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (PCA) plot title.
+#' @param pca.plot_name PCA plot name.
+#' @param pca.color PCA plot line color.
+#' @param pca.fill PCA plot fill color.
+#' @param cm.plot_title `Confusion Matrix` (CM) plot title.
+#' @param cm.plot_name CM plot name.
 init.plots_args <- function(targets,
                             predicted.probabilities,
                             predicted.values,
                             plots_dat.file,
-                            model_type = "Multiclass",
-                            model_name = "Classifier Model",
+                            model_type = "Multiclass Classifier",
                             alg_name = NULL,
                             roc.plot_title = NULL,
                             roc.plot_name = "ROC Curves",
-                            pca.plot_name = "Per Class Accuracy",
                             pca.plot_title = NULL,
+                            pca.plot_name = "Per-Class Accuracy",
+                            pca.color = "black",
+                            pca.fill = "steelblue",
                             cm.plot_title = NULL,
                             cm.plot_name = "Confusion Matrix",
                             cm.palette = "Greens",
@@ -570,14 +590,15 @@ The model-related plots input data object has been loaded from the following fil
                                    predicted.probabilities = predicted.probabilities,
                                    predicted.values = predicted.values,
                                    model_type = model_type,
-                                   model_name = model_name,
                                    alg_name = alg_name,
-                                   roc.plot_name = roc.plot_name,
                                    roc.plot_title = roc.plot_title,
-                                   pca.plot_name = pca.plot_name,
+                                   roc.plot_name = roc.plot_name,
                                    pca.plot_title = pca.plot_title,
-                                   cm.plot_name = cm.plot_name,
+                                   pca.plot_name = pca.plot_name,
+                                   pca.color = pca.color,
+                                   pca.fill = pca.fill,
                                    cm.plot_title = cm.plot_title,
+                                   cm.plot_name = cm.plot_name,
                                    cm.palette = cm.palette,
                                    cm.font.size = cm.font.size,
                                    cm.font.color = cm.font.color,
@@ -600,13 +621,29 @@ in the `.GlobalEnv` environment with the following structure:
 }
 
 
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted.probabilities Predicted probability values 
+#' obtained as a result of the model's evaluation.
+#' @param predicted.values Predicted values obtained as a result 
+#' of the model's evaluation.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
+#' @param roc.plot_title `ROC Curves` Plot title.
+#' @param roc.plot_name `ROC Curves` Plot name
+#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (PCA) plot title.
+#' @param pca.plot_name PCA plot name.
+#' @param pca.color PCA plot line color.
+#' @param pca.fill PCA plot fill color.
+#' @param cm.plot_title `Confusion Matrix` (CM) plot title.
+#' @param cm.plot_name CM plot name.
 #' @returns An object of the `modelEvalResultPlotArgs` class
 create.plot_args <- function(targets,
                              predicted.probabilities,
                              predicted.values,
                              plots_dat.file,
-                             model_type = "Multiclass",
-                             model_name = "Classifier Model",
+                             model_type = "Multiclass Classifier",
                              alg_name = NULL,
                              roc.plot_title = NULL,
                              roc.plot_name = "ROC Curves",
@@ -637,7 +674,6 @@ create.plot_args <- function(targets,
                          predicted.probabilities = predicted.probabilities,
                          predicted.values = predicted.values,
                          model_type = model_type,
-                         model_name = model_name,
                          alg_name = alg_name,
                          roc.plot_title = roc.plot_title,
                          roc.plot_name = roc.plot_name,
@@ -665,6 +701,10 @@ create.plot_args <- function(targets,
 
 #' Calculates the `ROC Curves` data based on the model evaluation result values 
 #' passed in the function arguments.
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted_probabilities Predicted probability values 
+#' obtained as a result of the model's evaluation.
+#' @param class.labels Multiclass Classifier Class Labels   
 #' @returns An object of the `rocCurvesDat` class 
 #' representing the `ROC Curves` data.
 calc.roc_curves <- function(targets,
@@ -724,7 +764,6 @@ to call the `plot.ROC_curves.default()` function...")
                   x$roc.plot_title,
                   x$roc.plot_name,
                   x$model_type,
-                  x$model_name,
                   x$alg_name)
 }
 
@@ -750,21 +789,26 @@ Using S3 Method Dispatch to call the `plot.ROC_curves.rocCurvesDat()` function..
 #' passed as the function arguments.
 #' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.ROC_curves.rocCurvesDat()` function.
-#' @param targets Values of the target classes.
-#' @param predicted_probabilities Predicted probabilities  
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted_probabilities Predicted probability values 
+#' obtained as a result of the model's evaluation.
+#' @param title Plot title.
+#' @param plot_name Plot name.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
 #' @returns An object of the `rocCurvesDat` class representing the `ROC Curves` data.
 plot.ROC_curves.default <- function(targets,
                                     predicted_probabilities,
-                                    plot_title = NULL,
+                                    title = NULL,
                                     plot_name = "ROC Curves",
-                                    model_type = "Multiclass",
-                                    model_name = "Classifier Model",
+                                    model_type = "Multiclass Classifier",
                                     alg_name = NULL,
 ) {
-  plot_title <- build.plot_title(plot_title ,
+  plot_title <- build.plot_title(title ,
                                  plot_name,
                                  model_type,
-                                 model_name,
                                  alg_name)
   
   put_log("Function `plot.ROC_curves.default`:
@@ -790,32 +834,23 @@ to call the `plot.ROC_curves.rocCurvesDat()` function...")
 #' evaluation results passed as the `rocCurvesDat` class object in the `x` argument.
 #' @param x An object of the `rocCurvesDat` class.
 plot.ROC_curves.rocCurvesDat <- function(x) {
-  if(is.null(plot_title)) {
-    # plot_title <- "ROC Curves for the"
-    
-    if(!is.null(alg_name))
-      plot_title <- paste(plot_title,
-                          model_name,
-                          str.build("Based on `%1` Algorithm", 
-                                    alg_name))
-  }
-    
   put_log("Function `plot.ROC_curves.rocCurvesDat`:
 Plotting the ROC curves...")
-  plot(x[[1]], 
-       main = plot_title)
+  plot(x$roc_curves[[1]], 
+       main = x$title)
   
   for (label.idx in 2:N.classes) {
     lines(x[[label.idx]], col = label.idx)
   }
 }
 
-### Plotting Per Class Accuracy (PCA) Bar Charts -------------------------------
+### Plotting Per-Class Accuracy (PCA) Bar Charts -------------------------------
 
-#' Calculates PCA values as a part of the Multiclass Classifier (MCC) model's 
-#' evaluation results.
-#' @param targets description
-#' @param predicted.values description
+#' Calculates PCA values as part of the Multiclass Classifier (MCC) model's 
+#' evaluation process.
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted.values Predicted values obtained as a result 
+#' of the model's evaluation.
 #' @param class.labels Multiclass Classifier Class Labels   
 #' @returns List of PCA values for the MCC model being evaluated. 
 MCClassifier.accuracy.by_class <- function(targets,
@@ -879,7 +914,7 @@ plot_bars.accuracy.by_class <-
 #### `barPlot.accuracy_by_class` Generic Function ------------------------------
 #' (Using `S3 Method Dispatch` Mechanism)
 
-#' Generic method for plotting `Per Class Accuracy (PCA) Bar Charts` based on the 
+#' Generic method for plotting `Per-Class Accuracy (PCA) Bar Charts` based on the 
 #' model evaluation results passed as the function arguments.
 barPlot.accuracy_by_class <- function(x, ...) {
   UseMethod("barPlot.accuracy_by_class")
@@ -888,7 +923,7 @@ barPlot.accuracy_by_class <- function(x, ...) {
 
 #' @details
 #' Plots `PCA Bar Chart` based on the visual representation data of the model 
-#' evaluation results (Per Class Accuracy) passed as a `PCA` property 
+#' evaluation results (Per-Class Accuracy) passed as a `PCA` property 
 #' of the `plotsDat` class object in the `x` argument.
 #' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `barPlot.accuracy_by_class.perClassAccValues()` function.
@@ -919,7 +954,6 @@ barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
                             x$pca.plot_title,
                             x$pca.plot_name,
                             x$model_type,
-                            x$model_name,
                             x$alg_name,
                             x$pca.color,
                             x$pca.fill)
@@ -930,16 +964,22 @@ barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
 #' passed as the function arguments.
 #' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `barPlot.accuracy_by_class.perClassAccValues()` function.
-#' @param targets Values of the target classes.
-#' @param predicted_probabilities Predicted probabilities  
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted.values Predicted values obtained as a result 
+#' of the model's evaluation.
+#' @param title Plot title.
+#' @param plot_name Plot name.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
 #' @returns An object of the `perClassAccValues` class representing 
 #' the `PCA Bar Chart` data.
 barPlot.accuracy_by_class.default <- function(targets,
                                               predicted.values,
-                                              plot_title = NULL,
+                                              title = NULL,
                                               plot_name = "Class-wise Evaluation Result",
-                                              model_type = "Multiclass",
-                                              model_name = "Classifier Model",
+                                              model_type = "Multiclass Classifier",
                                               alg_name = NULL,
                                               color = "black",
                                               fill = "steelblue") {
@@ -947,10 +987,9 @@ barPlot.accuracy_by_class.default <- function(targets,
   stopifnot(class(x$predicted.values) == "factor" && 
               sum(levels(x$predicted.values) != levels(Y.Labels)) == 0)
   
-  plot_title <- build.plot_title(plot_title ,
+  plot_title <- build.plot_title(title ,
                                  plot_name,
                                  model_type,
-                                 model_name,
                                  alg_name)
   
   per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
@@ -986,6 +1025,8 @@ Plotting a bar chart of the model's per-class accuracies...")
 
 ### Plotting Confusion Matrix --------------------------------------------------
 
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param pred_values Predicted values obtained as a result of the model's evaluation.
 #' @returns An object of the `ConfMxPlotArgs` class
 plot.cm.create_args <- function(targets,
                                 pred_values,
@@ -1024,6 +1065,8 @@ plot.cm.create_args <- function(targets,
   return(structure(args, class = "ConfMxPlotArgs"))
 }
 
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param pred_values Predicted values obtained as a result of the model's evaluation.
 #' @returns An object of the `ConfMxDat` class
 build_confusion_matrix.plot_data <- function(targets,
                                              pred_values,
@@ -1068,6 +1111,7 @@ suitable for visualization using the `cvms` package...")
 
 #' Creates a confusion matrix object from the model evaluation results 
 #' using the `cvms` package.
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
 create.confusion_matrix <- function(targets,
                                     predicted.values) {
   
@@ -1129,7 +1173,8 @@ Creating a visual representation of the confusion matrix using the `cvms` packag
                    class = "ConfMxPlot"))
 }
 
-#' Validates the consistency of the Confusion Matrix Visualization-related functions' arguments.
+#' Validates the consistency of the Confusion Matrix Visualization-related 
+#' functions' arguments.
 #' @param cm.print.image (Boolean) Determines whether to print the image - 
 #' the result of the export of the confusion matrix. 
 #' @param cm.export.img_file A connection or the path name of the file 
@@ -1165,7 +1210,6 @@ Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function.
                         x$cm.plot_title,
                         x$cm.plot_name,
                         x$model_type,
-                        x$model_name,
                         x$alg_name,
                         x$cm.palette,
                         x$cm.font.size,
@@ -1181,12 +1225,19 @@ Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function.
 
 #' Note: The function uses the S3 Method Dispatch internally 
 #' to call the `plot.confusion_matrix.ConfMxPlotArgs()` function.
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param pred_values Predicted values obtained as a result of the model's evaluation.
+#' @param title Plot title.
+#' @param plot_name Plot name.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
 plot.confusion_matrix.default <- function(targets,
                                           pred_values,
                                           title = NULL,
                                           plot_name = "Confusion Matrix",
-                                          model_type = "Multiclass",
-                                          model_name = "Classifier Model",
+                                          model_type = "Multiclass Classifier",
                                           alg_name = NULL,
                                           palette = "Greens",
                                           font.size = 3,
@@ -1205,17 +1256,16 @@ plot.confusion_matrix.default <- function(targets,
   cm.export2image.validate(cm.print.image,
                            cm.export.img_file)
   
-  title <- build.plot_title(title,
-                            plot_name,
-                            model_type,
-                            model_name,
-                            alg_name)
+  plot_title <- build.plot_title(title,
+                                 plot_name,
+                                 model_type,
+                                 alg_name)
   
   put_log("Function `plot.confusion_matrix.default`:
 Creating an object of the `ConfMxPlotArgs` class, 
 representing the argument list for the helper function that plots the confusion matrix...")
   args <- plot.cm.create_args(targets = targets,
-                              title = title,
+                              title = plot_title,
                               pred_values = pred_values,
                               palette = palette,
                               font.size = font.size,
@@ -1344,25 +1394,34 @@ to call the `plot.confusion_matrix.ConfMxPlot()` function...")
 
 ### Utility Functions -----------------------------------------------------------
 
-build.plot_title <- function(plot_title = NULL,
+#' Builds a plot title. 
+#' @details
+#' Note: If the value of the `title` argument is not `NULL`, the function returns 
+#' the value of that argument, ignoring the other arguments' values.
+#' @param title Plot title.
+#' @param plot_name Plot name.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
+build.plot_title <- function(title = NULL,
                              plot_name = "Visualization",
-                             model_type = "Multiclass",
-                             model_name = "Classifier",
+                             model_type = "Multiclass Classifier",
                              alg_name = NULL) {
-  if(is.null(plot_title)){
-    plot_title <- paste(plot_name,
+  if(is.null(title)){
+    title <- paste(plot_name,
                         "for the",
                         model_type,
-                        model_name,
                         "Model")
 
     if(!is.null(alg_name)){
-      plot_title <- paste(plot_title,
+      title <- paste(title,
                           str.build("Based on the %1 Algorithm", 
                                     alg_name))
     }
   }
-  plot_title
+  
+  title
 }
 
 
