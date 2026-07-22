@@ -284,10 +284,10 @@ open_logfile(".k(best)nn+pca.eval-results.visualization")
 stopifnot(file.exists(model_visualization.shared.script.path))
 
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
-                                           "knn_pca.eval.confusion-matrix.png")
+                                           "knn+pca-tuned.eval.confusion-matrix.png")
 
 model.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
-                            "knn_pca.eval.plots_dat.rds")
+                            "knn+pca-tuned.eval.plots_dat.rds")
 
 #' (Re-)Create the `plots.args` object in the `GlobalEnv` environment 
 #' of the `modelEvalResultPlotArgs` class, containing argument values 

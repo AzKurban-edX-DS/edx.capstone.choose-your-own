@@ -61,5 +61,7 @@ if(!file.exists(model.eval.plots_dat.file)) {
 %1", model.eval.plots_dat.file)
 }
 
+rm(plots.args)
+rm(model.eval.plots_dat.file)
 put_end_date(start)
 
