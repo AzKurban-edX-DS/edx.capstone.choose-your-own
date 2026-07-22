@@ -545,12 +545,12 @@ cnn.binclass.get_prediction_values <- function(preds) {
 #' @param alg_name Name of the algorithm used for the model training.
 #' @param roc.plot_title `ROC Curves` Plot title.
 #' @param roc.plot_name `ROC Curves` Plot name
-#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (PCA) plot title.
-#' @param pca.plot_name PCA plot name.
-#' @param pca.color PCA plot line color.
-#' @param pca.fill PCA plot fill color.
-#' @param cm.plot_title `Confusion Matrix` (CM) plot title.
-#' @param cm.plot_name CM plot name.
+#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (`PCA`) plot title.
+#' @param pca.plot_name `PCA` plot name.
+#' @param pca.color `PCA` plot line color.
+#' @param pca.fill `PCA` plot fill color.
+#' @param cm.plot_title `Confusion Matrix` (`CM`) plot title.
+#' @param cm.plot_name `CM` plot name.
 init.plots_args <- function(targets,
                             predicted.probabilities,
                             predicted.values,
@@ -632,12 +632,12 @@ in the `.GlobalEnv` environment with the following structure:
 #' @param alg_name Name of the algorithm used for the model training.
 #' @param roc.plot_title `ROC Curves` Plot title.
 #' @param roc.plot_name `ROC Curves` Plot name
-#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (PCA) plot title.
-#' @param pca.plot_name PCA plot name.
-#' @param pca.color PCA plot line color.
-#' @param pca.fill PCA plot fill color.
-#' @param cm.plot_title `Confusion Matrix` (CM) plot title.
-#' @param cm.plot_name CM plot name.
+#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (`PCA`) plot title.
+#' @param pca.plot_name `PCA` plot name.
+#' @param pca.color `PCA` plot line color.
+#' @param pca.fill `PCA` plot fill color.
+#' @param cm.plot_title `Confusion Matrix` (`CM`) plot title.
+#' @param cm.plot_name `CM` plot name.
 #' @returns An object of the `modelEvalResultPlotArgs` class
 create.plot_args <- function(targets,
                              predicted.probabilities,
@@ -679,6 +679,8 @@ create.plot_args <- function(targets,
                          roc.plot_name = roc.plot_name,
                          pca.plot_title = pca.plot_title,
                          pca.plot_name = pca.plot_name,
+                         pca.fill = pca.fill,
+                         pca.color = pca.color,
                          cm.plot_title = cm.plot_title,
                          cm.plot_name = cm.plot_name,
                          cm.palette = cm.palette,
@@ -694,7 +696,7 @@ create.plot_args <- function(targets,
                     class = "modelEvalResultPlotArgs"))
 }
 
-### Plotting ROC Curves Using  S3 Method Dispatch Approach ---------------------
+### Plotting ROC Curves Using  `S3 Method Dispatch` Approach ---------------------
 # References:
 # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
 # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
@@ -748,7 +750,7 @@ plot.ROC_curves <- function(x, ...) {
 #' @details
 #' Plots `ROC Curves` based on the model evaluation results passed 
 #' as the `modelEvalResultPlotArgs` class object in the `x` argument.
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.ROC_curves.default()` function.
 #' @param x An object of the `modelEvalResultPlotArgs` class 
 #' representing the model evaluation results.
@@ -770,14 +772,14 @@ to call the `plot.ROC_curves.default()` function...")
 #' @details
 #' Plots `ROC Curves` based on the visual representation data of the model 
 #' evaluation results passed as the `plotsDat` class object in the `x` argument.
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.ROC_curves.rocCurvesDat()` function.
 #' @param x An object of the `plotsDat` class.
 #' @returns An object of the `rocCurvesDat` class representing the `ROC Curves` data.
 plot.ROC_curves.plotsDat <- function(x) {
   
   put_log("Function `plot.ROC_curves.plotsDat`:
-Using S3 Method Dispatch to call the `plot.ROC_curves.rocCurvesDat()` function...")
+Using `S3 Method Dispatch` to call the `plot.ROC_curves.rocCurvesDat()` function...")
   plot.ROC_curves(x$ROC)
   
   # An object of the `rocCurvesDat` class. 
@@ -787,7 +789,7 @@ Using S3 Method Dispatch to call the `plot.ROC_curves.rocCurvesDat()` function..
 #' @details
 #' Plots `ROC Curves` based on the model evaluation result values 
 #' passed as the function arguments.
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.ROC_curves.rocCurvesDat()` function.
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
 #' @param predicted_probabilities Predicted probability values 
@@ -804,9 +806,8 @@ plot.ROC_curves.default <- function(targets,
                                     title = NULL,
                                     plot_name = "ROC Curves",
                                     model_type = "Multiclass Classifier",
-                                    alg_name = NULL,
-) {
-  plot_title <- build.plot_title(title ,
+                                    alg_name = NULL) {
+  plot_title <- build.plot_title(title,
                                  plot_name,
                                  model_type,
                                  alg_name)
@@ -840,19 +841,20 @@ Plotting the ROC curves...")
        main = x$title)
   
   for (label.idx in 2:N.classes) {
-    lines(x[[label.idx]], col = label.idx)
+    lines(x$roc_curves[[label.idx]], col = label.idx)
   }
 }
 
 ### Plotting Per-Class Accuracy (PCA) Bar Charts -------------------------------
 
-#' Calculates PCA values as part of the Multiclass Classifier (MCC) model's 
+#' Calculates `PCA` values as part of the `Multiclass Classifier` (`MCC`) model's 
 #' evaluation process.
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
 #' @param predicted.values Predicted values obtained as a result 
 #' of the model's evaluation.
-#' @param class.labels Multiclass Classifier Class Labels   
-#' @returns List of PCA values for the MCC model being evaluated. 
+#' @param class.labels `MCC` Class Labels   
+#' @returns `Single-column matrix` containing a list of the `PCA` values 
+#' for the `MCC` model being evaluated.
 MCClassifier.accuracy.by_class <- function(targets,
                                            predicted.values,
                                            class.labels) {
@@ -884,13 +886,17 @@ MCClassifier.accuracy.by_class <- function(targets,
 Accuracy for the class `%1` (of size %2) is %3.",
             class, n, accuracy) 
     accuracy
-  }) |> matrix(ncol = 1, dimnames = list(class = class.labels, "accuracy")) 
+  }) |> 
+    matrix(ncol = 1, dimnames = list(class = class.labels, "accuracy")) 
 }
 
 #' Plots `PCA Bar Chart` based on the model's 
-#' per class accuracy values.
-#' @param class.accuracies Model's per class accuracy values
+#' `Per-Class Accuracy` (`PCA`) values.
+#' @param class.accuracies Model's `PCA` values
 #' @param class.labels Multiclass Classifier Class Labels   
+#' @param .title Plot title.
+#' @param color Plot line color.
+#' @param fill Plot fill color.
 plot_bars.accuracy.by_class <- 
   function(class.accuracies,
            class.labels,
@@ -900,14 +906,14 @@ plot_bars.accuracy.by_class <-
     
     data.frame(class = class.labels,
                accuracy = class.accuracies) |>
-      ggplot(mapping = aes(x = class,
-                           y = accuracy)) +
+      ggplot(mapping = aes(x = accuracy,
+                           y = class)) +
       geom_col(fill = .fill,
                color = .color) +
-      labs(x = "Handwritten Character Class",
-           y = "Accuracy",
+      labs(x = "Accuracy",
+           y = "Handwritten Character Class Labels",
            title = .title) +
-      scale_y_continuous(labels = scales::label_percent(accuracy = 1),
+      scale_x_continuous(labels = scales::label_percent(accuracy = 1),
                          expand = c(0, 0, 0.005, 0))
   }
 
@@ -923,9 +929,9 @@ barPlot.accuracy_by_class <- function(x, ...) {
 
 #' @details
 #' Plots `PCA Bar Chart` based on the visual representation data of the model 
-#' evaluation results (Per-Class Accuracy) passed as a `PCA` property 
+#' evaluation results (`Per-Class Accuracy` OF `PCA`) passed as a `PCA` property 
 #' of the `plotsDat` class object in the `x` argument.
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `barPlot.accuracy_by_class.perClassAccValues()` function.
 #' @param x An object of the `plotsDat` class.
 #' @returns An object of the `perClassAccValues` class representing 
@@ -938,7 +944,7 @@ barPlot.accuracy_by_class.plotsDat <- function(x) {
 #' @details
 #' Plots `PCA Bar Charts` based on the model evaluation results 
 #' passed as the `modelEvalResultPlotArgs` class object in the `x` argument.
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `barPlot.accuracy_by_class.default()` function.
 #' @param x An object of the `modelEvalResultPlotArgs` class 
 #' representing the model evaluation results.
@@ -962,7 +968,7 @@ barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
 #' @details
 #' Plots `PCA Bar Chart` based on the model evaluation result values 
 #' passed as the function arguments.
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `barPlot.accuracy_by_class.perClassAccValues()` function.
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
 #' @param predicted.values Predicted values obtained as a result 
@@ -984,8 +990,8 @@ barPlot.accuracy_by_class.default <- function(targets,
                                               color = "black",
                                               fill = "steelblue") {
   
-  stopifnot(class(x$predicted.values) == "factor" && 
-              sum(levels(x$predicted.values) != levels(Y.Labels)) == 0)
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(Y.Labels)) == 0)
   
   plot_title <- build.plot_title(title ,
                                  plot_name,
@@ -996,7 +1002,7 @@ barPlot.accuracy_by_class.default <- function(targets,
                                                        predicted.values,
                                                        Y.Labels)
   x <- structure(list(acc.by_class = per_class.accuracy,
-                      title = title,
+                      title = plot_title,
                       color = color,
                       fill = fill),
                  class = "perClassAccValues")
@@ -1196,15 +1202,15 @@ plot.confusion_matrix <- function(x, ...) {
   UseMethod("plot.confusion_matrix")
 }
 
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.confusion_matrix.default()` function.
 plot.confusion_matrix.modelEvalResultPlotArgs <- function(x) {
   
-  stopifnot(class(x$pred_values) == "factor", 
-            sum(levels(x$pred_values) == levels(Y.Labels)) == N.classes)
+  stopifnot(class(x$predicted.values) == "factor", 
+            sum(levels(x$predicted.values) == levels(Y.Labels)) == N.classes)
   
   put_log("Function `plot.confusion_matrix.modelEvalResultPlotArgs`:
-Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function...")
+Using `S3 Method Dispatch` to call the `plot.confusion_matrix.default()` function...")
   plot.confusion_matrix(x$targets,
                         x$predicted.values,
                         x$cm.plot_title,
@@ -1223,7 +1229,7 @@ Using S3 Method Dispatch to call the `plot.confusion_matrix.default()` function.
                         x$cm.backup.file)
 }
 
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.confusion_matrix.ConfMxPlotArgs()` function.
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
 #' @param pred_values Predicted values obtained as a result of the model's evaluation.
@@ -1284,7 +1290,7 @@ to call the `plot.confusion_matrix.ConfMxPlotArgs()` function...")
   plot.confusion_matrix(args)
 }
 
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.confusion_matrix.ConfMxDat()` function.
 #' @param x An object of the `ConfMxPlotArgs` class.
 plot.confusion_matrix.ConfMxPlotArgs <- function(x) {
@@ -1311,7 +1317,7 @@ to call the `plot.confusion_matrix.ConfMxDat()` function...")
   
 }
 
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.confusion_matrix.ConfMxPlot()` function.
 #' @param x An object of the `ConfMxDat` class.
 plot.confusion_matrix.ConfMxDat <- function(x) {
@@ -1381,7 +1387,7 @@ The confusion matrix plot object has been backed up in the following file:
   return(x)
 }
 
-#' Note: The function uses the S3 Method Dispatch internally 
+#' Note: The function uses the `S3 Method Dispatch` internally 
 #' to call the `plot.confusion_matrix.()` function.
 #' @param x An object of the `plotsDat` class.
 plot.confusion_matrix.plotsDat <- function(x) {

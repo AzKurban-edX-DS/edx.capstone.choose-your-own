@@ -25,7 +25,7 @@ plots.dat <- structure(list(), class = "plotsDat")
 put_log("Plotting ROC curves of the Multiclass Classifier Evaluation Results...")
 
 plots.dat$ROC <- plot.ROC_curves(plots.args)
-plots.dat$ROC <- plot.ROC_curves(plots.dat)
+# plots.dat$ROC <- plot.ROC_curves(plots.dat)
 class(plots.dat$ROC)
 summary(plots.dat$ROC)
 

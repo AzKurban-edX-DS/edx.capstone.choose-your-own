@@ -289,19 +289,25 @@ knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
 model.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
                             "knn_pca.eval.plots_dat.rds")
 
-
+#' (Re-)Create the `plots.args` object in the `GlobalEnv` environment 
+#' of the `modelEvalResultPlotArgs` class, containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
 init.plots_args(targets = y_test,
                 predicted.probabilities = k_best.nn_pca.probs,
                 predicted.values = k_best.nn_pca.predicted,
+                alg_name = "kNN+PCA",
                 plots_dat.file = model.eval.plots_dat.file,
                 cm.export.img_file = knn_pca.eval.conf.mx.img_file,
                 cm.print.image = T)
 
-# source(model_visualization.shared.script.path,
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
+#'Run the helper script specifically designed to visualize 
+#'the model evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 log_close()

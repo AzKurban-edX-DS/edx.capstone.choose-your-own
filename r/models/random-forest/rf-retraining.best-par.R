@@ -222,28 +222,35 @@ log_close()
 # Log Elapsed Time: 0 01:37:25
 
 ## Visualizing the Evaluation Results ------------------------------------------
-open_logfile(".k(best)nn+pca.eval-results.visualization")
+open_logfile(".rf-tuned.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
 rf_best.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
-                                           "rf-final.eval.confusion-matrix.png")
+                                           "rf-tuned.eval.confusion-matrix.png")
 
 plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
-                            "rf_best.eval.plots_dat.rds")
+                            "rf-tuned.eval.plots_dat.rds")
 
+#' (Re-)Create the `plots.args` object in the `GlobalEnv` environment 
+#' of the `modelEvalResultPlotArgs` class, containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
 init.plots_args(targets = y_test,
                 predicted.probabilities = fit_rf.mtry_best$test$votes,
                 predicted.values = fit_rf.mtry_best$test$predicted,
+                alg_name = "Random Forest",
                 plots_dat.file = plots_dat.file,
                 cm.export.img_file = rf_best.eval.conf.mx.img_file,
                 cm.print.image = T)
 
-# source(model_visualization.shared.script.path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
+#'Run the helper script specifically designed to visualize 
+#'the model evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 log_close()
