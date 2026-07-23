@@ -3,7 +3,8 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Visualizing the Evaluation Results ------------------------------------------
-stopifnot(exists("plots.args"))
+stopifnot(exists("plots.args"),
+          exists("model.eval.plots_dat.file"))
 
 summary(plots.args)
 class(plots.args)
@@ -47,9 +48,22 @@ please wait...")
 
 plots.dat$CM <- plot.confusion_matrix(plots.args)
 # plots.dat$CM <- plot.confusion_matrix(plots.dat)
-
 class(plots.dat$CM)
 summary(plots.dat$CM)
+
+if(!file.exists(model.eval.plots_dat.file)) {
+  put_log("Saving the model-related plots input data object to file...")
+  
+  saveRDS(plots.dat,
+          file = model.eval.plots_dat.file)
+
+  put_log("The model-related plots input data object has been saved to the following file:
+%1", model.eval.plots_dat.file)
+}
+
+rm(plots.args,
+   plots.dat,
+   model.eval.plots_dat.file)
 
 put_end_date(start)
 
