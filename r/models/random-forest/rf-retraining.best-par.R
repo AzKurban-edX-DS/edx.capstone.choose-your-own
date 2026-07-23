@@ -155,10 +155,6 @@ start <- put_start_date()
 
 if(file.exists(fit_rf.mtry_best.backup.path)) {
   # No longer needed since the pre-trained model will be loaded from the backup file
-  rm(x_train, 
-     y_train,
-     x_test)
-  
   put_log("Loading data of the fine-tuned `RF MCC` Model by the `mtry` parameter...")
   
   fit_rf.mtry_best <- readRDS(fit_rf.mtry_best.backup.path)
@@ -182,15 +178,16 @@ trained with the best `mtry` parameter value, has been loaded from the following
                                    y_test,
                                    mtry = fit_rf.mtry.best,
                                    ntree = 400)
-  rm(x_train, 
-     y_train,
-     x_test)
-  
+
   put_log("The `RF MCC` Model has been trained with the best `mtry` parameter value.")
   put_end_date(start)
 
   stopCluster(cl)
   stopImplicitCluster()
+  
+  fit_rf.mtry_best$test$accuracy <-  mean(fit_rf.mtry_best$test$predicted == y_test)
+  
+  fit_rf.mtry_best$test$targets <- y_test
   
   put_log("Saving the fine-tuned `RF MCC` Model data...")
   
@@ -202,6 +199,13 @@ trained with the best `mtry` parameter value, has been loaded from the following
   put_end_date(start)
   # Time difference of  mins
 }
+
+
+
+rm(x_train, 
+   y_train,
+   x_test,
+   y_test)
 
 put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
 on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
@@ -215,34 +219,44 @@ plot(fit_rf.mtry_best,
 
 put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model, 
 trained with the best `mtry` parameter value, is as follows:
-%1", mean(fit_rf.mtry_best$test$predicted == y_test))
+%1", fit_rf.mtry_best$test$accuracy)
 # 0.886029854339713
 
 log_close()
 # Log Elapsed Time: 0 01:37:25
 
 ## Visualizing the Evaluation Results ------------------------------------------
+
 open_logfile(".rf-tuned.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
-rf_best.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
+rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                            "rf-tuned.eval.confusion-matrix.png")
 
-model.eval.plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
-                            "rf-tuned.eval.plots_dat.rds")
+rf_tuned.eval.plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
+                                         "rf-tuned.eval.plots_dat.rds")
 
-#' (Re-)Create the `plots.args` object in the `GlobalEnv` environment 
-#' of the `modelEvalResultPlotArgs` class, containing argument values 
+#' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
-init.plots_args(targets = y_test,
-                predicted.probabilities = fit_rf.mtry_best$test$votes,
-                predicted.values = fit_rf.mtry_best$test$predicted,
-                alg_name = "Random Forest",
-                plots_dat.file = model.eval.plots_dat.file,
-                cm.export.img_file = rf_best.eval.conf.mx.img_file,
-                cm.print.image = T)
+if(file.exists(rf_tuned.eval.plots_dat.file)) {
+  put_log("Function `init.plots_args`:
+Loading the model-related plots input data object from the backup file...")
+  plots.args <- init.plots_args(rf_tuned.eval.plots_dat.file)
+  
+  put_log("Function `init.plots_args`:
+The model-related plots input data object has been loaded from the following file:
+%1", rf_tuned.eval.plots_dat.file)
+} else {
+  plots.args <- init.plots_args(targets = fit_rf.mtry_best$test$targets,
+                                predicted.probabilities = fit_rf.mtry_best$test$votes,
+                                predicted.values = fit_rf.mtry_best$test$predicted,
+                                alg_name = "Random Forest",
+                                plots_dat.file = rf_tuned.eval.plots_dat.file,
+                                cm.export.img_file = rf_tuned.eval.conf.mx.img_file,
+                                cm.print.image = T)
+}
 
 #'Run the helper script specifically designed to visualize 
 #'the model evaluation results:
@@ -253,4 +267,23 @@ source(model_visualization.shared.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+rm(plots.args,
+   fit_rf.mtry_best)
+
+stopifnot(exists("plots.dat"),
+          !is.null(plots.dat$ROC),
+          !is.null(plots.dat$PCA),
+          !is.null(plots.dat$CM))
+
+put_log("Saving the model-related plots input data object to file...")
+
+saveRDS(plots.dat,
+        file = rf_tuned.eval.plots_dat.file)
+
+put_log("The model-related plots input data object has been saved to the following file:
+%1", rf_tuned.eval.plots_dat.file)
+
+rm(plots.dat)
 log_close()
+
+

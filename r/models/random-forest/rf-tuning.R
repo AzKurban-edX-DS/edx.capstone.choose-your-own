@@ -203,8 +203,12 @@ The Confusion Matrix has been created:
   
   stopCluster(cl)
   stopImplicitCluster()
-  
   # Time difference of the last iteration 19.8342 mins
+  
+  fit_rf.mtry_default$test$accuracy <- 
+    mean(fit_rf.mtry_default$test$predicted == y_test)
+  
+  fit_rf.mtry_default$test$targets <- y_test
   
   put_log("Saving the pre-trained `RF MCC` Model data...")
   saveRDS(list(fit = fit_rf.mtry_default,
@@ -228,9 +232,11 @@ plot(fit_rf.mtry_default,
 
 put_log("Prediction accuracy of the `RF MCC` Model,
 pre-trained with the default `mtry` parameter value, is as follows:
-%1", mean(fit_rf.mtry_default$test$predicted == y_test))
+%1", fit_rf.mtry_default$test$accuracy)
 # [1] 0.839746933643647
 
+rm(fit_rf.mtry_default,
+   rf_conf.mx.mtry_default)
 log_close()
 # Log Elapsed Time: 0 00:10:43
 
@@ -484,6 +490,8 @@ put_log("The best parameter value obtained as a result of the coarse tuning:
 # mtry
 #   44
 
+rm(fit_rf.mtry.coarse_tuned,
+   fit_rf.mtry.fine_tuned)
 log_close()
 # Log Elapsed Time: 0 00:19:10
 
@@ -621,6 +629,7 @@ put_log("The best parameter value obtained as a result of the RF Model tuning:
 %1", capture.output(fit_rf.mtry.best))
 # 44
 
+rm(fit_rf.mtry.final_tuned)
 log_close()
 # Log Elapsed Time: 0 00:21:16
 
