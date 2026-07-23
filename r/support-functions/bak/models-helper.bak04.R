@@ -531,6 +531,96 @@ cnn.binclass.get_prediction_values <- function(preds) {
 ## Analysis & Visualization ----------------------------------------------------
 ### Init Plot Args -------------------------------------------------------------
 
+#' Creates the `plots.args` object of the `modelEvalResultPlotArgs` class 
+#' in the `.GlobalEnv` environment to use as input data for plots by the following script:
+#' [Shared  Model Evaluation Results Visualization](r/models/model-visualization.shared.R)
+#' @param targets Target values of the `Test Set` used for the model's evaluation.
+#' @param predicted.probabilities Predicted probability values 
+#' obtained as a result of the model's evaluation.
+#' @param predicted.values Predicted values obtained as a result 
+#' of the model's evaluation.
+#' @param model_type Type of model: in `This Project`, it can be one of the following:
+#' - `Multiclass Classifier`;
+#' - `Binary Classifier`.
+#' @param alg_name Name of the algorithm used for the model training.
+#' @param roc.plot_title `ROC Curves` Plot title.
+#' @param roc.plot_name `ROC Curves` Plot name
+#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (`PCA`) plot title.
+#' @param pca.plot_name `PCA` plot name.
+#' @param pca.color `PCA` plot line color.
+#' @param pca.fill `PCA` plot fill color.
+#' @param cm.plot_title `Confusion Matrix` (`CM`) plot title.
+#' @param cm.plot_name `CM` plot name.
+init.plots_args <- function(targets,
+                            predicted.probabilities,
+                            predicted.values,
+                            plots_dat.file,
+                            model_type = "Multiclass Classifier",
+                            alg_name = NULL,
+                            roc.plot_title = NULL,
+                            roc.plot_name = "ROC Curves",
+                            pca.plot_title = NULL,
+                            pca.plot_name = "Per-Class Accuracy",
+                            pca.color = "black",
+                            pca.fill = "steelblue",
+                            cm.plot_title = NULL,
+                            cm.plot_name = "Confusion Matrix",
+                            cm.palette = "Greens",
+                            cm.font.size = 3,
+                            cm.font.color = "red",
+                            cm.add_normalized = FALSE,
+                            cm.add_col_percentages = FALSE,
+                            cm.add_row_percentages = FALSE,
+                            cm.print.plot_object = FALSE,
+                            cm.print.image = FALSE,
+                            cm.export.img_file = NULL,
+                            cm.backup.file = NULL) {
+  
+  if(file.exists(plots_dat.file)) {
+    put_log("Function `init.plots_args`:
+Loading the model-related plots input data object from the backup file...")
+    plots_args <- readRDS(plots_dat.file)
+    
+    put_log("Function `init.plots_args`:
+The model-related plots input data object has been loaded from the following file:
+%1", plots_dat.file)
+  } else {
+    
+    plots_args <- create.plot_args(targets = targets,
+                                   predicted.probabilities = predicted.probabilities,
+                                   predicted.values = predicted.values,
+                                   model_type = model_type,
+                                   alg_name = alg_name,
+                                   roc.plot_title = roc.plot_title,
+                                   roc.plot_name = roc.plot_name,
+                                   pca.plot_title = pca.plot_title,
+                                   pca.plot_name = pca.plot_name,
+                                   pca.color = pca.color,
+                                   pca.fill = pca.fill,
+                                   cm.plot_title = cm.plot_title,
+                                   cm.plot_name = cm.plot_name,
+                                   cm.palette = cm.palette,
+                                   cm.font.size = cm.font.size,
+                                   cm.font.color = cm.font.color,
+                                   cm.add_normalized = cm.add_normalized,
+                                   cm.add_col_percentages = cm.add_col_percentages,
+                                   cm.add_row_percentages = cm.add_row_percentages,
+                                   cm.print.plot_object = cm.print.plot_object,
+                                   cm.print.image = cm.print.image,
+                                   cm.export.img_file = cm.export.img_file,
+                                   cm.backup.file = cm.backup.file)
+  }
+  
+  assign("plots.args", plots_args, envir = .GlobalEnv)
+  
+  put_log("An object of the class `%1` has been assigned to the  `plots.args` variable 
+in the `.GlobalEnv` environment with the following structure:
+%2", class(plots.args), capture.output(summary(plots.args)))
+  
+  invisible(NULL)
+}
+
+
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
 #' @param predicted.probabilities Predicted probability values 
 #' obtained as a result of the model's evaluation.
@@ -576,10 +666,10 @@ create.plot_args <- function(targets,
   
   stopifnot(class(predicted.values) == "factor", 
             sum(levels(predicted.values) == levels(Y.Labels)) == N.classes)
-  
+
   cm.export2image.validate(cm.print.image,
                            cm.export.img_file)
-  
+
   return (structure(list(targets = targets,
                          predicted.probabilities = predicted.probabilities,
                          predicted.values = predicted.values,
@@ -606,101 +696,7 @@ create.plot_args <- function(targets,
                     class = "modelEvalResultPlotArgs"))
 }
 
-#### `init.plots_args` Generic Function ----------------------------------------
-#' (Using `S3 Method Dispatch` Mechanism)
-
-#' Generic method for plotting `Per-Class Accuracy (PCA) Bar Charts` based on the 
-#' model evaluation results passed as the function arguments.
-init.plots_args <- function(x, ...) {
-  UseMethod("init.plots_args")
-}
-
-#' Initialize an object, containing values to pass as arguments to visualization functions to for plots by the following script:
-#' [Shared  Model Evaluation Results Visualization](r/models/model-visualization.shared.R)
-#' @param targets Target values of the `Test Set` used for the model's evaluation.
-#' @param predicted.probabilities Predicted probability values 
-#' obtained as a result of the model's evaluation.
-#' @param predicted.values Predicted values obtained as a result 
-#' of the model's evaluation.
-#' @param model_type Type of model: in `This Project`, it can be one of the following:
-#' - `Multiclass Classifier`;
-#' - `Binary Classifier`.
-#' @param alg_name Name of the algorithm used for the model training.
-#' @param roc.plot_title `ROC Curves` Plot title.
-#' @param roc.plot_name `ROC Curves` Plot name
-#' @param pca.plot_title Multiclass Classifier `Per-Class Accuracy` (`PCA`) plot title.
-#' @param pca.plot_name `PCA` plot name.
-#' @param pca.color `PCA` plot line color.
-#' @param pca.fill `PCA` plot fill color.
-#' @param cm.plot_title `Confusion Matrix` (`CM`) plot title.
-#' @param cm.plot_name `CM` plot name.
-init.plots_args.default <- function(targets,
-                                    predicted.probabilities,
-                                    predicted.values,
-                                    plots_dat.file,
-                                    model_type = "Multiclass Classifier",
-                                    alg_name = NULL,
-                                    roc.plot_title = NULL,
-                                    roc.plot_name = "ROC Curves",
-                                    pca.plot_title = NULL,
-                                    pca.plot_name = "Per-Class Accuracy",
-                                    pca.color = "black",
-                                    pca.fill = "steelblue",
-                                    cm.plot_title = NULL,
-                                    cm.plot_name = "Confusion Matrix",
-                                    cm.palette = "Greens",
-                                    cm.font.size = 3,
-                                    cm.font.color = "red",
-                                    cm.add_normalized = FALSE,
-                                    cm.add_col_percentages = FALSE,
-                                    cm.add_row_percentages = FALSE,
-                                    cm.print.plot_object = FALSE,
-                                    cm.print.image = FALSE,
-                                    cm.export.img_file = NULL,
-                                    cm.backup.file = NULL) {
-  
-  
-  create.plot_args(targets = targets,
-                   predicted.probabilities = predicted.probabilities,
-                   predicted.values = predicted.values,
-                   model_type = model_type,
-                   alg_name = alg_name,
-                   roc.plot_title = roc.plot_title,
-                   roc.plot_name = roc.plot_name,
-                   pca.plot_title = pca.plot_title,
-                   pca.plot_name = pca.plot_name,
-                   pca.color = pca.color,
-                   pca.fill = pca.fill,
-                   cm.plot_title = cm.plot_title,
-                   cm.plot_name = cm.plot_name,
-                   cm.palette = cm.palette,
-                   cm.font.size = cm.font.size,
-                   cm.font.color = cm.font.color,
-                   cm.add_normalized = cm.add_normalized,
-                   cm.add_col_percentages = cm.add_col_percentages,
-                   cm.add_row_percentages = cm.add_row_percentages,
-                   cm.print.plot_object = cm.print.plot_object,
-                   cm.print.image = cm.print.image,
-                   cm.export.img_file = cm.export.img_file,
-                   cm.backup.file = cm.backup.file)
-}
-
-
-init.plots_args.character <- function(plots_dat.file) {
-  stopifnot(file.exists(plots_dat.file))
-
-  put_log("Function `init.plots_args.character`:
-Loading the model-related plots input data object from the backup file...")
-  plots_args <- readRDS(plots_dat.file)
-  
-  put_log("Function `init.plots_args.character`:
-The model-related plots input data object has been loaded from the following file:
-%1", plots_dat.file)
-  
-  return(plots_args)
-}
-
-### Plotting ROC Curves --------------------------------------------------------
+### Plotting ROC Curves Using  `S3 Method Dispatch` Approach ---------------------
 # References:
 # https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
 # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
