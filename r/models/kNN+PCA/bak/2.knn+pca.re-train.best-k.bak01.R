@@ -207,25 +207,23 @@ log_close()
 ## Constructing Predictions on kNN+PCA (for best *k* Parameter value) --------
 open_logfile(".x.test.flatten.predict.k(best)nn+pca")
 
-knn_pca.eval.results.backup <-
-  file.path(knn_pca.data.dir, "knn+pca.eval-results.rds")
+knn_pca.best.preds.backup <-
+  file.path(knn_pca.data.dir, "k_best.nn_pca.probs.rds")
 
 
 start <- put_start_date()
 # Thu Apr 9 09:14:47 2026
 
-if (file.exists(knn_pca.eval.results.backup)) {
+if (file.exists(knn_pca.best.preds.backup)) {
   put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
   
-  knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
+  k_best.nn_pca.probs <- readRDS(knn_pca.best.preds.backup)
   put_end_date(start)
   # Time difference of 
 
   put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
-%1...", knn_pca.eval.results.backup)
+%1...", knn_pca.best.preds.backup)
 } else {
-  knn_pca.eval.results <- list()
-  
   put_log("Constructing predictions using the `kNN+PCA MCC` Model trained for the best *k* value...")
   
   if(!exists("k_best.nn_pca.model")) {
@@ -245,10 +243,10 @@ has been loaded from the following backup file:
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
 
-  knn_pca.eval.results$predicted.probs <- caret::predict.train(k_best.nn_pca.model, 
-                                                               newdata = x_test,
-                                                               type = "prob",
-                                                               verbose = TRUE)
+  k_best.nn_pca.probs <- caret::predict.train(k_best.nn_pca.model, 
+                                              newdata = x_test,
+                                              type = "prob",
+                                              verbose = TRUE)
   put_end_date(start)
 
   stopCluster(cl)
@@ -256,34 +254,30 @@ has been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 2.354987 hours
   
-  knn_pca.eval.results$predicted <- 
-    predicted_probs2classes(as.matrix(knn_pca.eval.results$predicted.probs), 
-                            Y.Labels)
+  put_log("Saving the Tuned `kNN+PCA MCC` Model predicted data...")
+  #> [1] 0.8693882
   
-  put_end_date(start)
+  saveRDS(k_best.nn_pca.probs,
+          file = knn_pca.best.preds.backup)
   
-  knn_pca.eval.results$accuracy <- mean(k_best.nn_pca.predicted == y_test)
-  # [1] 0.8625557
-  
-  knn_pca.eval.results$targets <- y_test
-  
-  
-  put_log("Saving the Tuned `kNN+PCA MCC` Model evaluation results...")
-  saveRDS(knn_pca.eval.results,
-          file = knn_pca.eval.results.backup)
-  
-  put_log("The evaluation results of the tuned `kNN+PCA MCC` Model has been saved 
-to the following file:
-%1", knn_pca.eval.results.backup)
+  put_log("The predicted data of the Tuned `kNN+PCA MCC` Model has been saved to the following file:
+%1", knn_pca.best.preds.backup)
   
 }
 
   rm(x_test,
-     k_best.nn_pca.model,
-     y_test)
+     k_best.nn_pca.model)
+
+
+
+k_best.nn_pca.predicted <- predicted_probs2classes(as.matrix(k_best.nn_pca.probs),
+                                                   Y.Labels)
+put_end_date(start)
+
+knn_pca.best.accuracy <- mean(k_best.nn_pca.predicted == y_test)
 
 put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
-%1", knn_pca.eval.results$accuracy)
+%1", knn_pca.best.accuracy)
 #> [1] 0.862555675935958
 
 log_close()
@@ -298,38 +292,20 @@ stopifnot(file.exists(model_visualization.shared.script.path))
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
                                            "knn+pca-tuned.eval.confusion-matrix.png")
 
-knn_pca.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
+model.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
                             "knn+pca-tuned.eval.plots_dat.rds")
 
-#' Initialize the `plots.args` object containing argument values 
+#' (Re-)Create the `plots.args` object in the `GlobalEnv` environment 
+#' of the `modelEvalResultPlotArgs` class, containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
-if(file.exists(knn_pca.eval.plots_dat.file)) {
-  put_log("Function `init.plots_args`:
-Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(knn_pca.eval.plots_dat.file)
-  
-  put_log("Function `init.plots_args`:
-The model-related plots input data object has been loaded from the following file:
-%1", knn_pca.eval.plots_dat.file)
-} else {
-  if (!exists("knn_pca.eval.results")) {
-    stopifnot(file.exists(knn_pca.eval.results.backup))
-    put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
-    knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
-    
-    put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
-%1...", knn_pca.eval.results.backup)
-  } 
-
-  plots.args <- init.plots_args(targets = knn_pca.eval.results$targets,
-                                predicted.probabilities = knn_pca.eval.results$predicted.probs,
-                                predicted.values = knn_pca.eval.results$predicted,
-                                alg_name = "kNN+PCA",
-                                plots_dat.file = knn_pca.eval.plots_dat.file,
-                                cm.export.img_file = knn_pca.eval.conf.mx.img_file,
-                                cm.print.image = T)
-}
+init.plots_args(targets = y_test,
+                predicted.probabilities = k_best.nn_pca.probs,
+                predicted.values = k_best.nn_pca.predicted,
+                alg_name = "kNN+PCA",
+                plots_dat.file = model.eval.plots_dat.file,
+                cm.export.img_file = knn_pca.eval.conf.mx.img_file,
+                cm.print.image = T)
 
 #'Run the helper script specifically designed to visualize 
 #'the model evaluation results:
@@ -339,23 +315,5 @@ source(model_visualization.shared.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
-
-rm(plots.args)
-
-stopifnot(exists("plots.dat"),
-          !is.null(plots.dat$ROC),
-          !is.null(plots.dat$PCA),
-          !is.null(plots.dat$CM))
-
-put_log("Saving the model-related plots input data object to file...")
-
-saveRDS(plots.dat,
-        file = knn_pca.eval.plots_dat.file)
-
-put_log("The model-related plots input data object has been saved to the following file:
-%1", knn_pca.eval.plots_dat.file)
-
-rm(plots.dat,
-   knn_pca.eval.results)
 
 log_close()
