@@ -9,32 +9,160 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-## Loading Split Dataset allocated 20% for the Test set (default) ------------
+## Prepare Input Datasets -----------------------------------------------------
 open_logfile(".dl.basic-model.prepare-ds")
+stopifnot(file.exists(my_emnist.0.1split.file_path))
 
-stopifnot(exists("x0.1.train.flatten"),
-          exists("y0.1.train.flatten"),
-          exists("x0.9.test.flatten"),
-          exists("y0.9.test.flatten"))
-
+open_logfile(".rf.load-split.10%train.balanced_sample")
 start <- put_start_date()
 
-str(x.train.flatten)
-dim(x.train.flatten)
-#> [1] 16653   784
+### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
 
-str(y.train.flatten)
-length(y.train.flatten)
+put_log("Loading the Split Flattened Dataset from the backup file...")
 
-str(x.test.flatten)
-str(y.test.flatten)
-length(y.test.flatten)
-#> [1] 817379
+ds <- load_datasets(my_emnist.0.1split.file_path)
 
-shape(x.train.flatten)
-# shape(132873, 784)
+put_log("The Split Flattened Dataset has been loaded from the folowing file:
+%1", my_emnist.0.1split.file_path)
 
-max_img_pixels <- max(rowSums(x.train.flatten))
+put_log("The Split Flattened Dataset has the follwoing structure:
+%1", capture.output(str(ds)))
+
+x_train <- ds$train$x
+shape(x_train)
+
+put_log("The Train set is balanced with respect to the set of classes:
+%1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425  
+  invisible(NULL)
+}
+
+y_train <- ds$train$class_groups$classID
+
+
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(nrow(x_train) == length(y_train))
+
+x_test <- ds$test$x
+
+put_log("The Test set is balanced with respect to the set of classes:
+%1", capture.output(print(ds$test$class_groups$groupByClass, n = N.classes)))
+{
+  # # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #        3834
+  #  2 $        3834
+  #  3 &        3834
+  #  4 @        3834
+  #  5 0        3834
+  #  6 1        3834
+  #  7 2        3834
+  #  8 3        3834
+  #  9 4        3834
+  # 10 5        3834
+  # 11 6        3834
+  # 12 7        3834
+  # 13 8        3834
+  # 14 9        3834
+  # 15 A        3834
+  # 16 B        3834
+  # 17 C        3834
+  # 18 D        3834
+  # 19 E        3834
+  # 20 F        3834
+  # 21 G        3834
+  # 22 H        3834
+  # 23 I        3834
+  # 24 J        3834
+  # 25 K        3834
+  # 26 L        3834
+  # 27 M        3834
+  # 28 N        3834
+  # 29 P        3834
+  # 30 Q        3834
+  # 31 R        3834
+  # 32 S        3834
+  # 33 T        3834
+  # 34 U        3834
+  # 35 V        3834
+  # 36 W        3834
+  # 37 X        3834
+  # 38 Y        3834
+  # 39 Z        3834
+  invisible(NULL)
+}
+
+y_test <- ds$test$class_groups$classID
+
+stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
+stopifnot(nrow(x_test) == length(y_test))
+rm(ds)
+
+### Converting labels factor to categorical -----------------------------------
+# Reference: 
+#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
+# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
+# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
+
+
+y_train.cat <- to_categorical(y_train)
+colnames(y_train.cat) <- Y.Labels
+dim(y_train.cat)
+str(y_train.cat)
+head(y_train.cat)
+# max(y_train.cat)
+
+y_test.cat <- to_categorical(y_test)
+colnames(y_test.cat) <- Y.Labels
+dim(y_test.cat)
+str(y_test.cat)
+head(y_test.cat)
+
+### Analyzing Image Data --------------------------------------------------------
+max_img_pixels <- max(rowSums(x_train))
 put_log("The maximum number of pixels in the Train Set images is as follows: %1",
         max_img_pixels)
 #> 593
@@ -59,26 +187,6 @@ and also does not exceed the maximum number of black pixels (%2) making up every
 contained in the training set.",
         n.hl.units,
         max_img_pixels)
-
-#### Converting labels factor to categorical -----------------------------------
-# Reference: 
-#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
-# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
-# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
-
-
-y.train.flatten.cat <- to_categorical(y.train.flatten)
-colnames(y.train.flatten.cat) <- Y.Labels
-dim(y.train.flatten.cat)
-str(y.train.flatten.cat)
-head(y.train.flatten.cat)
-# max(y.train.flatten.cat)
-
-y.test.flatten.cat <- to_categorical(y.test.flatten)
-colnames(y.test.flatten.cat) <- Y.Labels
-dim(y.test.flatten.cat)
-str(y.test.flatten.cat)
-head(y.test.flatten.cat)
 
 log_close()
 
@@ -124,7 +232,7 @@ dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path,
 ## Building Basic DL MCC Model -------------------------------------------------
 
 
-n.input_shape <- ncol(x.train.flatten)
+n.input_shape <- ncol(x_train)
 # 784
 
 if(file.exists(dl.basic.model.file_path)) {
@@ -149,7 +257,7 @@ if(file.exists(dl.basic.model.file_path)) {
 } else {
   ### Defining & Compiling the Basic DL MCC Model ******************************
   
-  n.input_shape <- ncol(x.train.flatten)
+  n.input_shape <- ncol(x_train)
   # 784
   
   dl.basic.inputs <- layer_input(shape = c(n.input_shape))
@@ -187,8 +295,8 @@ if(file.exists(dl.basic.model.file_path)) {
   start <- put_start_date()
   
   dl.basic.train.flatten_history <- dl.basic.model |> 
-    fit(x.train.flatten, 
-        y.train.flatten.cat, 
+    fit(x_train, 
+        y_train.cat, 
         epochs = 100, 
         # batch_size = 128, 
         callbacks = dl.basic.callbacks,
@@ -228,7 +336,7 @@ log_close()
 open_logfile(".dl.basic-model.evaluate")
 
 put_log("Evaluating DL Model...")
-bdl.eval.result <- dl.basic.model |> evaluate(x.test.flatten, y.test.flatten.cat)
+bdl.eval.result <- dl.basic.model |> evaluate(x_test, y_test.cat)
 put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
 # List of 2
@@ -238,7 +346,7 @@ put_log("DL Model evaluation result:
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-bdl.preds <- dl.basic.model |> predict(x.test.flatten) 
+bdl.preds <- dl.basic.model |> predict(x_test) 
 put_end_date(start)
 # Time difference of  mins
 
@@ -266,8 +374,8 @@ dim(bdl.predictions)
 # bdl.predictions$numpy()
 
 
-# y.test.flatten
-# as.integer(y.test.flatten)
+# y_test
+# as.integer(y_test)
 
 bdl.pred.values.idx <- bdl.predictions$numpy()
 head(bdl.pred.values.idx)
@@ -275,11 +383,73 @@ head(bdl.pred.values.idx)
 bdl.pred.values <- Y.Labels[bdl.pred.values.idx]
 head(bdl.pred.values)
 
-dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y.test.flatten))
+dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y_test))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.897195136631756
 
 log_close()
+
+## Visualizing the Evaluation Results ------------------------------------------
+
+open_logfile(".rf-tuned.eval-results.visualization")
+
+stopifnot(file.exists(model_visualization.shared.script.path))
+
+rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
+                                            "rf-tuned.eval.confusion-matrix.png")
+
+rf_tuned.eval.plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
+                                          "rf-tuned.eval.plots_dat.rds")
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+if(file.exists(rf_tuned.eval.plots_dat.file)) {
+  put_log("Function `init.plots_args`:
+Loading the model-related plots input data object from the backup file...")
+  plots.args <- init.plots_args(rf_tuned.eval.plots_dat.file)
+  
+  put_log("Function `init.plots_args`:
+The model-related plots input data object has been loaded from the following file:
+%1", rf_tuned.eval.plots_dat.file)
+} else {
+  plots.args <- init.plots_args(targets = fit_rf.mtry_best$test$targets,
+                                predicted.probabilities = fit_rf.mtry_best$test$votes,
+                                predicted.values = fit_rf.mtry_best$test$predicted,
+                                alg_name = "Random Forest",
+                                plots_dat.file = rf_tuned.eval.plots_dat.file,
+                                cm.export.img_file = rf_tuned.eval.conf.mx.img_file,
+                                cm.print.image = T)
+}
+
+#'Run the helper script specifically designed to visualize 
+#'the model evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+rm(plots.args,
+   fit_rf.mtry_best)
+
+stopifnot(exists("plots.dat"),
+          !is.null(plots.dat$ROC),
+          !is.null(plots.dat$PCA),
+          !is.null(plots.dat$CM))
+
+put_log("Saving the model-related plots input data object to file...")
+
+saveRDS(plots.dat,
+        file = rf_tuned.eval.plots_dat.file)
+
+put_log("The model-related plots input data object has been saved to the following file:
+%1", rf_tuned.eval.plots_dat.file)
+
+rm(plots.dat)
+log_close()
+
 
 ## Evaluation Results: Visualization -------------------------------------------
 open_logfile(".dl.basic-model.build")
@@ -287,12 +457,12 @@ open_logfile(".dl.basic-model.build")
 start <- put_start_date()
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
-dl.basic.roc_curves <- plot.ROC.curves(y.test.flatten,
+dl.basic.roc_curves <- plot.ROC.curves(y_test,
                                        bdl.preds)
 Sys.sleep(6)
 
 put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
-dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y.test.flatten,
+dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y_test,
                                                            bdl.pred.values)
 
 put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
@@ -310,7 +480,7 @@ Sys.sleep(5)
 put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
 using the `cvms` package...")
 
-dl.basic.conf.mx <- create.confusion_matrix(y.test.flatten,
+dl.basic.conf.mx <- create.confusion_matrix(y_test,
                                                           bdl.pred.values)
 
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
