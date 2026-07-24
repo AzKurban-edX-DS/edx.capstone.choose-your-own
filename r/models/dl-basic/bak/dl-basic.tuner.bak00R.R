@@ -28,13 +28,13 @@ put_log("The Split Dataset List object has been loaded from the following file:
 
 x3d.train_set <- split3d.list$train_set
 put_log("The Train Set has been saved in the object `x3d.train_set`, 
-which contains a training sample stored in the `x_train` variable having the following shape:
+which contains a training sample stored in the `x.train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
 
 x3d.test_set <- split3d.list$test_set
 put_log("The Test Set has been saved in the object `x3d.test_set`, 
-which contains a testing sample stored in the `x_test` variable having the following shape:
+which contains a testing sample stored in the `x.test` variable having the following shape:
 %1", capture.output(shape(x3d.test_set$x.test)))
 # shape(33267, 28, 28)
 
@@ -43,46 +43,46 @@ rm(split3d.list)
 # str(x3d.train_set)
 # str(x3d.test_set)
 
-x_train <- x3d.train_set$x.train
-# storage.mode(x_train) <- "integer"
+x.train <- x3d.train_set$x.train
+# storage.mode(x.train) <- "integer"
 
-# x_train <- x_train[seq(1e4),,]
-str(x_train)
-dim(x_train)
+# x.train <- x.train[seq(1e4),,]
+str(x.train)
+dim(x.train)
 
-x_test <- x3d.test_set$x.test
-# storage.mode(x_test) <- "integer"
-dim(x_test)
+x.test <- x3d.test_set$x.test
+# storage.mode(x.test) <- "integer"
+dim(x.test)
 
-# x_test.files <- x3d.test_set$x.files
+x.test.files <- x3d.test_set$x.files
 
-y.train.groups <- ds.get_classIDs.grouped(x_train)
+y.train.groups <- ds.get_classIDs.grouped(x.train)
 y_train <- y.train.groups$classID
 
 # y_train <- y_train[seq(1e4)]
-stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(sum(as.character(y_train) != rownames(x.train)) == 0)
 
-y_train <- as.array(as.integer(y_train) - 1)
-str(y_train)
-dim(y_train)
+y.train <- as.array(as.integer(y_train) - 1)
+str(y.train)
+dim(y.train)
 
-stopifnot(min(y_train) == 0)
-stopifnot(max(y_train) == 38)
-stopifnot(dim(y_train) == nrow(x_train))
+stopifnot(min(y.train) == 0)
+stopifnot(max(y.train) == 38)
+stopifnot(dim(y.train) == nrow(x.train))
 
-y_test.groups <- ds.get_classIDs.grouped(x_test)
-y_test <- y_test.groups$classID
+y.test.groups <- ds.get_classIDs.grouped(x.test)
+y_test <- y.test.groups$classID
 
 # y_test <- y_test[seq(1e4)]
-stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
+stopifnot(sum(as.character(y_test) != rownames(x.test)) == 0)
 
-y_test <- as.array(as.integer(y_test) - 1)
-str(y_test)
-dim(y_test)
+y.test <- as.array(as.integer(y_test) - 1)
+str(y.test)
+dim(y.test)
 
-stopifnot(min(y_test) == 0)
-stopifnot(max(y_test) == 38)
-stopifnot(dim(y_test) == nrow(x_test))
+stopifnot(min(y.test) == 0)
+stopifnot(max(y.test) == 38)
+stopifnot(dim(y.test) == nrow(x.test))
 
 
 put_log("The Train Set is balanced by the set of Classes:
@@ -134,7 +134,7 @@ put_log("The Train Set is balanced by the set of Classes:
 }
 
 put_log("The Test Set is balanced by the set of Classes:
-%1", capture.output(print(y_test.groups$groupByClass, n = N.classes)))
+%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -182,17 +182,17 @@ put_log("The Test Set is balanced by the set of Classes:
 }
 
 #> [1] 16653   784
-str(x_train)
-str(y_train)
+str(x.train)
+str(y.train)
 
-dim(x_train)
-dim(y_train)
+dim(x.train)
+dim(y.train)
 
-str(x_test)
-str(y_test)
+str(x.test)
+str(y.test)
 
-dim(x_test)
-dim(y_test)
+dim(x.test)
+dim(y.test)
 #> [1] 817379
 
 
@@ -203,25 +203,25 @@ dim(y_test)
 # https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
 
 
-# y.train.cat <- to_categorical(y_train)
-# colnames(y.train.cat) <- Y.Labels
-# dim(y.train.cat)
-# str(y.train.cat)
-# head(y.train.cat)
+y.train.cat <- to_categorical(y.train)
+colnames(y.train.cat) <- Y.Labels
+dim(y.train.cat)
+str(y.train.cat)
+head(y.train.cat)
 # max(y.train.cat)
 
-y_test.cat <- to_categorical(y_test)
-colnames(y_test.cat) <- Y.Labels
-dim(y_test.cat)
-str(y_test.cat)
-head(y_test.cat)
+y.test.cat <- to_categorical(y.test)
+colnames(y.test.cat) <- Y.Labels
+dim(y.test.cat)
+str(y.test.cat)
+head(y.test.cat)
 
 log_close()
 
 ## Tuning the  BDL MCC Model ---------------------------------------------------
 open_logfile(paste0(".dl-basic-model.tuning_", 
-                    paste0("x_train(",
-                           str_flatten(shape(x_train), 
+                    paste0("x.train(",
+                           str_flatten(shape(x.train), 
                                        collapse = ","),")")))
 if(!is.null(dev.list())) dev.off()
 
@@ -307,15 +307,15 @@ dl.basic_best.checkpoint.file_path <-
 # } else {
 # }
 
-put_log("Tuning the DL Basic Model on the full Train Dataset (`x_train`) of shape: %1...",
-        paste0("(", str_flatten(shape(x_train), 
+put_log("Tuning the DL Basic Model on the full Train Dataset (`x.train`) of shape: %1...",
+        paste0("(", str_flatten(shape(x.train), 
                                 collapse = ","),")"))
 start <- put_start_date()
 # Log Start Time: 2026-06-29 09:22:51.209273
 
 dl_basic.tuner <- dl.tune.hwr_model(dl_basic.tunable_model,
-                                    x_train,
-                                    y_train,
+                                    x.train,
+                                    y.train,
                                     dl.basic.keras_tuner.dir,
                                     dl.basic_tuner.checkpoint.file_path,
                                     project_name = "DL.Basic.Tuner")
@@ -509,8 +509,8 @@ if(file.exists(dl_basic.final_model.file_path)) {
   start <- put_start_date()
   
   bdl.final_model.train_history <- dl_basic.final_model |> 
-    fit(x_train, 
-        y_train, 
+    fit(x.train, 
+        y.train, 
         epochs = dl_basic.retrain_epochs, 
         # batch_size = 128, 
         callbacks = dl.basic_best.callbacks,
@@ -547,7 +547,7 @@ log_close()
 
 ## The Final BDL MCC Model Evaluation ----------------------------------------------------
 put_log("Evaluating DL Model...")
-bdl_final.eval.result <- dl_basic.final_model |> evaluate(x_test, y_test)
+bdl_final.eval.result <- dl_basic.final_model |> evaluate(x.test, y.test)
 put_log("BDL MCC Bset Model evaluation result:
 %1", capture.output(str(bdl_final.eval.result)))
 # List of 2
@@ -557,7 +557,7 @@ put_log("BDL MCC Bset Model evaluation result:
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-bdl_final.preds <- dl_basic.final_model |> predict(x_test)
+bdl_final.preds <- dl_basic.final_model |> predict(x.test)
 str(bdl_final.preds)
 # put_end_date(start)
 # Time difference of  mins
@@ -586,8 +586,8 @@ dim(bdl_final.predictions)
 # bdl_final.predictions$numpy()
 
 
-# y_test
-# as.integer(y_test)
+# y.test
+# as.integer(y.test)
 
 bdl_final.pred.values.idx <- bdl_final.predictions$numpy()
 head(bdl_final.pred.values.idx)
@@ -597,10 +597,10 @@ max(bdl_final.pred.values.idx)
 bdl_final.pred.values <- Y.Labels[bdl_final.pred.values.idx]
 head(bdl_final.pred.values)
 
-y_test.idx <- y_test + 1
-# y_test.labels <- Y.Labels[y_test.idx]
+y.test.idx <- y.test + 1
+# y_test <- Y.Labels[y.test.idx]
 
-dl.basic.accuracy <- mean(bdl_final.pred.values.idx == y_test.idx)
+dl.basic.accuracy <- mean(bdl_final.pred.values.idx == y.test.idx)
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 # 0.899963885879379
 
@@ -608,12 +608,12 @@ put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
 ## Visualizing the Evaluation Results ------------------------------------------
 
 put_log("Plotting ROC curves the Model Evaluation Results...")
-bdl_final.roc_curves <- plot.ROC.curves(y_test.cat,
+bdl_final.roc_curves <- plot.ROC.curves(y.test.cat,
                                         bdl_final.preds)
 Sys.sleep(6)
 
 put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
-bdl_final.acc_by_class <- plot.per_class.accuracy.bars(y_test.cat,
+bdl_final.acc_by_class <- plot.per_class.accuracy.bars(y.test.cat,
                                                        bdl_final.pred.values)
 
 put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
@@ -670,7 +670,7 @@ Sys.sleep(6)
 put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
 using the `cvms` package...")
 
-bdl_final.conf.mx <- create.confusion_matrix(y_test.cat,
+bdl_final.conf.mx <- create.confusion_matrix(y.test.cat,
                                              bdl_final.pred.values)
 
 put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:

@@ -13,10 +13,9 @@
 open_logfile(".dl.basic-model.prepare-ds")
 stopifnot(file.exists(my_emnist.split.file_path))
 
-open_logfile(".rf.load-split.10%train.balanced_sample")
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 20% for the Test Set -------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -417,9 +416,14 @@ log_close()
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
-open_logfile("dl-basic.eval-results.visualization")
+open_logfile(".dl-basic.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
+
+dl_basic.plots.dat.dir <- file.path(data.dl_basic.dir, "plots.dat")
+
+if(!dir.exists(dl_basic.plots.dat.dir))
+  dir.create(dl_basic.plots.dat.dir)
 
 dl_basic.eval.conf.mx.img_file <- file.path(dl_basic.plots.dat.dir,
                                             "dl-basic.eval.confusion-matrix.png")
