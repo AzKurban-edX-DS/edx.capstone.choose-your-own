@@ -24,7 +24,7 @@ stopifnot(exists("fit_rf.mtry.best"),
 
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 20% for the Text Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 

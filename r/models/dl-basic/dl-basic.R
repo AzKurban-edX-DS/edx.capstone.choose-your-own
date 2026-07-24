@@ -11,7 +11,7 @@
 
 ## Prepare Input Datasets -----------------------------------------------------
 open_logfile(".dl.basic-model.prepare-ds")
-stopifnot(file.exists(my_emnist.0.1split.file_path))
+stopifnot(file.exists(my_emnist.split.file_path))
 
 open_logfile(".rf.load-split.10%train.balanced_sample")
 start <- put_start_date()
@@ -20,67 +20,60 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.0.1split.file_path)
-
-put_log("The Split Flattened Dataset has been loaded from the folowing file:
-%1", my_emnist.0.1split.file_path)
-
-put_log("The Split Flattened Dataset has the follwoing structure:
-%1", capture.output(str(ds)))
+ds <- load_datasets(my_emnist.split.file_path)
+str(ds)
 
 x_train <- ds$train$x
-shape(x_train)
 
 put_log("The Train set is balanced with respect to the set of classes:
 %1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
 {
-  # A tibble: 39 × 2
+  # # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
-  #  1 #         425
-  #  2 $         425
-  #  3 &         425
-  #  4 @         425
-  #  5 0         425
-  #  6 1         425
-  #  7 2         425
-  #  8 3         425
-  #  9 4         425
-  # 10 5         425
-  # 11 6         425
-  # 12 7         425
-  # 13 8         425
-  # 14 9         425
-  # 15 A         425
-  # 16 B         425
-  # 17 C         425
-  # 18 D         425
-  # 19 E         425
-  # 20 F         425
-  # 21 G         425
-  # 22 H         425
-  # 23 I         425
-  # 24 J         425
-  # 25 K         425
-  # 26 L         425
-  # 27 M         425
-  # 28 N         425
-  # 29 P         425
-  # 30 Q         425
-  # 31 R         425
-  # 32 S         425
-  # 33 T         425
-  # 34 U         425
-  # 35 V         425
-  # 36 W         425
-  # 37 X         425
-  # 38 Y         425
-  # 39 Z         425  
+  #  1 #        3407
+  #  2 $        3407
+  #  3 &        3407
+  #  4 @        3407
+  #  5 0        3407
+  #  6 1        3407
+  #  7 2        3407
+  #  8 3        3407
+  #  9 4        3407
+  # 10 5        3407
+  # 11 6        3407
+  # 12 7        3407
+  # 13 8        3407
+  # 14 9        3407
+  # 15 A        3407
+  # 16 B        3407
+  # 17 C        3407
+  # 18 D        3407
+  # 19 E        3407
+  # 20 F        3407
+  # 21 G        3407
+  # 22 H        3407
+  # 23 I        3407
+  # 24 J        3407
+  # 25 K        3407
+  # 26 L        3407
+  # 27 M        3407
+  # 28 N        3407
+  # 29 P        3407
+  # 30 Q        3407
+  # 31 R        3407
+  # 32 S        3407
+  # 33 T        3407
+  # 34 U        3407
+  # 35 V        3407
+  # 36 W        3407
+  # 37 X        3407
+  # 38 Y        3407
+  # 39 Z        3407
   invisible(NULL)
 }
 
 y_train <- ds$train$class_groups$classID
-
 
 stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
 stopifnot(nrow(x_train) == length(y_train))
@@ -93,45 +86,45 @@ put_log("The Test set is balanced with respect to the set of classes:
   # # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
-  #  1 #        3834
-  #  2 $        3834
-  #  3 &        3834
-  #  4 @        3834
-  #  5 0        3834
-  #  6 1        3834
-  #  7 2        3834
-  #  8 3        3834
-  #  9 4        3834
-  # 10 5        3834
-  # 11 6        3834
-  # 12 7        3834
-  # 13 8        3834
-  # 14 9        3834
-  # 15 A        3834
-  # 16 B        3834
-  # 17 C        3834
-  # 18 D        3834
-  # 19 E        3834
-  # 20 F        3834
-  # 21 G        3834
-  # 22 H        3834
-  # 23 I        3834
-  # 24 J        3834
-  # 25 K        3834
-  # 26 L        3834
-  # 27 M        3834
-  # 28 N        3834
-  # 29 P        3834
-  # 30 Q        3834
-  # 31 R        3834
-  # 32 S        3834
-  # 33 T        3834
-  # 34 U        3834
-  # 35 V        3834
-  # 36 W        3834
-  # 37 X        3834
-  # 38 Y        3834
-  # 39 Z        3834
+  #  1 #         852
+  #  2 $         852
+  #  3 &         852
+  #  4 @         852
+  #  5 0         852
+  #  6 1         852
+  #  7 2         852
+  #  8 3         852
+  #  9 4         852
+  # 10 5         852
+  # 11 6         852
+  # 12 7         852
+  # 13 8         852
+  # 14 9         852
+  # 15 A         852
+  # 16 B         852
+  # 17 C         852
+  # 18 D         852
+  # 19 E         852
+  # 20 F         852
+  # 21 G         852
+  # 22 H         852
+  # 23 I         852
+  # 24 J         852
+  # 25 K         852
+  # 26 L         852
+  # 27 M         852
+  # 28 N         852
+  # 29 P         852
+  # 30 Q         852
+  # 31 R         852
+  # 32 S         852
+  # 33 T         852
+  # 34 U         852
+  # 35 V         852
+  # 36 W         852
+  # 37 X         852
+  # 38 Y         852
+  # 39 Z         852
   invisible(NULL)
 }
 
@@ -139,7 +132,9 @@ y_test <- ds$test$class_groups$classID
 
 stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
 stopifnot(nrow(x_test) == length(y_test))
+
 rm(ds)
+log_close()
 
 ### Converting labels factor to categorical -----------------------------------
 # Reference: 
@@ -385,7 +380,7 @@ head(bdl.pred.values)
 
 dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y_test))
 put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
-# 0.897195136631756
+# 0.833146074930113
 
 log_close()
 
