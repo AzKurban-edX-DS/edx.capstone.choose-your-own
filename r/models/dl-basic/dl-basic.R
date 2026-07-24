@@ -144,6 +144,8 @@ log_close()
 
 
 y_train.cat <- to_categorical(y_train)
+rm(y_train)
+
 colnames(y_train.cat) <- Y.Labels
 dim(y_train.cat)
 str(y_train.cat)
@@ -189,12 +191,7 @@ log_close()
 
 open_logfile(".dl.basic-model.build")
 
-dl.basic.dir_path <- file.path(dl.keras3.dir, "dl.basic")
-
-if(!dir.exists(dl.basic.dir_path))
-  dir.create(dl.basic.dir_path)
-
-dl.basic.tuning.dir <- file.path(dl.basic.dir_path,
+dl.basic.tuning.dir <- file.path(data.dl_basic.dir,
                                             "tuning")
 if(!dir.exists(dl.basic.tuning.dir))
   dir.create(dl.basic.tuning.dir)
@@ -209,7 +206,7 @@ dl.basic.keras_tuner.dir <- file.path(dl.basic.tuning.dir, "keras-tuner")
 if(!dir.exists(dl.basic.keras_tuner.dir))
   dir.create(dl.basic.keras_tuner.dir)
 
-dl.basic.checkpoints.dir <- file.path(dl.basic.dir_path,
+dl.basic.checkpoints.dir <- file.path(data.dl_basic.dir,
                                             "checkpoints")
 if(!dir.exists(dl.basic.checkpoints.dir))
   dir.create(dl.basic.checkpoints.dir)
@@ -218,14 +215,16 @@ dl.basic.checkpoint.file_path <-
   file.path(dl.basic.checkpoints.dir, 
             "dl.basic.{epoch:02d}-{val_loss:.2f}.keras")
 
-dl.basic.model.file_path <- file.path(dl.basic.dir_path, 
+dl.basic.model.file_path <- file.path(data.dl_basic.dir, 
                              "dl.basic.pre-trained.model.keras")
 
-dl.basic.model.train_history.file_path <- file.path(dl.basic.dir_path, 
+dl.basic.model.train_history.file_path <- file.path(data.dl_basic.dir, 
                              "dl.basic.model.train_history.bak.rds")
 
-## Building Basic DL MCC Model -------------------------------------------------
+bdl.eval.result.file <- file.path(data.dl_basic.dir,
+                                        "bdl.eval.result.rds")
 
+## Building Basic DL MCC Model -------------------------------------------------
 
 n.input_shape <- ncol(x_train)
 # 784
@@ -241,7 +240,7 @@ if(file.exists(dl.basic.model.file_path)) {
   if(file.exists(dl.basic.model.train_history.file_path)){
     put_log("Loading the BDL MCC Model Train History...")
     
-    dl.basic.train.flatten_history <- readRDS(dl.basic.model.train_history.file_path)
+    dl.basic.train_history <- readRDS(dl.basic.model.train_history.file_path)
     
     put_log("The BDL MCC Model has been loaded from the backup file:
 %1", dl.basic.model.train_history.file_path)
@@ -250,7 +249,7 @@ if(file.exists(dl.basic.model.file_path)) {
 ", dl.basic.model.train_history.file_path)
   }
 } else {
-  ### Defining & Compiling the Basic DL MCC Model ******************************
+  #' *** Defining & Compiling the Basic DL MCC Model ***************************
   
   n.input_shape <- ncol(x_train)
   # 784
@@ -274,7 +273,7 @@ if(file.exists(dl.basic.model.file_path)) {
   
   summary(dl.basic.model)
   
-  ### Training the Basic DL MCC Model ******************************************
+  #' *** Training the Basic DL MCC Model ***************************************
   
   dl.basic.callbacks <- list(
     callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -283,13 +282,11 @@ if(file.exists(dl.basic.model.file_path)) {
                               save_best_only = TRUE,
                               verbose = 1)
   )
-  
-  
 
   put_log("Training the BDL MCC Model...")
   start <- put_start_date()
   
-  dl.basic.train.flatten_history <- dl.basic.model |> 
+  dl.basic.train_history <- dl.basic.model |> 
     fit(x_train, 
         y_train.cat, 
         epochs = 100, 
@@ -308,114 +305,150 @@ and saved in the following file:
   %1", dl.basic.model.file_path)
 
   put_log("Saving the BDL MCC Model History...")
-  saveRDS(dl.basic.train.flatten_history,
+  saveRDS(dl.basic.train_history,
           file = dl.basic.model.train_history.file_path)
   
   put_log("The BDL MCC Model History has been trained 
 and saved in the following file:
   %1", dl.basic.model.train_history.file_path)
   put_end_date(start)
-  # Time difference of 38.48235 mins
 }
 
-put_log("The Basic `DL MCC` Model has been trained with the following results
+rm(x_train,
+   y_train.cat)
+
+put_log("The trained Basic DL MCC Model summary:
 %1", dl.basic.model)
 
+plot(dl.basic.train_history)
 
-plot(dl.basic.train.flatten_history)
-str(dl.basic.train.flatten_history)
+put_log("Structure of the Basic DL MCC Model training history:
+%1", capture.output(str(dl.basic.train_history)))
 
+rm(dl.basic.train_history)
 log_close()
-
+# Log Elapsed Time: 0 00:04:07
 ## BDL MCC Model Evaluation ----------------------------------------------------
 open_logfile(".dl.basic-model.evaluate")
 
-put_log("Evaluating DL Model...")
-bdl.eval.result <- dl.basic.model |> evaluate(x_test, y_test.cat)
-put_log("DL Model evaluation result:
+if(file.exists(bdl.eval.result.file)) {
+  put_log("Loading the BDL MCC Model Evaluation Result object...")
+  bdl.eval.result <- readRDS(bdl.eval.result.file)
+  
+  put_log("The BDL MCC Model Evaluation Result object has been loaded 
+from the following file:
+%1", bdl.eval.result.file)
+} else {
+  put_log("Evaluating DL Model...")
+  bdl.eval.result <- dl.basic.model |> evaluate(x_test, y_test.cat)
+  put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
-# List of 2
-#  $ accuracy: num 0.897
-#  $ loss    : num 0.314
+  # List of 2
+  #  $ accuracy: num 0.897
+  #  $ loss    : num 0.314
+  
+  put_log("The overall Basic DL MCC Model evaluation accuracy: %1",
+          bdl.eval.result$accuracy)
+  # 0.898338750451427
+  
+  
+  put_end_date(start)
+  # Time difference of 1.668308 mins
+  
+  bdl.eval.result$predicted.probs <- dl.basic.model |> predict(x_test) 
+  put_end_date(start)
+  # Time difference of  mins
+  
+  colnames(bdl.eval.result$predicted.probs) <- Y.Labels
+  head(bdl.eval.result$predicted.probs[,1:5])
+  #                 #            $            &            @            0
+  # [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
+  # [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
+  # [3,] 2.074071e-11 1.434007e-10 3.564378e-09 8.688334e-12 2.087918e-05
+  # [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
+  # [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
+  # [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
+  dim(bdl.eval.result$predicted.probs)
+  #> [1] 33228    39
+  
+  bdl.preds.ts <- as_tensor(bdl.eval.result$predicted.probs)
+  str(bdl.preds.ts)
+  #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
+  
+  bdl.predictions <- bdl.preds.ts |> op_argmax(2)
+  bdl.predictions
+  #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
+  shape(bdl.predictions)
+  #> [1] 33228
+  # bdl.predictions$numpy()
+  
+  
+  bdl.pred.values.idx <- bdl.predictions$numpy()
+  head(bdl.pred.values.idx)
+  
+  bdl.eval.result$predicted.values <- Y.Labels[bdl.pred.values.idx]
+  head(bdl.eval.result$predicted.values)
+  
+  bdl.eval.result$targets <- y_test
+  
+  rm(bdl.preds.ts,
+     bdl.predictions,
+     bdl.pred.values.idx)
+  
+  put_log("Saving the BDL MCC Model History...")
+  saveRDS(bdl.eval.result,
+          file = bdl.eval.result.file)
+  
+  put_log("The BDL MCC Model History has been trained 
+and saved in the following file:
+  %1", bdl.eval.result.file)
+  put_end_date(start)
+}
 
-put_end_date(start)
-# Time difference of 1.668308 mins
+# dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y_test))
+# put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
+# 0.898338750451427
 
-bdl.preds <- dl.basic.model |> predict(x_test) 
-put_end_date(start)
-# Time difference of  mins
-
-colnames(bdl.preds) <- Y.Labels
-head(bdl.preds[,1:5])
-#                 #            $            &            @            0
-# [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
-# [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
-# [3,] 2.074071e-11 1.434007e-10 3.564378e-09 8.688334e-12 2.087918e-05
-# [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
-# [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
-# [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
-dim(bdl.preds)
-#> [1] 33228    39
-
-bdl.preds.ts <- as_tensor(bdl.preds)
-str(bdl.preds.ts)
-#> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
-
-bdl.predictions <- bdl.preds.ts |> op_argmax(2)
-bdl.predictions
-#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(bdl.predictions)
-#> [1] 33228
-# bdl.predictions$numpy()
-
-
-# y_test
-# as.integer(y_test)
-
-bdl.pred.values.idx <- bdl.predictions$numpy()
-head(bdl.pred.values.idx)
-
-bdl.pred.values <- Y.Labels[bdl.pred.values.idx]
-head(bdl.pred.values)
-
-dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y_test))
-put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
-# 0.833146074930113
+rm(x_test,
+   y_test,
+   y_test.cat)
 
 log_close()
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
-open_logfile(".rf-tuned.eval-results.visualization")
+open_logfile("dl-basic.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
-rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
-                                            "rf-tuned.eval.confusion-matrix.png")
+dl_basic.eval.conf.mx.img_file <- file.path(dl_basic.plots.dat.dir,
+                                            "dl-basic.eval.confusion-matrix.png")
 
-rf_tuned.eval.plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
-                                          "rf-tuned.eval.plots_dat.rds")
+dl_basic.eval.plots_dat.file <- file.path(dl_basic.plots.dat.dir,
+                                          "dl-basic.eval.plots_dat.rds")
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
-if(file.exists(rf_tuned.eval.plots_dat.file)) {
+if(file.exists(dl_basic.eval.plots_dat.file)) {
   put_log("Function `init.plots_args`:
 Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(rf_tuned.eval.plots_dat.file)
+  plots.args <- init.plots_args(dl_basic.eval.plots_dat.file)
   
   put_log("Function `init.plots_args`:
 The model-related plots input data object has been loaded from the following file:
-%1", rf_tuned.eval.plots_dat.file)
+%1", dl_basic.eval.plots_dat.file)
 } else {
-  plots.args <- init.plots_args(targets = fit_rf.mtry_best$test$targets,
-                                predicted.probabilities = fit_rf.mtry_best$test$votes,
-                                predicted.values = fit_rf.mtry_best$test$predicted,
-                                alg_name = "Random Forest",
-                                plots_dat.file = rf_tuned.eval.plots_dat.file,
-                                cm.export.img_file = rf_tuned.eval.conf.mx.img_file,
+  plots.args <- init.plots_args(targets = bdl.eval.result$targets,
+                                predicted.probabilities = bdl.eval.result$predicted.probs,
+                                predicted.values = bdl.eval.result$predicted.values,
+                                alg_name = "DL Basics",
+                                plots_dat.file = dl_basic.eval.plots_dat.file,
+                                cm.export.img_file = dl_basic.eval.conf.mx.img_file,
                                 cm.print.image = T)
 }
+
+rm(bdl.eval.result)
 
 #'Run the helper script specifically designed to visualize 
 #'the model evaluation results:
@@ -437,62 +470,58 @@ stopifnot(exists("plots.dat"),
 put_log("Saving the model-related plots input data object to file...")
 
 saveRDS(plots.dat,
-        file = rf_tuned.eval.plots_dat.file)
+        file = dl_basic.eval.plots_dat.file)
 
 put_log("The model-related plots input data object has been saved to the following file:
-%1", rf_tuned.eval.plots_dat.file)
+%1", dl_basic.eval.plots_dat.file)
+
+# put_log("The Basic DL Model per-class accuracy:,
+# %1", capture.output(plots.dat$PCA$acc.by_class))
+{
+#' class  accuracy
+#'     # 1.0000000
+#'     $ 1.0000000
+#'     & 1.0000000
+#'     @ 1.0000000
+#'     0 0.9577465
+#'     1 0.6502347
+#'     2 0.8673709
+#'     3 0.9577465
+#'     4 0.9295775
+#'     5 0.8767606
+#'     6 0.9213615
+#'     7 0.9776995
+#'     8 0.9225352
+#'     9 0.8356808
+#'     A 0.8685446
+#'     B 0.9025822
+#'     C 0.9366197
+#'     D 0.9295775
+#'     E 0.9284038
+#'     F 0.9354460
+#'     G 0.6913146
+#'     H 0.9225352
+#'     I 0.7453052
+#'     J 0.9166667
+#'     K 0.9237089
+#'     L 0.5258216
+#'     M 0.9565728
+#'     N 0.9284038
+#'     P 0.9589202
+#'     Q 0.7746479
+#'     R 0.9107981
+#'     S 0.8826291
+#'     T 0.9342723
+#'     U 0.9589202
+#'     V 0.8990610
+#'     W 0.9671362
+#'     X 0.9377934
+#'     Y 0.8767606
+#'     Z 0.9260563
+  invisible(NULL)
+}
 
 rm(plots.dat)
 log_close()
 
 
-## Evaluation Results: Visualization -------------------------------------------
-open_logfile(".dl.basic-model.build")
-
-start <- put_start_date()
-
-put_log("Plotting ROC curves the Model Evaluation Results...")
-dl.basic.roc_curves <- plot.ROC.curves(y_test,
-                                       bdl.preds)
-Sys.sleep(6)
-
-put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
-dl.basic.accuracy.by_class <- plot.per_class.accuracy.bars(y_test,
-                                                           bdl.pred.values)
-
-put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
-%1", capture.output(dl.basic.accuracy.by_class))
-{
-  
-  invisible(NULL)
-}
-
-Sys.sleep(5)
-
-# Confusion Matrix data suitable for Visualization using the `cvms` package:
-# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-
-put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
-using the `cvms` package...")
-
-dl.basic.conf.mx <- create.confusion_matrix(y_test,
-                                                          bdl.pred.values)
-
-put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(dl.basic.conf.mx))
-
-put_log("Plotting the confusion matrix, please wait...")
-dl.basic.conf.mx.chart <- plot.conf.mx(dl.basic.conf.mx)
-
-start <- put_start_date()
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
-
-dev.off()
-print(dl.basic.conf.mx.chart)
-
-stopCluster(cl)
-stopImplicitCluster()
-
-put_end_date(start)
-log_close()

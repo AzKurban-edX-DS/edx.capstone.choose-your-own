@@ -116,6 +116,17 @@ source(rf_retraining.best_par.script.path,
 ## Basic Deep Learning Model ---------------------------------------------------
 stopifnot(file.exists(dl_basic.script.path))
 
+data.dl_basic.dir <- file.path(dl.keras3.dir, "dl.basic")
+
+if(!dir.exists(data.dl_basic.dir))
+  dir.create(data.dl_basic.dir)
+
+dl_basic.plots.dat.dir <- file.path(data.dl_basic.dir, "plots.dat")
+
+if(!dir.exists(dl_basic.plots.dat.dir))
+  dir.create(dl_basic.plots.dat.dir)
+
+
 source(dl_basic.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,

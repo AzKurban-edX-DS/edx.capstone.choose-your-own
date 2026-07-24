@@ -212,12 +212,12 @@ open_logfile(paste0(".dl-basic-model.tuning_",
 if(!dir.exists(dl.keras3.dir))
   dir.create(dl.keras3.dir)
 
-dl.basic.dir_path <- file.path(dl.keras3.dir, "dl.basic")
+data.dl_basic.dir <- file.path(dl.keras3.dir, "dl.basic")
 
-if(!dir.exists(dl.basic.dir_path))
-  dir.create(dl.basic.dir_path)
+if(!dir.exists(data.dl_basic.dir))
+  dir.create(data.dl_basic.dir)
 
-dl.basic.tuning.dir <- file.path(dl.basic.dir_path,
+dl.basic.tuning.dir <- file.path(data.dl_basic.dir,
                                             "tuning")
 if(!dir.exists(dl.basic.tuning.dir))
   dir.create(dl.basic.tuning.dir)
