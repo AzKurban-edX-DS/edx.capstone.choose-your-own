@@ -294,7 +294,7 @@ dl.basic_best.checkpoint.file_path <-
   file.path(dl.basic_best.checkpoints.dir, 
             "dl.basic_best.{epoch:02d}-{val_loss:.2f}.keras")
 
-### Performing the Model Tuning ------------------------------------------------
+### Tuning the Model -----------------------------------------------------------
 
 # if(file.exists(dl_basic.model_tuner.file_path)) {
 #   put_log("Loading the BDL Model Tuner object...")
