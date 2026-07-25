@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%%%%
-# BDL MCC  Model Tuning
-#%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%
+# BDL MCC  Model
+#%%%%%%%%%%%%%%%%%%%%%
 
 # Basic Deep Learning Multiclass Classifier (BDL MCC)  Model
 
@@ -9,25 +9,22 @@
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
+## Prepare Input Datasets for the Model Tuning ---------------------------------
+open_logfile(".prepare-dataset-for-dl.model-tuning")
+start <- put_start_date()
+# stopifnot(file.exists(my_emnist.split.file_path))
+stopifnot(exists("split3d.list.backup.file"))
+
 # Disable the elapsed time limit for expressions
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit if needed
 
-## Prepare Input Datasets for the Model Tuning ---------------------------------
-open_logfile(".prepare-dataset-for-dl.model-tuning")
-start <- put_start_date()
-stopifnot(file.exists(train.img28x28mx.array.file_path))
+put_log("Loading the Split Dataset List object in the backup file...")
 
+split3d.list <- readRDS(split3d.list.backup.file)
 
-put_log("Loading and splitting the Train 28x28 Image Data Array 
-into a Default Train and Test Sets...")
-
-split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
-                                       seed = N.classes,
-                                       test_ratio = 0.9)
-
-put_log("The Default Split Dataset object structure:
-%1", capture.output(str(split3d.list)))
+put_log("The Split Dataset List object has been loaded from the following file:
+`%1`", split3d.list.backup.file)
 
 x3d.train_set <- split3d.list$train_set
 put_log("The Train Set has been saved in the object `x3d.train_set`, 

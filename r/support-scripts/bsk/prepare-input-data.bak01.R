@@ -246,10 +246,6 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   
   put_log("The Binary Image 28x28 array set has been saved to the following file:
 %1", train.img28x28mx.array.file_path)
-  
-  rm(img28x28mx.array,
-     img28x28mx.fpath)
-
   put_end_date(start)
 } else {
   put_log("The Binary Image 28x28 array has already been constructed 
@@ -259,7 +255,7 @@ and backed up to the following file:
 
 if (exists("img28x28mx.list")) rm(img28x28mx.list)
 
-### Preparing Default Split Datasets for Training the NN-Based Models ----------
+### Preparing Split Datasets for Training the NN-Based Models ------------------
 
 put_log("Preparing Train and Test Sets for training the NN-based Multiclass Classifier Models...")
 
@@ -271,18 +267,32 @@ put_log("The path for the backup file to save the list of the Split Datasets:
 start <- put_start_date()
 
 if(!file.exists(split3d.list.backup.file)) {
-  stopifnot(file.exists(train.img28x28mx.array.file_path))
+  if(!exists("img28x28mx.array")||
+     !exists("img28x28mx.fpath")){
+    stopifnot(file.exists(train.img28x28mx.array.file_path))
+  }
   
-  put_log("Loading and splitting the Train 28x28 Image Data Array 
-into a Default Train and Test Sets...")
+  put_log("Loading the Binary Image 28x28 array set from the backup file...")
+  img28x28mx.set <- readRDS(train.img28x28mx.array.file_path)
+  put_log("The Binary Image 28x28 array set has been loaded from the following file:
+%1", train.img28x28mx.array.file_path)
   
-  split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
-                                         seed = N.classes,
-                                         test_ratio = 0.2)
-
-  put_log("The Default Split Dataset object structure:
+  img28x28mx.array <- img28x28mx.set$img28x28mx.array
+  img28x28mx.fpath <- img28x28mx.set$img28x28mx.fpath
+  
+  rm(img28x28mx.set)
+  
+  put_log("Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+  
+  set.seed(N.classes)
+  split3d.list <- sample_train_test_sets.x3d(img28x28mx.array,
+                                             img28x28mx.fpath)
+  put_log("The Result Split Dataset object structure:
 %1", capture.output(str(split3d.list)))
-
+  
+  rm(img28x28mx.array)
+  rm(img28x28mx.fpath)
+  
   put_log("Saving the Split Dataset List object in the backup file...")
   
   saveRDS(split3d.list, 
