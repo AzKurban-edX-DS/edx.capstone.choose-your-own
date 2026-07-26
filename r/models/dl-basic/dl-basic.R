@@ -394,11 +394,11 @@ from the following file:
      bdl.predictions,
      bdl.pred.values.idx)
   
-  put_log("Saving the BDL MCC Model History...")
+  put_log("Saving the BDL MCC Model  Evaluation Result object...")
   saveRDS(bdl.eval.result,
           file = bdl.eval.result.file)
   
-  put_log("The BDL MCC Model History has been trained 
+  put_log("The BDL MCC Model  Evaluation Result object has been trained 
 and saved in the following file:
   %1", bdl.eval.result.file)
   put_end_date(start)

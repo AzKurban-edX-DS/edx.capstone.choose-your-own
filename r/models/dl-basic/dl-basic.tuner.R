@@ -192,6 +192,9 @@ dl.basic_best.checkpoint.file_path <-
   file.path(dl.basic_best.checkpoints.dir, 
             "dl.basic_best.{epoch:02d}-{val_loss:.2f}.keras")
 
+bdl_final.eval.result.file <- file.path(dl.basic.keras_tuner.dir,
+                                  "bdl_final.eval.result.rds")
+
 ### Process the Tuning ---------------------------------------------------------
 if(!is.null(dev.list())) dev.off()
 
@@ -231,7 +234,7 @@ dl_basic.tuner$results_summary()
 class(dl_basic.tuner)
 
 # This prints a summary of the search space and lists the top trial results
-bdl.model_tuner.result = kerastuneR::plot_tuner(dl_basic.tuner)
+bdl.model_tuner.result <- kerastuneR::plot_tuner(dl_basic.tuner)
 # the list will show the plot and the data.frame of tuning results
 
 put_log("The DL Basic Tuning Results:
@@ -259,6 +262,8 @@ put_log("The DL Basic Tuning Results:
   # 4      103      423      551      359      455        31 0.8862841
   # 5      231      199      583      263       71        19 0.8117780
 }
+
+rm(bdl.model_tuner.result)
 
 # This prints the top trials, their hyperparameters, and execution details
 dl_basic.tuner |> results_summary(num_trials = 1L)
@@ -298,6 +303,7 @@ dl_basic.tuner |> results_summary(num_trials = 1L)
 # Retrieve the best model from the search
 dl_basic.best_models <- kerastuneR::get_best_models(tuner = dl_basic.tuner, num_models = 1L)
 dl_basic.best_model <- dl_basic.best_models[[1]]
+rm(dl_basic.best_models)
 
 dl_basic.best_model$summary()
 # View completed epochs of this best model
@@ -314,9 +320,11 @@ dl_basic.best_trial$best_step
 
 dl_basic.best_trial$metrics$get_history('val_accuracy')
 
+rm(dl_basic.tuner.best_trials,
+   dl_basic.best_trial)
 
 log_close()
-# Log Elapsed Time: 0 03:38:15
+# Log Elapsed Time: 0 00:10:44
 
 ## Prepare Input Datasets for Re-training the Best Model -----------------------
 open_logfile(".ds-prepare.retraining.best-dl.model")
@@ -495,6 +503,9 @@ put_log("The Test Set is balanced by the set of Classes:
   invisible(NULL)
 }
 
+rm(y.train.groups,
+   y_test.groups)
+
 #> [1] 16653   784
 str(x_train)
 str(y_train)
@@ -524,11 +535,11 @@ dim(y_test)
 # head(y.train.cat)
 # max(y.train.cat)
 
-y_test.cat <- to_categorical(y_test)
-colnames(y_test.cat) <- Y.Labels
-dim(y_test.cat)
-str(y_test.cat)
-head(y_test.cat)
+# y_test.cat <- to_categorical(y_test)
+# colnames(y_test.cat) <- Y.Labels
+# dim(y_test.cat)
+# str(y_test.cat)
+# head(y_test.cat)
 
 log_close()
 
@@ -644,152 +655,198 @@ and saved in the following file:
   # Time difference of 38.48235 mins
 }
 
+rm(x_train,
+   y_train,
+   dl_basic.tuner)
+
 put_log("The re-trained `BDL MCC` Model has been trained with the following results
 %1", dl_basic.final_model)
 
 plot(bdl.final_model.train_history)
 str(bdl.final_model.train_history)
 
+rm(bdl.final_model.train_history)
+
 log_close()
+# Log Elapsed Time: 0 00:13:05
 
 ## The Final BDL MCC Model Evaluation ----------------------------------------------------
-put_log("Evaluating DL Model...")
-bdl_final.eval.result <- dl_basic.final_model |> evaluate(x_test, y_test)
-put_log("BDL MCC Bset Model evaluation result:
+
+if(file.exists(bdl_final.eval.result.file)) {
+  put_log("Loading the BDL MCC Final Model Evaluation Result object...")
+  bdl_final.eval.result <- readRDS(bdl_final.eval.result.file)
+  
+  put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
+from the following file:
+%1", bdl_final.eval.result.file)
+} else {
+  put_log("Evaluating DL Model...")
+  bdl_final.eval.result <- dl_basic.final_model |> evaluate(x_test, y_test)
+  put_log("BDL MCC Bset Model evaluation result:
 %1", capture.output(str(bdl_final.eval.result)))
-# List of 2
- # $ accuracy: num 0.9
- # $ loss    : num 0.374
+  # List of 2
+  # $ accuracy: num 0.9
+  # $ loss    : num 0.374
+  
+  
+  put_end_date(start)
+  # Time difference of 1.668308 mins
+  
+  bdl_final.preds <- dl_basic.final_model |> predict(x_test)
+  str(bdl_final.preds)
+  # put_end_date(start)
+  # Time difference of  mins
+  
+  colnames(bdl_final.preds) <- Y.Labels
+  head(bdl_final.preds[,1:5])
+  #                 #            $            &            @            0
+  # [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
+  # [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
+  # [3,] 2.074071e-11 1.434007e-10 3.564378e-09 8.688334e-12 2.087918e-05
+  # [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
+  # [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
+  # [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
+  dim(bdl_final.preds)
+  #> [1] 33228    39
+  
+  bdl_final.eval.result$predicted.probs <- bdl_final.preds
+  str(bdl_final.eval.result)
+  
+  bdl_final.preds.ts <- as_tensor(bdl_final.preds)
+  str(bdl_final.preds.ts)
+  #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
+  
+  bdl_final.predictions <- bdl_final.preds.ts |> op_argmax(2)
+  bdl_final.predictions
+  #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
+  dim(bdl_final.predictions)
+  #> [1] 33228
+  # bdl_final.predictions$numpy()
+  
+  
+  # y_test
+  # as.integer(y_test)
+  
+  bdl_final.pred.values.idx <- bdl_final.predictions$numpy()
+  head(bdl_final.pred.values.idx)
+  min(bdl_final.pred.values.idx)
+  max(bdl_final.pred.values.idx)
+  
+  bdl_final.pred.values <- Y.Labels[bdl_final.pred.values.idx]
+  head(bdl_final.pred.values)
+  
+  bdl_final.eval.result$predicted.values <- bdl_final.pred.values
+  str(bdl_final.eval.result)
+  
+  
+  y_test.idx <- y_test + 1
+  y_test.labels <- Y.Labels[y_test.idx]
+  
+  bdl_final.eval.result$targets <- y_test.labels
+  
+  rm(y_test.labels,
+     y_test.idx,
+     bdl_final.pred.values,
+     bdl_final.pred.values.idx,
+     bdl_final.predictions,
+     bdl_final.preds.ts,
+     bdl_final.preds)
+  
+  put_log("Saving the BDL MCC Model  Evaluation Result object...")
+  saveRDS(bdl_final.eval.result,
+          file = bdl_final.eval.result.file)
+  
+  put_log("The BDL MCC Model  Evaluation Result object has been trained 
+and saved in the following file:
+  %1", bdl_final.eval.result.file)
+  
+}
 
-put_end_date(start)
-# Time difference of 1.668308 mins
+rm(x_test,
+   y_test)
 
-bdl_final.preds <- dl_basic.final_model |> predict(x_test)
-str(bdl_final.preds)
-# put_end_date(start)
-# Time difference of  mins
-
-colnames(bdl_final.preds) <- Y.Labels
-head(bdl_final.preds[,1:5])
-#                 #            $            &            @            0
-# [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
-# [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
-# [3,] 2.074071e-11 1.434007e-10 3.564378e-09 8.688334e-12 2.087918e-05
-# [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
-# [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
-# [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
-dim(bdl_final.preds)
-#> [1] 33228    39
-
-bdl_final.preds.ts <- as_tensor(bdl_final.preds)
-str(bdl_final.preds.ts)
-#> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
-
-bdl_final.predictions <- bdl_final.preds.ts |> op_argmax(2)
-bdl_final.predictions
-#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(bdl_final.predictions)
-#> [1] 33228
-# bdl_final.predictions$numpy()
-
-
-# y_test
-# as.integer(y_test)
-
-bdl_final.pred.values.idx <- bdl_final.predictions$numpy()
-head(bdl_final.pred.values.idx)
-min(bdl_final.pred.values.idx)
-max(bdl_final.pred.values.idx)
-
-bdl_final.pred.values <- Y.Labels[bdl_final.pred.values.idx]
-head(bdl_final.pred.values)
-
-y_test.idx <- y_test + 1
-# y_test.labels <- Y.Labels[y_test.idx]
-
-dl.basic.accuracy <- mean(bdl_final.pred.values.idx == y_test.idx)
-put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
-# 0.899963885879379
+# dl.basic.accuracy <- mean(bdl_final.pred.values.idx == y_test.idx)
+put_log("The overall Basic `DL MCC` Model accuracy: %1", 
+        bdl_final.eval.result$accuracy)
+# 0.898338750451427
 
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
-put_log("Plotting ROC curves the Model Evaluation Results...")
-bdl_final.roc_curves <- plot.ROC.curves(y_test.cat,
-                                        bdl_final.preds)
-Sys.sleep(6)
+open_logfile(".bdl-final.eval-results.visualization")
 
-put_log("Plotting the Tuned BDL MCC Model Per-Class Accuracy...")
-bdl_final.acc_by_class <- plot.per_class.accuracy.bars(y_test.cat,
-                                                       bdl_final.pred.values)
+stopifnot(file.exists(model_visualization.shared.script.path))
 
-put_log("The following values of the BDL MCC Model Per-Class Accuracy have been plotted:
-%1", capture.output(dl.basic.accuracy.by_class))
+bdl.keras_tunes.plots.dat.dir <- file.path(dl.basic.keras_tuner.dir, "plots.dat")
+
+if(!dir.exists(bdl.keras_tunes.plots.dat.dir))
+  dir.create(bdl.keras_tunes.plots.dat.dir)
+
+bdl_final.eval.conf.mx.img_file <- file.path(bdl.keras_tunes.plots.dat.dir,
+                                            "bdl-final.eval.confusion-matrix.png")
+
+bdl_final.eval.plots_dat.file <- file.path(bdl.keras_tunes.plots.dat.dir,
+                                          "bdl-final.eval.plots_dat.rds")
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+if(file.exists(bdl_final.eval.plots_dat.file)) {
+  put_log("Function `init.plots_args`:
+Loading the model-related plots input data object from the backup file...")
+  plots.args <- init.plots_args(bdl_final.eval.plots_dat.file)
+  
+  put_log("Function `init.plots_args`:
+The model-related plots input data object has been loaded from the following file:
+%1", bdl_final.eval.plots_dat.file)
+} else {
+  plots.args <- init.plots_args(targets = bdl_final.eval.result$targets,
+                                predicted.probabilities = bdl_final.eval.result$predicted.probs,
+                                predicted.values = bdl_final.eval.result$predicted.values,
+                                alg_name = "DL Basic Tuned",
+                                plots_dat.file = bdl_final.eval.plots_dat.file,
+                                cm.export.img_file = bdl_final.eval.conf.mx.img_file,
+                                cm.print.image = T)
+}
+
+rm(bdl_final.eval.result)
+
+#'Run the helper script specifically designed to visualize 
+#'the model evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+rm(plots.args,
+   fit_rf.mtry_best)
+
+stopifnot(exists("plots.dat"),
+          !is.null(plots.dat$ROC),
+          !is.null(plots.dat$PCA),
+          !is.null(plots.dat$CM))
+
+put_log("Saving the model-related plots input data object to file...")
+
+saveRDS(plots.dat,
+        file = bdl_final.eval.plots_dat.file)
+
+put_log("The model-related plots input data object has been saved to the following file:
+%1", bdl_final.eval.plots_dat.file)
+
+# put_log("The Basic DL Model per-class accuracy:,
+# %1", capture.output(plots.dat$PCA$acc.by_class))
 {
-#' class  accuracy
-#'     # 1.0000000
-#'     $ 1.0000000
-#'     & 1.0000000
-#'     @ 1.0000000
-#'     0 0.9683099
-#'     1 0.7546948
-#'     2 0.9061033
-#'     3 0.9565728
-#'     4 0.9330986
-#'     5 0.8873239
-#'     6 0.9272300
-#'     7 0.9882629
-#'     8 0.9143192
-#'     9 0.9518779
-#'     A 0.8485915
-#'     B 0.8779343
-#'     C 0.9565728
-#'     D 0.9025822
-#'     E 0.9237089
-#'     F 0.9436620
-#'     G 0.6514085
-#'     H 0.9354460
-#'     I 0.7030516
-#'     J 0.9319249
-#'     K 0.9213615
-#'     L 0.4049296
-#'     M 0.9530516
-#'     N 0.9342723
-#'     P 0.9659624
-#'     Q 0.7406103
-#'     R 0.9190141
-#'     S 0.8955399
-#'     T 0.9366197
-#'     U 0.9471831
-#'     V 0.9260563
-#'     W 0.9636150
-#'     X 0.9389671
-#'     Y 0.8814554
-#'     Z 0.9072770
+
+  
+  
+  
   invisible(NULL)
 }
 
-Sys.sleep(6)
-
-# Confusion Matrix data suitable for Visualization using the `cvms` package:
-# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
-
-put_log("Creating a confusion matrix for Tuned BDL MCC Model in a format suitable for visualization 
-using the `cvms` package...")
-
-bdl_final.conf.mx <- create.confusion_matrix(y_test.cat,
-                                             bdl_final.pred.values)
-
-put_log("The confusion matrix based on the `BDL MCC` Model evaluation results has been created:
-%1", capture.output(bdl_final.conf.mx))
-
-put_log("Plotting the confusion matrix, please wait...")
-bdl_final.conf.mx.chart <- 
-  plot.conf.mx(bdl_final.conf.mx,
-                        cm.export.img_file = dl.basic.final.conf_mx.img)
-
-print(bdl_final.conf.mx.chart)
-
-put_end_date(start)
-
+rm(plots.dat)
 log_close()
+
+
