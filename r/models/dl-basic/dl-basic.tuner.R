@@ -112,56 +112,6 @@ put_log("The Train Set is balanced by the set of Classes:
 
 rm(y.train.groups)
 
-put_log("The Test Set is balanced by the set of Classes:
-%1", capture.output(print(y_test.groups$groupByClass, n = N.classes)))
-{
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-#  1 #        3834
-#  2 $        3834
-#  3 &        3834
-#  4 @        3834
-#  5 0        3834
-#  6 1        3834
-#  7 2        3834
-#  8 3        3834
-#  9 4        3834
-# 10 5        3834
-# 11 6        3834
-# 12 7        3834
-# 13 8        3834
-# 14 9        3834
-# 15 A        3834
-# 16 B        3834
-# 17 C        3834
-# 18 D        3834
-# 19 E        3834
-# 20 F        3834
-# 21 G        3834
-# 22 H        3834
-# 23 I        3834
-# 24 J        3834
-# 25 K        3834
-# 26 L        3834
-# 27 M        3834
-# 28 N        3834
-# 29 P        3834
-# 30 Q        3834
-# 31 R        3834
-# 32 S        3834
-# 33 T        3834
-# 34 U        3834
-# 35 V        3834
-# 36 W        3834
-# 37 X        3834
-# 38 Y        3834
-# 39 Z        3834  
-invisible(NULL)
-}
-
-rm(y_test.groups)
-
 str(x_train)
 str(y_train)
 
