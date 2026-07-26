@@ -13,7 +13,7 @@
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit if needed
 
-## Prepare Input Datasets for the Model Tuning ---------------------------------
+## Prepare a Train Set for the Model Tuning ------------------------------------
 open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path))
@@ -30,21 +30,14 @@ put_log("The Default Split Dataset object structure:
 %1", capture.output(str(split3d.list)))
 
 x3d.train_set <- split3d.list$train_set
+# str(x3d.train_set)
+
 put_log("The Train Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x_train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
 
-x3d.test_set <- split3d.list$test_set
-put_log("The Test Set has been saved in the object `x3d.test_set`, 
-which contains a testing sample stored in the `x_test` variable having the following shape:
-%1", capture.output(shape(x3d.test_set$x.test)))
-# shape(33267, 28, 28)
-
 rm(split3d.list)
-
-# str(x3d.train_set)
-# str(x3d.test_set)
 
 x_train <- x3d.train_set$x.train
 # storage.mode(x_train) <- "integer"
@@ -53,11 +46,7 @@ x_train <- x3d.train_set$x.train
 str(x_train)
 dim(x_train)
 
-x_test <- x3d.test_set$x.test
-# storage.mode(x_test) <- "integer"
-dim(x_test)
-
-# x_test.files <- x3d.test_set$x.files
+rm(x3d.train_set)
 
 y.train.groups <- ds.get_classIDs.grouped(x_train)
 y_train <- y.train.groups$classID
@@ -73,153 +62,111 @@ stopifnot(min(y_train) == 0)
 stopifnot(max(y_train) == 38)
 stopifnot(dim(y_train) == nrow(x_train))
 
-y_test.groups <- ds.get_classIDs.grouped(x_test)
-y_test <- y_test.groups$classID
-
-# y_test <- y_test[seq(1e4)]
-stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
-
-y_test <- as.array(as.integer(y_test) - 1)
-str(y_test)
-dim(y_test)
-
-stopifnot(min(y_test) == 0)
-stopifnot(max(y_test) == 38)
-stopifnot(dim(y_test) == nrow(x_test))
-
-
 put_log("The Train Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #        3407
-  #  2 $        3407
-  #  3 &        3407
-  #  4 @        3407
-  #  5 0        3407
-  #  6 1        3407
-  #  7 2        3407
-  #  8 3        3407
-  #  9 4        3407
-  # 10 5        3407
-  # 11 6        3407
-  # 12 7        3407
-  # 13 8        3407
-  # 14 9        3407
-  # 15 A        3407
-  # 16 B        3407
-  # 17 C        3407
-  # 18 D        3407
-  # 19 E        3407
-  # 20 F        3407
-  # 21 G        3407
-  # 22 H        3407
-  # 23 I        3407
-  # 24 J        3407
-  # 25 K        3407
-  # 26 L        3407
-  # 27 M        3407
-  # 28 N        3407
-  # 29 P        3407
-  # 30 Q        3407
-  # 31 R        3407
-  # 32 S        3407
-  # 33 T        3407
-  # 34 U        3407
-  # 35 V        3407
-  # 36 W        3407
-  # 37 X        3407
-  # 38 Y        3407
-  # 39 Z        3407
+#    classID     n
+#    <fct>   <int>
+#  1 #         425
+#  2 $         425
+#  3 &         425
+#  4 @         425
+#  5 0         425
+#  6 1         425
+#  7 2         425
+#  8 3         425
+#  9 4         425
+# 10 5         425
+# 11 6         425
+# 12 7         425
+# 13 8         425
+# 14 9         425
+# 15 A         425
+# 16 B         425
+# 17 C         425
+# 18 D         425
+# 19 E         425
+# 20 F         425
+# 21 G         425
+# 22 H         425
+# 23 I         425
+# 24 J         425
+# 25 K         425
+# 26 L         425
+# 27 M         425
+# 28 N         425
+# 29 P         425
+# 30 Q         425
+# 31 R         425
+# 32 S         425
+# 33 T         425
+# 34 U         425
+# 35 V         425
+# 36 W         425
+# 37 X         425
+# 38 Y         425
+# 39 Z         425  
   invisible(NULL)
 }
+
+rm(y.train.groups)
 
 put_log("The Test Set is balanced by the set of Classes:
 %1", capture.output(print(y_test.groups$groupByClass, n = N.classes)))
 {
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #         852
-  #  2 $         852
-  #  3 &         852
-  #  4 @         852
-  #  5 0         852
-  #  6 1         852
-  #  7 2         852
-  #  8 3         852
-  #  9 4         852
-  # 10 5         852
-  # 11 6         852
-  # 12 7         852
-  # 13 8         852
-  # 14 9         852
-  # 15 A         852
-  # 16 B         852
-  # 17 C         852
-  # 18 D         852
-  # 19 E         852
-  # 20 F         852
-  # 21 G         852
-  # 22 H         852
-  # 23 I         852
-  # 24 J         852
-  # 25 K         852
-  # 26 L         852
-  # 27 M         852
-  # 28 N         852
-  # 29 P         852
-  # 30 Q         852
-  # 31 R         852
-  # 32 S         852
-  # 33 T         852
-  # 34 U         852
-  # 35 V         852
-  # 36 W         852
-  # 37 X         852
-  # 38 Y         852
-  # 39 Z         852  
-  invisible(NULL)
+# A tibble: 39 × 2
+#    classID     n
+#    <fct>   <int>
+#  1 #        3834
+#  2 $        3834
+#  3 &        3834
+#  4 @        3834
+#  5 0        3834
+#  6 1        3834
+#  7 2        3834
+#  8 3        3834
+#  9 4        3834
+# 10 5        3834
+# 11 6        3834
+# 12 7        3834
+# 13 8        3834
+# 14 9        3834
+# 15 A        3834
+# 16 B        3834
+# 17 C        3834
+# 18 D        3834
+# 19 E        3834
+# 20 F        3834
+# 21 G        3834
+# 22 H        3834
+# 23 I        3834
+# 24 J        3834
+# 25 K        3834
+# 26 L        3834
+# 27 M        3834
+# 28 N        3834
+# 29 P        3834
+# 30 Q        3834
+# 31 R        3834
+# 32 S        3834
+# 33 T        3834
+# 34 U        3834
+# 35 V        3834
+# 36 W        3834
+# 37 X        3834
+# 38 Y        3834
+# 39 Z        3834  
+invisible(NULL)
 }
 
-#> [1] 16653   784
+rm(y_test.groups)
+
 str(x_train)
 str(y_train)
 
 dim(x_train)
 dim(y_train)
-
-str(x_test)
-str(y_test)
-
-dim(x_test)
-dim(y_test)
-#> [1] 817379
-
-
-#### Converting labels factor to categorical -----------------------------------
-# Reference: 
-#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
-# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
-# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
-
-
-# y.train.cat <- to_categorical(y_train)
-# colnames(y.train.cat) <- Y.Labels
-# dim(y.train.cat)
-# str(y.train.cat)
-# head(y.train.cat)
-# max(y.train.cat)
-
-y_test.cat <- to_categorical(y_test)
-colnames(y_test.cat) <- Y.Labels
-dim(y_test.cat)
-str(y_test.cat)
-head(y_test.cat)
-
-log_close()
 
 ## Tuning the  BDL MCC Model ---------------------------------------------------
 open_logfile(paste0(".dl-basic-model.tuning_", 
@@ -310,6 +257,8 @@ dl_basic.tuner <- dl.tune.hwr_model(dl_basic.tunable_model,
                                     dl.basic.keras_tuner.dir,
                                     dl.basic_tuner.checkpoint.file_path,
                                     project_name = "DL.Basic.Tuner")
+rm(x_train,
+   y_train)
 
 put_log("The DL Basic Model Tuning has been completed.")
 put_end_date(start)
@@ -416,34 +365,36 @@ dl_basic.best_trial$best_step
 dl_basic.best_trial$metrics$get_history('val_accuracy')
 
 
-### Close Log ------------------------------------------------------------------
 log_close()
 # Log Elapsed Time: 0 03:38:15
 
 ## Prepare Input Datasets for Re-training the Best Model -----------------------
 open_logfile(".ds-prepare.retraining.best-dl.model")
 start <- put_start_date()
-# stopifnot(file.exists(my_emnist.split.file_path))
-stopifnot(exists("split3d.list.backup.file"))
+stopifnot(file.exists(train.img28x28mx.array.file_path))
 
-# Disable the elapsed time limit for expressions
-options(timeout = max(1000, getOption("timeout")))
-options(expressions = 50000) # Increases nesting limit if needed
 
-put_log("Loading the Split Dataset List object in the backup file...")
+put_log("Loading and splitting the Train 28x28 Image Data Array 
+into a Default Train and Test Sets...")
 
-split3d.list <- readRDS(split3d.list.backup.file)
+split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
+                                       seed = N.classes,
+                                       test_ratio = 0.2)
 
-put_log("The Split Dataset List object has been loaded from the following file:
-`%1`", split3d.list.backup.file)
+put_log("The Default Split Dataset object structure:
+%1", capture.output(str(split3d.list)))
 
 x3d.train_set <- split3d.list$train_set
+# str(x3d.train_set)
+
 put_log("The Train Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x_train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
 
 x3d.test_set <- split3d.list$test_set
+# str(x3d.test_set)
+
 put_log("The Test Set has been saved in the object `x3d.test_set`, 
 which contains a testing sample stored in the `x_test` variable having the following shape:
 %1", capture.output(shape(x3d.test_set$x.test)))
@@ -451,8 +402,6 @@ which contains a testing sample stored in the `x_test` variable having the follo
 
 rm(split3d.list)
 
-# str(x3d.train_set)
-# str(x3d.test_set)
 
 x_train <- x3d.train_set$x.train
 # storage.mode(x_train) <- "integer"
@@ -466,6 +415,10 @@ x_test <- x3d.test_set$x.test
 dim(x_test)
 
 # x_test.files <- x3d.test_set$x.files
+
+rm(x3d.train_set)
+rm(x3d.test_set)
+
 
 y.train.groups <- ds.get_classIDs.grouped(x_train)
 y_train <- y.train.groups$classID
@@ -628,6 +581,10 @@ str(y_test.cat)
 head(y_test.cat)
 
 log_close()
+
+
+
+
 
 ## Re-training the Best Model --------------------------------------------------
 
