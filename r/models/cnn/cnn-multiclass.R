@@ -3,7 +3,9 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Reference: Convolution Neural Network (CNN) 
-# Reference:
+# References:
+# Building a Vision Inspection CNN for an Industrial Application
+# https://towardsdatascience.com/building-a-vision-inspection-cnn-for-an-industrial-application-138936d7a34a/
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
@@ -234,7 +236,6 @@ if(exists("cnn_multiclass.train_history")){
 
 put_end_date(start)
 
-### Close Log ------------------------------------------------------------------
 log_close()
 
 
