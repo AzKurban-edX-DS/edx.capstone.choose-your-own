@@ -9,6 +9,8 @@
 # Deep Learning Using R with keras (CNN)
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
+# [*] Deep Learning Using R with keras (CNN) 
+# https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 ## Preparing Training Data ---------------------------------------------------------
 
 open_logfile(".train.cnn_multiclass-classifier.model")
@@ -132,7 +134,7 @@ if(file.exists(cnn_multiclass.model.file_path)) {
 ", cnn_multiclass.train_history.file_path)
   }
 } else {
-  ##### Define a CNN-Based Multiclass Classification model structure ***********
+  #* *** Define a CNN-Based Multiclass Classification model structure *******
   {
     # Define a few parameters to be used in the CNN model
     
@@ -141,21 +143,25 @@ if(file.exists(cnn_multiclass.model.file_path)) {
     #> Then flatten the output and use two dense layers to connect to the categoires 
     #> of the image. [*]
     
+    # [*] 3.3.1 Define a CNN model structure
     cnn_multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
-      layer_conv_2d(filters = 16L,
-                    kernel_size = c(2L, 2L), 
-                    # strides = 1,
+      layer_conv_2d(filters = 32L,
+                    kernel_size = c(3L, 3L), 
+                    # strides = list(1L, 1L),
                     activation = "relu") |>
-      layer_max_pooling_2d() |>
-      layer_dropout(rate = 0.25) |>
-      layer_conv_2d(filters = 16L, 
+      # layer_max_pooling_2d() |>
+      layer_max_pooling_2d(pool_size = c(2, 2)) |>
+      # layer_dropout(rate = 0.25) |>
+      layer_conv_2d(filters = 64L, 
                     kernel_size = c(3L, 3L),
-                    strides = 1,
+                    # strides = list(1L, 1L),
                     activation = "relu") |>
-      layer_max_pooling_2d() |>
+      # layer_max_pooling_2d() |>
+      layer_max_pooling_2d(pool_size = c(2, 2)) |>
+      layer_dropout(rate = 0.25) |>
       layer_flatten() |>
-      layer_dense(units = 100L, activation = "relu") |>
-      layer_dropout(rate = 0.3) |>
+      layer_dense(units = 128L, activation = "relu") |>
+      layer_dropout(rate = 0.5) |>
       layer_dense(units = N.classes, activation = "softmax")
     
     summary(cnn_multiclass.model)
