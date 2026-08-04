@@ -155,7 +155,7 @@ cnn_mcc.vld_split <- 0.2
 
 if(file.exists(cnn_mcc.model.file_path)) {
   put_log("Loading pre-trained CNN-Based Multiclass Classifier Model...")
-  cnn_mcc.model <- load_model(cnn_mcc.model.file_path)
+  cnn_mcc.model <- keras3::load_model(cnn_mcc.model.file_path)
   put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
 %1", cnn_mcc.model.file_path)
   
