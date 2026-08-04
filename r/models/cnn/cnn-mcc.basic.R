@@ -258,9 +258,9 @@ if(file.exists(cnn_mcc.model.file_path)) {
     # acc: 0.8741
     
     put_log("Saving the pre-trained CNN MCC Model...")
-    save_model(cnn_mcc.model,
-               filepath = cnn_mcc.model.file_path,
-               overwrite = TRUE)
+    keras3::save_model(cnn_mcc.model,
+                       filepath = cnn_mcc.model.file_path,
+                       overwrite = TRUE)
     
     put_log("The CNN MCC has been trained 
 and saved in the following file:
