@@ -9,30 +9,133 @@
 
 # [*] Deep Learning Using R with keras (CNN) 
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-## Preparing Training Data ---------------------------------------------------------
-
-open_logfile(".train.cnn_mcc-classifier.model")
-
-put_log("Preparing Training Data...")
+## Prepare a Train Set for the Model Tuning ------------------------------------
+open_logfile(".prepare-dataset-for-cnn-basic.model")
 start <- put_start_date()
+stopifnot(file.exists(train.img28x28mx.array.file_path))
 
-put_log("The Train Set object (`x3d.train_set`) has the following structure:
-%1", capture.output(str(x3d.train_set)))
 
-class.groups <- ds.get_classIDs.grouped(x3d.train_set$x.train)
-y.train <- class.groups$classID
-length(y.train)
-#> [1] 132912
+put_log("Loading and splitting the Train 28x28 Image Data Array 
+into a Default Train and Test Sets...")
 
-y.train.cat <- to_categorical(y.train)
-colnames(y.train.cat) <- Y.Labels
+split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
+                                       seed = N.classes,
+                                       test_ratio = 0.9)
+
+put_log("The Default Split Dataset object structure:
+%1", capture.output(str(split3d.list)))
+
+x3d.train_set <- split3d.list$train_set
+# str(x3d.train_set)
+
+put_log("The Train Set has been saved in the object `x3d.train_set`, 
+which contains a training sample stored in the `x_train` variable having the following shape:
+%1", capture.output(shape(x3d.train_set$x.train)))
+# shape(132912, 28, 28)
+
+rm(split3d.list)
+
+x3d_train <- x3d.train_set$x.train
+
+y.train.groups <- ds.get_classIDs.grouped(x3d_train)
+y_train <- y.train.groups$classID
+
+
+put_log("Reshaping the Train Set to make it compatible with the Convolutional Neural Network (CNN)...")
+# Add channel into the dimension
+x_train <- array_reshape(x3d_train, 
+                         c(nrow(x3d.train_set$x.train), 
+                           n.img_rows, 
+                           n.img_cols, 
+                           1))
+
+put_log("The Train Set has been reshaped as follows:
+%1", capture.output(shape(x_train)))
+# shape(132912, 28, 28)
+
+str(x_train)
+dim(x_train)
+shape(x_train)
+
+
+rm(x3d.train_set,
+   x3d_train)
+
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+
+# y_train <- as.array(as.integer(y_train) - 1)
+# str(y_train)
+# dim(y_train)
+# 
+# stopifnot(min(y_train) == 0)
+# stopifnot(max(y_train) == 38)
+stopifnot(length(y_train) == nrow(x_train))
+
+put_log("The Train Set is balanced by the set of Classes:
+%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425  
+  invisible(NULL)
+}
+
+rm(y.train.groups)
+
+str(x_train)
+str(y_train)
+
+dim(x_train)
+dim(y_train)
+
+y_train.cat <- to_categorical(y_train)
+colnames(y_train.cat) <- Y.Labels
 
 put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
-%1", capture.output(dim(y.train.cat)))
+%1", capture.output(dim(y_train.cat)))
 # [1] 132912     39
 
-# str(y.train.cat)
-head(y.train.cat)
+# str(y_train.cat)
+head(y_train.cat)
 #      # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 # [1,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # [2,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -41,76 +144,10 @@ head(y.train.cat)
 # [5,] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # [6,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
 
-put_log("Reshaping the Train Set to make it compatible with the Convolutional Neural Network (CNN)...")
-# Add channel into the dimension
-x.train <- array_reshape(x3d.train_set$x.train, 
-                             c(nrow(x3d.train_set$x.train), 
-                               n.img_rows, 
-                               n.img_cols, 
-                               1))
-
-put_log("The Train Set has been reshaped as follows:
-%1", capture.output(shape(x.train)))
-# shape(132912, 28, 28)
-
-### class Identifies: Quick Analysis -------------------------------------------
-
-y.train.chars <- class.groups$groupByClass
-#str(y.train.chars)
-
-char_n.max <- max(y.train.chars$n)
-# 3408
-char_n.max == min(y.train.chars$n)
-# TRUE
-
-put_log("The number of rows for each *Character Class* to be recognized in the Train Set is as follows:
-%1", capture.output(print(y.train.chars, n = nrow(y.train.chars))))
-{
-# A tibble: 39 × 2
-#    classID     n
-#    <fct>   <int>
-#  1 #        3408
-#  2 $        3408
-#  3 &        3408
-#  4 @        3408
-#  5 0        3408
-#  6 1        3408
-#  7 2        3408
-#  8 3        3408
-#  9 4        3408
-# 10 5        3408
-# 11 6        3408
-# 12 7        3408
-# 13 8        3408
-# 14 9        3408
-# 15 A        3408
-# 16 B        3408
-# 17 C        3408
-# 18 D        3408
-# 19 E        3408
-# 20 F        3408
-# 21 G        3408
-# 22 H        3408
-# 23 I        3408
-# 24 J        3408
-# 25 K        3408
-# 26 L        3408
-# 27 M        3408
-# 28 N        3408
-# 29 P        3408
-# 30 Q        3408
-# 31 R        3408
-# 32 S        3408
-# 33 T        3408
-# 34 U        3408
-# 35 V        3408
-# 36 W        3408
-# 37 X        3408
-# 38 Y        3408
-# 39 Z        3408
-}
 
 ## CNN MCC Model building --------------------------------------------------------------
+open_logfile(".cnn-basic.model-building")
+start <- put_start_date()
 
 cnn_mcc.batch_size <- 128
 cnn_mcc.epochs <- 100
@@ -186,8 +223,8 @@ if(file.exists(cnn_mcc.model.file_path)) {
     #> Please note, as we are not using GPU, it takes a few minutes to finish. 
     #> Please be patient while waiting for the results. 
     #> The training time can be significantly reduced if running on GPU. [*]
-    dim(x.train)
-    dim(y.train.cat)
+    dim(x_train)
+    dim(y_train.cat)
     
     cnn_mcc.callbacks <- list(
       callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -195,26 +232,26 @@ if(file.exists(cnn_mcc.model.file_path)) {
                                 monitor = "val_loss",
                                 mode = max,
                                 save_best_only = TRUE,
-                                verbose = 1),
-      callback_tensorboard(log_dir = data.cnn_mcc.tensorboard.logs.dir,
-                           # write_graph = T,
-                           write_images = T,
-                           write_steps_per_second = T,
-                           embeddings_freq = 1L)
+                                verbose = 1)#,
+      # callback_tensorboard(log_dir = data.cnn_mcc.tensorboard.logs.dir,
+      #                      # write_graph = T,
+      #                      write_images = T,
+      #                      write_steps_per_second = T,
+      #                      embeddings_freq = 1L)
     )
     
     # Runnign the TensorBoard tool
-    tensorboard(data.cnn_mcc.tensorboard.logs.dir)
+    #tensorboard(data.cnn_mcc.tensorboard.logs.dir)
     
     put_log("Training the CNN-based Multiclass Classifier (CNN MCC) Model...")
     start <- put_start_date()
     
     # Train model
     cnn_mcc.train_history <- cnn_mcc.model |> 
-      fit(x.train, 
-          y.train.cat,
-          cnn_mcc.epochs = cnn_mcc.epochs,
-          cnn_mcc.batch_size = cnn_mcc.batch_size,
+      fit(x_train, 
+          y_train.cat,
+          epochs = cnn_mcc.epochs,
+          batch_size = cnn_mcc.batch_size,
           validation_split = cnn_mcc.vld_split,
           callbacks = cnn_mcc.callbacks
       )
@@ -250,6 +287,11 @@ if(exists("cnn_mcc.train_history")){
 } 
 
 put_end_date(start)
+
+rm(x_train,
+   y_train,
+   y_train.cat,
+   cnn_mcc.callbacks)
 
 log_close()
 

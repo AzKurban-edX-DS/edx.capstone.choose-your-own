@@ -174,9 +174,6 @@ if(!dir.exists(data.cnn_mcc.tensorboard.logs.dir))
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 
-stopifnot(exists("x3d.train_set"))
-
-
 cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir, 
                                             "cnn.pre-trained.multiclass.model.keras")
 cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
