@@ -262,8 +262,7 @@ if(file.exists(dl.basic.model.file_path)) {
   
   
   dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
-  # dl.basic.model
-  
+
   dl.basic.model |> compile(
     loss = "categorical_crossentropy",
     optimizer = keras3::optimizer_adamax(0.001),

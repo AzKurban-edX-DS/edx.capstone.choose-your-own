@@ -388,6 +388,18 @@ dl.tune_model <- function(dl.build_model,
   tuner
 }
 
+cnn_mcc.tunable_model <- function(hp,
+                                   input_shape = c(28, 28, 1),
+                                   n.outputs,
+                                   dropout.rate = 0.2) {
+#> References:
+#> Hyperparameter tuning with Keras Tuner
+#> https://blog.tensorflow.org/2020/01/hyperparameter-tuning-with-keras-tuner.html  
+  
+
+  
+}
+
 dl_basic.tunable_model <- function(hp,
                                    input_shape = c(28, 28),
                                    n.outputs,

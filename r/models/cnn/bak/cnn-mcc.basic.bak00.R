@@ -6,12 +6,14 @@
 # References:
 # Building a Vision Inspection CNN for an Industrial Application
 # https://towardsdatascience.com/building-a-vision-inspection-cnn-for-an-industrial-application-138936d7a34a/
+# Deep Learning Using R with keras (CNN)
+# https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
 # [*] Deep Learning Using R with keras (CNN) 
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 ## Preparing Training Data ---------------------------------------------------------
 
-open_logfile(".train.cnn_mcc-classifier.model")
+open_logfile(".train.cnn_multiclass-classifier.model")
 
 put_log("Preparing Training Data...")
 start <- put_start_date()
@@ -116,20 +118,20 @@ cnn_mcc.batch_size <- 128
 cnn_mcc.epochs <- 100
 cnn_mcc.vld_split <- 0.2
 
-if(file.exists(cnn_mcc.model.file_path)) {
+if(file.exists(cnn_multiclass.model.file_path)) {
   put_log("Loading pre-trained CNN-Based Multiclass Classifier Model...")
-  cnn_mcc.model <- load_model(cnn_mcc.model.file_path)
+  cnn_multiclass.model <- load_model(cnn_multiclass.model.file_path)
   put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
-%1", cnn_mcc.model.file_path)
+%1", cnn_multiclass.model.file_path)
   
-  if(file.exists(cnn_mcc.train_history.file_path)){
+  if(file.exists(cnn_multiclass.train_history.file_path)){
     put_log("Loading the CNN-Based Multiclass Classifier Model Train History...")
-    cnn_mcc.train_history <- readRDS(cnn_mcc.train_history.file_path)
+    cnn_multiclass.train_history <- readRDS(cnn_multiclass.train_history.file_path)
     put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
-%1", cnn_mcc.train_history.file_path)
+%1", cnn_multiclass.train_history.file_path)
   } else {
     warning("The CNN-Based Multiclass Classifier Model backup does not exist:
-", cnn_mcc.train_history.file_path)
+", cnn_multiclass.train_history.file_path)
   }
 } else {
   #* *** Define a CNN-Based Multiclass Classification model structure *******
@@ -142,9 +144,7 @@ if(file.exists(cnn_mcc.model.file_path)) {
     #> of the image. [*]
     
     # [*] 3.3.1 Define a CNN model structure
-    cnn_mcc.inputs <- layer_input(shape = shape(28L, 28L, 1L))
-    
-    cnn_mcc.outputs <- cnn_mcc.inputs |>
+    cnn_multiclass.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
       layer_conv_2d(filters = 32L,
                     kernel_size = c(3L, 3L), 
                     # strides = list(1L, 1L),
@@ -164,28 +164,22 @@ if(file.exists(cnn_mcc.model.file_path)) {
       layer_dropout(rate = 0.5) |>
       layer_dense(units = N.classes, activation = "softmax")
     
-    
-    cnn_mcc.model <- keras_model(cnn_mcc.inputs, cnn_mcc.outputs)
-    
-    
-    cnn_mcc.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
-    
-    # summary(cnn_mcc.model)
-    # plot(cnn_mcc.model)
+    summary(cnn_multiclass.model)
+    # plot(cnn_multiclass.model)
     
     # Similar to DNN model, we need to compile the defined CNN model. [*]
     
     # Compile model
-    cnn_mcc.model |> compile(
+    cnn_multiclass.model |> compile(
       loss = loss_categorical_crossentropy,
       optimizer = keras3::optimizer_adamax(0.001),
       metrics = c('accuracy')
     )
     
-    summary(cnn_mcc.model)
+    summary(cnn_multiclass.model)
   }
   
-  #' *** Training CNN-Based Muliclass Classifier Model **********************
+  #### Training CNN-Based Muliclass Classifier Model ***************************
   {
     #> Now, we can train the model with our processed data. 
     #> Each cnn_mcc.epochs's history can be saved to track the progress. 
@@ -195,57 +189,55 @@ if(file.exists(cnn_mcc.model.file_path)) {
     dim(x.train)
     dim(y.train.cat)
     
-    cnn_mcc.callbacks <- list(
-      callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-      callback_model_checkpoint(filepath = cnn_mcc.checkpoint.file_path,
-                                monitor = "val_loss",
+    cnn_multiclass.callbacks <- list(
+      callback_model_checkpoint(filepath = cnn_multiclass.checkpoint.file_path,
+                                monitor = "val_accuracy",
                                 mode = max,
                                 save_best_only = TRUE,
-                                verbose = 1),
-      callback_tensorboard()
+                                verbose = 1)
     )
     
     put_log("Training the CNN-based Multiclass Classifier (CNN MCC) Model...")
     start <- put_start_date()
     
     # Train model
-    cnn_mcc.train_history <- cnn_mcc.model |> 
+    cnn_multiclass.train_history <- cnn_multiclass.model |> 
       fit(x.train, 
           y.train.cat,
           cnn_mcc.epochs = cnn_mcc.epochs,
           cnn_mcc.batch_size = cnn_mcc.batch_size,
           validation_split = cnn_mcc.vld_split,
-          callbacks = cnn_mcc.callbacks
+          callbacks = cnn_multiclass.callbacks
       )
     # acc: 0.8741
     
     put_log("Saving the pre-trained CNN MCC Model...")
-    save_model(cnn_mcc.model,
-               filepath = cnn_mcc.model.file_path,
+    save_model(cnn_multiclass.model,
+               filepath = cnn_multiclass.model.file_path,
                overwrite = TRUE)
     
     put_log("The CNN MCC has been trained 
 and saved in the following file:
-  %1", cnn_mcc.model.file_path)
+  %1", cnn_multiclass.model.file_path)
     
     put_log("Saving the CNN MCC Model History...")
-    saveRDS(cnn_mcc.train_history,
-            file = cnn_mcc.train_history.file_path)
+    saveRDS(cnn_multiclass.train_history,
+            file = cnn_multiclass.train_history.file_path)
     
     put_log("The CNN MCC Model History has been trained 
 and saved in the following file:
-  %1", cnn_mcc.train_history.file_path)
+  %1", cnn_multiclass.train_history.file_path)
   }
 }
 
 
 put_log("The CNN MCC Model has been created and trained:
 
-%1", capture.output(cnn_mcc.model))
+%1", capture.output(cnn_multiclass.model))
 
 
-if(exists("cnn_mcc.train_history")){
-  plot(cnn_mcc.train_history)
+if(exists("cnn_multiclass.train_history")){
+  plot(cnn_multiclass.train_history)
 } 
 
 put_end_date(start)

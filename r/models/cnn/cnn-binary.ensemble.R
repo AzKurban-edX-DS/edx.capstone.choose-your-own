@@ -178,7 +178,7 @@ has been loaded from the following backup file:
   
   put_log("The Prediction Results of the CNN BCC-Based Ensemble 
 have been backed up to the following file:
-%1", cnn_multiclass.model.eval.file_path)
+%1", cnn_mcc.model.eval.file_path)
 }
   
 put_end_date(start)

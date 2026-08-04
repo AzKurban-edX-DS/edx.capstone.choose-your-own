@@ -5,32 +5,32 @@ stopifnot(exists("x3d.test_set"))
 ## Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
 put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
 
-if (!exists("cnn_multiclass.model")) {
-  stopifnot(file.exists(cnn_multiclass.model.file_path))
+if (!exists("cnn_mcc.model")) {
+  stopifnot(file.exists(cnn_mcc.model.file_path))
   
   put_log("Loading the pre-trained CNN-based Multiclass Classifier model from the backup file...")
-  cnn_multiclass.model <- load_model(cnn_multiclass.model.file_path)
+  cnn_mcc.model <- load_model(cnn_mcc.model.file_path)
   put_log("The pre-trained CNN-based Multiclass Classifier model 
 has been loaded from the following backup file:
-%1", cnn_multiclass.model.file_path)
+%1", cnn_mcc.model.file_path)
   
-  if(file.exists(cnn_multiclass.train_history.file_path)){
+  if(file.exists(cnn_mcc.train_history.file_path)){
     put_log("Loading the CNN-Based Multiclass Classifier Model Train History...")
-    cnn_multiclass.train_history <- readRDS(cnn_multiclass.train_history.file_path)
+    cnn_mcc.train_history <- readRDS(cnn_mcc.train_history.file_path)
     put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
-%1", cnn_multiclass.train_history.file_path)
+%1", cnn_mcc.train_history.file_path)
   } else {
     warning("The CNN-Based Multiclass Classifier Model backup does not exist:
-", cnn_multiclass.train_history.file_path)
+", cnn_mcc.train_history.file_path)
   }
 }
 
 put_log("The Pre-trained CNN-Based Multiclass Classifier Model detains:
 
-%1", capture.output(cnn_multiclass.model))
+%1", capture.output(cnn_mcc.model))
 
-if(exists("cnn_multiclass.train_history")){
-  plot(cnn_multiclass.train_history)
+if(exists("cnn_mcc.train_history")){
+  plot(cnn_mcc.train_history)
 } 
 
 ## Preparing Validation Data ---------------------------------------------------
@@ -139,18 +139,18 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
-if(file.exists(cnn_multiclass.model.eval.file_path)) {
+if(file.exists(cnn_mcc.model.eval.file_path)) {
   put_log("Loading the Multiclass Classifier model Evaluation Results...")
-  load(cnn_multiclass.model.eval.file_path)
+  load(cnn_mcc.model.eval.file_path)
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been loaded from the following backup file:
-%1", cnn_multiclass.model.eval.file_path)
+%1", cnn_mcc.model.eval.file_path)
   put_end_date(start)
 } else {
   put_log("Evaluating CNN Model...")
-  cnn_multiclass.eval.result <- cnn_multiclass.model |> evaluate(x.test, y.test.cat)
+  cnn_mcc.eval.result <- cnn_mcc.model |> evaluate(x.test, y.test.cat)
   put_log("CNN MCC Model evaluation has been completed with the following result:
-%1", capture.output(cnn_multiclass.eval.result))
+%1", capture.output(cnn_mcc.eval.result))
   # $accuracy
   # [1] 0.9193752
   # 
@@ -162,46 +162,46 @@ have been loaded from the following backup file:
   # model prediction
   put_log("CNN Model: constructing predictions...")
   
-  cnn_multiclass.preds <- cnn_multiclass.model |> predict(x.test) 
+  cnn_mcc.preds <- cnn_mcc.model |> predict(x.test) 
   put_log("CNN Model: predictions have been constructed.")
   put_end_date(start)
   # Time difference of 1.502232 mins
   
   put_log("Saving the Multiclass Classifier model Evaluation Results...")
-  save(cnn_multiclass.eval.result,
-       cnn_multiclass.preds,
-       file = cnn_multiclass.model.eval.file_path)
+  save(cnn_mcc.eval.result,
+       cnn_mcc.preds,
+       file = cnn_mcc.model.eval.file_path)
   
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
-%1", cnn_multiclass.model.eval.file_path)
+%1", cnn_mcc.model.eval.file_path)
 
 }
 
 put_log("CNN MCC Model evaluation result:
-%1", capture.output(cnn_multiclass.eval.result))
+%1", capture.output(cnn_mcc.eval.result))
 # $accuracy
 # [1] 0.9193752
 # 
 # $loss
 # [1] 0.2359146
 
-dim(cnn_multiclass.preds)
+dim(cnn_mcc.preds)
 
-colnames(cnn_multiclass.preds) <- Y.Labels
-head(cnn_multiclass.preds[,1:5])
+colnames(cnn_mcc.preds) <- Y.Labels
+head(cnn_mcc.preds[,1:5])
 
-cnn_preds.ts <- as_tensor(cnn_multiclass.preds)
+cnn_preds.ts <- as_tensor(cnn_mcc.preds)
 str(cnn_preds.ts)
 #> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
 
-cnn_multiclass.predictions <- cnn_preds.ts |> op_argmax(2)
-str(cnn_multiclass.predictions)
-cnn_multiclass.predictions
+cnn_mcc.predictions <- cnn_preds.ts |> op_argmax(2)
+str(cnn_mcc.predictions)
+cnn_mcc.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(cnn_multiclass.predictions)
+dim(cnn_mcc.predictions)
 #> [1] 684467
-cnn.prediction.values.idx <- cnn_multiclass.predictions$numpy()
+cnn.prediction.values.idx <- cnn_mcc.predictions$numpy()
 head(cnn.prediction.values.idx)
 cnn_mcc.prediction.values <- Y.Labels[cnn.prediction.values.idx]
 head(cnn_mcc.prediction.values)
@@ -210,16 +210,16 @@ head(cnn_mcc.prediction.values)
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
 put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
 suitable for visualization using the `cvms` package...")
-cnn_multiclass.conf.mx <- confusion_matrix(as.character(y.test),
+cnn_mcc.conf.mx <- confusion_matrix(as.character(y.test),
                                            as.character(cnn_mcc.prediction.values))
 put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
-%1", cnn_multiclass.conf.mx)  
+%1", cnn_mcc.conf.mx)  
 
 #### Accuracy by Class ---
 y.test.idx <- seq_len(length(y.test))
 # head(y.test.idx)
 
-cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
+cnn_mcc.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
                                                                    y.test,
                                                                    cnn_mcc.prediction.values)
 #### ROC Curves
@@ -229,22 +229,22 @@ cnn_multiclass.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
 
 put_log("Calculating a ROC curve for each class...")
 cnn_mcc.roc_curves <- calc.roc_curves.cnn(y.test.cat,
-                                          cnn_multiclass.preds,
+                                          cnn_mcc.preds,
                                           Y.Labels)
 
-cnn_multiclass.accuracy <- mean(cnn_mcc.prediction.values == y.test)
-put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_multiclass.accuracy)
+cnn_mcc.accuracy <- mean(cnn_mcc.prediction.values == y.test)
+put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.accuracy)
 # 0.919375225713254
 #> For final test (expected value):
 #> CNN Model accuracy: 0.910364145658263
 
-# cnn_multiclass.conf.mx0 <- confusionMatrix(y.test, cnn_mcc.prediction.values)
+# cnn_mcc.conf.mx0 <- confusionMatrix(y.test, cnn_mcc.prediction.values)
 
 
 ### Logging Accuracies by class -------------------------------------------------
 
 put_log("The total set of accuracies by class is as follows:
-%1", capture.output(cnn_multiclass.accuracy_by_class))
+%1", capture.output(cnn_mcc.accuracy_by_class))
 {
 # class  accuracy
     #' # 1.0000000
@@ -293,7 +293,7 @@ put_log("The total set of accuracies by class is as follows:
 #### Class-wise accuracy
 put_log("`CNN MCC` Model: Plotting bar chart of per-class accuracy...")
 plot_bars.accuracy.by_class(Y.Labels,
-                            cnn_multiclass.accuracy_by_class[, 1],
+                            cnn_mcc.accuracy_by_class[, 1],
                             title.prefix = "CNN-based Multiclass")
 
 # Plot ROC curves
@@ -308,7 +308,7 @@ for (class.idx in 2:N.classes) {
 # registerDoParallel(cl)
 # 
 # dev.off()
-# plot_confusion_matrix(cnn_multiclass.conf.mx$`Confusion Matrix`[[1]],
+# plot_confusion_matrix(cnn_mcc.conf.mx$`Confusion Matrix`[[1]],
 #                       palette = "Greens",
 #                       font_counts = font(size = 3,
 # 

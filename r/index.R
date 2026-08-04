@@ -163,24 +163,24 @@ put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 stopifnot(exists("x3d.train_set"))
 
 
-cnn_multiclass.model.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+cnn_mcc.model.file_path <- file.path(data.dl.cnn.multiclass.dir, 
                                             "cnn.pre-trained.multiclass.model.keras")
-cnn_multiclass.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
-                                                    "cnn_multiclass.train_history.backup.rds")
+cnn_mcc.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
+                                                    "cnn_mcc.train_history.backup.rds")
 
 if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
   dir.create(data.dl.cnn.multiclass.checkpoints.dir)
 
-cnn_multiclass.checkpoint.file_path <- 
+cnn_mcc.checkpoint.file_path <- 
   file.path(data.dl.cnn.multiclass.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
 log_close()
 
 #### Build CNN-Based Multiclass Classifier (CNN MCC) Model ---------------------
-stopifnot(file.exists(cnn_multiclass.script.path))
+stopifnot(file.exists(cnn_mcc.script.path))
 
-source(cnn_multiclass.script.path, 
+source(cnn_mcc.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -188,9 +188,9 @@ source(cnn_multiclass.script.path,
        keep.source = TRUE)
 
 #### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
-stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
+stopifnot(file.exists(cnn_mcc.evaluation.script.path))
 
-source(cnn_multiclass.evaluation.script.path, 
+source(cnn_mcc.evaluation.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

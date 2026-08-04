@@ -309,12 +309,12 @@ stopifnot(file.exists(dl_basic.script.path))
 dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.tuner.R")
 stopifnot(file.exists(dl_basic.tuner.script.path))
 
-cnn_multiclass.script.path <- file.path(models.cnn_scripts.dir, "cnn-mcc.basic.R")
-stopifnot(file.exists(cnn_multiclass.script.path))
+cnn_mcc.script.path <- file.path(models.cnn_scripts.dir, "cnn-mcc.basic.R")
+stopifnot(file.exists(cnn_mcc.script.path))
 
-cnn_multiclass.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
-                                                   "cnn-multiclass.evaluation.R")
-stopifnot(file.exists(cnn_multiclass.evaluation.script.path))
+cnn_mcc.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
+                                                   "cnn-mcc.basic.eval.R")
+stopifnot(file.exists(cnn_mcc.evaluation.script.path))
 
 cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
