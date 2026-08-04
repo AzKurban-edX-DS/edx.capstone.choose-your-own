@@ -291,7 +291,8 @@ put_end_date(start)
 rm(x_train,
    y_train,
    y_train.cat,
-   cnn_mcc.callbacks)
+   cnn_mcc.callbacks,
+   cnn_mcc.train_history)
 
 log_close()
 
