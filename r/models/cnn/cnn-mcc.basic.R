@@ -166,13 +166,7 @@ if(file.exists(cnn_mcc.model.file_path)) {
     
     
     cnn_mcc.model <- keras_model(cnn_mcc.inputs, cnn_mcc.outputs)
-    
-    
-    cnn_mcc.model <- keras_model_sequential(shape(28L, 28L, 1L)) |>
-    
-    # summary(cnn_mcc.model)
-    # plot(cnn_mcc.model)
-    
+
     # Similar to DNN model, we need to compile the defined CNN model. [*]
     
     # Compile model
@@ -202,8 +196,15 @@ if(file.exists(cnn_mcc.model.file_path)) {
                                 mode = max,
                                 save_best_only = TRUE,
                                 verbose = 1),
-      callback_tensorboard()
+      callback_tensorboard(log_dir = data.cnn_mcc.tensorboard.logs.dir,
+                           # write_graph = T,
+                           write_images = T,
+                           write_steps_per_second = T,
+                           embeddings_freq = 1L)
     )
+    
+    # Runnign the TensorBoard tool
+    tensorboard(data.cnn_mcc.tensorboard.logs.dir)
     
     put_log("Training the CNN-based Multiclass Classifier (CNN MCC) Model...")
     start <- put_start_date()

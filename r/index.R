@@ -156,6 +156,20 @@ data.cnn_mcc.checkpoints.dir <- file.path(data.cnn_mcc.dir, "checkpoints")
 if(!dir.exists(data.cnn_mcc.checkpoints.dir))
   dir.create(data.cnn_mcc.checkpoints.dir)
 
+data.cnn_mcc.tensorboard.dir <- file.path(data.cnn_mcc.dir, "tensorboard")
+
+if(!dir.exists(data.cnn_mcc.tensorboard.dir))
+  dir.create(data.cnn_mcc.tensorboard.dir)
+
+data.cnn_mcc.tensorboard.logs.dir <- file.path(data.cnn_mcc.tensorboard.dir, "logs")
+
+if(!dir.exists(data.cnn_mcc.tensorboard.logs.dir))
+  dir.create(data.cnn_mcc.tensorboard.logs.dir)
+
+
+
+
+
 #### Init File Paths -----------------------------------------------------------
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
