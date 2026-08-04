@@ -146,15 +146,15 @@ source(dl_basic.tuner.script.path,
 
 open_logfile(".ds.prepare.train&test.balanced_sets")
 
-data.dl.cnn.multiclass.dir <- file.path(data.dl.cnn.dir, "multiclass")
+data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "multiclass")
 
-if(!dir.exists(data.dl.cnn.multiclass.dir))
-  dir.create(data.dl.cnn.multiclass.dir)
+if(!dir.exists(data.cnn_mcc.dir))
+  dir.create(data.cnn_mcc.dir)
 
-data.dl.cnn.multiclass.checkpoints.dir <- file.path(data.dl.cnn.multiclass.dir, "checkpoints")
+data.cnn_mcc.checkpoints.dir <- file.path(data.cnn_mcc.dir, "checkpoints")
 
-if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
-  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
+if(!dir.exists(data.cnn_mcc.checkpoints.dir))
+  dir.create(data.cnn_mcc.checkpoints.dir)
 
 #### Init File Paths -----------------------------------------------------------
 
@@ -163,16 +163,16 @@ put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 stopifnot(exists("x3d.train_set"))
 
 
-cnn_mcc.model.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir, 
                                             "cnn.pre-trained.multiclass.model.keras")
-cnn_mcc.train_history.file_path <- file.path(data.dl.cnn.multiclass.dir,
+cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
                                                     "cnn_mcc.train_history.backup.rds")
 
-if(!dir.exists(data.dl.cnn.multiclass.checkpoints.dir))
-  dir.create(data.dl.cnn.multiclass.checkpoints.dir)
+if(!dir.exists(data.cnn_mcc.checkpoints.dir))
+  dir.create(data.cnn_mcc.checkpoints.dir)
 
 cnn_mcc.checkpoint.file_path <- 
-  file.path(data.dl.cnn.multiclass.checkpoints.dir, 
+  file.path(data.cnn_mcc.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
 log_close()
@@ -286,7 +286,7 @@ stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
 x3d.test_set <- ft.x3d.test_set
 rm(ft.x3d.test_set)
 
-cnn_mcc.model.final_test.file_path <- file.path(data.dl.cnn.multiclass.dir, 
+cnn_mcc.model.final_test.file_path <- file.path(data.cnn_mcc.dir, 
                                                 "cnn.multiclass.model.final-test.RData")
 stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
 saaaaaaaaaaaaaaaaaaaaaaaaaasssssssss
