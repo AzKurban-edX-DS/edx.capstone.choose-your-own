@@ -19,6 +19,26 @@ stopifnot(file.exists(train.img28x28mx.array.file_path),
           exists("cnn_mcc.train_history.file_path"),
           exists("cnn_mcc.x3d.test_set.bakup"))
 
+### Init File Paths -----------------------------------------------------------
+
+
+cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir, 
+                                     "cnn.pre-trained.multiclass.model.keras")
+cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
+                                             "cnn_mcc.train_history.backup.rds")
+
+cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
+                                        "x3d.test_set.rds")
+
+if(!dir.exists(data.cnn_mcc.checkpoints.dir))
+  dir.create(data.cnn_mcc.checkpoints.dir)
+
+cnn_mcc.checkpoint.file_path <- 
+  file.path(data.cnn_mcc.checkpoints.dir, 
+            "{epoch:02d}-{val_loss:.2f}.keras")
+
+
+
 ### Prepare a Train Set for the Model Training ---------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
@@ -311,8 +331,10 @@ rm(x_train,
    cnn_mcc.callbacks)
 
 log_close()
-
+# Log Elapsed Time: 0 00:00:58
 ## Evaluate Basic CNN MCC Model ------------------------------------------------
+open_logfile(".cnn-basic.model.start-evaluation")
+
 stopifnot(file.exists(cnn_mcc.evaluation.script.path))
 
 source(cnn_mcc.evaluation.script.path, 
@@ -322,3 +344,4 @@ source(cnn_mcc.evaluation.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()

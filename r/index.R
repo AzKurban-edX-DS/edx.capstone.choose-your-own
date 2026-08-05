@@ -166,33 +166,10 @@ data.cnn_mcc.tensorboard.logs.dir <- file.path(data.cnn_mcc.tensorboard.dir, "lo
 if(!dir.exists(data.cnn_mcc.tensorboard.logs.dir))
   dir.create(data.cnn_mcc.tensorboard.logs.dir)
 
-
-
-
-
-#### Init File Paths -----------------------------------------------------------
+#### Build Basic CNN MCC Model ---------------------
+stopifnot(file.exists(cnn_mcc.script.path))
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
-
-cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir, 
-                                            "cnn.pre-trained.multiclass.model.keras")
-cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
-                                                    "cnn_mcc.train_history.backup.rds")
-
-cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
-                                        "x3d.test_set.rds")
-
-if(!dir.exists(data.cnn_mcc.checkpoints.dir))
-  dir.create(data.cnn_mcc.checkpoints.dir)
-
-cnn_mcc.checkpoint.file_path <- 
-  file.path(data.cnn_mcc.checkpoints.dir, 
-            "{epoch:02d}-{val_loss:.2f}.keras")
-
-log_close()
-
-#### Build CNN-Based Multiclass Classifier (CNN MCC) Model ---------------------
-stopifnot(file.exists(cnn_mcc.script.path))
 
 source(cnn_mcc.script.path, 
        catch.aborts = TRUE,
@@ -200,6 +177,8 @@ source(cnn_mcc.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+log_close()
 
 ### CNN-based Binary Classifier Models -----------------------------------------
 stopifnot(file.exists(cnn_binary.r_scripts.dir))

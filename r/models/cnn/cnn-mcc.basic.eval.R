@@ -6,6 +6,9 @@
 open_logfile(".basic-cnn-model.evaluation.setup")
 stopifnot(file.exists(cnn_mcc.x3d.test_set.bakup))
 
+cnn_mcc.model.eval.backup <- file.path(data.cnn_mcc.dir,
+                                       "cnn_mcc.model.eval.backup.RData")
+
 ### Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
 put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
 
@@ -144,6 +147,7 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
   # 37 X         853
   # 38 Y         853
   # 39 Z         853
+  invisible()
 }
 
 log_close()
@@ -154,12 +158,12 @@ open_logfile(".basic-cnn-model.evaluation")
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
-if(file.exists(cnn_mcc.model.eval.file_path)) {
+if(file.exists(cnn_mcc.model.eval.backup)) {
   put_log("Loading the Multiclass Classifier model Evaluation Results...")
-  load(cnn_mcc.model.eval.file_path)
+  load(cnn_mcc.model.eval.backup)
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been loaded from the following backup file:
-%1", cnn_mcc.model.eval.file_path)
+%1", cnn_mcc.model.eval.backup)
   put_end_date(start)
 } else {
   put_log("Evaluating CNN Model...")
@@ -167,10 +171,10 @@ have been loaded from the following backup file:
   put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(cnn_mcc.eval.result))
   # $accuracy
-  # [1] 0.9193752
+  # [1] 0.8887953
   # 
   # $loss
-  # [1] 0.2359146
+  # [1] 0.3397374
   
   put_end_date(start)
   
@@ -185,21 +189,21 @@ have been loaded from the following backup file:
   put_log("Saving the Multiclass Classifier model Evaluation Results...")
   save(cnn_mcc.eval.result,
        cnn_mcc.preds,
-       file = cnn_mcc.model.eval.file_path)
+       file = cnn_mcc.model.eval.backup)
   
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
-%1", cnn_mcc.model.eval.file_path)
+%1", cnn_mcc.model.eval.backup)
 
 }
 
 put_log("CNN MCC Model evaluation result:
 %1", capture.output(cnn_mcc.eval.result))
 # $accuracy
-# [1] 0.9193752
+# [1] 0.8887953
 # 
 # $loss
-# [1] 0.2359146
+# [1] 0.3397374
 
 dim(cnn_mcc.preds)
 
@@ -220,6 +224,15 @@ cnn.prediction.values.idx <- cnn_mcc.predictions$numpy()
 head(cnn.prediction.values.idx)
 cnn_mcc.prediction.values <- Y.Labels[cnn.prediction.values.idx]
 head(cnn_mcc.prediction.values)
+
+cnn_mcc.accuracy <- mean(cnn_mcc.prediction.values == y_test)
+put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.accuracy)
+# 0.888795259687278
+
+
+
+
+### Visualization --------------------------------------------------------------
 
 # Confusion Matrix data suitable for Visualization using the `cvms` package:
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
@@ -247,9 +260,6 @@ cnn_mcc.roc_curves <- calc.roc_curves.cnn(y_test.cat,
                                           cnn_mcc.preds,
                                           Y.Labels)
 
-cnn_mcc.accuracy <- mean(cnn_mcc.prediction.values == y_test)
-put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.accuracy)
-# 0.919375225713254
 #> For final test (expected value):
 #> CNN Model accuracy: 0.910364145658263
 
@@ -301,11 +311,11 @@ put_log("The total set of accuracies by class is as follows:
     #' X 0.9554513
     #' Y 0.8944900
     #' Z 0.9261430
+    invisible()
 }
 
 log_close()
 
-### Visualization --------------------------------------------------------------
 
 #### Class-wise accuracy
 put_log("`CNN MCC` Model: Plotting bar chart of per-class accuracy...")
