@@ -179,6 +179,9 @@ cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir,
 cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
                                                     "cnn_mcc.train_history.backup.rds")
 
+cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
+                                        "x3d.test_set.rds")
+
 if(!dir.exists(data.cnn_mcc.checkpoints.dir))
   dir.create(data.cnn_mcc.checkpoints.dir)
 
@@ -192,16 +195,6 @@ log_close()
 stopifnot(file.exists(cnn_mcc.script.path))
 
 source(cnn_mcc.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-#### Evaluate pre-trained CNN-Based Multiclass Classifier Model -----------------
-stopifnot(file.exists(cnn_mcc.evaluation.script.path))
-
-source(cnn_mcc.evaluation.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

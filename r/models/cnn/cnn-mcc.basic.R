@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# CNN-Based Multiclass Classifier Model
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Basic CNN Multiclass Classifier (MCC) Model
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Reference: Convolution Neural Network (CNN) 
 # References:
@@ -9,12 +9,17 @@
 
 # [*] Deep Learning Using R with keras (CNN) 
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-## Prepare a Train Set for the Model Tuning ------------------------------------
+
+## Setup
 open_logfile(".prepare-dataset-for-cnn-basic.model")
 start <- put_start_date()
-stopifnot(file.exists(train.img28x28mx.array.file_path))
+stopifnot(file.exists(train.img28x28mx.array.file_path),
+          dir.exists(data.cnn_mcc.dir),
+          exists("cnn_mcc.model.file_path"),
+          exists("cnn_mcc.train_history.file_path"),
+          exists("cnn_mcc.x3d.test_set.bakup"))
 
-
+### Prepare a Train Set for the Model Training ---------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
 
@@ -33,7 +38,22 @@ which contains a training sample stored in the `x_train` variable having the fol
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
 
-rm(split3d.list)
+x3d.test_set <- split3d.list$test_set
+# str(x3d.test_set)
+
+put_log("The Test Set data is stored in the object `x3d.test_set`, 
+having the following structure:
+%1", capture.output(str(x3d.test_set)))
+
+put_log("Saving the Test Set to backup file for later use...")
+saveRDS(x3d.test_set,
+        file = cnn_mcc.x3d.test_set.bakup)
+
+put_log("The Test Set for Basic CNN MCC Model has been saved to the following file:
+%1", cnn_mcc.x3d.test_set.bakup)
+
+rm(split3d.list,
+   x3d.test_set)
 
 x3d_train <- x3d.train_set$x.train
 
@@ -145,7 +165,7 @@ head(y_train.cat)
 # [6,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
 
 
-## CNN MCC Model building --------------------------------------------------------------
+## Basic CNN MCC Model building --------------------------------------------------------------
 open_logfile(".cnn-basic.model-building")
 start <- put_start_date()
 
@@ -276,11 +296,8 @@ and saved in the following file:
   }
 }
 
-
 put_log("The CNN MCC Model has been created and trained:
-
 %1", capture.output(cnn_mcc.model))
-
 
 if(exists("cnn_mcc.train_history")){
   plot(cnn_mcc.train_history)
@@ -291,9 +308,17 @@ put_end_date(start)
 rm(x_train,
    y_train,
    y_train.cat,
-   cnn_mcc.callbacks,
-   cnn_mcc.train_history)
+   cnn_mcc.callbacks)
 
 log_close()
 
+## Evaluate Basic CNN MCC Model ------------------------------------------------
+stopifnot(file.exists(cnn_mcc.evaluation.script.path))
+
+source(cnn_mcc.evaluation.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 

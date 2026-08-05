@@ -1,8 +1,12 @@
-# CNN MCC Model Evaluation -----------------------------------------------------
-open_logfile(".evaluate-cnn-model")
-stopifnot(exists("x3d.test_set"))
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Basic CNN MCC Model: Evaluation
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
+## Setup -----------------------------------------------------------------------
+open_logfile(".basic-cnn-model.evaluation.setup")
+stopifnot(file.exists(cnn_mcc.x3d.test_set.bakup))
+
+### Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
 put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
 
 if (!exists("cnn_mcc.model")) {
@@ -33,9 +37,16 @@ if(exists("cnn_mcc.train_history")){
   plot(cnn_mcc.train_history)
 } 
 
-## Preparing Validation Data ---------------------------------------------------
+### Preparing Validation Data ---------------------------------------------------
 put_log("Preparing a Test Set...")
 start <- put_start_date()
+
+put_log("Loading the Test Set from backup...")
+x3d.test_set <- readRDS(cnn_mcc.x3d.test_set.bakup)
+
+put_log("The Test Set has been loaded from the following file:
+%1", cnn_mcc.x3d.test_set.bakup)
+
 
 put_log("The Test Set data is stored in the object `x3d.test_set`, 
 having the following structure:
@@ -43,19 +54,19 @@ having the following structure:
 
 class.groups <- ds.get_classIDs.grouped(x3d.test_set$x.test)
 
-y.test <- class.groups$classID
-length(y.test)
+y_test <- class.groups$classID
+length(y_test)
 #> [1] 33267
 
-y.test.cat <- to_categorical(y.test)
-colnames(y.test.cat) <- Y.Labels
+y_test.cat <- to_categorical(y_test)
+colnames(y_test.cat) <- Y.Labels
 
 put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
-%1", capture.output(dim(y.test.cat)))
+%1", capture.output(dim(y_test.cat)))
 #> [1] 33267    39
 
-# str(y.test.cat)
-head(y.test.cat)
+# str(y_test.cat)
+head(y_test.cat)
 #      # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 # [1,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # [2,] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
@@ -66,30 +77,30 @@ head(y.test.cat)
 
 put_log("Reshaping the Test Set to make it compatible with the Convolutional Neural Network (CNN)...")
 # Add channel into the dimension
-x.test <- array_reshape(x3d.test_set$x.test, 
+x_test <- array_reshape(x3d.test_set$x.test, 
                         c(nrow(x3d.test_set$x.test), 
                           n.img_rows, 
                           n.img_cols, 
                           1))
 
-x.test.files <- x3d.test_set$x.files
+x_test.files <- x3d.test_set$x.files
 
 put_log("The Test Set has been reshaped as follows:
-%1", capture.output(shape(x.test)))
+%1", capture.output(shape(x_test)))
 # shape(33228, 28, 28, 1)
 
-### class Identifies: Quick Analysis ---------------------------------------------
+#### class Identifies: Quick Analysis ---------------------------------------------
 
-y.test.chars <- class.groups$groupByClass
-#str(y.test.chars)
+y_test.chars <- class.groups$groupByClass
+#str(y_test.chars)
 
-char_n.max <- max(y.test.chars$n)
+char_n.max <- max(y_test.chars$n)
 # 853
-char_n.max == min(y.test.chars$n)
+char_n.max == min(y_test.chars$n)
 # TRUE
 
 put_log("The number of rows for each *Character Class* to be recognized in the Test Set is as follows:
-%1", capture.output(print(y.test.chars, n = nrow(y.test.chars))))
+%1", capture.output(print(y_test.chars, n = nrow(y_test.chars))))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -135,7 +146,11 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
   # 39 Z         853
 }
 
+log_close()
+
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
+open_logfile(".basic-cnn-model.evaluation")
+
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
@@ -148,7 +163,7 @@ have been loaded from the following backup file:
   put_end_date(start)
 } else {
   put_log("Evaluating CNN Model...")
-  cnn_mcc.eval.result <- cnn_mcc.model |> evaluate(x.test, y.test.cat)
+  cnn_mcc.eval.result <- cnn_mcc.model |> evaluate(x_test, y_test.cat)
   put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(cnn_mcc.eval.result))
   # $accuracy
@@ -162,7 +177,7 @@ have been loaded from the following backup file:
   # model prediction
   put_log("CNN Model: constructing predictions...")
   
-  cnn_mcc.preds <- cnn_mcc.model |> predict(x.test) 
+  cnn_mcc.preds <- cnn_mcc.model |> predict(x_test) 
   put_log("CNN Model: predictions have been constructed.")
   put_end_date(start)
   # Time difference of 1.502232 mins
@@ -210,17 +225,17 @@ head(cnn_mcc.prediction.values)
 # Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
 put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
 suitable for visualization using the `cvms` package...")
-cnn_mcc.conf.mx <- confusion_matrix(as.character(y.test),
+cnn_mcc.conf.mx <- confusion_matrix(as.character(y_test),
                                            as.character(cnn_mcc.prediction.values))
 put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
 %1", cnn_mcc.conf.mx)  
 
 #### Accuracy by Class ---
-y.test.idx <- seq_len(length(y.test))
-# head(y.test.idx)
+y_test.idx <- seq_len(length(y_test))
+# head(y_test.idx)
 
 cnn_mcc.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
-                                                                   y.test,
+                                                                   y_test,
                                                                    cnn_mcc.prediction.values)
 #### ROC Curves
 # References:
@@ -228,17 +243,17 @@ cnn_mcc.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
 # https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
 
 put_log("Calculating a ROC curve for each class...")
-cnn_mcc.roc_curves <- calc.roc_curves.cnn(y.test.cat,
+cnn_mcc.roc_curves <- calc.roc_curves.cnn(y_test.cat,
                                           cnn_mcc.preds,
                                           Y.Labels)
 
-cnn_mcc.accuracy <- mean(cnn_mcc.prediction.values == y.test)
+cnn_mcc.accuracy <- mean(cnn_mcc.prediction.values == y_test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.accuracy)
 # 0.919375225713254
 #> For final test (expected value):
 #> CNN Model accuracy: 0.910364145658263
 
-# cnn_mcc.conf.mx0 <- confusionMatrix(y.test, cnn_mcc.prediction.values)
+# cnn_mcc.conf.mx0 <- confusionMatrix(y_test, cnn_mcc.prediction.values)
 
 
 ### Logging Accuracies by class -------------------------------------------------
@@ -288,6 +303,8 @@ put_log("The total set of accuracies by class is as follows:
     #' Z 0.9261430
 }
 
+log_close()
+
 ### Visualization --------------------------------------------------------------
 
 #### Class-wise accuracy
@@ -323,7 +340,7 @@ for (class.idx in 2:N.classes) {
 ### Review Some Errors --------------------------------------------------------- 
 
 recg.err.info <- recognition_err.table(cnn_mcc.prediction.values,
-                                        y.test,
+                                        y_test,
                                         x.test.files)
 put_log("First 30 prediction errors:
 %1", capture.output(head(recg.err.info, n = 30)))
