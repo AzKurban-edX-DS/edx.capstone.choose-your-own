@@ -6,8 +6,8 @@
 open_logfile(".basic-cnn-model.evaluation.setup")
 stopifnot(file.exists(cnn_mcc.x3d.test_set.bakup))
 
-cnn_mcc.eval.result.backup <- file.path(data.cnn_mcc.dir,
-                                       "cnn_mcc.eval.result.rds")
+cnn_mcc.model.eval.backup <- file.path(data.cnn_mcc.dir,
+                                       "cnn_mcc.model.eval.backup.RData")
 
 ### Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
 put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
@@ -158,12 +158,12 @@ open_logfile(".basic-cnn-model.evaluation")
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
-if(file.exists(cnn_mcc.eval.result.backup)) {
+if(file.exists(cnn_mcc.model.eval.backup)) {
   put_log("Loading the Multiclass Classifier model Evaluation Results...")
-  cnn_mcc.eval.result <- readRDS(cnn_mcc.eval.result.backup)
+  load(cnn_mcc.model.eval.backup)
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been loaded from the following backup file:
-%1", cnn_mcc.eval.result.backup)
+%1", cnn_mcc.model.eval.backup)
   put_end_date(start)
 } else {
   put_log("Evaluating CNN Model...")
@@ -181,46 +181,20 @@ have been loaded from the following backup file:
   # model prediction
   put_log("CNN Model: constructing predictions...")
   
-  cnn_mcc.eval.result$predicted.probs <- cnn_mcc.model |> predict(x_test) 
+  cnn_mcc.preds <- cnn_mcc.model |> predict(x_test) 
   put_log("CNN Model: predictions have been constructed.")
   put_end_date(start)
   # Time difference of 1.502232 mins
-
-  dim(cnn_mcc.eval.result$predicted.probs)
-  
-  colnames(cnn_mcc.eval.result$predicted.probs) <- Y.Labels
-  head(cnn_mcc.eval.result$predicted.probs[,1:5])
-  
-  cnn_preds.ts <- as_tensor(cnn_mcc.eval.result$predicted.probs)
-  str(cnn_preds.ts)
-  #> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
-  
-  cnn_mcc.predictions <- cnn_preds.ts |> op_argmax(2)
-  str(cnn_mcc.predictions)
-  cnn_mcc.predictions
-  #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-  dim(cnn_mcc.predictions)
-  #> [1] 684467
-  
-  cnn.prediction.values.idx <- cnn_mcc.predictions$numpy()
-  head(cnn.prediction.values.idx)
-  
-  cnn_mcc.eval.result$predicted.values <- Y.Labels[cnn.prediction.values.idx]
-  head(cnn_mcc.eval.result$predicted.values)
-  
-  cnn_mcc.eval.result$targets <- y_test
-  
-  rm(cnn_preds.ts,
-     cnn_mcc.predictions,
-     cnn.prediction.values.idx)
   
   put_log("Saving the Multiclass Classifier model Evaluation Results...")
-  saveRDS(cnn_mcc.eval.result,
-          file = cnn_mcc.eval.result.backup)
+  save(cnn_mcc.eval.result,
+       cnn_mcc.preds,
+       file = cnn_mcc.model.eval.backup)
   
   put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
-%1", cnn_mcc.eval.result.backup)
+%1", cnn_mcc.model.eval.backup)
+
 }
 
 put_log("CNN MCC Model evaluation result:
@@ -231,136 +205,153 @@ put_log("CNN MCC Model evaluation result:
 # $loss
 # [1] 0.3397374
 
+dim(cnn_mcc.preds)
 
-cnn_mcc.accuracy <- mean(cnn_mcc.eval.result$predicted.values == y_test)
+colnames(cnn_mcc.preds) <- Y.Labels
+head(cnn_mcc.preds[,1:5])
+
+cnn_preds.ts <- as_tensor(cnn_mcc.preds)
+str(cnn_preds.ts)
+#> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
+
+cnn_mcc.predictions <- cnn_preds.ts |> op_argmax(2)
+str(cnn_mcc.predictions)
+cnn_mcc.predictions
+#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
+dim(cnn_mcc.predictions)
+#> [1] 684467
+cnn.prediction.values.idx <- cnn_mcc.predictions$numpy()
+head(cnn.prediction.values.idx)
+cnn_mcc.prediction.values <- Y.Labels[cnn.prediction.values.idx]
+head(cnn_mcc.prediction.values)
+
+cnn_mcc.accuracy <- mean(cnn_mcc.prediction.values == y_test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.accuracy)
 # 0.888795259687278
 
-rm(x_test,
-   y_test,
-   y_test.cat)
 
-log_close()
 
-## Visualizing the Evaluation Results ------------------------------------------
 
-open_logfile(".dl-basic.eval-results.visualization")
+### Visualization --------------------------------------------------------------
 
-stopifnot(file.exists(model_visualization.shared.script.path))
+# Confusion Matrix data suitable for Visualization using the `cvms` package:
+# Reference: https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
+put_log("`CNN MCC` Model Evaluation: Creating a confusion matrix in a format 
+suitable for visualization using the `cvms` package...")
+cnn_mcc.conf.mx <- confusion_matrix(as.character(y_test),
+                                           as.character(cnn_mcc.prediction.values))
+put_log("The confusion matrix based on the `CNN MCC` Model evaluation results has been created:
+%1", cnn_mcc.conf.mx)  
 
-cnn_mcc.plots.dat.dir <- file.path(data.cnn_mcc.dir, "plots.dat")
+#### Accuracy by Class ---
+y_test.idx <- seq_len(length(y_test))
+# head(y_test.idx)
 
-if(!dir.exists(cnn_mcc.plots.dat.dir))
-  dir.create(cnn_mcc.plots.dat.dir)
+cnn_mcc.accuracy_by_class <- MCClassifier.accuracy.by_class(Y.Labels,
+                                                                   y_test,
+                                                                   cnn_mcc.prediction.values)
+#### ROC Curves
+# References:
+# https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.
+# https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/
 
-cnn_mcc.eval.conf.mx.img_file <- file.path(cnn_mcc.plots.dat.dir,
-                                            "dl-basic.eval.confusion-matrix.png")
+put_log("Calculating a ROC curve for each class...")
+cnn_mcc.roc_curves <- calc.roc_curves.cnn(y_test.cat,
+                                          cnn_mcc.preds,
+                                          Y.Labels)
 
-cnn_mcc.eval.plots_dat.file <- file.path(cnn_mcc.plots.dat.dir,
-                                          "dl-basic.eval.plots_dat.rds")
+#> For final test (expected value):
+#> CNN Model accuracy: 0.910364145658263
 
-#' Initialize the `plots.args` object containing argument values 
-#' for the visualization helper functions being called in the following script 
-#' about to launch:
-if(file.exists(cnn_mcc.eval.plots_dat.file)) {
-  put_log("Function `init.plots_args`:
-Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(cnn_mcc.eval.plots_dat.file)
-  
-  put_log("Function `init.plots_args`:
-The model-related plots input data object has been loaded from the following file:
-%1", cnn_mcc.eval.plots_dat.file)
-} else {
-  plots.args <- init.plots_args(targets = cnn_mcc.eval.result$targets,
-                                predicted.probabilities = cnn_mcc.eval.result$predicted.probs,
-                                predicted.values = cnn_mcc.eval.result$predicted.values,
-                                alg_name = "CNN Basic",
-                                plots_dat.file = cnn_mcc.eval.plots_dat.file,
-                                cm.export.img_file = cnn_mcc.eval.conf.mx.img_file,
-                                cm.print.image = T)
-}
+# cnn_mcc.conf.mx0 <- confusionMatrix(y_test, cnn_mcc.prediction.values)
 
-#'Run the helper script specifically designed to visualize 
-#'the model evaluation results:
-source(model_visualization.shared.script.path,
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
 
-rm(plots.args,
-   fit_rf.mtry_best)
+### Logging Accuracies by class -------------------------------------------------
 
-stopifnot(exists("plots.dat"),
-          !is.null(plots.dat$ROC),
-          !is.null(plots.dat$PCA),
-          !is.null(plots.dat$CM))
-
-if(!file.exists(cnn_mcc.eval.plots_dat.file)) {
-  put_log("Saving the model-related plots input data object to file...")
-  
-  saveRDS(plots.dat,
-          file = cnn_mcc.eval.plots_dat.file)
-  
-  put_log("The model-related plots input data object has been saved to the following file:
-%1", cnn_mcc.eval.plots_dat.file)
-}
-
-# put_log("The Basic DL Model per-class accuracy:,
-# %1", capture.output(plots.dat$PCA$acc.by_class))
+put_log("The total set of accuracies by class is as follows:
+%1", capture.output(cnn_mcc.accuracy_by_class))
 {
-  #' class  accuracy
-  #'     # 1.0000000
-  #'     $ 1.0000000
-  #'     & 1.0000000
-  #'     @ 1.0000000
-  #'     0 0.9577465
-  #'     1 0.6502347
-  #'     2 0.8673709
-  #'     3 0.9577465
-  #'     4 0.9295775
-  #'     5 0.8767606
-  #'     6 0.9213615
-  #'     7 0.9776995
-  #'     8 0.9225352
-  #'     9 0.8356808
-  #'     A 0.8685446
-  #'     B 0.9025822
-  #'     C 0.9366197
-  #'     D 0.9295775
-  #'     E 0.9284038
-  #'     F 0.9354460
-  #'     G 0.6913146
-  #'     H 0.9225352
-  #'     I 0.7453052
-  #'     J 0.9166667
-  #'     K 0.9237089
-  #'     L 0.5258216
-  #'     M 0.9565728
-  #'     N 0.9284038
-  #'     P 0.9589202
-  #'     Q 0.7746479
-  #'     R 0.9107981
-  #'     S 0.8826291
-  #'     T 0.9342723
-  #'     U 0.9589202
-  #'     V 0.8990610
-  #'     W 0.9671362
-  #'     X 0.9377934
-  #'     Y 0.8767606
-  #'     Z 0.9260563
-  invisible(NULL)
+# class  accuracy
+    #' # 1.0000000
+    #' $ 1.0000000
+    #' & 1.0000000
+    #' @ 0.9976553
+    #' 0 0.9847597
+    #' 1 0.7713951
+    #' 2 0.9331770
+    #' 3 0.9777257
+    #' 4 0.9425557
+    #' 5 0.9320047
+    #' 6 0.9531067
+    #' 7 0.9859320
+    #' 8 0.9484174
+    #' 9 0.8944900
+    #' A 0.9202814
+    #' B 0.9284877
+    #' C 0.9624853
+    #' D 0.9449004
+    #' E 0.9495897
+    #' F 0.9671747
+    #' G 0.7162954
+    #' H 0.9437280
+    #' I 0.6365768
+    #' J 0.9495897
+    #' K 0.9577960
+    #' L 0.5087925
+    #' M 0.9812427
+    #' N 0.9542790
+    #' P 0.9788980
+    #' Q 0.7760844
+    #' R 0.9495897
+    #' S 0.9120750
+    #' T 0.9577960
+    #' U 0.9671747
+    #' V 0.9495897
+    #' W 0.9812427
+    #' X 0.9554513
+    #' Y 0.8944900
+    #' Z 0.9261430
+    invisible()
 }
 
-rm(plots.dat)
 log_close()
 
-## Review Some Errors --------------------------------------------------------- 
 
-recg.err.info <- recognition_err.table(cnn_mcc.eval.result$predicted.values,
-                                        cnn_mcc.eval.result$targets,
-                                        x_test.files)
+#### Class-wise accuracy
+put_log("`CNN MCC` Model: Plotting bar chart of per-class accuracy...")
+plot_bars.accuracy.by_class(Y.Labels,
+                            cnn_mcc.accuracy_by_class[, 1],
+                            title.prefix = "CNN-based Multiclass")
+
+# Plot ROC curves
+plot(cnn_mcc.roc_curves[[1]], main = "ROC Curves for CNN-based Multiclass Classification")
+for (class.idx in 2:N.classes) {
+  lines(cnn_mcc.roc_curves[[class.idx]], col = class.idx)
+}
+
+# put_log("Plotting the confusion matrix, please wait...")
+# start <- put_start_date()
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+# 
+# dev.off()
+# plot_confusion_matrix(cnn_mcc.conf.mx$`Confusion Matrix`[[1]],
+#                       palette = "Greens",
+#                       font_counts = font(size = 3,
+# 
+#                                          color = "red"),
+#                       add_normalized = FALSE,
+#                       add_col_percentages = FALSE,
+#                       add_row_percentages = FALSE)
+# stopCluster(cl)
+# stopImplicitCluster()
+# put_end_date(start)
+
+### Review Some Errors --------------------------------------------------------- 
+
+recg.err.info <- recognition_err.table(cnn_mcc.prediction.values,
+                                        y_test,
+                                        x.test.files)
 put_log("First 30 prediction errors:
 %1", capture.output(head(recg.err.info, n = 30)))
 {
@@ -395,7 +386,6 @@ put_log("First 30 prediction errors:
   # 28         G      5     data/raw/Vaibs.HW-Chars/Train/5/3938.jpg
   # 29         6      B  data/raw/Vaibs.HW-Chars/Train/B/_1_4978.jpg
   # 30         V      U    data/raw/Vaibs.HW-Chars/Train/U/15093.jpg
-  invisible()
 }
 
 # dev.off()
@@ -404,7 +394,4 @@ print.image_grid(recg.err.info)
 # str(recg.err.info)
 
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
-
-rm(cnn_mcc.eval.result)
-
 log_close()
