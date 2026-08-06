@@ -38,6 +38,7 @@ put_log("The Pre-trained CNN-Based Multiclass Classifier Model detains:
 
 if(exists("cnn_mcc.train_history")){
   plot(cnn_mcc.train_history)
+  rm(cnn_mcc.train_history)
 } 
 
 ### Preparing Validation Data ---------------------------------------------------
@@ -87,6 +88,7 @@ x_test <- array_reshape(x3d.test_set$x.test,
                           1))
 
 x_test.files <- x3d.test_set$x.files
+rm(x3d.test_set)
 
 put_log("The Test Set has been reshaped as follows:
 %1", capture.output(shape(x_test)))
@@ -96,6 +98,8 @@ put_log("The Test Set has been reshaped as follows:
 
 y_test.chars <- class.groups$groupByClass
 #str(y_test.chars)
+
+rm(class.groups)
 
 char_n.max <- max(y_test.chars$n)
 # 853
@@ -150,6 +154,7 @@ put_log("The number of rows for each *Character Class* to be recognized in the T
   invisible()
 }
 
+rm(y_test.chars)
 log_close()
 
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
@@ -402,6 +407,7 @@ put_log("First 30 prediction errors:
 print.image_grid(recg.err.info)
 # dev.off()
 # str(recg.err.info)
+rm(recg.err.info)
 
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
