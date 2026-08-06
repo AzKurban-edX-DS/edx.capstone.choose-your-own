@@ -14,10 +14,7 @@
 open_logfile(".prepare-dataset-for-cnn-basic.model")
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.dir),
-          exists("cnn_mcc.model.file_path"),
-          exists("cnn_mcc.train_history.file_path"),
-          exists("cnn_mcc.x3d.test_set.bakup"))
+          dir.exists(data.cnn_mcc.dir))
 
 ### Init File Paths -----------------------------------------------------------
 
