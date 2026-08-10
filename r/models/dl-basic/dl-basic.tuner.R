@@ -2,12 +2,15 @@
 # BDL MCC  Model Tuning
 #%%%%%%%%%%%%%%%%%%%%%%%
 
-# Basic Deep Learning Multiclass Classifier (BDL MCC)  Model
+# Basic Deep Learning Multiclass Classifier (BDL MCC)  Model Tuning
 
 # References:
-# MNIST Handwritten Digit Recognition in Keras
-# https://nextjournal.com/gkoehler/digit-recognition-with-keras
-# ref.bib: DL_R3_E2-S7.3
+# R interface to Keras Tuner
+# https://eagerai.github.io/kerastuneR/#r-interface-to-keras-tuner
+
+# Automating neural network configuration with Keras Tuner
+# June 9, 2020 by Chris
+# https://machinecurve.com/index.php/2020/06/09/automating-neural-network-configuration-with-keras-tuner
 
 # Disable the elapsed time limit for expressions
 options(timeout = max(1000, getOption("timeout")))

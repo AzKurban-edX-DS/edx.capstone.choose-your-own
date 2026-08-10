@@ -306,7 +306,8 @@ stopifnot(file.exists(rf_retraining.best_par.script.path))
 dl_basic.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.R")
 stopifnot(file.exists(dl_basic.script.path))
 
-dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.tuner.R")
+dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, 
+                                        "dl-basic.tuner.R")
 stopifnot(file.exists(dl_basic.tuner.script.path))
 
 cnn_mcc.script.path <- file.path(models.cnn_scripts.dir, "cnn-mcc.basic.R")
@@ -316,6 +317,14 @@ cnn_mcc.evaluation.script.path <- file.path(models.cnn_scripts.dir,
                                                    "cnn-mcc.basic.eval.R")
 stopifnot(file.exists(cnn_mcc.evaluation.script.path))
 
+cnn_mcc.hypermodel.script.path <- file.path(models.cnn_scripts.dir, 
+                                            "cnn-mcc.hyper-model.R")
+stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
+
+cnn_mcc.model_tuner.script.path <- file.path(models.cnn_scripts.dir, 
+                                            "cnn-mcc.model-tuner.R")
+stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+
 cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
 
@@ -324,17 +333,14 @@ cnn_binary.ensemble.script.path <- file.path(models.cnn_scripts.dir,
 stopifnot(file.exists(cnn_binary.ensemble.script.path))
 
 ## Load Common Helper Functions ------------------------------------------------
-common_helper.funcs.file_path <- file.path(support_functions.dir, "common-helper.R")
-
-
+common_helper.funcs.file_path <- file.path(support_functions.dir, 
+                                           "common-helper.R")
 source(common_helper.funcs.file_path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
-
-
 
 ## Load Data Helper Functions --------------------------------------------------
 data_helper.funcs.file_path <- file.path(support_functions.dir, "data-helper.R")
@@ -353,6 +359,20 @@ model_helper.funcs.file_path <- file.path(support_functions.dir, "models-helper.
 
 
 source(model_helper.funcs.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+## Load `CNN_MCC.HyperModel` helper class --------------------------------------
+stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
+
+put_log("Initializing `CNN_MCC.HyperModel` helper class for tuning the 
+CNN-based Multiclass Classifier Model...")
+
+source(cnn_mcc.hypermodel.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

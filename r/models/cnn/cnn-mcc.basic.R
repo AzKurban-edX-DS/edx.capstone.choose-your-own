@@ -24,9 +24,6 @@ cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir,
 cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
                                              "cnn_mcc.train_history.backup.rds")
 
-cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
-                                        "x3d.test_set.rds")
-
 if(!dir.exists(data.cnn_mcc.checkpoints.dir))
   dir.create(data.cnn_mcc.checkpoints.dir)
 
@@ -231,7 +228,7 @@ if(file.exists(cnn_mcc.model.file_path)) {
                     # strides = list(1L, 1L),
                     activation = "relu") |>
       # layer_max_pooling_2d() |>
-      layer_max_pooling_2d(pool_size = c(2, 2)) |>
+      layer_max_pooling_2d(pool_size = c(2L, 2L)) |>
       layer_dropout(rate = 0.25) |>
       layer_flatten() |>
       layer_dense(units = 128L, activation = "relu") |>

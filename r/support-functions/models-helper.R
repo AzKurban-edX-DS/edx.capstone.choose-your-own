@@ -389,15 +389,42 @@ dl.tune_model <- function(dl.build_model,
 }
 
 cnn_mcc.tunable_model <- function(hp,
-                                   input_shape = c(28, 28, 1),
+                                   input_shape = c(28L, 28L, 1),
                                    n.outputs,
                                    dropout.rate = 0.2) {
 #> References:
 #> Hyperparameter tuning with Keras Tuner
 #> https://blog.tensorflow.org/2020/01/hyperparameter-tuning-with-keras-tuner.html  
   
-
+  model_inputs <- layer_input(shape = input_shape)
+  #layer <- model_inputs |> layer_flatten()
   
+  # Tune the NUMBER OF LAYERS dynamically
+  for (i in 1:hp$get('conv_blocs')) {
+    
+    layer <- layer |>
+      layer_conv_2d(filters = hp$get(paste0("filters_", i)),
+                    kernel_size = c(3L, 3L), 
+                    # strides = list(1L, 1L),
+                    activation = "relu") |>
+      # layer_max_pooling_2d() |>
+      layer_max_pooling_2d(pool_size = c(2, 2)) #|>
+      # Good practice: add dropout to prevent deep layers from overfitting
+#      layer_dropout(rate = dropout.rate) 
+  }
+  
+  model_outputs <- layer |> 
+    layer_dense(units = n.outputs, activation = "softmax")
+  
+  model <- keras_model(model_inputs, model_outputs)
+  
+  # For `loss` argument, Use sparse_categorical_crossentropy if labels are integers
+  model|>compile(loss = "sparse_categorical_crossentropy",
+                 optimizer =  keras3::optimizer_adamax(hp$get('learning_rate')),
+                 metrics = "accuracy"
+  )
+  
+  return(model)
 }
 
 dl_basic.tunable_model <- function(hp,

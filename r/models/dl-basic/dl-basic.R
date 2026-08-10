@@ -200,11 +200,6 @@ dl.basic.layers_dynamic.dir <- file.path(dl.basic.tuning.dir, "layers-dynamic")
 if(!dir.exists(dl.basic.layers_dynamic.dir))
   dir.create(dl.basic.layers_dynamic.dir)
 
-dl.basic.keras_tuner.dir <- file.path(dl.basic.tuning.dir, "keras-tuner")
-
-if(!dir.exists(dl.basic.keras_tuner.dir))
-  dir.create(dl.basic.keras_tuner.dir)
-
 dl.basic.checkpoints.dir <- file.path(data.dl_basic.dir,
                                             "checkpoints")
 if(!dir.exists(dl.basic.checkpoints.dir))

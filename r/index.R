@@ -166,12 +166,33 @@ data.cnn_mcc.tensorboard.logs.dir <- file.path(data.cnn_mcc.tensorboard.dir, "lo
 if(!dir.exists(data.cnn_mcc.tensorboard.logs.dir))
   dir.create(data.cnn_mcc.tensorboard.logs.dir)
 
+data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
+
+if(!dir.exists(data.cnn_mcc.tuner.dir))
+  dir.create(data.cnn_mcc.tuner.dir)
+
+cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
+                                        "x3d.test_set.rds")
+
 #### Build Basic CNN MCC Model ---------------------
 stopifnot(file.exists(cnn_mcc.script.path))
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 
 source(cnn_mcc.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+#### Tuning CNN MCC Model ---------------------
+stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+
+put_log("Tuning the CNN-based Multiclass Classifier Model...")
+
+source(cnn_mcc.model_tuner.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
