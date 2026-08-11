@@ -66,7 +66,7 @@ split3d.list <- sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
 str(split3d.list)
 
 x3d.train_set <- split3d.list$train_set
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x.train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
@@ -80,7 +80,7 @@ which contains a testing sample stored in the `x.test` variable having the follo
 rm(split3d.list)
 
 ## Prepare Flatten Datasets ----------------------------------------------------
-### Loading Split Flatten Dataset allocated 10% for the Train Set ---------------
+### Loading Split Flatten Dataset allocated 10% for the Training Set ---------------
 open_logfile(".split.10%train.balanced_subset")
 start <- put_start_date()
 
@@ -115,8 +115,8 @@ str(y0.1.train.flatten)
 
 stopifnot(nrow(x0.1.train.flatten) == length(y0.1.train.flatten))
 
-##### View of the Train Set Grouped by Class ------------------------------------
-put_log("The Train Set is balanced by set of Classes:
+##### View of the Training Set Grouped by Class ------------------------------------
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y0.1.train.flatten.groups$groupByClass, n = N.classes)))
 {  
   # A tibble: 39 × 2
@@ -271,8 +271,8 @@ str(y.train.flatten)
 stopifnot(nrow(x.train.flatten) == length(y.train.flatten))
 # 132873
 
-##### View of the Train Set Grouped by Class ------------------------------------
-put_log("The Train Set is balanced by set of Classes:
+##### View of the Training Set Grouped by Class ------------------------------------
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.train.flatten.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2

@@ -52,7 +52,7 @@ if (file.exists(k1_8nn_pca.model.backup.path)) {
   put_log("The pre-trained Model has been loaded from the following file:
 %1", k1_8nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 10% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 10% size Training Set..." )
   
   start <- put_start_date()
   #flush.console()
@@ -61,7 +61,7 @@ if (file.exists(k1_8nn_pca.model.backup.path)) {
   
 k.values <- seq_len(8)
 
-# The model will be tuned by *k* parameter ranging from 1 to 8 on 10% size sample of the Train Set.
+# The model will be tuned by *k* parameter ranging from 1 to 8 on 10% size sample of the Training Set.
 
 # Reference:
 # Dimension reduction with PCA
@@ -87,14 +87,14 @@ k.values <- seq_len(8)
     put_end_date(start)
   # Time difference of 27.84693 mins
   
-  put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
 
   put_log("Saving the pre-trained model in the backup file...")
 
     saveRDS(k1_8nn_pca.model, 
           file = k1_8nn_pca.model.backup.path)
   
-  put_log("The Model `kNN+PCA` pre-trained on the 10% size Train Set 
+  put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
 for *k* values ranged from 1 to 8 has been backed up in the following file:
 `%1`", k1_8nn_pca.model.backup.path)
 
@@ -189,7 +189,7 @@ if (file.exists(k_best.nn_pca.model.backup.path)) {
 has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 80% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 80% size Training Set..." )
   
   start <- put_start_date()
   
@@ -218,7 +218,7 @@ has been loaded from the following backup file:
   # Sun Jul 5 08:18:14 2026 
   # Time difference of 1.875516 hours
  
-  put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 80% size Training Set")
   
   put_log("Saving `kNN+PCAM`odel in the backup file: `...")
   
@@ -227,7 +227,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 1.880165 hours
   
-  put_log("The Model `kNN+PCA` trained on the 80% size Train Set has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
   
 }

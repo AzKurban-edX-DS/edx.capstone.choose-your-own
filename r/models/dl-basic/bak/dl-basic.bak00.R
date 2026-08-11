@@ -16,7 +16,7 @@ stopifnot(file.exists(my_emnist.0.1split.file_path))
 open_logfile(".rf.load-split.10%train.balanced_sample")
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -163,7 +163,7 @@ head(y_test.cat)
 
 ### Analyzing Image Data --------------------------------------------------------
 max_img_pixels <- max(rowSums(x_train))
-put_log("The maximum number of pixels in the Train Set images is as follows: %1",
+put_log("The maximum number of pixels in the Training Set images is as follows: %1",
         max_img_pixels)
 #> 593
 

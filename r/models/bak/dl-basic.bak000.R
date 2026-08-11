@@ -179,7 +179,7 @@ if (file.exists(cache_file.path)) {
   
   put_log("The `DL Keras3` model has been saved to the cache file: 
 %1", cache_file.path)
-  put_log("Training Basic DL Model task has been completed on the Train Set 
+  put_log("Training Basic DL Model task has been completed on the Training Set 
 (90% balanced sample of the dataset).")
   put_end_date(start)
   # Time difference of 38.48235 mins

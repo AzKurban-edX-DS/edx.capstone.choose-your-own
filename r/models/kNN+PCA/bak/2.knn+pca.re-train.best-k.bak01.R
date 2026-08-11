@@ -14,7 +14,7 @@ stopifnot(file.exists(my_emnist.split.file_path))
 open_logfile(".split.80%train.balanced_subset")
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -155,7 +155,7 @@ if (file.exists(k_best.nn_pca.model.backup.path)) {
 has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 80% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 80% size Training Set..." )
   
   start <- put_start_date()
 
@@ -185,7 +185,7 @@ has been loaded from the following backup file:
   # Sun Jul 5 08:18:14 2026 
   # Time difference of 1.875516 hours
  
-  put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 80% size Training Set")
   
   put_log("Saving `kNN+PCAM`odel in the backup file: `...")
   
@@ -194,7 +194,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 1.880165 hours
   
-  put_log("The Model `kNN+PCA` trained on the 80% size Train Set has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
 }
 

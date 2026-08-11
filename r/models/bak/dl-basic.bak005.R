@@ -35,7 +35,7 @@ shape(x.train.flatten)
 # shape(132873, 784)
 
 max_img_pixels <- max(rowSums(x.train.flatten))
-put_log("The maximum number of pixels in the Train Set images is as follows: %1",
+put_log("The maximum number of pixels in the Training Set images is as follows: %1",
         max_img_pixels)
 #> 593
 

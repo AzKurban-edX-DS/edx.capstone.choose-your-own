@@ -27,7 +27,7 @@ put_log("The Split Dataset List object has been loaded from the following file:
 `%1`", split3d.list.backup.file)
 
 x3d.train_set <- split3d.list$train_set
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x.train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
@@ -85,7 +85,7 @@ stopifnot(max(y.test) == 38)
 stopifnot(dim(y.test) == nrow(x.test))
 
 
-put_log("The Train Set is balanced by the set of Classes:
+put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2

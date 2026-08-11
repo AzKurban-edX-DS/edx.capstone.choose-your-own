@@ -19,7 +19,7 @@ stopifnot(file.exists(my_emnist.0.1split.file_path))
 open_logfile(".split.10%train.balanced_subset")
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -175,7 +175,7 @@ if (file.exists(k1_8nn_pca.model.backup.path)) {
   put_log("The pre-trained Model has been loaded from the following file:
 %1", k1_8nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 10% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 10% size Training Set..." )
   
   start <- put_start_date()
   #flush.console()
@@ -184,7 +184,7 @@ if (file.exists(k1_8nn_pca.model.backup.path)) {
   
 k.values <- seq_len(8)
 
-# The model will be tuned by *k* parameter ranging from 1 to 8 on 10% size sample of the Train Set.
+# The model will be tuned by *k* parameter ranging from 1 to 8 on 10% size sample of the Training Set.
 
 # Reference:
 # Dimension reduction with PCA
@@ -210,14 +210,14 @@ k.values <- seq_len(8)
     put_end_date(start)
   # Time difference of 27.84693 mins
   
-  put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
 
   put_log("Saving the pre-trained model in the backup file...")
 
     saveRDS(k1_8nn_pca.model, 
           file = k1_8nn_pca.model.backup.path)
   
-  put_log("The Model `kNN+PCA` pre-trained on the 10% size Train Set 
+  put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
 for *k* values ranged from 1 to 8 has been backed up in the following file:
 `%1`", k1_8nn_pca.model.backup.path)
 

@@ -389,7 +389,7 @@ The Split Dataset List object has been loaded from the following file:
   
   x3d.train_set <- split3d.list$train_set
   put_log("Function `prepare.train_set.x3d`:
-The Train Set has been saved in the object `x3d.train_set`, 
+The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x_train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
   # shape(132912, 28, 28)
@@ -453,7 +453,7 @@ which contains a testing sample stored in the `x_test` variable having the follo
   
   
   put_log("Function `prepare.train_set.x3d`:
-The Train Set is balanced by the set of Classes:
+The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 
   put_log("Function `prepare.train_set.x3d`:
@@ -716,7 +716,7 @@ The size of the part of the Test Set belonging to the Class `%1` is %2.",
   class.train.idx <- setdiff(class.idx, class.test.idx)
 
   put_log("Function: `binClass.get_sample.idx.balanced`: 
-The size of the part of the Train Set belonging to the Class `%1` is %2.", 
+The size of the part of the Training Set belonging to the Class `%1` is %2.", 
           class.label,
           length(class.train.idx))
 
@@ -737,7 +737,7 @@ The size of the part of the Test Set belonging to all other classes (all except 
     setdiff(other_classes.test.idx)
 
   put_log("Function: `binClass.get_sample.idx.balanced`: 
-The size of the part of the Train Set belonging to all other classes (all except `%1`) is %2.", 
+The size of the part of the Training Set belonging to all other classes (all except `%1`) is %2.", 
           class.label,
           length(other_classes.train.idx))
   
@@ -757,7 +757,7 @@ The total size of the Test Set is %1.",
     sample()
   
   put_log("Function: `binClass.get_sample.idx.balanced`: 
-The total size of the Train Set is %1.", 
+The total size of the Training Set is %1.", 
           length(train.idx))
   
   list(train.index = train.idx,
@@ -811,7 +811,7 @@ The Train and Test Sets has been created with the following dimensions:
   
   
   put_log("Function: `binClass.sample_train_test_sets.x3d`: 
-The Train Set has been reshaped as follows:
+The Training Set has been reshaped as follows:
 %1", capture.output(shape(x.train)))
   
 

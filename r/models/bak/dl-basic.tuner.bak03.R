@@ -63,7 +63,7 @@ stopifnot(max(y.test) == 38)
 stopifnot(dim(y.test) == nrow(x.test))
 
 
-put_log("The Train Set is balanced by the set of Classes:
+put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2

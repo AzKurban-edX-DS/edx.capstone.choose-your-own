@@ -43,7 +43,7 @@ y.train <- y.train.groups$classID
 
 stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
 # A tibble: 39 × 2
@@ -95,7 +95,7 @@ y.test <- y.test.groups$classID
 
 stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
 # A tibble: 39 × 2
@@ -474,16 +474,16 @@ stopImplicitCluster()
 #> [1] 
 
 put_log("Summary of predicted data made using the fine-tuned `k5NN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
+trained on a 10% sample of the`Training Set` dataset,
 optimized for a sequence of *k* values ranging from 4 to 6,
-and tested on the 10% sample from the remaining 90% data of the `Train Set`:
+and tested on the 10% sample from the remaining 90% data of the `Training Set`:
 %1", summary(y0.1_hat_knn_pca.k4_6))
 
 
 put_log("Accuracy of the predicted data for the `k5NN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
+trained on a 10% sample of the`Training Set` dataset,
 optimized for a sequence of *k* values ranging from 4 to 6,
-and tested on the 10% sample from the remaining data of the `Train Set`:
+and tested on the 10% sample from the remaining data of the `Training Set`:
 %1", xy0.1.knn_pca.k4_6.accuracy)
 #> [1] 0.868550221477314
 
@@ -526,18 +526,18 @@ if (file.exists(cache_file.path)) {
     plot(y_hat)
     
     put_log("Summary of predicted data for the `x0.1 kNN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
+trained on a 10% sample of the`Training Set` dataset,
 optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
-and tested on the %1 10% subset of the remaining 90% of the `Train Set`:
+and tested on the %1 10% subset of the remaining 90% of the `Training Set`:
 %2", n.to_ordinal(i), capture.output(summary(y_hat)))
     
     y_hat
   }) |> unlist()
   
   put_log("Summary of predicted data for the `x0.1 kNN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
+trained on a 10% sample of the`Training Set` dataset,
 optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
-and tested on the remaining 90% of the `Train Set`:
+and tested on the remaining 90% of the `Training Set`:
 %1", capture.output(summary(y_hat.k4_6nn.pca.x0.9.test)))
   
   plot(y_hat.k4_6nn.pca.x0.9.test)
@@ -562,9 +562,9 @@ xy0.9.k4_6nn.pca.accuracy
 #> 0.8677351
 
 put_log("Accuracy of the predicted data for the `x0.1 kNN+PCA` model,
-trained on a 10% sample of the`Train Set` dataset,
+trained on a 10% sample of the`Training Set` dataset,
 optimized for a sequence of *k* values ranging from 1 to 7 with a step of 2,
-and tested on the remaining 90% of the `Train Set`:
+and tested on the remaining 90% of the `Training Set`:
 %1", xy0.9.k4_6nn.pca.accuracy)
 #> [1] 0.867735081163533
 
@@ -645,15 +645,15 @@ stopCluster(cl)
 stopImplicitCluster()
 
 put_log("Summary of predicted data made using the `RF.mtry9` model,
-trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
-and tested on the 10% sample from the remaining 90% data of the `Train Set`:
+trained on a 10% sample of the`Training Set` dataset for `mtry = 9`,
+and tested on the 10% sample from the remaining 90% data of the `Training Set`:
 %1", summary(y0.1_hat_rf.mtry9),
         capture_output = 1)
 
 
 put_log("Accuracy of the predicted data for the `RF.mtry9` model,
-trained on a 10% sample of the`Train Set` dataset for `mtry = 9`,
-and tested on the 10% sample from the remaining 90% data of the `Train Set`:
+trained on a 10% sample of the`Training Set` dataset for `mtry = 9`,
+and tested on the 10% sample from the remaining 90% data of the `Training Set`:
 %1", xy0.rf.mtry9.accuracy)
 #> 0.876092421884353
 
@@ -692,7 +692,7 @@ if (file.exists(cache_file.path)) {
   
   start <- put_start_date()
   
-  put_log("Preprocessing transformation using the `Train Set` (`x0.1.train` object)...")
+  put_log("Preprocessing transformation using the `Training Set` (`x0.1.train` object)...")
   start <- put_start_date()
   pp0.1 <- preProcess(x0.1.train, method = c("nzv", "center", "scale")) 
   
@@ -753,9 +753,9 @@ fit_rf.mtry_default.tuned_result <- tune.rf(x0.1.train_nzv,
 # Time difference of the last iteration 19.8342 mins
 
 put_log("Structure of results of tuning the model for the default value of parameter `mtry (NA)`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry_default.tuned_result)))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -844,9 +844,9 @@ fit_rf.pp.mtry18.tuned_result <- tune.rf(x0.1.train.preprocessed,
                                       cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 18`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.pp.mtry18.tuned_result)))
 put_end_date(start)
 # Time difference of 17.51424 mins
@@ -886,9 +886,9 @@ fit_rf.pp.mtry25.tuned_result <- tune.rf(x0.1.train.preprocessed,
                                       cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 25`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.pp.mtry25.tuned_result)))
 put_end_date(start)
 # Time difference of 17.72548 mins
@@ -928,9 +928,9 @@ fit_rf.bin.mtry25.tuned_result <- tune.rf(x0.1.train.binarized,
                                       cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 25`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.bin.mtry25.tuned_result)))
 put_end_date(start)
 
@@ -1063,9 +1063,9 @@ fit_rf.nzv.mtry16.17.20.tuned_result <- tune.rf(x0.1.train_nzv,
                                                 cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.nzv.mtry16.17.20.tuned_result)))
 put_end_date(start)
 
@@ -1103,9 +1103,9 @@ fit_rf.mtry18_19.tuned_result <- tune.rf(x0.1.train_nzv,
                                                 cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry18_19.tuned_result)))
 put_end_date(start)
 
@@ -1143,9 +1143,9 @@ fit_rf.mtry18.tuned_result <- tune.rf(x0.1.train_nzv,
                                                 cache_file = cache_file.path)
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry18.tuned_result)))
 put_end_date(start)
 
@@ -1184,9 +1184,9 @@ fit_rf.mtry7_25.tuned_result <- tune.rf(x0.1.train_nzv,
 # Time difference of the last iteration 19.8342 mins
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry7_25.tuned_result)))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -1227,9 +1227,9 @@ fit_rf.mtry20_30.tuned_result <- tune.rf(x0.1.train_nzv,
 # Time difference of the last iteration 19.8342 mins
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry20_30.tuned_result)))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -1270,9 +1270,9 @@ fit_rf.mtry27_30.45.60.90.150.180.tuned_result <- tune.rf(x0.1.train_nzv,
 # Time difference of the last iteration 19.8342 mins
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry27_30.45.60.90.150.180.tuned_result)))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -1313,9 +1313,9 @@ fit_rf.mtry45_60_90.4.tuned_result <- tune.rf(x0.1.train_nzv,
 # Time difference of the last iteration 19.8342 mins
 
 put_log("Structure of results of tuning the model for parameter `mtry = 16, 17, 20`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset,
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset,
 pre-processed using `Nzv` method, and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(str(fit_rf.mtry45_60_90.4.tuned_result)))
 put_end_date(start)
 # Time difference of 6.260901 hours

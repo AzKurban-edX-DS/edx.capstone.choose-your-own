@@ -24,7 +24,7 @@ stopifnot(exists("fit_rf.mtry.best"),
 
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -221,7 +221,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
 }
 
 put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
-on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
+on an 80% sample of the`Training Set` dataset and tested on the remaining 20% of the `Training Set`) 
 are as follows:
 %1", capture.output(fit_rf.mmtry_best))
 put_end_date(start)

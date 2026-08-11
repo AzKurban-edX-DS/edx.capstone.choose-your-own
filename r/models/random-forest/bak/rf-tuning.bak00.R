@@ -19,7 +19,7 @@ stopifnot(file.exists(my_emnist.0.1split.file_path))
 open_logfile(".rf.load-split.10%train.balanced_sample")
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Train Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -225,8 +225,8 @@ has been saved to the following file:
 }
 
 put_log("The results of pre-training the `RF MCC` Model 
-(with the default `mtry` parameter value) on a 10% sample of the`Train Set` dataset 
-and testing on the remaining 90% of the `Train Set` are as follows:
+(with the default `mtry` parameter value) on a 10% sample of the`Training Set` dataset 
+and testing on the remaining 90% of the `Training Set` are as follows:
 %1", capture.output(fit_rf.mtry_default))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -306,7 +306,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry_tuned))
 
 {
@@ -434,7 +434,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry.fine_tuned$results[,1:3]))
 
 {
@@ -552,7 +552,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
 
 {
@@ -651,7 +651,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
 }
 
 put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
-on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
+on an 80% sample of the`Training Set` dataset and tested on the remaining 20% of the `Training Set`) 
 are as follows:
 %1", capture.output(fit_rf.mmtry_best))
 put_end_date(start)

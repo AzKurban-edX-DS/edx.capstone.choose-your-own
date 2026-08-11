@@ -30,7 +30,7 @@ if(!dir.exists(knn_pca.path))
 # Dimension reduction with PCA
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
 
-#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Train Set ----
+#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Training Set ----
 # (The training takes about half an hour)
 k.values <- seq_len(8)
 
@@ -48,7 +48,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   put_log("The pre-trained Model has been loaded from the following file:
 %1", k1_7nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 10% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 10% size Training Set..." )
   
   start <- put_start_date()
   #flush.console()
@@ -75,14 +75,14 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
     put_end_date(start)
   # Time difference of 27.84693 mins
   
-  put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
 
   put_log("Saving the pre-trained model in the backup file...")
 
     saveRDS(k1_7nn_pca.model, 
           file = k1_7nn_pca.model.backup.path)
   
-  put_log("The Model `kNN+PCA` pre-trained on the 10% size Train Set 
+  put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
 for *k* values ranged from 1 to 7 has been backed up in the following file:
 `%1`", k1_7nn_pca.model.backup.path)
 
@@ -177,7 +177,7 @@ if (file.exists(k_best.nn_pca.model.backup.path)) {
 has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 80% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 80% size Training Set..." )
   
   start <- put_start_date()
   
@@ -206,7 +206,7 @@ has been loaded from the following backup file:
   # Sun Jul 5 08:18:14 2026 
   # Time difference of 1.875516 hours
  
-  put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 80% size Training Set")
   
   put_log("Saving `kNN+PCAM`odel in the backup file: `...")
   
@@ -215,7 +215,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 1.880165 hours
   
-  put_log("The Model `kNN+PCA` trained on the 80% size Train Set has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
   
 }
@@ -520,8 +520,8 @@ has been saved to the following file:
 }
 
 put_log("The results of pre-training the `RF MCC` Model 
-(with the default `mtry` parameter value) on a 10% sample of the`Train Set` dataset 
-and testing on the remaining 90% of the `Train Set` are as follows:
+(with the default `mtry` parameter value) on a 10% sample of the`Training Set` dataset 
+and testing on the remaining 90% of the `Training Set` are as follows:
 %1", capture.output(fit_rf.mtry_default))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -670,7 +670,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry_tuned))
 
 {
@@ -809,7 +809,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry.fine_tuned$results[,1:3]))
 
 {
@@ -927,7 +927,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
 
 {
@@ -1026,7 +1026,7 @@ trained with the best `mtry` parameter value, has been loaded from the following
 }
 
 put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
-on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
+on an 80% sample of the`Training Set` dataset and tested on the remaining 20% of the `Training Set`) 
 are as follows:
 %1", capture.output(fit_rf.mmtry_best))
 put_end_date(start)

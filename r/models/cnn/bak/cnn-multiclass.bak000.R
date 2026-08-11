@@ -14,7 +14,7 @@ open_logfile(".train.cnn_multiclass-classifier.model")
 put_log("Preparing Training Data...")
 start <- put_start_date()
 
-put_log("The Train Set object (`x3d.train_set`) hase the following structure:
+put_log("The Training Set object (`x3d.train_set`) hase the following structure:
 %1", capture.output(str(x3d.train_set)))
 
 class.groups <- ds.get_classIDs.grouped(x3d.train_set$x.train)
@@ -39,7 +39,7 @@ head(y.train.cat)
 # [5,] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # [6,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
 
-put_log("Reshaping the Train Set to make it compatible with the Convolutional Neural Network (CNN)...")
+put_log("Reshaping the Training Set to make it compatible with the Convolutional Neural Network (CNN)...")
 # Add channel into the dimension
 x.train <- array_reshape(x3d.train_set$x.train, 
                              c(nrow(x3d.train_set$x.train), 
@@ -47,7 +47,7 @@ x.train <- array_reshape(x3d.train_set$x.train,
                                n.img_cols, 
                                1))
 
-put_log("The Train Set has been reshaped as follows:
+put_log("The Training Set has been reshaped as follows:
 %1", capture.output(shape(x.train)))
 # shape(132912, 28, 28)
 
@@ -61,7 +61,7 @@ char_n.max <- max(y.train.chars$n)
 char_n.max == min(y.train.chars$n)
 # TRUE
 
-put_log("The number of rows for each *Character Class* to be recognized in the Train Set is as follows:
+put_log("The number of rows for each *Character Class* to be recognized in the Training Set is as follows:
 %1", capture.output(print(y.train.chars, n = nrow(y.train.chars))))
 {
 # A tibble: 39 × 2

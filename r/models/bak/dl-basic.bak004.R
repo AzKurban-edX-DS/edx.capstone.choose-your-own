@@ -30,7 +30,7 @@ y.train <- y.train.groups$classID
 
 stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -82,7 +82,7 @@ y.test <- y.test.groups$classID
 
 stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2

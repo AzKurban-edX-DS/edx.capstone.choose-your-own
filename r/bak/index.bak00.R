@@ -198,7 +198,7 @@ split3d.list <- sample_train_test_sets.x3d(img_mx.set$img28x28mx.array,
 str(split3d.list)
 
 x3d.train_set <- split3d.list$train_set
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x.train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)

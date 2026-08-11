@@ -5,7 +5,7 @@
 ### Open log: Load Split Dataset -------------
 open_logfile(".split.10%train.balanced_subset")
 
-#### Loading Split Dataset allocated 10% for the Train Set ---------------------
+#### Loading Split Dataset allocated 10% for the Training Set ---------------------
 start <- put_start_date()
 
 
@@ -32,7 +32,7 @@ y0.1.train <- y0.1.train.groups$classID
 
 stopifnot(sum(as.character(y0.1.train) != rownames(x0.1.train)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y0.1.train.groups$groupByClass, n = N.classes)))
 {
 # A tibble: 39 × 2
@@ -169,7 +169,7 @@ if(!dir.exists(knn_pca.path)) {
 
 open_logfile(".pre-train-model.k1-7nn+pca")
 
-#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Train Set ----
+#### Tuning k1_7NN+PCA model by *k* parameter ranging from 1 to 7 on 10% size Training Set ----
 # (The training takes about half an hour)
 k.values <- seq_len(8)
 
@@ -187,7 +187,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   put_log("The pre-trained Model has been loaded from the following file:
 %1", k1_7nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 10% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 10% size Training Set..." )
   
   start <- put_start_date()
   #flush.console()
@@ -208,7 +208,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   put_end_date(start)
   # Time difference of 40.88067 mins
   
-  put_log("The Model `kNN+PCA` has been trained on the 10% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
 
   put_log("Saving the pre-trained model in the backup file...")
 
@@ -217,7 +217,7 @@ if (file.exists(k1_7nn_pca.model.backup.path)) {
   put_end_date(start)
   # Time difference of 12.37275 secs
   
-  put_log("The Model `kNN+PCA` pre-trained on the 10% size Train Set 
+  put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
 for *k* values ranged from 1 to 7 has been backed up in the following file:
 `%1`", k1_7nn_pca.model.backup.path)
 
@@ -295,7 +295,7 @@ y.train <- y.train.groups$classID
 
 stopifnot(sum(as.character(y.train) != rownames(x.train)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -347,7 +347,7 @@ y.test <- y.test.groups$classID
 
 stopifnot(sum(as.character(y.test) != rownames(x.test)) == 0)
 
-put_log("The Train Set is balanced by set of Classes:
+put_log("The Training Set is balanced by set of Classes:
 %1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -426,7 +426,7 @@ if (file.exists(k_best.nn_pca.model.backup.path)) {
 has been loaded from the following backup file:
 %1", k_best.nn_pca.model.backup.path)
 } else {
-  put_log("Training Model `kNN+PCA` on the 80% size Train Set..." )
+  put_log("Training Model `kNN+PCA` on the 80% size Training Set..." )
   
   start <- put_start_date()
   
@@ -451,7 +451,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 40.88067 mins
 
-  put_log("The Model `kNN+PCA` has been trained on the 80% size Train Set")
+  put_log("The Model `kNN+PCA` has been trained on the 80% size Training Set")
   
   put_log("Saving `kNN+PCAM`odel in the backup file: `...")
   
@@ -460,7 +460,7 @@ has been loaded from the following backup file:
   put_end_date(start)
   # Time difference of 12.37275 secs
   
-  put_log("The Model `kNN+PCA` trained on the 80% size Train Set has been cached in file:
+  put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
   
 }
@@ -676,9 +676,9 @@ has been saved to the following backup file:
 }
 
 put_log("Results summary of tuning the model for the default value of parameter `mtry`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset 
 and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(summary(fit_rf.mtry_default)))
 put_end_date(start)
 # Time difference of 6.260901 hours
@@ -824,7 +824,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry_tuned))
 
 {
@@ -963,7 +963,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry.fine_tuned$results[,1:3]))
 
 {
@@ -1081,7 +1081,7 @@ has been saved to the following backup file:
 
 
 put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset:
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
 %1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
 
 {
@@ -1153,9 +1153,9 @@ has been saved to the following backup file:
 }
 
 put_log("Results summary of tuning the model for the best value of parameter `mtry`, 
-trained using `Random Forest` method on a 10% sample of the`Train Set` dataset 
+trained using `Random Forest` method on a 10% sample of the`Training Set` dataset 
 and tested on the 10% sample from the remaining 
-90% data of the `Train Set`:
+90% data of the `Training Set`:
 %1", capture.output(summary(fit_rf.mmtry_best)))
 put_end_date(start)
 # Time difference of 6.260901 hours
