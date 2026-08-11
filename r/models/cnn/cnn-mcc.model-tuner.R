@@ -30,7 +30,7 @@ cnn_mcc.model_tuner.file_path <- file.path(data.cnn_mcc.tuner.dir,
                                             "cnn_mcc.model-tuner.rds")
 
 
-### Prepare a Train Set for the Model Training ---------------------------------
+### Prepare a Training Set for the Model Training ---------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
 
@@ -44,7 +44,7 @@ put_log("The Default Split Dataset object structure:
 x3d.train_set <- split3d.list$train_set
 # str(x3d.train_set)
 
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x_train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
@@ -69,7 +69,7 @@ rm(split3d.list,
 x3d_train <- x3d.train_set$x.train
 
 y.train.groups <- ds.get_classIDs.grouped(x3d_train)
-put_log("The Train Set is balanced by the set of Classes:
+put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -128,7 +128,7 @@ dim(y_train)
 stopifnot(min(y_train) == 0)
 stopifnot(max(y_train) == 38)
 
-put_log("Reshaping the Train Set to make it compatible
+put_log("Reshaping the Training Set to make it compatible
 with the Convolutional Neural Network (CNN)...")
 
 # Add channel into the dimension
@@ -140,7 +140,7 @@ x_train <- array_reshape(x3d_train,
 
 stopifnot(length(y_train) == nrow(x_train))
 
-put_log("The Train Set has been reshaped as follows:
+put_log("The Training Set has been reshaped as follows:
 %1", capture.output(shape(x_train)))
 # shape(132912, 28, 28)
 

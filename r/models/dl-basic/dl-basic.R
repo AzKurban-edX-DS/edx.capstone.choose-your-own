@@ -164,7 +164,7 @@ head(y_test.cat)
 
 ### Analyzing Image Data --------------------------------------------------------
 max_img_pixels <- max(rowSums(x_train))
-put_log("The maximum number of pixels in the Train Set images is as follows: %1",
+put_log("The maximum number of pixels in the Training Set images is as follows: %1",
         max_img_pixels)
 #> 593
 

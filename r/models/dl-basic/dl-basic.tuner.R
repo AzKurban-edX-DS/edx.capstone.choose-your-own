@@ -16,7 +16,7 @@
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit if needed
 
-## Prepare a Train Set for the Model Tuning ------------------------------------
+## Prepare a Training Set for the Model Tuning ------------------------------------
 open_logfile(".prepare-dataset-for-dl.model-tuning")
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path))
@@ -35,7 +35,7 @@ put_log("The Default Split Dataset object structure:
 x3d.train_set <- split3d.list$train_set
 # str(x3d.train_set)
 
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x_train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
@@ -65,7 +65,7 @@ stopifnot(min(y_train) == 0)
 stopifnot(max(y_train) == 38)
 stopifnot(dim(y_train) == nrow(x_train))
 
-put_log("The Train Set is balanced by the set of Classes:
+put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
@@ -349,7 +349,7 @@ put_log("The Default Split Dataset object structure:
 x3d.train_set <- split3d.list$train_set
 # str(x3d.train_set)
 
-put_log("The Train Set has been saved in the object `x3d.train_set`, 
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
 which contains a training sample stored in the `x_train` variable having the following shape:
 %1", capture.output(shape(x3d.train_set$x.train)))
 # shape(132912, 28, 28)
@@ -411,7 +411,7 @@ stopifnot(max(y_test) == 38)
 stopifnot(dim(y_test) == nrow(x_test))
 
 
-put_log("The Train Set is balanced by the set of Classes:
+put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2

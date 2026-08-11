@@ -208,7 +208,7 @@ rm(x_train,
    y_test)
 
 put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
-on an 80% sample of the`Train Set` dataset and tested on the remaining 20% of the `Train Set`) 
+on an 80% sample of the`Training Set` dataset and tested on the remaining 20% of the `Training Set`) 
 are as follows:
 %1", capture.output(fit_rf.mtry_best))
 put_end_date(start)
