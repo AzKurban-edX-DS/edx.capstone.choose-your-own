@@ -230,7 +230,8 @@ put_log("The BDL Model Tuner object has been saved in the following file:
   %1", dl_basic.model_tuner.file_path)
 put_end_date(start)
 
-dl_basic.tuner$results_summary()
+put_log("The DL Basic Tuning Results Summary:
+%1", capture.output(dl_basic.tuner$results_summary()))
 
 # <keras_tuner.src.tuners.randomsearch.RandomSearch object at 0x000001F3BD376D90>
 

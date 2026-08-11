@@ -195,7 +195,248 @@ put_log("The CNN MCC Model Tuner object has been saved in the following file:
   %1", cnn_mcc.model_tuner.file_path)
 put_end_date(start)
 
-cnn_mcc.tuner$results_summary()
+put_log("The DL Basic Tuning Results Summary:
+%1", capture.output(cnn_mcc.tuner$results_summary()))
+{
+# > cnn_mcc.tuner$results_summary()
+# Results summary
+# Results in data/models/dl.keras3/cnn/multiclass/tuner\CNN-MCC.Tuning
+# Showing 10 best trials
+# Objective(name="val_accuracy", direction="max")
+# 
+# Trial 0234 summary
+# Hyperparameters:
+#   conv_blocs: 5
+# filters_1: 192
+# filters_2: 64
+# filters_3: 224
+# dropout2: 0.5
+# hidden_size: 448
+# dropout1: 0.5
+# learning_rate: 0.003937767129539985
+# filters_4: 128
+# filters_5: 32
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 2
+# tuner/round: 2
+# tuner/trial_id: 0228
+# Score: 0.8739064931869507
+# 
+# Trial 0488 summary
+# Hyperparameters:
+#   conv_blocs: 4
+# filters_1: 224
+# filters_2: 32
+# filters_3: 160
+# dropout2: 0.5
+# hidden_size: 320
+# dropout1: 0.2
+# learning_rate: 0.002904610757828663
+# filters_4: 32
+# filters_5: 128
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 2
+# tuner/round: 2
+# tuner/trial_id: 0483
+# Score: 0.8739064931869507
+# 
+# Trial 0389 summary
+# Hyperparameters:
+#   conv_blocs: 2
+# filters_1: 128
+# filters_2: 96
+# filters_3: 160
+# dropout2: 0.4
+# hidden_size: 416
+# dropout1: 0.5
+# learning_rate: 0.00518044142551884
+# filters_4: 224
+# filters_5: 256
+# tuner/epochs: 12
+# tuner/initial_epoch: 4
+# tuner/bracket: 4
+# tuner/round: 2
+# tuner/trial_id: 0357
+# Score: 0.8736048340797424
+# 
+# Trial 0401 summary
+# Hyperparameters:
+#   conv_blocs: 2
+# filters_1: 128
+# filters_2: 96
+# filters_3: 160
+# dropout2: 0.4
+# hidden_size: 416
+# dropout1: 0.5
+# learning_rate: 0.00518044142551884
+# filters_4: 224
+# filters_5: 256
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 4
+# tuner/round: 4
+# tuner/trial_id: 0396
+# Score: 0.8736048340797424
+# 
+# Trial 0235 summary
+# Hyperparameters:
+#   conv_blocs: 2
+# filters_1: 160
+# filters_2: 256
+# filters_3: 224
+# dropout2: 0.5
+# hidden_size: 464
+# dropout1: 0.30000000000000004
+# learning_rate: 0.007950871082139998
+# filters_4: 32
+# filters_5: 192
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 2
+# tuner/round: 2
+# tuner/trial_id: 0230
+# Score: 0.8720965385437012
+# 
+# Trial 0400 summary
+# Hyperparameters:
+#   conv_blocs: 2
+# filters_1: 32
+# filters_2: 224
+# filters_3: 224
+# dropout2: 0.2
+# hidden_size: 432
+# dropout1: 0.5
+# learning_rate: 0.0035013676680471597
+# filters_4: 96
+# filters_5: 256
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 4
+# tuner/round: 4
+# tuner/trial_id: 0398
+# Score: 0.8720965385437012
+# 
+# Trial 0142 summary
+# Hyperparameters:
+#   conv_blocs: 4
+# filters_1: 224
+# filters_2: 192
+# filters_3: 128
+# dropout2: 0.4
+# hidden_size: 432
+# dropout1: 0.30000000000000004
+# learning_rate: 0.004840503032482819
+# filters_4: 256
+# filters_5: 64
+# tuner/epochs: 34
+# tuner/initial_epoch: 12
+# tuner/bracket: 4
+# tuner/round: 3
+# tuner/trial_id: 0134
+# Score: 0.8717948794364929
+# 
+# Trial 0245 summary
+# Hyperparameters:
+#   conv_blocs: 2
+# filters_1: 224
+# filters_2: 224
+# filters_3: 160
+# dropout2: 0.5
+# hidden_size: 496
+# dropout1: 0.2
+# learning_rate: 0.007272185647755973
+# filters_4: 128
+# filters_5: 32
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 1
+# tuner/round: 1
+# tuner/trial_id: 0241
+# Score: 0.8717948794364929
+# 
+# Trial 0398 summary
+# Hyperparameters:
+#   conv_blocs: 2
+# filters_1: 32
+# filters_2: 224
+# filters_3: 224
+# dropout2: 0.2
+# hidden_size: 432
+# dropout1: 0.5
+# learning_rate: 0.0035013676680471597
+# filters_4: 96
+# filters_5: 256
+# tuner/epochs: 34
+# tuner/initial_epoch: 12
+# tuner/bracket: 4
+# tuner/round: 3
+# tuner/trial_id: 0388
+# Score: 0.8717948794364929
+# 
+# Trial 0483 summary
+# Hyperparameters:
+#   conv_blocs: 4
+# filters_1: 224
+# filters_2: 32
+# filters_3: 160
+# dropout2: 0.5
+# hidden_size: 320
+# dropout1: 0.2
+# learning_rate: 0.002904610757828663
+# filters_4: 32
+# filters_5: 128
+# tuner/epochs: 34
+# tuner/initial_epoch: 12
+# tuner/bracket: 2
+# tuner/round: 1
+# tuner/trial_id: 0476
+# Score: 0.8708899021148682
+invisible()
+}
+
+class(cnn_mcc.tuner)
+# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
+# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
+# [5] "python.builtin.object"                      
+
+# This prints a summary of the search space and lists the top trial results
+cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
+# the list will show the plot and the data.frame of tuning results
+
+put_log("The CNN MCC Tuning Results:
+%1", capture.output(cnn_mcc.tuner.result))
+
+
 
 log_close()
+# Log Elapsed Time: 0 18:30:48
+
+# Device name	azlaptop
+# Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
+# Installed RAM	32.0 GB (31.7 GB usable)
+# Device ID	949CF58A-EEAA-4265-B971-A9B9EABA779A
+# Product ID	00331-20300-00000-AA237
+# System type	64-bit operating system, x64-based processor
+# Pen and touch	No pen or touch input is available for this display
+
+# Edition	Windows 11 Pro
+# Version	25H2
+# Installed on	‎12/‎14/‎2024
+# OS build	26200.8973
+# Experience	Windows Feature Experience Pack 1000.26100.344.0
+
+
+
+
+
+
+
+
+
+
+
+
+
 
