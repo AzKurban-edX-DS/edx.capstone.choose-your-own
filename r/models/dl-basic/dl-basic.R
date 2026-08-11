@@ -20,13 +20,22 @@ start <- put_start_date()
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
 ds <- load_datasets(my_emnist.split.file_path)
-str(ds)
+
+put_log("The Split Flatten Dataset has the following structure:
+%1", capture.output(str(ds)))
+
+#### Preparing a Training Set -------------------------------------------------- 
 
 x_train <- ds$train$x
 
+y_train <- ds$train$class_groups$classID
+
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(nrow(x_train) == length(y_train))
+
+##### Size of the Training Set by Class ----------------------------------------
 put_log("The Train set is balanced with respect to the set of classes:
 %1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
-{
   # # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
@@ -69,16 +78,17 @@ put_log("The Train set is balanced with respect to the set of classes:
   # 37 X        3407
   # 38 Y        3407
   # 39 Z        3407
-  invisible(NULL)
-}
 
-y_train <- ds$train$class_groups$classID
-
-stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
-stopifnot(nrow(x_train) == length(y_train))
-
+#### Preparing a Test Set ------------------------------------------------------ 
 x_test <- ds$test$x
 
+y_test <- ds$test$class_groups$classID
+
+stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
+stopifnot(nrow(x_test) == length(y_test))
+
+
+##### Size of the Test Set by Class --------------------------------------------
 put_log("The Test set is balanced with respect to the set of classes:
 %1", capture.output(print(ds$test$class_groups$groupByClass, n = N.classes)))
 {
@@ -126,11 +136,6 @@ put_log("The Test set is balanced with respect to the set of classes:
   # 39 Z         852
   invisible(NULL)
 }
-
-y_test <- ds$test$class_groups$classID
-
-stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
-stopifnot(nrow(x_test) == length(y_test))
 
 rm(ds)
 log_close()
@@ -473,9 +478,9 @@ saveRDS(plots.dat,
 put_log("The model-related plots input data object has been saved to the following file:
 %1", dl_basic.eval.plots_dat.file)
 
-# put_log("The Basic DL Model per-class accuracy:,
-# %1", capture.output(plots.dat$PCA$acc.by_class))
-{
+### The Model Per-Class Accuracy -----------------------------------------------
+put_log("The Basic DL Model per-class accuracy:,
+%1", capture.output(plots.dat$PCA$acc.by_class))
 #' class  accuracy
 #'     # 1.0000000
 #'     $ 1.0000000
@@ -516,8 +521,6 @@ put_log("The model-related plots input data object has been saved to the followi
 #'     X 0.9377934
 #'     Y 0.8767606
 #'     Z 0.9260563
-  invisible(NULL)
-}
 
 rm(plots.dat)
 log_close()
