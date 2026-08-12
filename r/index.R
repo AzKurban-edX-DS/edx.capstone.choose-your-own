@@ -137,9 +137,7 @@ source(dl_basic.tuner.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## CNN-Based Classifier Models -------------------------------------------------
-
-### CNN-based Multiclass Classifier (CNN MCC) Model ----------------------------
+## CNN-based Multiclass Classifier (CNN MCC) Model ----------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
 #### Initial Paths -------------------------------------------------------------
@@ -201,7 +199,7 @@ source(cnn_mcc.model_tuner.script.path,
 
 log_close()
 
-### CNN-based Binary Classifier Models -----------------------------------------
+## CNN-based Binary Classifier Models -----------------------------------------
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
 
 data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
@@ -215,17 +213,17 @@ data.cnn.binary.models.dir <- file.path(data.cnn.binary.dir, "models")
 if(!dir.exists(data.cnn.binary.models.dir))
   dir.create(data.cnn.binary.models.dir)
 
-data.cnn.binary.models.checkpoints.dir <- file.path(data.cnn.binary.models.dir, 
+data.cnn.binary.models.checkpoints.dir <- file.path(data.cnn.binary.models.dir,
                                                     "checkpoints")
 if(!dir.exists(data.cnn.binary.models.checkpoints.dir))
   dir.create(data.cnn.binary.models.checkpoints.dir)
 
-data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir, 
+data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir,
                                                    "evaluation")
 if(!dir.exists(data.cnn.binary.models.evaluation.dir))
   dir.create(data.cnn.binary.models.evaluation.dir)
 
-source(cnn_binary.r_scripts.dir, 
+source(cnn_binary.r_scripts.dir,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

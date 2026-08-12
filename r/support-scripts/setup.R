@@ -173,6 +173,8 @@ source(log_func_script.file_path,
 
 ## Init Project Directories ----------------------------------------------------
 
+### `R` Script Directories -----------------------------------------------------
+
 put_log("Root directory for the `R` scripts:
 %1", r_scripts.dir)
 
@@ -207,10 +209,31 @@ put_log("Root directory for the Basic DL-Based model's scripts:
 %1", models.dl_basic.scripts.dir)
 
 models.cnn_scripts.dir <- file.path(model_scripts.dir, "cnn")
-stopifnot(dir.exists(model_scripts.dir))
+stopifnot(dir.exists(models.cnn_scripts.dir))
+
+put_log("Root directory for the `CNN-Based` model's scripts:
+%1", models.cnn_scripts.dir)
+#---
+
+cnn._binary.scripts.dir <- file.path(models.cnn_scripts.dir, "binary")
+stopifnot(dir.exists(cnn._binary.scripts.dir))
 
 put_log("Root directory for the `CNN-Based MCC` model's scripts:
-%1", models.cnn_scripts.dir)
+%1", cnn._binary.scripts.dir)
+
+cnn_mcc.scripts.dir <- file.path(models.cnn_scripts.dir, "mcc")
+stopifnot(dir.exists(cnn_mcc.scripts.dir))
+
+put_log("Root directory for the `CNN-Based MCC` model's scripts:
+%1", cnn_mcc.scripts.dir)
+
+cnn_mcc.tuner_scripts.dir <- file.path(cnn_mcc.scripts.dir, "tuner")
+stopifnot(dir.exists(cnn_mcc.tuner_scripts.dir))
+
+put_log("Root directory for the `CNN-Based MCC` model tuner's scripts:
+%1", cnn_mcc.tuner_scripts.dir)
+
+### Data Directories -----------------------------------------------------------
 
 data.dir <- "data"
 raw_data.dir <- file.path(data.dir, "raw")
@@ -310,25 +333,25 @@ dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir,
                                         "dl-basic.tuner.R")
 stopifnot(file.exists(dl_basic.tuner.script.path))
 
-cnn_mcc.script.path <- file.path(models.cnn_scripts.dir, "cnn-mcc.basic.R")
+cnn_mcc.script.path <- file.path(cnn_mcc.scripts.dir, "cnn-mcc.basic.R")
 stopifnot(file.exists(cnn_mcc.script.path))
 
-cnn_mcc.evaluation.script.path <- file.path(models.cnn_scripts.dir, 
-                                                   "cnn-mcc.basic.eval.R")
+cnn_mcc.evaluation.script.path <- file.path(cnn_mcc.scripts.dir, 
+                                            "cnn-mcc.basic.eval.R")
 stopifnot(file.exists(cnn_mcc.evaluation.script.path))
 
-cnn_mcc.hypermodel.script.path <- file.path(models.cnn_scripts.dir, 
+cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner_scripts.dir, 
                                             "cnn-mcc.hyper-model.R")
 stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
 
-cnn_mcc.model_tuner.script.path <- file.path(models.cnn_scripts.dir, 
+cnn_mcc.model_tuner.script.path <- file.path(cnn_mcc.tuner_scripts.dir, 
                                             "cnn-mcc.model-tuner.R")
 stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
 
-cnn_binary.r_scripts.dir <- file.path(models.cnn_scripts.dir, "cnn-binary.R")
+cnn_binary.r_scripts.dir <- file.path(cnn._binary.scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
 
-cnn_binary.ensemble.script.path <- file.path(models.cnn_scripts.dir, 
+cnn_binary.ensemble.script.path <- file.path(cnn._binary.scripts.dir, 
                                               "cnn-binary.ensemble.R")
 stopifnot(file.exists(cnn_binary.ensemble.script.path))
 
