@@ -180,13 +180,17 @@ cnn_mcc.callbacks <- list(
                             save_best_only = TRUE,
                             verbose = 1))
 
-cnn_mcc.tuner |> fit_tuner(x = x_train,
-                           y = y_train,
-                           callbacks = cnn_mcc.callbacks,
-                           validation_split = 0.2,
-                           epochs = 100)
+# cnn_mcc.tuner |> fit_tuner(x = x_train,
+#                            y = y_train,
+#                            callbacks = cnn_mcc.callbacks,
+#                            validation_split = 0.2,
+#                            epochs = 100)
 
-# cnn_mcc.tuner$search()
+cnn_mcc.tuner$search(x = x_train,
+                     y = y_train,
+                     callbacks = cnn_mcc.callbacks,
+                     validation_split = 0.2,
+                     epochs = 30)
 
 # put_log("Saving the CNN MCC Model Tuner object...")
 # saveRDS(cnn_mcc.tuner,
