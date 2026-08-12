@@ -33,29 +33,6 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     build = function(self, hp) { # [2]
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
-      
-      #layer <- input_layer #|>
-        # layer_conv_2d(filters = 32L,
-        #               kernel_size = c(3L, 3L), 
-        #               # strides = list(1L, 1L),
-        #               activation = "relu") |>
-        # # layer_max_pooling_2d() |>
-        # layer_max_pooling_2d(pool_size = c(2, 2)) |>
-        # # layer_dropout(rate = 0.25) |>
-        # layer_conv_2d(filters = 64L, 
-        #               kernel_size = c(3L, 3L),
-        #               # strides = list(1L, 1L),
-        #               activation = "relu") |>
-        # # layer_max_pooling_2d() |>
-        # layer_max_pooling_2d(pool_size = c(2L, 2L)) # |>
-        #layer_dropout(rate = 0.25) |>
-        # layer_flatten() |>
-        # layer_dense(units = 128L, activation = "relu") |>
-        # layer_dropout(rate = 0.5) #|>
-        #layer_dense(units = N.classes, activation = "softmax")
-
-
-      # for (i in 1:2) {
 
       for (i in 1:hp$Int('conv_blocs',
                          min_value = 2,
@@ -79,23 +56,12 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
 
           layer <- layer |>
             layer_max_pooling_2d()
-          
-          # if (hp$Choice(paste0('pooling_', i),
-          #               values = c('avg', 'max')) == 'max') {
-          #   layer <- layer |>
-          #     layer_max_pooling_2d()
-          # 
-          # } else {
-          #   layer <- layer |>
-          #     layer_average_pooling_2d(pool_size = c(2L, 2L))
-          # }
 
         }
 
       }
 
       layer <- layer |>
-        # layer_global_average_pooling_2d() |>
         layer_dropout(hp$Float('dropout1',
                                min_value = 0.1,
                                max_value = 0.5,

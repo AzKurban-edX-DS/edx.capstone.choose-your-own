@@ -186,16 +186,24 @@ cnn_mcc.tuner |> fit_tuner(x = x_train,
                            validation_split = 0.2,
                            epochs = 100)
 
+# cnn_mcc.tuner$search()
 
-put_log("Saving the CNN MCC Model Tuner object...")
-saveRDS(cnn_mcc.tuner,
-        file = cnn_mcc.model_tuner.file_path)
-
-put_log("The CNN MCC Model Tuner object has been saved in the following file:
-  %1", cnn_mcc.model_tuner.file_path)
+# put_log("Saving the CNN MCC Model Tuner object...")
+# saveRDS(cnn_mcc.tuner,
+#         file = cnn_mcc.model_tuner.file_path)
+# 
+# put_log("The CNN MCC Model Tuner object has been saved in the following file:
+#   %1", cnn_mcc.model_tuner.file_path)
 put_end_date(start)
 
-put_log("The DL Basic Tuning Results Summary:
+class(cnn_mcc.tuner)
+# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
+# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
+# [5] "python.builtin.object"                      
+
+
+### CNN MCC Model Tuning Results Summary ---------------------------------------
+put_log("The Model Tuning Results Summary:
 %1", capture.output(cnn_mcc.tuner$results_summary()))
 {
 # > cnn_mcc.tuner$results_summary()
@@ -395,12 +403,37 @@ put_log("The DL Basic Tuning Results Summary:
 # Score: 0.8708899021148682
 invisible()
 }
+### CNN MCC Model Tuning Results: Best Trial Summary ---------------------------
 
-class(cnn_mcc.tuner)
-# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
-# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
-# [5] "python.builtin.object"                      
+# This prints the top trials, their hyperparameters, and execution details
+put_log("CNN MCC Model Tuning Results, Best Trial Summary:
+%1", capture.output(results_summary(cnn_mcc.tuner,
+                                    num_trials = 1L)))
+# Results summary
+# Results in data/models/dl.keras3/cnn/multiclass/tuner\CNN-MCC.Tuning
+# Showing 1 best trials
+# Objective(name="val_accuracy", direction="max")
+# 
+# Trial 0234 summary
+# Hyperparameters:
+#   conv_blocs: 5
+# filters_1: 192
+# filters_2: 64
+# filters_3: 224
+# dropout2: 0.5
+# hidden_size: 448
+# dropout1: 0.5
+# learning_rate: 0.003937767129539985
+# filters_4: 128
+# filters_5: 32
+# tuner/epochs: 100
+# tuner/initial_epoch: 34
+# tuner/bracket: 2
+# tuner/round: 2
+# tuner/trial_id: 0228
+# Score: 0.8739064931869507
 
+### CNN MCC Model Tuning Results Visualization ---------------------------------
 # This prints a summary of the search space and lists the top trial results
 cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
 # the list will show the plot and the data.frame of tuning results
@@ -409,9 +442,11 @@ put_log("The CNN MCC Tuning Results:
 %1", capture.output(cnn_mcc.tuner.result))
 
 
-
 log_close()
 # Log Elapsed Time: 0 18:30:48
+
+## 
+
 
 # Device name	azlaptop
 # Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
