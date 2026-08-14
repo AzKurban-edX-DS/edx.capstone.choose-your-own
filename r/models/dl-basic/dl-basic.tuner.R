@@ -222,14 +222,14 @@ put_end_date(start)
 # Best val_accuracy So Far: 0.8961053490638733
 # Total elapsed time: 03h 38m 12s
 
-put_log("Saving the BDL Model Tuner object...")
-saveRDS(dl_basic.tuner,
-        file = dl_basic.model_tuner.file_path)
-
-put_log("The BDL Model Tuner object has been saved in the following file:
-  %1", dl_basic.model_tuner.file_path)
-put_end_date(start)
-
+# put_log("Saving the BDL Model Tuner object...")
+# saveRDS(dl_basic.tuner,
+#         file = dl_basic.model_tuner.file_path)
+# 
+# put_log("The BDL Model Tuner object has been saved in the following file:
+#   %1", dl_basic.model_tuner.file_path)
+# put_end_date(start)
+# 
 put_log("The DL Basic Tuning Results Summary:
 %1", capture.output(dl_basic.tuner$results_summary()))
 
@@ -346,6 +346,8 @@ split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
 put_log("The Default Split Dataset object structure:
 %1", capture.output(str(split3d.list)))
 
+### Prepare a Training Set for Re-training the Best Model ----------------------
+
 x3d.train_set <- split3d.list$train_set
 # str(x3d.train_set)
 
@@ -396,21 +398,8 @@ stopifnot(min(y_train) == 0)
 stopifnot(max(y_train) == 38)
 stopifnot(dim(y_train) == nrow(x_train))
 
-y_test.groups <- ds.get_classIDs.grouped(x_test)
-y_test <- y_test.groups$classID
 
-# y_test <- y_test[seq(1e4)]
-stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
-
-y_test <- as.array(as.integer(y_test) - 1)
-str(y_test)
-dim(y_test)
-
-stopifnot(min(y_test) == 0)
-stopifnot(max(y_test) == 38)
-stopifnot(dim(y_test) == nrow(x_test))
-
-
+#### Size of the Training Set by Class ----------------------------------------
 put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
@@ -459,6 +448,24 @@ put_log("The Training Set is balanced by the set of Classes:
   invisible(NULL)
 }
 
+### Prepare a Test Set for the Best Model Evaluation ---------------------------
+
+
+y_test.groups <- ds.get_classIDs.grouped(x_test)
+y_test <- y_test.groups$classID
+
+# y_test <- y_test[seq(1e4)]
+stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
+
+y_test <- as.array(as.integer(y_test) - 1)
+str(y_test)
+dim(y_test)
+
+stopifnot(min(y_test) == 0)
+stopifnot(max(y_test) == 38)
+stopifnot(dim(y_test) == nrow(x_test))
+
+#### Size of the Test Set by Class ---------------------------------------------
 put_log("The Test Set is balanced by the set of Classes:
 %1", capture.output(print(y_test.groups$groupByClass, n = N.classes)))
 {

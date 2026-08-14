@@ -6,9 +6,13 @@
 open_logfile(".setup.cnn_mcc.model-tuner")
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.tuner.dir))
+          dir.exists(data.cnn_mcc.tuner.best.dir),
+          exists("cnn_mcc.best_model.file"))
 
 ### Init File Paths -----------------------------------------------------------
+
+cnn_mcc.tuner.best.plot_img.file <- file.path(data.cnn_mcc.tuner.best.dir,
+                                               "cnn-mcc.tuner.best-model.png")
 
 data.cnn_mcc.tuner.checkpoints.dir <- file.path(data.cnn_mcc.tuner.dir, "checkpoints")
 
@@ -16,19 +20,9 @@ if(!dir.exists(data.cnn_mcc.tuner.checkpoints.dir))
   dir.create(data.cnn_mcc.tuner.checkpoints.dir)
 
 
-dl.basic.keras_tuner.dir <- file.path(dl.basic.tuning.dir, "keras-tuner")
-
-if(!dir.exists(dl.basic.keras_tuner.dir))
-  dir.create(dl.basic.keras_tuner.dir)
-
-
 cnn_mcc.checkpoint.tuner.file_path <- 
   file.path(data.cnn_mcc.tuner.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
-
-cnn_mcc.model_tuner.file_path <- file.path(data.cnn_mcc.tuner.dir, 
-                                            "cnn_mcc.model-tuner.rds")
-
 
 ### Prepare a Training Set for the Model Training ---------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
@@ -191,20 +185,6 @@ cnn_mcc.tuner |> fit_tuner(x = x_train,
 #                      callbacks = cnn_mcc.callbacks,
 #                      validation_split = 0.2,
 #                      epochs = 30)
-
-# put_log("Saving the CNN MCC Model Tuner object...")
-# saveRDS(cnn_mcc.tuner,
-#         file = cnn_mcc.model_tuner.file_path)
-# 
-# put_log("The CNN MCC Model Tuner object has been saved in the following file:
-#   %1", cnn_mcc.model_tuner.file_path)
-put_end_date(start)
-
-class(cnn_mcc.tuner)
-# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
-# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
-# [5] "python.builtin.object"                      
-
 
 ### CNN MCC Model Tuning Results Summary ---------------------------------------
 put_log("The Model Tuning Results Summary:
@@ -445,27 +425,56 @@ cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
 put_log("The CNN MCC Tuning Results:
 %1", capture.output(cnn_mcc.tuner.result))
 
+### Retrieving the Best Model --------------------------------------------------
+
+# Retrieve the best model from the search
+
+# put_log("Loading the CNN MCC Model Tuner object...")
+# cnn_mcc.tuner <- readRDS(cnn_mcc.best_model.file)
+# 
+# put_log("The CNN MCC Model Tuner object has been loaded from the following file:
+#   %1", cnn_mcc.best_model.file)
+# put_end_date(start)
+
+cnn_mcc.tuner
+
+class(cnn_mcc.tuner)
+# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
+# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
+# [5] "python.builtin.object"                      
+
+cnn_mcc.best_models <- kerastuneR::get_best_models(tuner = cnn_mcc.tuner, num_models = 1L)
+cnn_mcc.best_model <- cnn_mcc.best_models[[1]]
+rm(cnn_mcc.best_models)
+
+put_log("Saving the CNN MCC Best Model...")
+keras3::save_model(cnn_mcc.best_model,
+                       file = cnn_mcc.best_model.file)
+
+put_log("The CNN MCC Best Model object has been saved in the following file:
+  %1", cnn_mcc.best_model.file)
+put_end_date(start)
+
+cnn_mcc.best_model$summary()
+# View completed epochs of this best model
+# If restore_best_weights = TRUE, this tells you the optimal epoch
+# best_epoch <- cnn_mcc.best_model$history$params$epochs
+
+cnn_mcc.best_model |> plot_keras_model(to_file = cnn_mcc.tuner.best.plot_img.file,
+                                        show_shapes = TRUE)
+
+cnn_mcc.tuner.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
+cnn_mcc.best_trial <- cnn_mcc.tuner.best_trials[[1]]
+cnn_mcc.best_trial$summary()
+cnn_mcc.best_trial$best_step
+
+cnn_mcc.best_trial$metrics$get_history('val_accuracy')
+
+# rm(cnn_mcc.tuner.best_trials,
+#    cnn_mcc.best_trial)
 
 log_close()
-# Log Elapsed Time: 0 18:30:48
-
-## 
-
-
-# Device name	azlaptop
-# Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
-# Installed RAM	32.0 GB (31.7 GB usable)
-# Device ID	949CF58A-EEAA-4265-B971-A9B9EABA779A
-# Product ID	00331-20300-00000-AA237
-# System type	64-bit operating system, x64-based processor
-# Pen and touch	No pen or touch input is available for this display
-
-# Edition	Windows 11 Pro
-# Version	25H2
-# Installed on	‎12/‎14/‎2024
-# OS build	26200.8973
-# Experience	Windows Feature Experience Pack 1000.26100.344.0
-
+# Log Elapsed Time: 18:30:48
 
 
 

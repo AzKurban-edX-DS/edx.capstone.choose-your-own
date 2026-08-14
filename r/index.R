@@ -2,6 +2,18 @@
 # Main (Index) Script
 #%%%%%%%%%%%%%%%%%%%%
 
+## The Device (laptop) Info Where the Project was Build & Tested ---------------
+
+# Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
+# Installed RAM	32.0 GB (31.7 GB usable)
+# System type	64-bit operating system, x64-based processor
+
+# Edition	Windows 11 Pro
+# Version	25H2
+# Installed on	‎12/‎14/‎2024
+# OS build	26200.8973
+# Experience	Windows Feature Experience Pack 1000.26100.344.0
+
 ## Setup -----------------------------------------------------------------------
 
 r_scripts.dir <- "r"
@@ -149,11 +161,6 @@ data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "multiclass")
 if(!dir.exists(data.cnn_mcc.dir))
   dir.create(data.cnn_mcc.dir)
 
-data.cnn_mcc.checkpoints.dir <- file.path(data.cnn_mcc.dir, "checkpoints")
-
-if(!dir.exists(data.cnn_mcc.checkpoints.dir))
-  dir.create(data.cnn_mcc.checkpoints.dir)
-
 data.cnn_mcc.tensorboard.dir <- file.path(data.cnn_mcc.dir, "tensorboard")
 
 if(!dir.exists(data.cnn_mcc.tensorboard.dir))
@@ -168,6 +175,17 @@ data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
 
 if(!dir.exists(data.cnn_mcc.tuner.dir))
   dir.create(data.cnn_mcc.tuner.dir)
+
+data.cnn_mcc.tuner.best.dir <- file.path(data.cnn_mcc.tuner.dir, "best")
+
+if(!dir.exists(data.cnn_mcc.tuner.best.dir))
+  dir.create(data.cnn_mcc.tuner.best.dir)
+
+cnn_mcc.best_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
+                                     "cnn_mcc.best-model.keras")
+
+cnn_mcc.final_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
+                                     "cnn_mcc.final-model.keras")
 
 cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
                                         "x3d.test_set.rds")

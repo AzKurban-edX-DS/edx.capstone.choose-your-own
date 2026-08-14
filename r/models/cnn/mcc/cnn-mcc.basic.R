@@ -24,6 +24,8 @@ cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir,
 cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
                                              "cnn_mcc.train_history.backup.rds")
 
+data.cnn_mcc.checkpoints.dir <- file.path(data.cnn_mcc.dir, "checkpoints")
+
 if(!dir.exists(data.cnn_mcc.checkpoints.dir))
   dir.create(data.cnn_mcc.checkpoints.dir)
 

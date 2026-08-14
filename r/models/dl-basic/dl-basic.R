@@ -27,7 +27,6 @@ put_log("The Split Flatten Dataset has the following structure:
 #### Preparing a Training Set -------------------------------------------------- 
 
 x_train <- ds$train$x
-
 y_train <- ds$train$class_groups$classID
 
 stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
