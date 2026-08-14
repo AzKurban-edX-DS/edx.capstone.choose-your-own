@@ -3,8 +3,9 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".basic-cnn-model.eval.setup")
-stopifnot(file.exists(cnn_mcc.x3d.test_set.bakup))
+open_logfile(".tuner.cnn-mcc.best-model.eval.setup")
+stopifnot(file.exists(cnn_mcc.final_model.file),
+          file.exists(cnn_mcc.x3d.test_set.bakup))
 
 cnn_mcc.eval.result.backup <- file.path(data.cnn_mcc.dir,
                                        "cnn_mcc.eval.result.rds")
@@ -16,7 +17,7 @@ if (!exists("cnn_mcc.model")) {
   stopifnot(file.exists(cnn_mcc.model.file_path))
   
   put_log("Loading the pre-trained CNN-based Multiclass Classifier model from the backup file...")
-  cnn_mcc.model <- keras3::load_model(cnn_mcc.model.file_path)
+  cnn_mcc.model <- load_model(cnn_mcc.model.file_path)
   put_log("The pre-trained CNN-based Multiclass Classifier model 
 has been loaded from the following backup file:
 %1", cnn_mcc.model.file_path)
@@ -158,7 +159,7 @@ rm(y_test.chars)
 log_close()
 
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
-open_logfile(".basic-cnn-model.evaluation")
+open_logfile(".tuner.cnn-mcc.best-model.evaluation")
 
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
@@ -249,7 +250,7 @@ log_close()
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
-open_logfile(".basic-cnn-model.eval.visualization")
+open_logfile(".tuner.cnn-mcc.best-model.eval.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
@@ -359,6 +360,7 @@ if(!file.exists(cnn_mcc.eval.plots_dat.file)) {
 }
 
 rm(plots.dat)
+log_close()
 
 ## Review Some Errors --------------------------------------------------------- 
 

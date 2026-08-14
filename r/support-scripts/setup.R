@@ -348,9 +348,17 @@ cnn_mcc.model_tuner.script.path <- file.path(cnn_mcc.tuner_scripts.dir,
                                             "cnn-mcc.model-tuner.R")
 stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
 
-cnn_mcc.tuner.retrain_best.script.path <- 
+cnn_mcc_final.retrain.script.path <- 
   file.path(cnn_mcc.tuner_scripts.dir, 
-            "cnn-mcc.retrain-best.R")
+            "cnn-mcc.final.retrain.R")
+
+stopifnot(file.exists(cnn_mcc_final.retrain.script.path))
+
+cnn_mcc_final.eval.script.path <- 
+  file.path(cnn_mcc.tuner_scripts.dir, 
+            "cnn-mcc.final.eval.R")
+
+stopifnot(file.exists(cnn_mcc_final.eval.script.path))
 
 # edx.capstone.choose-your-own/r/models/cnn/mcc/tuner/cnn-mcc.retrain-best.R
 stopifnot(file.exists(cnn_mcc.model_tuner.script.path))

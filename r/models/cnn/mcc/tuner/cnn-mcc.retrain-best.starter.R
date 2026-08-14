@@ -11,6 +11,8 @@ stopifnot(exists("cnn_mcc.tuner"),
           dir.exists(data.cnn_mcc.tuner.best.dir),
           exists("cnn_mcc.final_model.file"))
 
+
+
 ### Prepare a Training Set for the Model Training ---------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
@@ -168,30 +170,13 @@ if(file.exists(cnn_mcc.final_model.file)) {
     
     put_log("The tuned Final MCC Model has been loaded from the backup file:
 %1", cnn.mcc_final.train_history.file)
+    print(cnn.mcc_final.train_history)
+    
   } else {
     warning("The tuned Final MCC Model backup does not exist:
 ", cnn.mcc_final.train_history.file)
   }
 } else {
-  # cnn_mcc.tuner.best_trial.ls <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 10L)
-  # str(cnn_mcc.tuner.best_trial.ls)
-  # 
-  # 
-  # 
-  # cnn_mcc.tuner.best_trial.last_epochs <- sapply(cnn_mcc.tuner.best_trial.ls,
-  #                                                 function(trial){
-  #                                                   trial$best_step
-  #                                                 })
-  # 
-  # cnn_mcc.tuner_best.retrain_epochs <- max(cnn_mcc.tuner.best_trial.last_epochs)
-  # 
-  # cnn_mcc.tuner.best_hp.ls <- cnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
-  # # str(cnn_mcc.tuner.best_hp.ls)
-  # 
-  # cnn_mcc.tuner.best_hp.ls[[1]]$values
-  # cnn_mcc.tuner.best_hp <- cnn_mcc.tuner.best_hp.ls[[1]]
-  
-  # Extract top hyperparameter sets
   cnn_mcc.tuner.best_hps <- cnn_mcc.tuner$get_best_hyperparameters(num_trials = 10L)
   str(cnn_mcc.tuner.best_hps)
   
@@ -276,6 +261,17 @@ plot(cnn.mcc_final.train_history)
 str(cnn.mcc_final.train_history)
 
 rm(cnn.mcc_final.train_history)
+
+### Evaluating the Re-trained Model --------------------------------------------
+
+stopifnot(file.exists(cnn_mcc_final.eval.script.path))
+
+# source(cnn_mcc_final.eval.script.path, 
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 log_close()
 # Log Elapsed Time: 0 00:13:05

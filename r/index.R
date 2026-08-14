@@ -187,6 +187,9 @@ cnn_mcc.best_model.file <- file.path(data.cnn_mcc.tuner.best.dir,
 cnn_mcc.final_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
                                      "cnn_mcc.final-model.keras")
 
+cnn.mcc_final.train_history.file <- file.path(data.cnn_mcc.tuner.best.dir, 
+                                              "cnn.mcc-final.train-history.rds")
+
 cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
                                         "x3d.test_set.rds")
 
@@ -203,17 +206,49 @@ source(cnn_mcc.script.path,
        keep.source = TRUE)
 
 
-#### Tuning CNN MCC Model ---------------------
-stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+#### Tuning CNN MCC Model ------------------------------------------------------
 
-put_log("Tuning the CNN-based Multiclass Classifier Model...")
-
-source(cnn_mcc.model_tuner.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+if(file.exists(cnn_mcc.final_model.file)) {
+#   put_log("Loading pre-trained tuned Final MCC Model...")
+#   
+#   cnn_mcc.final_model <- keras3::load_model(cnn_mcc.final_model.file)
+#   
+#   put_log("The tuned Final MCC Model has been loaded from the backup file:
+# %1", cnn_mcc.final_model.file)
+  
+  if(file.exists(cnn.mcc_final.train_history.file)){
+    put_log("Loading the tuned Final MCC Model Train History...")
+    
+    cnn.mcc_final.train_history <- readRDS(cnn.mcc_final.train_history.file)
+    
+    put_log("The tuned Final MCC Model Training History has been loaded from the backup file:
+%1", cnn.mcc_final.train_history.file)
+    print(cnn.mcc_final.train_history)
+  } else {
+    warning("The tuned Final MCC Model backup does not exist:
+", cnn.mcc_final.train_history.file)
+  }
+  
+  put_log("Evaluating the tuned and re-trained Final CNN MCC Model")
+  stopifnot(file.exists(cnn_mcc_final.eval.script.path))
+  
+  # source(cnn_mcc_final.eval.script.path, 
+  #        catch.aborts = TRUE,
+  #        echo = TRUE,
+  #        spaced = TRUE,
+  #        verbose = TRUE,
+  #        keep.source = TRUE)
+} else {
+    stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+    
+    put_log("Tuning the CNN-based Multiclass Classifier Model...")
+    source(cnn_mcc.model_tuner.script.path, 
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
+}
 
 log_close()
 
@@ -241,12 +276,12 @@ data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir,
 if(!dir.exists(data.cnn.binary.models.evaluation.dir))
   dir.create(data.cnn.binary.models.evaluation.dir)
 
-source(cnn_binary.r_scripts.dir,
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+# source(cnn_binary.r_scripts.dir,
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 ## Final Test for the Best Models ----------------------------------------------
 ### Preparing the Final Test Data ----------------------------------------------
