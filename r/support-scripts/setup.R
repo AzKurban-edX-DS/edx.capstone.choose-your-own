@@ -348,6 +348,13 @@ cnn_mcc.model_tuner.script.path <- file.path(cnn_mcc.tuner_scripts.dir,
                                             "cnn-mcc.model-tuner.R")
 stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
 
+cnn_mcc.tuner.retrain_best.script.path <- 
+  file.path(cnn_mcc.tuner_scripts.dir, 
+            "cnn-mcc.retrain-best.R")
+
+# edx.capstone.choose-your-own/r/models/cnn/mcc/tuner/cnn-mcc.retrain-best.R
+stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+
 cnn_binary.r_scripts.dir <- file.path(cnn._binary.scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
 

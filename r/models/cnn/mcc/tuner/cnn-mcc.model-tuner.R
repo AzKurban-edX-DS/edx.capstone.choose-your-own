@@ -473,6 +473,18 @@ cnn_mcc.best_trial$metrics$get_history('val_accuracy')
 # rm(cnn_mcc.tuner.best_trials,
 #    cnn_mcc.best_trial)
 
+### Re-training the Best Model --------------------------------------------------
+stopifnot(file.exists(cnn_mcc.tuner.retrain_best.script.path))
+
+put_log("Re-training the CNN-based Multiclass Classifier Model...")
+
+source(cnn_mcc.tuner.retrain_best.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 log_close()
 # Log Elapsed Time: 18:30:48
 
