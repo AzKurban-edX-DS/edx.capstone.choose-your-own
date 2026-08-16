@@ -288,7 +288,7 @@ into a Default Train and Test Sets...")
   saveRDS(ds28x28.split.train_0.8, 
           file = ds28x28.split.train_0.8.backup.file)
   
-  rm(ds28x28.split.train_0.8)
+  # rm(ds28x28.split.train_0.8)
   
   put_log("The Split Dataset List object has been backed up in the following file:
 `%1`", ds28x28.split.train_0.8.backup.file)
@@ -330,7 +330,7 @@ into a Default Train and Test Sets...")
   saveRDS(ds28x28.split.train_0.1, 
           file = ds28x28.split.train_0.1.backup.file)
   
-  rm(ds28x28.split.train_0.1)
+  # rm(ds28x28.split.train_0.1)
   
   put_log("The Split Dataset List object has been backed up in the following file:
 `%1`", ds28x28.split.train_0.1.backup.file)

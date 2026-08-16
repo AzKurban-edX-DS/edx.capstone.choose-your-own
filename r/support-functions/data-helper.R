@@ -161,13 +161,13 @@ img.load.bin28x28mx.list <- function(root_path,
        img.list = img_list)
 }
 
-load_datasets <- function(ds.file) {
+load_datasets <- function(backup.file) {
   put_log("Function `load_datasets`:
 Loading dataset from the backup file...")
-  ds <- readRDS(ds.file)
+  ds <- readRDS(backup.file)
   put_log("Function `load_datasets`:
 The dataset has been loaded from the following backup file:
-%1", ds.file)
+%1", backup.file)
   
   train <- list()
   
@@ -194,6 +194,32 @@ load.test_set <- function(backup.file) {
   ds <- load_datasets(backup.file)
   return(ds$test)
 }
+
+load28x28x1.train_set <- function(backup.file) {
+  ds.train <- load.train_set(backup.file)
+  
+  x <- array_reshape(ds.train$x, 
+                     c(nrow(ds.train$x), 
+                       28, 
+                       28, 
+                       1))
+  list(x = x,
+       class_groups = ds.train$class_groups)
+} 
+
+load28x28x1.test_set <- function(backup.file) {
+  ds.test <- load.test_set(backup.file)
+  
+  x <- array_reshape(ds.test$x, 
+                     c(nrow(ds.test$x), 
+                       28, 
+                       28, 
+                       1))
+  list(x = x,
+       class_groups = ds.test$class_groups)
+} 
+
+
 
 ## Image Processing ------------------------------------------------------------
 img.file_path.get_list <- function(root_path, 
