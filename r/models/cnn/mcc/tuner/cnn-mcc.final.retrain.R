@@ -9,7 +9,7 @@ start <- put_start_date()
 stopifnot(exists("cnn_mcc.tuner"),
           file.exists(train.img28x28mx.array.file_path),
           dir.exists(data.cnn_mcc.tuner.best.dir),
-          exists("cnn_mcc.final_model.file"))
+          exists("cnn_mcc.final.file"))
 
 
 
@@ -140,6 +140,9 @@ log_close()
 ### Init File Paths ------------------------------------------------------------
 open_logfile(".cnn_mcc.retrain-best")
 
+cnn_mcc.tuner.final.plot_img.file <- file.path(data.cnn_mcc.tuner.best.dir,
+                                              "cnn-mcc.tuner.final-model.png")
+
 data.cnn_mcc.tuner.best.checkpoints.dir <- file.path(data.cnn_mcc.tuner.best.dir,
                                                      "checkpoints")
 
@@ -152,106 +155,89 @@ cnn_mcc.best.checkpoint.file <-
 
 ## Re-training the Best Model --------------------------------------------------
 
-if(file.exists(cnn_mcc.final_model.file)) {
-  
-#   if(file.exists(cnn.mcc_final.train_history.file)){
-#     put_log("Loading the tuned Final MCC Model Train History...")
-#     
-#     cnn.mcc_final.train_history <- readRDS(cnn.mcc_final.train_history.file)
-#     
-#     put_log("The tuned Final MCC Model has been loaded from the backup file:
-# %1", cnn.mcc_final.train_history.file)
-#     print(cnn.mcc_final.train_history)
-#     
-#   } else {
-#     warning("The tuned Final MCC Model backup does not exist:
-# ", cnn.mcc_final.train_history.file)
-#   }
-} else {
-  cnn_mcc.tuner.best_hps <- cnn_mcc.tuner$get_best_hyperparameters(num_trials = 10L)
-  str(cnn_mcc.tuner.best_hps)
-  
-  # Inspect the values of the top configuration
-  # cnn_mcc.tuner.best_hps[[1]]$values
-  cnn_mcc.tuner.best_hp <- cnn_mcc.tuner.best_hps[[1]]
-  
-  put_log("The best Hyperparameters configuration:
-%1", capture.output(cnn_mcc.tuner.best_hp$get_config()))
-  
-  # class(cnn_mcc.tuner.best_hp)
-  # [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
-  # [2] "python.builtin.object"        
-  
-  #cnn_mcc.tuner.best_hp
-  # <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
-  
-  put_log("The best Hyperparameters values:
-%1", capture.output(cnn_mcc.tuner.best_hp$values))
-  
-  # 1. Re-build a clean model structure using the winning hyperparams
-  cnn_mcc.final_model <- cnn_mcc.tuner$hypermodel$build(cnn_mcc.tuner.best_hp)
-  # print(cnn_mcc.final_model)
-  # cnn_mcc.final_model$summary()
-  
-  put_log("The Final tuned tuned Final Model Summary: 
-%1", capture.output(cnn_mcc.final_model))
-  
-  cnn_mcc.final_model |> plot_keras_model(to_file = dl.basic.final_model.plot_img.file,
-                                           show_shapes = T)
-  
-  #best_models <- tuner |> get_best_models(num_models = 1L)
-  # best_5_models[[1]] %>% plot_keras_model()
-  
-  cnn_mcc.best.callbacks <- list(
-    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = cnn_mcc.best.checkpoint.file,
-                              monitor = "val_loss",
-                              save_best_only = TRUE,
-                              verbose = 1))
-  
-  put_log("Training the tuned Final MCC Model...")
-  start <- put_start_date()
-  
-  cnn.mcc_final.train_history <- cnn_mcc.final_model |> 
-    fit(x_train, 
-        y_train, 
-        epochs = 100, 
-        # batch_size = 128, 
-        callbacks = cnn_mcc.best.callbacks,
-        validation_split = 0.2
-    )
-  
-  put_log("Saving re-trained final tuned Final MCC Model...")
-  keras3::save_model(cnn_mcc.final_model,
-                     filepath = cnn_mcc.final_model.file,
-                     overwrite = TRUE)
-  
-  put_log("The re-trained final tuned Final MCC Model has been trained 
-and saved in the following file:
-  %1", cnn_mcc.final_model.file)
-  
-  put_log("Saving the tuned Final MCC Model History...")
-  saveRDS(cnn.mcc_final.train_history,
-          file = cnn.mcc_final.train_history.file)
-  
-  put_log("The re-trained final tuned Final MCC Model History has been trained 
-and saved in the following file:
-  %1", cnn.mcc_final.train_history.file)
-  put_end_date(start)
-  # Time difference of 38.48235 mins
-}
+cnn_mcc.tuner.best_hps <- cnn_mcc.tuner$get_best_hyperparameters(num_trials = 10L)
+str(cnn_mcc.tuner.best_hps)
 
-rm(x_train,
-   y_train,
-   cnn_mcc.tuner)
+# Inspect the values of the top configuration
+# cnn_mcc.tuner.best_hps[[1]]$values
+cnn_mcc.tuner.best_hp <- cnn_mcc.tuner.best_hps[[1]]
+
+put_log("The best Hyperparameters configuration:
+%1", capture.output(cnn_mcc.tuner.best_hp$get_config()))
+
+# class(cnn_mcc.tuner.best_hp)
+# [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
+# [2] "python.builtin.object"        
+
+#cnn_mcc.tuner.best_hp
+# <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
+
+put_log("The best Hyperparameters values:
+%1", capture.output(cnn_mcc.tuner.best_hp$values))
+
+# 1. Re-build a clean model structure using the winning hyperparams
+cnn_mcc.final <- cnn_mcc.tuner$hypermodel$build(cnn_mcc.tuner.best_hp)
+# print(cnn_mcc.final)
+# cnn_mcc.final$summary()
+
+put_log("The Final tuned tuned Final Model Summary: 
+%1", capture.output(cnn_mcc.final))
+
+cnn_mcc.final |> plot_keras_model(to_file = cnn_mcc.tuner.final.plot_img.file,
+                                        show_shapes = T)
+
+#best_models <- tuner |> get_best_models(num_models = 1L)
+# best_5_models[[1]] %>% plot_keras_model()
+
+cnn_mcc.best.callbacks <- list(
+  callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+  callback_model_checkpoint(filepath = cnn_mcc.best.checkpoint.file,
+                            monitor = "val_loss",
+                            save_best_only = TRUE,
+                            verbose = 1))
+
+put_log("Training the tuned Final MCC Model...")
+start <- put_start_date()
+
+cnn_mcc.final.train_history <- cnn_mcc.final |> 
+  fit(x_train, 
+      y_train.cat, 
+      epochs = 100, 
+      # batch_size = 128, 
+      callbacks = cnn_mcc.best.callbacks,
+      validation_split = 0.2
+  )
+
+put_log("Saving re-trained final tuned Final MCC Model...")
+keras3::save_model(cnn_mcc.final,
+                   filepath = cnn_mcc.final.file,
+                   overwrite = TRUE)
+
+put_log("The re-trained final tuned Final MCC Model has been trained 
+and saved in the following file:
+  %1", cnn_mcc.final.file)
+
+put_log("Saving the tuned Final MCC Model History...")
+saveRDS(cnn_mcc.final.train_history,
+        file = cnn_mcc.final.train_history.file)
+
+put_log("The re-trained final tuned Final MCC Model History has been trained 
+and saved in the following file:
+  %1", cnn_mcc.final.train_history.file)
+put_end_date(start)
+# Time difference of 38.48235 mins
+
+# rm(x_train,
+#    y_train,
+#    cnn_mcc.tuner)
 
 put_log("The re-trained `tuned Final MCC` Model has been trained with the following results
-%1", cnn_mcc.final_model)
+%1", cnn_mcc.final)
 
-plot(cnn.mcc_final.train_history)
-str(cnn.mcc_final.train_history)
+plot(cnn_mcc.final.train_history)
+str(cnn_mcc.final.train_history)
 
-rm(cnn.mcc_final.train_history)
+# rm(cnn_mcc.final.train_history)
 
 ### Evaluating the Re-trained Model --------------------------------------------
 
@@ -266,9 +252,3 @@ stopifnot(file.exists(cnn_mcc_final.eval.script.path))
 
 log_close()
 # Log Elapsed Time: 0 00:13:05
-
-
-
-
-
-

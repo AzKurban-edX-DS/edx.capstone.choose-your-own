@@ -162,9 +162,11 @@ img.load.bin28x28mx.list <- function(root_path,
 }
 
 load_datasets <- function(ds.file) {
+  put_log("Function `load_datasets`:
+Loading dataset from the backup file...")
   ds <- readRDS(ds.file)
-  
-  put_log("The Split Flattened Dataset has been loaded from the following backup file:
+  put_log("Function `load_datasets`:
+The dataset has been loaded from the following backup file:
 %1", ds.file)
   
   train <- list()
@@ -181,6 +183,16 @@ load_datasets <- function(ds.file) {
 
   list(train = train,
        test = test)
+}
+
+load.train_set <- function(backup.file) {
+  ds <- load_datasets(backup.file)
+  return(ds$train)
+}
+
+load.test_set <- function(backup.file) {
+  ds <- load_datasets(backup.file)
+  return(ds$test)
 }
 
 ## Image Processing ------------------------------------------------------------

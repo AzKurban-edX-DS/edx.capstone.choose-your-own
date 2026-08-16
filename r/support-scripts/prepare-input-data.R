@@ -259,43 +259,85 @@ and backed up to the following file:
 
 if (exists("img28x28mx.list")) rm(img28x28mx.list)
 
-### Preparing Default Split Datasets for Training the NN-Based Models ----------
+### Preparing Default Split Datasets (of 80%-size Training Set) for NN-Based Models ----
 
-put_log("Preparing Train and Test Sets for training the NN-based Multiclass Classifier Models...")
+put_log("Preparing Default Split Datasets (of 80%-size Training Set) for training 
+the NN-based Multiclass Classifier (MCC) Models...")
 
-split3d.list.backup.file <- file.path(train.data.dir, "split3d.list.backup.rds")
 
 put_log("The path for the backup file to save the list of the Split Datasets: 
-%1", split3d.list.backup.file)
+%1", ds28x28.split.train_0.8.backup.file)
 
 start <- put_start_date()
 
-if(!file.exists(split3d.list.backup.file)) {
+if(!file.exists(ds28x28.split.train_0.8.backup.file)) {
   stopifnot(file.exists(train.img28x28mx.array.file_path))
   
   put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
   
-  split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
+  ds28x28.split.train_0.8 <- split.img28x28mx_array(train.img28x28mx.array.file_path,
                                          seed = N.classes,
                                          test_ratio = 0.2)
 
   put_log("The Default Split Dataset object structure:
-%1", capture.output(str(split3d.list)))
+%1", capture.output(str(ds28x28.split.train_0.8)))
 
   put_log("Saving the Split Dataset List object in the backup file...")
   
-  saveRDS(split3d.list, 
-          file = split3d.list.backup.file)
+  saveRDS(ds28x28.split.train_0.8, 
+          file = ds28x28.split.train_0.8.backup.file)
   
-  rm(split3d.list)
+  rm(ds28x28.split.train_0.8)
   
   put_log("The Split Dataset List object has been backed up in the following file:
-`%1`", split3d.list.backup.file)
+`%1`", ds28x28.split.train_0.8.backup.file)
 } else {
   put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
 has already been constructed and backed up to the following file:
-%1", split3d.list.backup.file)
+%1", ds28x28.split.train_0.8.backup.file)
+}
+
+put_end_date(start)
+log_close()
+
+### Preparing Split Datasets of 10%-size Training Set for NN-Based Models ----
+
+put_log("Preparing Split Datasets of 10%-size Training Set) for training 
+the NN-based Multiclass Classifier (MCC) Models...")
+
+
+put_log("The path for the backup file to save the list of the Split Datasets: 
+%1", ds28x28.split.train_0.1.backup.file)
+
+start <- put_start_date()
+
+if(!file.exists(ds28x28.split.train_0.1.backup.file)) {
+  stopifnot(file.exists(train.img28x28mx.array.file_path))
+  
+  put_log("Loading and splitting the Train 28x28 Image Data Array 
+into a Default Train and Test Sets...")
+  
+  ds28x28.split.train_0.1 <- split.img28x28mx_array(train.img28x28mx.array.file_path,
+                                         seed = N.classes,
+                                         test_ratio = 0.9)
+
+  put_log("The Default Split Dataset object structure:
+%1", capture.output(str(ds28x28.split.train_0.1)))
+
+  put_log("Saving the Split Dataset List object in the backup file...")
+  
+  saveRDS(ds28x28.split.train_0.1, 
+          file = ds28x28.split.train_0.1.backup.file)
+  
+  rm(ds28x28.split.train_0.1)
+  
+  put_log("The Split Dataset List object has been backed up in the following file:
+`%1`", ds28x28.split.train_0.1.backup.file)
+} else {
+  put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
+has already been constructed and backed up to the following file:
+%1", ds28x28.split.train_0.1.backup.file)
 }
 
 put_end_date(start)

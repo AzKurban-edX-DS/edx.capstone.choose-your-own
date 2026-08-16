@@ -14,26 +14,31 @@
 open_logfile(".prepare-dataset-for-cnn-basic.model")
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.dir))
+          dir.exists(data.cnn_mcc.basic.dir))
 
 ### Init File Paths -----------------------------------------------------------
 
+data.cnn_mcc.basic.tensorboard.dir <- file.path(data.cnn_mcc.basic.dir, "tensorboard")
 
-cnn_mcc.model.file_path <- file.path(data.cnn_mcc.dir, 
-                                     "cnn.pre-trained.multiclass.model.keras")
-cnn_mcc.train_history.file_path <- file.path(data.cnn_mcc.dir,
-                                             "cnn_mcc.train_history.backup.rds")
+if(!dir.exists(data.cnn_mcc.basic.tensorboard.dir))
+  dir.create(data.cnn_mcc.basic.tensorboard.dir)
 
-data.cnn_mcc.checkpoints.dir <- file.path(data.cnn_mcc.dir, "checkpoints")
+data.cnn_mcc.basic.tensorboard.logs.dir <- file.path(data.cnn_mcc.basic.tensorboard.dir, "logs")
 
-if(!dir.exists(data.cnn_mcc.checkpoints.dir))
-  dir.create(data.cnn_mcc.checkpoints.dir)
+if(!dir.exists(data.cnn_mcc.basic.tensorboard.logs.dir))
+  dir.create(data.cnn_mcc.basic.tensorboard.logs.dir)
 
-cnn_mcc.checkpoint.file_path <- 
-  file.path(data.cnn_mcc.checkpoints.dir, 
+data.cnn_mcc.basic.checkpoints.dir <- file.path(data.cnn_mcc.basic.dir, "checkpoints")
+
+if(!dir.exists(data.cnn_mcc.basic.checkpoints.dir))
+  dir.create(data.cnn_mcc.basic.checkpoints.dir)
+
+cnn_mcc.basic.checkpoint.file_path <- 
+  file.path(data.cnn_mcc.basic.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
-
+cnn_mcc.basic.plot_img.file <- file.path(cnn_mcc.basic.plots.dat.dir,
+                                         "cnn-mcc.basic-model.png")
 
 ### Prepare a Training Set for the Model Training ---------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
@@ -63,10 +68,10 @@ having the following structure:
 
 put_log("Saving the Test Set to backup file for later use...")
 saveRDS(x3d.test_set,
-        file = cnn_mcc.x3d.test_set.bakup)
+        file = cnn_mcc.basic.x3d.test_set.bakup)
 
 put_log("The Test Set for Basic CNN MCC Model has been saved to the following file:
-%1", cnn_mcc.x3d.test_set.bakup)
+%1", cnn_mcc.basic.x3d.test_set.bakup)
 
 rm(split3d.list,
    x3d.test_set)
@@ -185,24 +190,24 @@ head(y_train.cat)
 open_logfile(".cnn-basic.model-building")
 start <- put_start_date()
 
-cnn_mcc.batch_size <- 128
-cnn_mcc.epochs <- 100
-cnn_mcc.vld_split <- 0.2
+cnn_mcc.basic.batch_size <- 128
+cnn_mcc.basic.epochs <- 100
+cnn_mcc.basic.vld_split <- 0.2
 
-if(file.exists(cnn_mcc.model.file_path)) {
+if(file.exists(cnn_mcc.basic.file_path)) {
   put_log("Loading pre-trained CNN-Based Multiclass Classifier Model...")
-  cnn_mcc.model <- keras3::load_model(cnn_mcc.model.file_path)
+  cnn_mcc.basic <- keras3::load_model(cnn_mcc.basic.file_path)
   put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
-%1", cnn_mcc.model.file_path)
+%1", cnn_mcc.basic.file_path)
   
-  if(file.exists(cnn_mcc.train_history.file_path)){
+  if(file.exists(cnn_mcc.basic.train_history.file_path)){
     put_log("Loading the CNN-Based Multiclass Classifier Model Train History...")
-    cnn_mcc.train_history <- readRDS(cnn_mcc.train_history.file_path)
+    cnn_mcc.basic.train_history <- readRDS(cnn_mcc.basic.train_history.file_path)
     put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
-%1", cnn_mcc.train_history.file_path)
+%1", cnn_mcc.basic.train_history.file_path)
   } else {
     warning("The CNN-Based Multiclass Classifier Model backup does not exist:
-", cnn_mcc.train_history.file_path)
+", cnn_mcc.basic.train_history.file_path)
   }
 } else {
   #* *** Define a CNN-Based Multiclass Classification model structure *******
@@ -215,9 +220,9 @@ if(file.exists(cnn_mcc.model.file_path)) {
     #> of the image. [*]
     
     # [*] 3.3.1 Define a CNN model structure
-    cnn_mcc.inputs <- layer_input(shape = shape(28L, 28L, 1L))
+    cnn_mcc.basic.inputs <- layer_input(shape = shape(28L, 28L, 1L))
     
-    cnn_mcc.outputs <- cnn_mcc.inputs |>
+    cnn_mcc.basic.outputs <- cnn_mcc.basic.inputs |>
       layer_conv_2d(filters = 32L,
                     kernel_size = c(3L, 3L), 
                     # strides = list(1L, 1L),
@@ -238,38 +243,41 @@ if(file.exists(cnn_mcc.model.file_path)) {
       layer_dense(units = N.classes, activation = "softmax")
     
     
-    cnn_mcc.model <- keras_model(cnn_mcc.inputs, cnn_mcc.outputs)
+    cnn_mcc.basic <- keras_model(cnn_mcc.basic.inputs, cnn_mcc.basic.outputs)
 
     # Similar to DNN model, we need to compile the defined CNN model. [*]
     
     # Compile model
-    cnn_mcc.model |> compile(
+    cnn_mcc.basic |> compile(
       loss = loss_categorical_crossentropy,
       optimizer = keras3::optimizer_adamax(0.001),
       metrics = c('accuracy')
     )
     
-    summary(cnn_mcc.model)
+    summary(cnn_mcc.basic)
+    
+    cnn_mcc.basic |> plot_keras_model(to_file = cnn_mcc.basic.plot_img.file,
+                                            show_shapes = T)
   }
   
   #' *** Training CNN-Based Muliclass Classifier Model **********************
   {
     #> Now, we can train the model with our processed data. 
-    #> Each cnn_mcc.epochs's history can be saved to track the progress. 
+    #> Each cnn_mcc.basic.epochs's history can be saved to track the progress. 
     #> Please note, as we are not using GPU, it takes a few minutes to finish. 
     #> Please be patient while waiting for the results. 
     #> The training time can be significantly reduced if running on GPU. [*]
     dim(x_train)
     dim(y_train.cat)
     
-    cnn_mcc.callbacks <- list(
+    cnn_mcc.basic.callbacks <- list(
       callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-      callback_model_checkpoint(filepath = cnn_mcc.checkpoint.file_path,
+      callback_model_checkpoint(filepath = cnn_mcc.basic.checkpoint.file_path,
                                 monitor = "val_loss",
                                 mode = max,
                                 save_best_only = TRUE,
                                 verbose = 1)#,
-      # callback_tensorboard(log_dir = data.cnn_mcc.tensorboard.logs.dir,
+      # callback_tensorboard(log_dir = data.cnn_mcc.basic.tensorboard.logs.dir,
       #                      # write_graph = T,
       #                      write_images = T,
       #                      write_steps_per_second = T,
@@ -277,46 +285,46 @@ if(file.exists(cnn_mcc.model.file_path)) {
     )
     
     # Runnign the TensorBoard tool
-    #tensorboard(data.cnn_mcc.tensorboard.logs.dir)
+    #tensorboard(data.cnn_mcc.basic.tensorboard.logs.dir)
     
     put_log("Training the CNN-based Multiclass Classifier (CNN MCC) Model...")
     start <- put_start_date()
     
     # Train model
-    cnn_mcc.train_history <- cnn_mcc.model |> 
+    cnn_mcc.basic.train_history <- cnn_mcc.basic |> 
       fit(x_train, 
           y_train.cat,
-          epochs = cnn_mcc.epochs,
-          batch_size = cnn_mcc.batch_size,
-          validation_split = cnn_mcc.vld_split,
-          callbacks = cnn_mcc.callbacks
+          epochs = cnn_mcc.basic.epochs,
+          batch_size = cnn_mcc.basic.batch_size,
+          validation_split = cnn_mcc.basic.vld_split,
+          callbacks = cnn_mcc.basic.callbacks
       )
     # acc: 0.8741
     
     put_log("Saving the pre-trained CNN MCC Model...")
-    keras3::save_model(cnn_mcc.model,
-                       filepath = cnn_mcc.model.file_path,
+    keras3::save_model(cnn_mcc.basic,
+                       filepath = cnn_mcc.basic.file_path,
                        overwrite = TRUE)
     
     put_log("The CNN MCC has been trained 
 and saved in the following file:
-  %1", cnn_mcc.model.file_path)
+  %1", cnn_mcc.basic.file_path)
     
     put_log("Saving the CNN MCC Model History...")
-    saveRDS(cnn_mcc.train_history,
-            file = cnn_mcc.train_history.file_path)
+    saveRDS(cnn_mcc.basic.train_history,
+            file = cnn_mcc.basic.train_history.file_path)
     
     put_log("The CNN MCC Model History has been trained 
 and saved in the following file:
-  %1", cnn_mcc.train_history.file_path)
+  %1", cnn_mcc.basic.train_history.file_path)
   }
 }
 
 put_log("The CNN MCC Model has been created and trained:
-%1", capture.output(cnn_mcc.model))
+%1", capture.output(cnn_mcc.basic))
 
-if(exists("cnn_mcc.train_history")){
-  plot(cnn_mcc.train_history)
+if(exists("cnn_mcc.basic.train_history")){
+  plot(cnn_mcc.basic.train_history)
 } 
 
 put_end_date(start)
@@ -324,16 +332,16 @@ put_end_date(start)
 rm(x_train,
    y_train,
    y_train.cat,
-   cnn_mcc.callbacks)
+   cnn_mcc.basic.callbacks)
 
 log_close()
 # Log Elapsed Time: 0 00:00:58
 ## Evaluate Basic CNN MCC Model ------------------------------------------------
 open_logfile(".cnn-basic.model.start-evaluation")
 
-stopifnot(file.exists(cnn_mcc.evaluation.script.path))
+stopifnot(file.exists(cnn_mcc.basic.evaluation.script.path))
 
-source(cnn_mcc.evaluation.script.path, 
+source(cnn_mcc.basic.evaluation.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

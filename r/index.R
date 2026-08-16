@@ -2,18 +2,6 @@
 # Main (Index) Script
 #%%%%%%%%%%%%%%%%%%%%
 
-## The Device (laptop) Info Where the Project was Build & Tested ---------------
-
-# Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
-# Installed RAM	32.0 GB (31.7 GB usable)
-# System type	64-bit operating system, x64-based processor
-
-# Edition	Windows 11 Pro
-# Version	25H2
-# Installed on	‎12/‎14/‎2024
-# OS build	26200.8973
-# Experience	Windows Feature Experience Pack 1000.26100.344.0
-
 ## Setup -----------------------------------------------------------------------
 
 r_scripts.dir <- "r"
@@ -37,6 +25,12 @@ source(setup_script.file_path,
 
 ## Prepare Input Datasets ------------------------------------------------------
 stopifnot(file.exists(prepare_ds.script.path))
+
+ds28x28.split.train_0.8.backup.file <- file.path(train.data.dir, 
+                                                 "ds28x28.split.train_0.8.backup.rds")
+
+ds28x28.split.train_0.1.backup.file <- file.path(train.data.dir, 
+                                                 "ds28x28.split.train_0.1.backup.rds")
 
 source(prepare_ds.script.path, 
        catch.aborts = TRUE,
@@ -161,15 +155,23 @@ data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "multiclass")
 if(!dir.exists(data.cnn_mcc.dir))
   dir.create(data.cnn_mcc.dir)
 
-data.cnn_mcc.tensorboard.dir <- file.path(data.cnn_mcc.dir, "tensorboard")
+cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
+                                        "x3d.test_set.rds")
 
-if(!dir.exists(data.cnn_mcc.tensorboard.dir))
-  dir.create(data.cnn_mcc.tensorboard.dir)
+data.cnn_mcc.basic.dir <- file.path(data.cnn_mcc.dir, "basic")
 
-data.cnn_mcc.tensorboard.logs.dir <- file.path(data.cnn_mcc.tensorboard.dir, "logs")
+if(!dir.exists(data.cnn_mcc.basic.dir))
+  dir.create(data.cnn_mcc.basic.dir)
 
-if(!dir.exists(data.cnn_mcc.tensorboard.logs.dir))
-  dir.create(data.cnn_mcc.tensorboard.logs.dir)
+cnn_mcc.basic.plots.dat.dir <- file.path(data.cnn_mcc.basic.dir, "plots.dat")
+
+if(!dir.exists(cnn_mcc.basic.plots.dat.dir))
+  dir.create(cnn_mcc.basic.plots.dat.dir)
+
+cnn_mcc.basic.file_path <- file.path(data.cnn_mcc.basic.dir, 
+                                     "cnn.pre-trained.multiclass.model.keras")
+cnn_mcc.basic.train_history.file_path <- file.path(data.cnn_mcc.basic.dir,
+                                             "cnn_mcc.train_history.backup.rds")
 
 data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
 
@@ -181,19 +183,18 @@ data.cnn_mcc.tuner.best.dir <- file.path(data.cnn_mcc.tuner.dir, "best")
 if(!dir.exists(data.cnn_mcc.tuner.best.dir))
   dir.create(data.cnn_mcc.tuner.best.dir)
 
-cnn_mcc.best_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
-                                     "cnn_mcc.best-model.keras")
+cnn_mcc.best.plots.dat.dir <- file.path(data.cnn_mcc.tuner.best.dir, "plots.dat")
 
-cnn_mcc.final_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
+if(!dir.exists(cnn_mcc.best.plots.dat.dir))
+  dir.create(cnn_mcc.best.plots.dat.dir)
+
+cnn_mcc.final.file <- file.path(data.cnn_mcc.tuner.best.dir, 
                                      "cnn_mcc.final-model.keras")
 
-cnn.mcc_final.train_history.file <- file.path(data.cnn_mcc.tuner.best.dir, 
+cnn_mcc.final.train_history.file <- file.path(data.cnn_mcc.tuner.best.dir, 
                                               "cnn.mcc-final.train-history.rds")
 
-cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
-                                        "x3d.test_set.rds")
-
-#### Build Basic CNN MCC Model ---------------------
+#### Build Basic CNN MCC Model -------------------------------------------------
 stopifnot(file.exists(cnn_mcc.script.path))
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
@@ -208,25 +209,21 @@ source(cnn_mcc.script.path,
 
 #### Tuning CNN MCC Model ------------------------------------------------------
 
-if(file.exists(cnn_mcc.final_model.file)) {
-#   put_log("Loading pre-trained tuned Final MCC Model...")
-#   
-#   cnn_mcc.final_model <- keras3::load_model(cnn_mcc.final_model.file)
-#   
-#   put_log("The tuned Final MCC Model has been loaded from the backup file:
-# %1", cnn_mcc.final_model.file)
-  
-  if(file.exists(cnn.mcc_final.train_history.file)){
+if(file.exists(cnn_mcc.final.file)) {
+  if(file.exists(cnn_mcc.final.train_history.file)){
     put_log("Loading the tuned Final MCC Model Train History...")
     
-    cnn.mcc_final.train_history <- readRDS(cnn.mcc_final.train_history.file)
+    cnn_mcc.final.train_history <- readRDS(cnn_mcc.final.train_history.file)
     
-    put_log("The tuned Final MCC Model Training History has been loaded from the backup file:
-%1", cnn.mcc_final.train_history.file)
-    print(cnn.mcc_final.train_history)
+    put_log("The Tuned Final MCC Model Training History has been loaded from the backup file:
+%1", cnn_mcc.final.train_history.file)
+    
+    put_log("The Tuned Final MCC Model Training History Summary:
+%1", capture.output(cnn_mcc.final.train_history))
+    plot(cnn_mcc.final.train_history)
   } else {
     warning("The tuned Final MCC Model backup does not exist:
-", cnn.mcc_final.train_history.file)
+", cnn_mcc.final.train_history.file)
   }
   
   put_log("Evaluating the tuned and re-trained Final CNN MCC Model")
@@ -351,5 +348,17 @@ source(cnn_mcc.model.final_test.file_path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+# Appendix: The Device (laptop) Info Where the Project was Build & Tested ---------------
+
+# Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
+# Installed RAM	32.0 GB (31.7 GB usable)
+# System type	64-bit operating system, x64-based processor
+
+# Edition	Windows 11 Pro
+# Version	25H2
+# Installed on	‎12/‎14/‎2024
+# OS build	26200.8973
+# Experience	Windows Feature Experience Pack 1000.26100.344.0
 
 

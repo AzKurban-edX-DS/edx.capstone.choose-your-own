@@ -6,12 +6,14 @@
 open_logfile(".setup.cnn_mcc.model-tuner")
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.tuner.best.dir),
-          exists("cnn_mcc.best_model.file"))
+          dir.exists(data.cnn_mcc.tuner.best.dir))
 
 ### Init File Paths -----------------------------------------------------------
 
-cnn_mcc.tuner.best.plot_img.file <- file.path(data.cnn_mcc.tuner.best.dir,
+cnn_mcc.best_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
+                                     "cnn_mcc.best-model.keras")
+
+cnn_mcc.tuner.best.plot_img.file <- file.path(cnn_mcc.best.plots.dat.dir,
                                                "cnn-mcc.tuner.best-model.png")
 
 data.cnn_mcc.tuner.checkpoints.dir <- file.path(data.cnn_mcc.tuner.dir, "checkpoints")
@@ -479,12 +481,12 @@ stopifnot(file.exists(cnn_mcc_final.retrain.script.path))
 
 put_log("Re-training the CNN-based Multiclass Classifier Model...")
 
-source(cnn_mcc_final.retrain.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+# source(cnn_mcc_final.retrain.script.path, 
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 log_close()
 # Log Elapsed Time: 18:30:48

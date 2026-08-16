@@ -4,30 +4,31 @@
 
 ## Setup -----------------------------------------------------------------------
 open_logfile(".tuner.cnn-mcc.best-model.eval.setup")
-stopifnot(file.exists(cnn_mcc.final_model.file),
-          file.exists(cnn_mcc.x3d.test_set.bakup))
+stopifnot(dir.exists(data.cnn_mcc.tuner.best.dir),
+          file.exists(cnn_mcc.final.file),
+          file.exists(cnn_mcc.final.x3d.test_set.bakup))
 
-cnn_mcc.eval.result.backup <- file.path(data.cnn_mcc.dir,
-                                       "cnn_mcc.eval.result.rds")
+cnn_mcc.final.eval.result.backup <- file.path(data.cnn_mcc.tuner.best.dir,
+                                       "cnn_mcc.final.eval.result.rds")
 
 ### Loading the Pre-trained CNN-based Multiclass Classifier Model --------------
 
 put_log("Loading pre-trained tuned Final MCC Model...")
 
-cnn_mcc.final_model <- keras3::load_model(cnn_mcc.final_model.file)
+cnn_mcc.final <- keras3::load_model(cnn_mcc.final.file)
 
 put_log("The tuned Final MCC Model has been loaded from the backup file:
-%1", cnn_mcc.final_model.file)
+%1", cnn_mcc.final.file)
 
 ### Preparing Validation Data ---------------------------------------------------
 put_log("Preparing a Test Set...")
 start <- put_start_date()
 
 put_log("Loading the Test Set from backup...")
-x3d.test_set <- readRDS(cnn_mcc.x3d.test_set.bakup)
+x3d.test_set <- readRDS(cnn_mcc.final.x3d.test_set.bakup)
 
 put_log("The Test Set has been loaded from the following file:
-%1", cnn_mcc.x3d.test_set.bakup)
+%1", cnn_mcc.final.x3d.test_set.bakup)
 
 
 put_log("The Test Set data is stored in the object `x3d.test_set`, 
@@ -146,9 +147,9 @@ put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
 put_log("Evaluating tuned Final CNN MCC Model...")
-cnn_mcc_final.eval.result <- cnn_mcc.final_model |> evaluate(x_test, y_test.cat)
+cnn_mcc.final.eval.result <- cnn_mcc.final |> evaluate(x_test, y_test.cat)
 put_log("CNN MCC Model evaluation has been completed with the following result:
-%1", capture.output(cnn_mcc_final.eval.result))
+%1", capture.output(cnn_mcc.final.eval.result))
 # $accuracy
 # [1] 0.8887953
 # 
@@ -160,49 +161,49 @@ put_end_date(start)
 # model prediction
 put_log("CNN Model: constructing predictions...")
 
-cnn_mcc_final.eval.result$predicted.probs <- cnn_mcc.final_model |> predict(x_test) 
+cnn_mcc.final.eval.result$predicted.probs <- cnn_mcc.final |> predict(x_test) 
 put_log("CNN Model: predictions have been constructed.")
 put_end_date(start)
 # Time difference of 1.502232 mins
 
-dim(cnn_mcc_final.eval.result$predicted.probs)
+dim(cnn_mcc.final.eval.result$predicted.probs)
 
-colnames(cnn_mcc_final.eval.result$predicted.probs) <- Y.Labels
-head(cnn_mcc_final.eval.result$predicted.probs[,1:5])
+colnames(cnn_mcc.final.eval.result$predicted.probs) <- Y.Labels
+head(cnn_mcc.final.eval.result$predicted.probs[,1:5])
 
-cnn_preds.ts <- as_tensor(cnn_mcc_final.eval.result$predicted.probs)
+cnn_preds.ts <- as_tensor(cnn_mcc.final.eval.result$predicted.probs)
 str(cnn_preds.ts)
 #> <tf.Tensor: shape=(817379, 39), dtype=float64, numpy=…>
 
-cnn_mcc.predictions <- cnn_preds.ts |> op_argmax(2)
-str(cnn_mcc.predictions)
-cnn_mcc.predictions
+cnn_mcc.final.predictions <- cnn_preds.ts |> op_argmax(2)
+str(cnn_mcc.final.predictions)
+cnn_mcc.final.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(cnn_mcc.predictions)
+dim(cnn_mcc.final.predictions)
 #> [1] 684467
 
-cnn.prediction.values.idx <- cnn_mcc.predictions$numpy()
+cnn.prediction.values.idx <- cnn_mcc.final.predictions$numpy()
 head(cnn.prediction.values.idx)
 
-cnn_mcc_final.eval.result$predicted.values <- Y.Labels[cnn.prediction.values.idx]
-head(cnn_mcc_final.eval.result$predicted.values)
+cnn_mcc.final.eval.result$predicted.values <- Y.Labels[cnn.prediction.values.idx]
+head(cnn_mcc.final.eval.result$predicted.values)
 
-cnn_mcc_final.eval.result$targets <- y_test
+cnn_mcc.final.eval.result$targets <- y_test
 
 rm(cnn_preds.ts,
-   cnn_mcc.predictions,
+   cnn_mcc.final.predictions,
    cnn.prediction.values.idx)
 
 put_log("Saving the Multiclass Classifier model Evaluation Results...")
-saveRDS(cnn_mcc_final.eval.result,
-        file = cnn_mcc.eval.result.backup)
+saveRDS(cnn_mcc.final.eval.result,
+        file = cnn_mcc.final.eval.result.backup)
 
 put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
-%1", cnn_mcc.eval.result.backup)
+%1", cnn_mcc.final.eval.result.backup)
 
 put_log("CNN MCC Model evaluation result:
-%1", capture.output(cnn_mcc_final.eval.result))
+%1", capture.output(cnn_mcc.final.eval.result))
 # $accuracy
 # [1] 0.8887953
 # 
@@ -210,8 +211,8 @@ put_log("CNN MCC Model evaluation result:
 # [1] 0.3397374
 
 
-cnn_mcc.accuracy <- mean(cnn_mcc_final.eval.result$predicted.values == y_test)
-put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.accuracy)
+cnn_mcc.final.accuracy <- mean(cnn_mcc.final.eval.result$predicted.values == y_test)
+put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.final.accuracy)
 # 0.888795259687278
 
 rm(x_test,
@@ -228,35 +229,30 @@ open_logfile(".tuner.cnn-mcc.best-model.eval.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
-cnn_mcc.plots.dat.dir <- file.path(data.cnn_mcc.dir, "plots.dat")
-
-if(!dir.exists(cnn_mcc.plots.dat.dir))
-  dir.create(cnn_mcc.plots.dat.dir)
-
-cnn_mcc.eval.conf.mx.img_file <- file.path(cnn_mcc.plots.dat.dir,
+cnn_mcc.final.eval.conf.mx.img_file <- file.path(cnn_mcc.best.plots.dat.dir,
                                             "dl-basic.eval.confusion-matrix.png")
 
-cnn_mcc.eval.plots_dat.file <- file.path(cnn_mcc.plots.dat.dir,
+cnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.best.plots.dat.dir,
                                           "dl-basic.eval.plots_dat.rds")
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
-if(file.exists(cnn_mcc.eval.plots_dat.file)) {
+if(file.exists(cnn_mcc.final.eval.plots_dat.file)) {
   put_log("Function `init.plots_args`:
 Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(cnn_mcc.eval.plots_dat.file)
+  plots.args <- init.plots_args(cnn_mcc.final.eval.plots_dat.file)
   
   put_log("Function `init.plots_args`:
 The model-related plots input data object has been loaded from the following file:
-%1", cnn_mcc.eval.plots_dat.file)
+%1", cnn_mcc.final.eval.plots_dat.file)
 } else {
-  plots.args <- init.plots_args(targets = cnn_mcc_final.eval.result$targets,
-                                predicted.probabilities = cnn_mcc_final.eval.result$predicted.probs,
-                                predicted.values = cnn_mcc_final.eval.result$predicted.values,
+  plots.args <- init.plots_args(targets = cnn_mcc.final.eval.result$targets,
+                                predicted.probabilities = cnn_mcc.final.eval.result$predicted.probs,
+                                predicted.values = cnn_mcc.final.eval.result$predicted.values,
                                 alg_name = "CNN Basic",
-                                plots_dat.file = cnn_mcc.eval.plots_dat.file,
-                                cm.export.img_file = cnn_mcc.eval.conf.mx.img_file,
+                                plots_dat.file = cnn_mcc.final.eval.plots_dat.file,
+                                cm.export.img_file = cnn_mcc.final.eval.conf.mx.img_file,
                                 cm.print.image = T)
 }
 
@@ -277,14 +273,14 @@ stopifnot(exists("plots.dat"),
           !is.null(plots.dat$PCA),
           !is.null(plots.dat$CM))
 
-if(!file.exists(cnn_mcc.eval.plots_dat.file)) {
+if(!file.exists(cnn_mcc.final.eval.plots_dat.file)) {
   put_log("Saving the model-related plots input data object to file...")
   
   saveRDS(plots.dat,
-          file = cnn_mcc.eval.plots_dat.file)
+          file = cnn_mcc.final.eval.plots_dat.file)
   
   put_log("The model-related plots input data object has been saved to the following file:
-%1", cnn_mcc.eval.plots_dat.file)
+%1", cnn_mcc.final.eval.plots_dat.file)
 }
 
 # put_log("The Basic DL Model per-class accuracy:,
@@ -338,8 +334,8 @@ log_close()
 
 ## Review Some Errors --------------------------------------------------------- 
 
-recg.err.info <- recognition_err.table(cnn_mcc_final.eval.result$predicted.values,
-                                        cnn_mcc_final.eval.result$targets,
+recg.err.info <- recognition_err.table(cnn_mcc.final.eval.result$predicted.values,
+                                        cnn_mcc.final.eval.result$targets,
                                         x_test.files)
 put_log("First 30 prediction errors:
 %1", capture.output(head(recg.err.info, n = 30)))
@@ -386,6 +382,6 @@ rm(recg.err.info)
 
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-rm(cnn_mcc_final.eval.result)
+rm(cnn_mcc.final.eval.result)
 
 log_close()

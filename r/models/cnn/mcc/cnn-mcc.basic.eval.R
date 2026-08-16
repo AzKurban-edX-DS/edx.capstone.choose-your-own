@@ -6,31 +6,33 @@
 open_logfile(".basic-cnn-model.eval.setup")
 stopifnot(file.exists(cnn_mcc.x3d.test_set.bakup))
 
-cnn_mcc.eval.result.backup <- file.path(data.cnn_mcc.dir,
+### Init File Paths ------------------------------------------------------------
+cnn_mcc.eval.result.backup <- file.path(data.cnn_mcc.basic.dir,
                                        "cnn_mcc.eval.result.rds")
 
 ### Loading the Pre-trained CNN-based Multiclass Classifier Model ---------------
 put_log("Evaluating the pre-trained CNN-based Multiclass Classifier Model...")
 
 if (!exists("cnn_mcc.model")) {
-  stopifnot(file.exists(cnn_mcc.model.file_path))
+  stopifnot(file.exists(cnn_mcc.basic.file_path))
   
   put_log("Loading the pre-trained CNN-based Multiclass Classifier model from the backup file...")
-  cnn_mcc.model <- keras3::load_model(cnn_mcc.model.file_path)
+  cnn_mcc.model <- keras3::load_model(cnn_mcc.basic.file_path)
   put_log("The pre-trained CNN-based Multiclass Classifier model 
 has been loaded from the following backup file:
-%1", cnn_mcc.model.file_path)
+%1", cnn_mcc.basic.file_path)
   
-  if(file.exists(cnn_mcc.train_history.file_path)){
+  if(file.exists(cnn_mcc.basic.train_history.file_path)){
     put_log("Loading the CNN-Based Multiclass Classifier Model Train History...")
-    cnn_mcc.train_history <- readRDS(cnn_mcc.train_history.file_path)
+    cnn_mcc.train_history <- readRDS(cnn_mcc.basic.train_history.file_path)
     put_log("The CNN-Based Multiclass Classifier Model has been loaded from the backup file:
-%1", cnn_mcc.train_history.file_path)
+%1", cnn_mcc.basic.train_history.file_path)
   } else {
     warning("The CNN-Based Multiclass Classifier Model backup does not exist:
-", cnn_mcc.train_history.file_path)
+", cnn_mcc.basic.train_history.file_path)
   }
 }
+
 
 put_log("The Pre-trained CNN-Based Multiclass Classifier Model detains:
 
@@ -250,19 +252,13 @@ log_close()
 ## Visualizing the Evaluation Results ------------------------------------------
 
 open_logfile(".basic-cnn-model.eval.visualization")
-
 stopifnot(file.exists(model_visualization.shared.script.path))
 
-cnn_mcc.plots.dat.dir <- file.path(data.cnn_mcc.dir, "plots.dat")
+cnn_mcc.eval.conf.mx.img_file <- file.path(cnn_mcc.basic.plots.dat.dir,
+                                            "cnn_mcc.eval.confusion-matrix.png")
 
-if(!dir.exists(cnn_mcc.plots.dat.dir))
-  dir.create(cnn_mcc.plots.dat.dir)
-
-cnn_mcc.eval.conf.mx.img_file <- file.path(cnn_mcc.plots.dat.dir,
-                                            "dl-basic.eval.confusion-matrix.png")
-
-cnn_mcc.eval.plots_dat.file <- file.path(cnn_mcc.plots.dat.dir,
-                                          "dl-basic.eval.plots_dat.rds")
+cnn_mcc.eval.plots_dat.file <- file.path(cnn_mcc.basic.plots.dat.dir,
+                                          "cnn_mcc.eval.plots_dat.rds")
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
