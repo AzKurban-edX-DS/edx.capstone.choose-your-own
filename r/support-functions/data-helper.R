@@ -384,6 +384,7 @@ plot_image <- function(image_file) {
 ## Data processing -------------------------------------------------------------
 split.img28x28mx_array <- function(backup.file,
                                    seed = NA,
+                                   seed.default = TRUE,
                                    test_ratio = 0.2) {
   stopifnot(file.exists(backup.file))
   
@@ -399,6 +400,8 @@ Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
   
   if(!is.na(seed)) {
     set.seed(seed)
+  } else if(seed.default) {
+    set.seed(nrow(img28x28mx.set$img28x28mx.array))
   }
 
   split.list <- sample_train_test_sets.x3d(img28x28mx.set$img28x28mx.array,

@@ -213,7 +213,7 @@ x.binarize <- function(x) {
   (x > 0.5)*1
 }
 
-dl_basic.model.sequential = function(hp) {
+dnn_basic.model.sequential = function(hp) {
   
   model = keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28,28))
@@ -230,7 +230,7 @@ dl_basic.model.sequential = function(hp) {
   return(model)
 }
 
-build.dl_basic.model <- function(hp) {
+build.dnn_basic.model <- function(hp) {
   n.inputs <- 28*28
  
   model_inputs <- layer_input(shape = c(n.inputs))
@@ -427,7 +427,7 @@ cnn_mcc.tunable_model <- function(hp,
   return(model)
 }
 
-dl_basic.tunable_model <- function(hp,
+dnn_basic.tunable_model <- function(hp,
                                    input_shape = c(28, 28),
                                    n.outputs,
                                    dropout.rate = 0.2) {
@@ -461,7 +461,7 @@ dl_basic.tunable_model <- function(hp,
 }
 
 #' @param class.labels Multiclass Classifier Class Labels   
-predict.dl_basic.model <- function(model,
+predict.dnn_basic.model <- function(model,
                              x.test,
                              class.labels) {
   put_log("Evaluating DL Model...")
@@ -481,7 +481,7 @@ predict.dl_basic.model <- function(model,
   
   predictions <- preds.ts |> op_argmax(2)
   
-  put_log("Function `predict.dl_basic.model`:
+  put_log("Function `predict.dnn_basic.model`:
 Predictions have been constructed:
 %1", capture.output(str(predictions)))
   put_end_date(start)

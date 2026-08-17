@@ -276,10 +276,10 @@ if(!file.exists(ds28x28.split.train_0.8.backup.file)) {
   put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
   
-  ds28x28.split.train_0.8 <- split.img28x28mx_array(train.img28x28mx.array.file_path,
-                                         seed = N.classes,
-                                         test_ratio = 0.2)
-
+  ds28x28.split.train_0.8 <- 
+    split.img28x28mx_array(train.img28x28mx.array.file_path,
+                           test_ratio = 0.2)
+  
   put_log("The Default Split Dataset object structure:
 %1", capture.output(str(ds28x28.split.train_0.8)))
 
@@ -288,7 +288,7 @@ into a Default Train and Test Sets...")
   saveRDS(ds28x28.split.train_0.8, 
           file = ds28x28.split.train_0.8.backup.file)
   
-  # rm(ds28x28.split.train_0.8)
+  rm(ds28x28.split.train_0.8)
   
   put_log("The Split Dataset List object has been backed up in the following file:
 `%1`", ds28x28.split.train_0.8.backup.file)
@@ -318,10 +318,10 @@ if(!file.exists(ds28x28.split.train_0.1.backup.file)) {
   put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
   
-  ds28x28.split.train_0.1 <- split.img28x28mx_array(train.img28x28mx.array.file_path,
-                                         seed = N.classes,
-                                         test_ratio = 0.9)
-
+  ds28x28.split.train_0.1 <- 
+    split.img28x28mx_array(train.img28x28mx.array.file_path,
+                           test_ratio = 0.9)
+  
   put_log("The Default Split Dataset object structure:
 %1", capture.output(str(ds28x28.split.train_0.1)))
 
@@ -330,7 +330,7 @@ into a Default Train and Test Sets...")
   saveRDS(ds28x28.split.train_0.1, 
           file = ds28x28.split.train_0.1.backup.file)
   
-  # rm(ds28x28.split.train_0.1)
+  rm(ds28x28.split.train_0.1)
   
   put_log("The Split Dataset List object has been backed up in the following file:
 `%1`", ds28x28.split.train_0.1.backup.file)

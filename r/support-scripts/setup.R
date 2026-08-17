@@ -202,11 +202,23 @@ stopifnot(dir.exists(models.rf_scripts.dir))
 put_log("Root directory for the `RF MCC` model's scripts:
 %1", models.rf_scripts.dir)
 
-models.dl_basic.scripts.dir <- file.path(model_scripts.dir, "dl-basic")
-stopifnot(dir.exists(models.dl_basic.scripts.dir))
+#' ******************************
 
-put_log("Root directory for the Basic DL-Based model's scripts:
-%1", models.dl_basic.scripts.dir)
+models.dnn.scripts.dir <- file.path(model_scripts.dir, "dnn")
+stopifnot(dir.exists(models.dnn.scripts.dir))
+
+put_log("Root directory for the Basic DNN-Based model's scripts:
+%1", models.dnn.scripts.dir)
+
+models.dnn_basic.scripts.dir <- file.path(models.dnn.scripts.dir, "basic")
+stopifnot(dir.exists(models.dnn_basic.scripts.dir))
+
+put_log("Root directory for the Basic DNN-Based model's scripts:
+%1", models.dnn_basic.scripts.dir)
+
+#' ******************************
+
+
 
 models.cnn_scripts.dir <- file.path(model_scripts.dir, "cnn")
 stopifnot(dir.exists(models.cnn_scripts.dir))
@@ -297,6 +309,11 @@ dl.keras3.dir <- file.path(models_data.dir, "dl.keras3")
 if(!dir.exists(dl.keras3.dir))
   dir.create(dl.keras3.dir)
 
+data.dnn_basic.dir <- file.path(dl.keras3.dir, "dnn_basic")
+
+if(!dir.exists(data.dnn_basic.dir))
+  dir.create(data.dnn_basic.dir)
+
 data.dl.cnn.dir <- file.path(dl.keras3.dir, "cnn")
 
 if(!dir.exists(data.dl.cnn.dir))
@@ -326,12 +343,12 @@ rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir,
                                                 "rf-retraining.best-par.R")
 stopifnot(file.exists(rf_retraining.best_par.script.path))
 
-dl_basic.script.path <- file.path(models.dl_basic.scripts.dir, "dl-basic.R")
-stopifnot(file.exists(dl_basic.script.path))
+dnn_basic.script.path <- file.path(models.dnn_basic.scripts.dir, "dnn-basic.R")
+stopifnot(file.exists(dnn_basic.script.path))
 
-dl_basic.tuner.script.path <- file.path(models.dl_basic.scripts.dir, 
+dnn_basic.tuner.script.path <- file.path(models.dnn_basic.scripts.dir, 
                                         "dl-basic.tuner.R")
-stopifnot(file.exists(dl_basic.tuner.script.path))
+stopifnot(file.exists(dnn_basic.tuner.script.path))
 
 cnn_mcc.script.path <- file.path(cnn_mcc.scripts.dir, "cnn-mcc.basic.R")
 stopifnot(file.exists(cnn_mcc.script.path))

@@ -119,24 +119,45 @@ source(rf_retraining.best_par.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Basic Deep Learning Model ---------------------------------------------------
-stopifnot(file.exists(dl_basic.script.path))
+## Basic Deep Learning (BDL) Model ----------------------------------------------
+stopifnot(file.exists(dnn_basic.script.path))
 
-data.dl_basic.dir <- file.path(dl.keras3.dir, "dl.basic")
+dnn_basic.tuning.dir <- file.path(data.dnn_basic.dir,
+                                 "tuning")
+if(!dir.exists(dnn_basic.tuning.dir))
+  dir.create(dnn_basic.tuning.dir)
 
-if(!dir.exists(data.dl_basic.dir))
-  dir.create(data.dl_basic.dir)
-
-source(dl_basic.script.path, 
+source(dnn_basic.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
-stopifnot(file.exists(dl_basic.tuner.script.path))
+### Tuning BDL Model -----------------------------------------------------------
 
-source(dl_basic.tuner.script.path, 
+dnn_basic.keras_tuner.dir <- file.path(dnn_basic.tuning.dir, "keras-tuner")
+
+if(!dir.exists(dnn_basic.keras_tuner.dir))
+  dir.create(dnn_basic.keras_tuner.dir)
+
+bdl_final.eval.result.file <- file.path(dnn_basic.keras_tuner.dir,
+                                        "bdl_final.eval.result.rds")
+
+if(file.exists(bdl_final.eval.result.file)) {
+  put_log("Loading the BDL MCC Final Model Evaluation Result object...")
+  bdl_final.eval.result <- readRDS(bdl_final.eval.result.file)
+  
+  put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
+from the following file:
+%1", bdl_final.eval.result.file)
+} else {
+  
+}
+
+stopifnot(file.exists(dnn_basic.tuner.script.path))
+
+source(dnn_basic.tuner.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

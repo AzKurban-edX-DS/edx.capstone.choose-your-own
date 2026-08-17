@@ -10,7 +10,7 @@
 # ref.bib: DL_R3_E2-S7.3
 
 ## Prepare Input Datasets -----------------------------------------------------
-open_logfile(".dl.basic-model.prepare-ds")
+open_logfile(".dnn_basic-model.prepare-ds")
 stopifnot(file.exists(my_emnist.split.file_path))
 
 start <- put_start_date()
@@ -192,34 +192,24 @@ log_close()
 
 ## Init DL Basic Model Paths ---------------------------------------------------
 
-open_logfile(".dl.basic-model.build")
+open_logfile(".dnn_basic-model.build")
 
-dl.basic.tuning.dir <- file.path(data.dl_basic.dir,
-                                            "tuning")
-if(!dir.exists(dl.basic.tuning.dir))
-  dir.create(dl.basic.tuning.dir)
-
-dl.basic.layers_dynamic.dir <- file.path(dl.basic.tuning.dir, "layers-dynamic")
-
-if(!dir.exists(dl.basic.layers_dynamic.dir))
-  dir.create(dl.basic.layers_dynamic.dir)
-
-dl.basic.checkpoints.dir <- file.path(data.dl_basic.dir,
+dnn_basic.checkpoints.dir <- file.path(data.dnn_basic.dir,
                                             "checkpoints")
-if(!dir.exists(dl.basic.checkpoints.dir))
-  dir.create(dl.basic.checkpoints.dir)
+if(!dir.exists(dnn_basic.checkpoints.dir))
+  dir.create(dnn_basic.checkpoints.dir)
 
-dl.basic.checkpoint.file_path <- 
-  file.path(dl.basic.checkpoints.dir, 
-            "dl.basic.{epoch:02d}-{val_loss:.2f}.keras")
+dnn_basic.checkpoint.file_path <- 
+  file.path(dnn_basic.checkpoints.dir, 
+            "dnn_basic.{epoch:02d}-{val_loss:.2f}.keras")
 
-dl.basic.model.file_path <- file.path(data.dl_basic.dir, 
-                             "dl.basic.pre-trained.model.keras")
+dnn_basic.model.file_path <- file.path(data.dnn_basic.dir, 
+                             "dnn_basic.pre-trained.model.keras")
 
-dl.basic.model.train_history.file_path <- file.path(data.dl_basic.dir, 
-                             "dl.basic.model.train_history.bak.rds")
+dnn_basic.model.train_history.file_path <- file.path(data.dnn_basic.dir, 
+                             "dnn_basic.model.train_history.bak.rds")
 
-bdl.eval.result.file <- file.path(data.dl_basic.dir,
+bdl.eval.result.file <- file.path(data.dnn_basic.dir,
                                         "bdl.eval.result.rds")
 
 ## Building Basic DL MCC Model -------------------------------------------------
@@ -227,24 +217,24 @@ bdl.eval.result.file <- file.path(data.dl_basic.dir,
 n.input_shape <- ncol(x_train)
 # 784
 
-if(file.exists(dl.basic.model.file_path)) {
+if(file.exists(dnn_basic.model.file_path)) {
   put_log("Loading pre-trained BDL MCC Model...")
   
-  dl.basic.model <- keras3::load_model(dl.basic.model.file_path)
+  dnn_basic.model <- keras3::load_model(dnn_basic.model.file_path)
   
   put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dl.basic.model.file_path)
+%1", dnn_basic.model.file_path)
   
-  if(file.exists(dl.basic.model.train_history.file_path)){
+  if(file.exists(dnn_basic.model.train_history.file_path)){
     put_log("Loading the BDL MCC Model Train History...")
     
-    dl.basic.train_history <- readRDS(dl.basic.model.train_history.file_path)
+    dnn_basic.train_history <- readRDS(dnn_basic.model.train_history.file_path)
     
     put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dl.basic.model.train_history.file_path)
+%1", dnn_basic.model.train_history.file_path)
   } else {
     warning("The BDL MCC Model backup does not exist:
-", dl.basic.model.train_history.file_path)
+", dnn_basic.model.train_history.file_path)
   }
 } else {
   #' *** Defining & Compiling the Basic DL MCC Model ***************************
@@ -252,29 +242,29 @@ if(file.exists(dl.basic.model.file_path)) {
   n.input_shape <- ncol(x_train)
   # 784
   
-  dl.basic.inputs <- layer_input(shape = c(n.input_shape))
+  dnn_basic.inputs <- layer_input(shape = c(n.input_shape))
   
-  dl.basic.outputs <- dl.basic.inputs |>
+  dnn_basic.outputs <- dnn_basic.inputs |>
     layer_dense(units = n.hl.units, activation = "relu") |>
     layer_dropout(rate = 0.25) |> 
     layer_dense(units = N.classes, activation = "softmax")
   
   
-  dl.basic.model <- keras_model(dl.basic.inputs, dl.basic.outputs)
+  dnn_basic.model <- keras_model(dnn_basic.inputs, dnn_basic.outputs)
 
-  dl.basic.model |> compile(
+  dnn_basic.model |> compile(
     loss = "categorical_crossentropy",
     optimizer = keras3::optimizer_adamax(0.001),
     metrics = "accuracy"
   )
   
-  summary(dl.basic.model)
+  summary(dnn_basic.model)
   
   #' *** Training the Basic DL MCC Model ***************************************
   
-  dl.basic.callbacks <- list(
+  dnn_basic.callbacks <- list(
     callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = dl.basic.checkpoint.file_path,
+    callback_model_checkpoint(filepath = dnn_basic.checkpoint.file_path,
                               monitor = "val_loss",
                               save_best_only = TRUE,
                               verbose = 1)
@@ -283,31 +273,31 @@ if(file.exists(dl.basic.model.file_path)) {
   put_log("Training the BDL MCC Model...")
   start <- put_start_date()
   
-  dl.basic.train_history <- dl.basic.model |> 
+  dnn_basic.train_history <- dnn_basic.model |> 
     fit(x_train, 
         y_train.cat, 
         epochs = 100, 
         # batch_size = 128, 
-        callbacks = dl.basic.callbacks,
+        callbacks = dnn_basic.callbacks,
         validation_split = 0.2
         )
 
   put_log("Saving pre-trained BDL MCC Model...")
-  keras3::save_model(dl.basic.model,
-             filepath = dl.basic.model.file_path,
+  keras3::save_model(dnn_basic.model,
+             filepath = dnn_basic.model.file_path,
              overwrite = FALSE)
   
   put_log("The BDL MCC Model has been trained 
 and saved in the following file:
-  %1", dl.basic.model.file_path)
+  %1", dnn_basic.model.file_path)
 
   put_log("Saving the BDL MCC Model History...")
-  saveRDS(dl.basic.train_history,
-          file = dl.basic.model.train_history.file_path)
+  saveRDS(dnn_basic.train_history,
+          file = dnn_basic.model.train_history.file_path)
   
   put_log("The BDL MCC Model History has been trained 
 and saved in the following file:
-  %1", dl.basic.model.train_history.file_path)
+  %1", dnn_basic.model.train_history.file_path)
   put_end_date(start)
 }
 
@@ -315,18 +305,18 @@ rm(x_train,
    y_train.cat)
 
 put_log("The trained Basic DL MCC Model summary:
-%1", dl.basic.model)
+%1", dnn_basic.model)
 
-plot(dl.basic.train_history)
+plot(dnn_basic.train_history)
 
 put_log("Structure of the Basic DL MCC Model training history:
-%1", capture.output(str(dl.basic.train_history)))
+%1", capture.output(str(dnn_basic.train_history)))
 
-rm(dl.basic.train_history)
+rm(dnn_basic.train_history)
 log_close()
 # Log Elapsed Time: 0 00:04:07
 ## BDL MCC Model Evaluation ----------------------------------------------------
-open_logfile(".dl.basic-model.evaluate")
+open_logfile(".dnn_basic-model.evaluate")
 
 if(file.exists(bdl.eval.result.file)) {
   put_log("Loading the BDL MCC Model Evaluation Result object...")
@@ -337,7 +327,7 @@ from the following file:
 %1", bdl.eval.result.file)
 } else {
   put_log("Evaluating DL Model...")
-  bdl.eval.result <- dl.basic.model |> evaluate(x_test, y_test.cat)
+  bdl.eval.result <- dnn_basic.model |> evaluate(x_test, y_test.cat)
   put_log("DL Model evaluation result:
 %1", capture.output(str(bdl.eval.result)))
   # List of 2
@@ -352,7 +342,7 @@ from the following file:
   put_end_date(start)
   # Time difference of 1.668308 mins
   
-  bdl.eval.result$predicted.probs <- dl.basic.model |> predict(x_test) 
+  bdl.eval.result$predicted.probs <- dnn_basic.model |> predict(x_test) 
   put_end_date(start)
   # Time difference of  mins
   
@@ -402,8 +392,8 @@ and saved in the following file:
   put_end_date(start)
 }
 
-# dl.basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y_test))
-# put_log("The overall Basic `DL MCC` Model accuracy: %1",dl.basic.accuracy)
+# dnn_basic.accuracy <- mean(bdl.pred.values.idx == as.integer(y_test))
+# put_log("The overall Basic `DL MCC` Model accuracy: %1",dnn_basic.accuracy)
 # 0.898338750451427
 
 rm(x_test,
@@ -418,35 +408,35 @@ open_logfile(".dl-basic.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
-dl_basic.plots.dat.dir <- file.path(data.dl_basic.dir, "plots.dat")
+dnn_basic.plots.dat.dir <- file.path(data.dnn_basic.dir, "plots.dat")
 
-if(!dir.exists(dl_basic.plots.dat.dir))
-  dir.create(dl_basic.plots.dat.dir)
+if(!dir.exists(dnn_basic.plots.dat.dir))
+  dir.create(dnn_basic.plots.dat.dir)
 
-dl_basic.eval.conf.mx.img_file <- file.path(dl_basic.plots.dat.dir,
+dnn_basic.eval.conf.mx.img_file <- file.path(dnn_basic.plots.dat.dir,
                                             "dl-basic.eval.confusion-matrix.png")
 
-dl_basic.eval.plots_dat.file <- file.path(dl_basic.plots.dat.dir,
+dnn_basic.eval.plots_dat.file <- file.path(dnn_basic.plots.dat.dir,
                                           "dl-basic.eval.plots_dat.rds")
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
-if(file.exists(dl_basic.eval.plots_dat.file)) {
+if(file.exists(dnn_basic.eval.plots_dat.file)) {
   put_log("Function `init.plots_args`:
 Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(dl_basic.eval.plots_dat.file)
+  plots.args <- init.plots_args(dnn_basic.eval.plots_dat.file)
   
   put_log("Function `init.plots_args`:
 The model-related plots input data object has been loaded from the following file:
-%1", dl_basic.eval.plots_dat.file)
+%1", dnn_basic.eval.plots_dat.file)
 } else {
   plots.args <- init.plots_args(targets = bdl.eval.result$targets,
                                 predicted.probabilities = bdl.eval.result$predicted.probs,
                                 predicted.values = bdl.eval.result$predicted.values,
                                 alg_name = "DL Basics",
-                                plots_dat.file = dl_basic.eval.plots_dat.file,
-                                cm.export.img_file = dl_basic.eval.conf.mx.img_file,
+                                plots_dat.file = dnn_basic.eval.plots_dat.file,
+                                cm.export.img_file = dnn_basic.eval.conf.mx.img_file,
                                 cm.print.image = T)
 }
 
@@ -472,10 +462,10 @@ stopifnot(exists("plots.dat"),
 put_log("Saving the model-related plots input data object to file...")
 
 saveRDS(plots.dat,
-        file = dl_basic.eval.plots_dat.file)
+        file = dnn_basic.eval.plots_dat.file)
 
 put_log("The model-related plots input data object has been saved to the following file:
-%1", dl_basic.eval.plots_dat.file)
+%1", dnn_basic.eval.plots_dat.file)
 
 ### The Model Per-Class Accuracy -----------------------------------------------
 put_log("The Basic DL Model per-class accuracy:,

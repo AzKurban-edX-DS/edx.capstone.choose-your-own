@@ -26,7 +26,7 @@ cnn_mcc.checkpoint.tuner.file_path <-
   file.path(data.cnn_mcc.tuner.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
-### Prepare a Training Set for the Model Training ---------------------------------
+### Prepare a Training Set for the Model Training ------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
 
