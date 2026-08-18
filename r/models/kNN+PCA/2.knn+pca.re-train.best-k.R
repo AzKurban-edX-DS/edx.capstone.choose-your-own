@@ -295,6 +295,9 @@ open_logfile(".k(best)nn+pca.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
+if(!dir.exists(knn_pca.data.plots.dat.dir))
+  dir.create(knn_pca.data.plots.dat.dir)
+
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
                                            "knn+pca-tuned.eval.confusion-matrix.png")
 

@@ -231,6 +231,9 @@ open_logfile(".rf-tuned.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
+if(!dir.exists(data.models.rf.plots.dat.dir))
+  dir.create(data.models.rf.plots.dat.dir)
+
 rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                            "rf-tuned.eval.confusion-matrix.png")
 
