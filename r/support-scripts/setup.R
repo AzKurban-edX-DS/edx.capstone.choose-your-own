@@ -321,9 +321,10 @@ if(!dir.exists(knn_pca.data.dir))
 knn_pca.data.plots.dat.dir <- file.path(knn_pca.data.dir, 
                                         "plots.dat")
 
-###### Directories for Random Forest Model Data --------------------------------
 if(!dir.exists(knn_pca.data.plots.dat.dir))
   dir.create(knn_pca.data.plots.dat.dir)
+
+###### Directories for Random Forest Model Data --------------------------------
 
 data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
 
@@ -363,6 +364,12 @@ dnn_mcc.tuner.dir <- file.path(data.dnn_mcc.dir,
                                   "tuner")
 if(!dir.exists(dnn_mcc.tuner.dir))
   dir.create(dnn_mcc.tuner.dir)
+
+dnn_mcc.tuner.plots.dat.dir <- file.path(dnn_mcc.tuner.dir, "plots.dat")
+
+if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
+  dir.create(dnn_mcc.tuner.plots.dat.dir)
+
 
 ###### Directories for CNN-Based Data -------------------------------------------
 
