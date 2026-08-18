@@ -320,11 +320,10 @@ if(!dir.exists(knn_pca.data.dir))
 
 knn_pca.data.plots.dat.dir <- file.path(knn_pca.data.dir, 
                                         "plots.dat")
-
-###### Directories for Random Forest Model Data --------------------------------
 if(!dir.exists(knn_pca.data.plots.dat.dir))
   dir.create(knn_pca.data.plots.dat.dir)
 
+###### Directories for Random Forest Model Data --------------------------------
 data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
 
 if(!dir.exists(data.models.random_forest.dir))
