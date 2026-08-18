@@ -112,59 +112,46 @@ open_logfile(paste0(".dl-basic-model.tuning_",
                                        collapse = ","),")")))
 ### Init the Model Tuner Paths --------------------------------------------
 
-dnn_basic.tuning.dir <- file.path(data.dnn_basic.dir,
-                                            "tuning")
-if(!dir.exists(dnn_basic.tuning.dir))
-  dir.create(dnn_basic.tuning.dir)
+dnn_mcc.final.file_path <- file.path(dnn_mcc.tuner.dir, 
+                                      "dnn-mcc.final-model.keras")
 
-dnn_basic.layers_dynamic.dir <- file.path(dnn_basic.tuning.dir, "layers-dynamic")
+dnnb.final_model.train_history.file_path <- file.path(dnn_mcc.tuner.dir, 
+                                                    "dnn_mcc.final_model.train_history.rds")
 
-if(!dir.exists(dnn_basic.layers_dynamic.dir))
-  dir.create(dnn_basic.layers_dynamic.dir)
+dnn_mcc.tune.plot_img.dir <- file.path(dnn_mcc.tuner.dir, "plot.img")
 
-dnn_basic.model_tuner.file_path <- file.path(dnn_basic.keras_tuner.dir, 
-                                      "dl-basic.model-tuner.rds")
+if(!dir.exists(dnn_mcc.tune.plot_img.dir))
+  dir.create(dnn_mcc.tune.plot_img.dir)
 
-dnn_basic.final_model.file_path <- file.path(dnn_basic.keras_tuner.dir, 
-                                      "dl-basic.final-model.keras")
-
-bdl.final_model.train_history.file_path <- file.path(dnn_basic.keras_tuner.dir, 
-                                                    "dnn_basic.final_model.train_history.rds")
-
-dnn_basic_tune.plot_img.dir <- file.path(dnn_basic.keras_tuner.dir, "plot.img")
-
-if(!dir.exists(dnn_basic_tune.plot_img.dir))
-  dir.create(dnn_basic_tune.plot_img.dir)
-
-dnn_basic.best_model.plot_img.file <- file.path(dnn_basic_tune.plot_img.dir, 
+dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tune.plot_img.dir, 
                                                "tuner.best-model.png")
-dnn_basic.final_model.plot_img.file <- file.path(dnn_basic_tune.plot_img.dir, 
+dnn_mcc.final_model.plot_img.file <- file.path(dnn_mcc.tune.plot_img.dir, 
                                                "tuner.final-model.png")
 
-dnn_basic.final.conf_mx.bak <- file.path(dnn_basic_tune.plot_img.dir, 
+dnn_mcc.final.conf_mx.bak <- file.path(dnn_mcc.tune.plot_img.dir, 
                                                "tuner-final.confusion-matrix.rds")
 
-dnn_basic.final.conf_mx.img <- file.path(dnn_basic_tune.plot_img.dir, 
+dnn_mcc.final.conf_mx.img <- file.path(dnn_mcc.tune.plot_img.dir, 
                                                "tuner-final.confusion-matrix.png")
 
 
-dnn_basic_tuner.checkpoints.dir <- file.path(dnn_basic.keras_tuner.dir,
+dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints")
-if(!dir.exists(dnn_basic_tuner.checkpoints.dir))
-  dir.create(dnn_basic_tuner.checkpoints.dir)
+if(!dir.exists(dnn_mcc.tuner.checkpoints.dir))
+  dir.create(dnn_mcc.tuner.checkpoints.dir)
 
-dnn_basic_tuner.checkpoint.file_path <- 
-  file.path(dnn_basic_tuner.checkpoints.dir, 
-            "dnn_basic_tuner.{epoch:02d}-{val_loss:.2f}.keras")
+dnn_mcc.tuner.checkpoint.file_path <- 
+  file.path(dnn_mcc.tuner.checkpoints.dir, 
+            "dnn_mcc.tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
-dnn_basic_best.checkpoints.dir <- file.path(dnn_basic.keras_tuner.dir,
+dnn_mcc.best.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints.best")
-if(!dir.exists(dnn_basic_best.checkpoints.dir))
-  dir.create(dnn_basic_best.checkpoints.dir)
+if(!dir.exists(dnn_mcc.best.checkpoints.dir))
+  dir.create(dnn_mcc.best.checkpoints.dir)
 
-dnn_basic_best.checkpoint.file_path <- 
-  file.path(dnn_basic_best.checkpoints.dir, 
-            "dnn_basic_best.{epoch:02d}-{val_loss:.2f}.keras")
+dnn_mcc.best.checkpoint.file_path <- 
+  file.path(dnn_mcc.best.checkpoints.dir, 
+            "dnn_mcc.best.{epoch:02d}-{val_loss:.2f}.keras")
 
 ### Process the Tuning ---------------------------------------------------------
 if(!is.null(dev.list())) dev.off()
@@ -175,11 +162,11 @@ put_log("Tuning the DL Basic Model on the full Train Dataset (`x_train`) of shap
 start <- put_start_date()
 # Log Start Time: 2026-06-29 09:22:51.209273
 
-dnn_basic.tuner <- dl.tune.hwr_model(dnn_basic.tunable_model,
+dnn_mcc.tuner <- dl.tune.hwr_model(dnn_mcc.tunable_model,
                                     x_train,
                                     y_train,
-                                    dnn_basic.keras_tuner.dir,
-                                    dnn_basic_tuner.checkpoint.file_path,
+                                    dnn_mcc.tuner.dir,
+                                    dnn_mcc.tuner.checkpoint.file_path,
                                     project_name = "DL.Basic.Tuner")
 rm(x_train,
    y_train)
@@ -190,27 +177,19 @@ put_end_date(start)
 # Best val_accuracy So Far: 0.8961053490638733
 # Total elapsed time: 03h 38m 12s
 
-# put_log("Saving the BDL Model Tuner object...")
-# saveRDS(dnn_basic.tuner,
-#         file = dnn_basic.model_tuner.file_path)
-# 
-# put_log("The BDL Model Tuner object has been saved in the following file:
-#   %1", dnn_basic.model_tuner.file_path)
-# put_end_date(start)
-# 
 put_log("The DL Basic Tuning Results Summary:
-%1", capture.output(dnn_basic.tuner$results_summary()))
+%1", capture.output(dnn_mcc.tuner$results_summary()))
 
 # <keras_tuner.src.tuners.randomsearch.RandomSearch object at 0x000001F3BD376D90>
 
-class(dnn_basic.tuner)
+class(dnn_mcc.tuner)
 
 # This prints a summary of the search space and lists the top trial results
-bdl.model_tuner.result <- kerastuneR::plot_tuner(dnn_basic.tuner)
+dnnb.model_tuner.result <- kerastuneR::plot_tuner(dnn_mcc.tuner)
 # the list will show the plot and the data.frame of tuning results
 
 put_log("The DL Basic Tuning Results:
-%1", capture.output(bdl.model_tuner.result))
+%1", capture.output(dnnb.model_tuner.result))
 {
   # [[1]]
   # 
@@ -235,13 +214,13 @@ put_log("The DL Basic Tuning Results:
   # 5      231      199      583      263       71        19 0.8117780
 }
 
-rm(bdl.model_tuner.result)
+rm(dnnb.model_tuner.result)
 
 # This prints the top trials, their hyperparameters, and execution details
-dnn_basic.tuner |> results_summary(num_trials = 1L)
+dnn_mcc.tuner |> results_summary(num_trials = 1L)
 {
   # Results summary
-  # Results in data/models/dl.keras3/dnn_basic/tuning/keras-tuner\DL.Basic.Tuner
+  # Results in data/models/dl.keras3/dnn_mcc/tuning/keras-tuner\DL.Basic.Tuner
   # Showing 1 best trials
   # Objective(name="val_accuracy", direction="max")
   # 
@@ -273,27 +252,27 @@ dnn_basic.tuner |> results_summary(num_trials = 1L)
 }
 
 # Retrieve the best model from the search
-dnn_basic.best_models <- kerastuneR::get_best_models(tuner = dnn_basic.tuner, num_models = 1L)
-dnn_basic.best_model <- dnn_basic.best_models[[1]]
-rm(dnn_basic.best_models)
+dnn_mcc.best_models <- kerastuneR::get_best_models(tuner = dnn_mcc.tuner, num_models = 1L)
+dnn_mcc.best_model <- dnn_mcc.best_models[[1]]
+rm(dnn_mcc.best_models)
 
-dnn_basic.best_model$summary()
+dnn_mcc.best_model$summary()
 # View completed epochs of this best model
 # If restore_best_weights = TRUE, this tells you the optimal epoch
-# best_epoch <- dnn_basic.best_model$history$params$epochs
+# best_epoch <- dnn_mcc.best_model$history$params$epochs
 
-dnn_basic.best_model |> plot_keras_model(to_file = dnn_basic.best_model.plot_img.file,
+dnn_mcc.best_model |> plot_keras_model(to_file = dnn_mcc.best_model.plot_img.file,
                                         show_shapes = TRUE)
 
-dnn_basic.tuner.best_trials <- dnn_basic.tuner$oracle$get_best_trials(num_trials = 1L)
-dnn_basic.best_trial <- dnn_basic.tuner.best_trials[[1]]
-dnn_basic.best_trial$summary()
-dnn_basic.best_trial$best_step
+dnn_mcc.tuner.best_trials <- dnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
+dnn_mcc.best_trial <- dnn_mcc.tuner.best_trials[[1]]
+dnn_mcc.best_trial$summary()
+dnn_mcc.best_trial$best_step
 
-dnn_basic.best_trial$metrics$get_history('val_accuracy')
+dnn_mcc.best_trial$metrics$get_history('val_accuracy')
 
-rm(dnn_basic.tuner.best_trials,
-   dnn_basic.best_trial)
+rm(dnn_mcc.tuner.best_trials,
+   dnn_mcc.best_trial)
 
 log_close()
 # Log Elapsed Time: 0 00:10:44
@@ -389,75 +368,75 @@ log_close()
 
 ## Re-training the Final Model --------------------------------------------------
 
-open_logfile("re-training.best.dnn_basic-model")
+open_logfile("re-training.best.dnn_mcc-model")
 
 
-if(file.exists(dnn_basic.final_model.file_path)) {
+if(file.exists(dnn_mcc.final.file_path)) {
   put_log("Loading pre-trained BDL MCC Model...")
   
-  dnn_basic.final_model <- keras3::load_model(dnn_basic.final_model.file_path)
+  dnn_mcc.final_model <- keras3::load_model(dnn_mcc.final.file_path)
   
   put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dnn_basic.final_model.file_path)
+%1", dnn_mcc.final.file_path)
   
-  if(file.exists(bdl.final_model.train_history.file_path)){
+  if(file.exists(dnnb.final_model.train_history.file_path)){
     put_log("Loading the BDL MCC Model Train History...")
     
-    bdl.final_model.train_history <- readRDS(bdl.final_model.train_history.file_path)
+    dnnb.final_model.train_history <- readRDS(dnnb.final_model.train_history.file_path)
     
     put_log("The BDL MCC Model has been loaded from the backup file:
-%1", bdl.final_model.train_history.file_path)
+%1", dnnb.final_model.train_history.file_path)
   } else {
     warning("The BDL MCC Model backup does not exist:
-", bdl.final_model.train_history.file_path)
+", dnnb.final_model.train_history.file_path)
   }
 } else {
-  dnn_basic.tuner.best_trial.ls <- dnn_basic.tuner$oracle$get_best_trials(num_trials = 10L)
-  str(dnn_basic.tuner.best_trial.ls)
+  dnn_mcc.tuner.best_trial.ls <- dnn_mcc.tuner$oracle$get_best_trials(num_trials = 10L)
+  str(dnn_mcc.tuner.best_trial.ls)
   
-  dnn_basic.tuner.best_trial.last_epochs <- sapply(dnn_basic.tuner.best_trial.ls, 
+  dnn_mcc.tuner.best_trial.last_epochs <- sapply(dnn_mcc.tuner.best_trial.ls, 
                                                   function(trial){
                                                     trial$best_step
                                                   })
   
-  dnn_basic.retrain_epochs <- max(dnn_basic.tuner.best_trial.last_epochs)
+  dnn_mcc.retrain_epochs <- max(dnn_mcc.tuner.best_trial.last_epochs)
   
   
-  dnn_basic.tuner.best_hp.ls <- dnn_basic.tuner$get_best_hyperparameters(num_trials = 1L)
-  # str(dnn_basic.tuner.best_hp.ls)
+  dnn_mcc.tuner.best_hp.ls <- dnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
+  # str(dnn_mcc.tuner.best_hp.ls)
   
-  dnn_basic.tuner.best_hp <- dnn_basic.tuner.best_hp.ls[[1]]
+  dnn_mcc.tuner.best_hp <- dnn_mcc.tuner.best_hp.ls[[1]]
   
   put_log("The best Hyperparameters configuration:
-%1", capture.output(dnn_basic.tuner.best_hp$get_config()))
+%1", capture.output(dnn_mcc.tuner.best_hp$get_config()))
   
-  class(dnn_basic.tuner.best_hp)
+  class(dnn_mcc.tuner.best_hp)
   # [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
   # [2] "python.builtin.object"        
   
-  dnn_basic.tuner.best_hp
+  dnn_mcc.tuner.best_hp
   # <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
   
   put_log("The best Hyperparameters values:
-%1", capture.output(dnn_basic.tuner.best_hp$values))
+%1", capture.output(dnn_mcc.tuner.best_hp$values))
   
   # 1. Re-build a clean model structure using the winning hyperparams
-  dnn_basic.final_model <- dnn_basic.tuner$hypermodel$build(dnn_basic.tuner.best_hp)
-  # print(dnn_basic.final_model)
-  # dnn_basic.final_model$summary()
+  dnn_mcc.final_model <- dnn_mcc.tuner$hypermodel$build(dnn_mcc.tuner.best_hp)
+  # print(dnn_mcc.final_model)
+  # dnn_mcc.final_model$summary()
   
   put_log("The Final tuned BDL Model Summary: 
-%1", capture.output(dnn_basic.final_model))
+%1", capture.output(dnn_mcc.final_model))
   
-  dnn_basic.final_model |> plot_keras_model(to_file = dnn_basic.final_model.plot_img.file,
+  dnn_mcc.final_model |> plot_keras_model(to_file = dnn_mcc.final_model.plot_img.file,
                                            show_shapes = T)
   
   #best_models <- tuner |> get_best_models(num_models = 1L)
   # best_5_models[[1]] %>% plot_keras_model()
   
-  dnn_basic_best.callbacks <- list(
+  dnn_mcc.best.callbacks <- list(
     callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = dnn_basic_best.checkpoint.file_path,
+    callback_model_checkpoint(filepath = dnn_mcc.best.checkpoint.file_path,
                               monitor = "val_loss",
                               save_best_only = TRUE,
                               verbose = 1)
@@ -466,46 +445,46 @@ if(file.exists(dnn_basic.final_model.file_path)) {
   put_log("Training the BDL MCC Model...")
   start <- put_start_date()
   
-  bdl.final_model.train_history <- dnn_basic.final_model |> 
+  dnnb.final_model.train_history <- dnn_mcc.final_model |> 
     fit(x_train, 
         y_train, 
-        epochs = dnn_basic.retrain_epochs, 
+        epochs = dnn_mcc.retrain_epochs, 
         # batch_size = 128, 
-        callbacks = dnn_basic_best.callbacks,
+        callbacks = dnn_mcc.best.callbacks,
         validation_split = 0.2
     )
   
   put_log("Saving re-trained final BDL MCC Model...")
-  keras3::save_model(dnn_basic.final_model,
-                     filepath = dnn_basic.final_model.file_path,
+  keras3::save_model(dnn_mcc.final_model,
+                     filepath = dnn_mcc.final.file_path,
                      overwrite = TRUE)
   
   put_log("The re-trained final BDL MCC Model has been trained 
 and saved in the following file:
-  %1", dnn_basic.final_model.file_path)
+  %1", dnn_mcc.final.file_path)
   
   put_log("Saving the BDL MCC Model History...")
-  saveRDS(bdl.final_model.train_history,
-          file = bdl.final_model.train_history.file_path)
+  saveRDS(dnnb.final_model.train_history,
+          file = dnnb.final_model.train_history.file_path)
   
   put_log("The re-trained final BDL MCC Model History has been trained 
 and saved in the following file:
-  %1", bdl.final_model.train_history.file_path)
+  %1", dnnb.final_model.train_history.file_path)
   put_end_date(start)
   # Time difference of 38.48235 mins
 }
 
 rm(x_train,
    y_train,
-   dnn_basic.tuner)
+   dnn_mcc.tuner)
 
 put_log("The re-trained `BDL MCC` Model has been trained with the following results
-%1", dnn_basic.final_model)
+%1", dnn_mcc.final_model)
 
-plot(bdl.final_model.train_history)
-str(bdl.final_model.train_history)
+plot(dnnb.final_model.train_history)
+str(dnnb.final_model.train_history)
 
-rm(bdl.final_model.train_history)
+rm(dnnb.final_model.train_history)
 
 log_close()
 # Log Elapsed Time: 0 00:13:05
@@ -599,18 +578,18 @@ log_close()
 
 ## The Final BDL MCC Model Evaluation ------------------------------------------
 
-if(file.exists(bdl_final.eval.result.file)) {
+if(file.exists(dnn_mcc.final.eval.result.file)) {
   put_log("Loading the BDL MCC Final Model Evaluation Result object...")
-  bdl_final.eval.result <- readRDS(bdl_final.eval.result.file)
+  dnnb_final.eval.result <- readRDS(dnn_mcc.final.eval.result.file)
   
   put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
 from the following file:
-%1", bdl_final.eval.result.file)
+%1", dnn_mcc.final.eval.result.file)
 } else {
   put_log("Evaluating DL Model...")
-  bdl_final.eval.result <- dnn_basic.final_model |> evaluate(x_test, y_test)
+  dnnb_final.eval.result <- dnn_mcc.final_model |> evaluate(x_test, y_test)
   put_log("BDL MCC Bset Model evaluation result:
-%1", capture.output(str(bdl_final.eval.result)))
+%1", capture.output(str(dnnb_final.eval.result)))
   # List of 2
   # $ accuracy: num 0.9
   # $ loss    : num 0.374
@@ -619,13 +598,13 @@ from the following file:
   put_end_date(start)
   # Time difference of 1.668308 mins
   
-  bdl_final.preds <- dnn_basic.final_model |> predict(x_test)
-  str(bdl_final.preds)
+  dnnb_final.preds <- dnn_mcc.final_model |> predict(x_test)
+  str(dnnb_final.preds)
   # put_end_date(start)
   # Time difference of  mins
   
-  colnames(bdl_final.preds) <- Y.Labels
-  head(bdl_final.preds[,1:5])
+  colnames(dnnb_final.preds) <- Y.Labels
+  head(dnnb_final.preds[,1:5])
   #                 #            $            &            @            0
   # [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
   # [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
@@ -633,109 +612,109 @@ from the following file:
   # [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
   # [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
   # [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
-  dim(bdl_final.preds)
+  dim(dnnb_final.preds)
   #> [1] 33228    39
   
-  bdl_final.eval.result$predicted.probs <- bdl_final.preds
-  str(bdl_final.eval.result)
+  dnnb_final.eval.result$predicted.probs <- dnnb_final.preds
+  str(dnnb_final.eval.result)
   
-  bdl_final.preds.ts <- as_tensor(bdl_final.preds)
-  str(bdl_final.preds.ts)
+  dnnb_final.preds.ts <- as_tensor(dnnb_final.preds)
+  str(dnnb_final.preds.ts)
   #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
   
-  bdl_final.predictions <- bdl_final.preds.ts |> op_argmax(2)
-  bdl_final.predictions
+  dnnb_final.predictions <- dnnb_final.preds.ts |> op_argmax(2)
+  dnnb_final.predictions
   #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-  dim(bdl_final.predictions)
+  dim(dnnb_final.predictions)
   #> [1] 33228
-  # bdl_final.predictions$numpy()
+  # dnnb_final.predictions$numpy()
   
   
   # y_test
   # as.integer(y_test)
   
-  bdl_final.pred.values.idx <- bdl_final.predictions$numpy()
-  head(bdl_final.pred.values.idx)
-  min(bdl_final.pred.values.idx)
-  max(bdl_final.pred.values.idx)
+  dnnb_final.pred.values.idx <- dnnb_final.predictions$numpy()
+  head(dnnb_final.pred.values.idx)
+  min(dnnb_final.pred.values.idx)
+  max(dnnb_final.pred.values.idx)
   
-  bdl_final.pred.values <- Y.Labels[bdl_final.pred.values.idx]
-  head(bdl_final.pred.values)
+  dnnb_final.pred.values <- Y.Labels[dnnb_final.pred.values.idx]
+  head(dnnb_final.pred.values)
   
-  bdl_final.eval.result$predicted.values <- bdl_final.pred.values
-  str(bdl_final.eval.result)
+  dnnb_final.eval.result$predicted.values <- dnnb_final.pred.values
+  str(dnnb_final.eval.result)
   
   
   y_test.idx <- y_test + 1
   y_test.labels <- Y.Labels[y_test.idx]
   
-  bdl_final.eval.result$targets <- y_test.labels
+  dnnb_final.eval.result$targets <- y_test.labels
   
   rm(y_test.labels,
      y_test.idx,
-     bdl_final.pred.values,
-     bdl_final.pred.values.idx,
-     bdl_final.predictions,
-     bdl_final.preds.ts,
-     bdl_final.preds)
+     dnnb_final.pred.values,
+     dnnb_final.pred.values.idx,
+     dnnb_final.predictions,
+     dnnb_final.preds.ts,
+     dnnb_final.preds)
   
   put_log("Saving the BDL MCC Model  Evaluation Result object...")
-  saveRDS(bdl_final.eval.result,
-          file = bdl_final.eval.result.file)
+  saveRDS(dnnb_final.eval.result,
+          file = dnn_mcc.final.eval.result.file)
   
   put_log("The BDL MCC Model  Evaluation Result object has been trained 
 and saved in the following file:
-  %1", bdl_final.eval.result.file)
+  %1", dnn_mcc.final.eval.result.file)
   
 }
 
 rm(x_test,
    y_test)
 
-# dnn_basic.accuracy <- mean(bdl_final.pred.values.idx == y_test.idx)
+# dnn_mcc.accuracy <- mean(dnnb_final.pred.values.idx == y_test.idx)
 put_log("The overall Basic `DL MCC` Model accuracy: %1", 
-        bdl_final.eval.result$accuracy)
+        dnnb_final.eval.result$accuracy)
 # 0.898338750451427
 
 ## Visualizing the Evaluation Results ------------------------------------------
 
-open_logfile(".bdl-final.eval-results.visualization")
+open_logfile(".dnnb-final.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path))
 
-bdl.keras_tunes.plots.dat.dir <- file.path(dnn_basic.keras_tuner.dir, "plots.dat")
+dnnb.keras_tunes.plots.dat.dir <- file.path(dnn_mcc.tuner.dir, "plots.dat")
 
-if(!dir.exists(bdl.keras_tunes.plots.dat.dir))
-  dir.create(bdl.keras_tunes.plots.dat.dir)
+if(!dir.exists(dnnb.keras_tunes.plots.dat.dir))
+  dir.create(dnnb.keras_tunes.plots.dat.dir)
 
-bdl_final.eval.conf.mx.img_file <- file.path(bdl.keras_tunes.plots.dat.dir,
-                                            "bdl-final.eval.confusion-matrix.png")
+dnnb_final.eval.conf.mx.img_file <- file.path(dnnb.keras_tunes.plots.dat.dir,
+                                            "dnnb-final.eval.confusion-matrix.png")
 
-bdl_final.eval.plots_dat.file <- file.path(bdl.keras_tunes.plots.dat.dir,
-                                          "bdl-final.eval.plots_dat.rds")
+dnnb_final.eval.plots_dat.file <- file.path(dnnb.keras_tunes.plots.dat.dir,
+                                          "dnnb-final.eval.plots_dat.rds")
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
-if(file.exists(bdl_final.eval.plots_dat.file)) {
+if(file.exists(dnnb_final.eval.plots_dat.file)) {
   put_log("Function `init.plots_args`:
 Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(bdl_final.eval.plots_dat.file)
+  plots.args <- init.plots_args(dnnb_final.eval.plots_dat.file)
   
   put_log("Function `init.plots_args`:
 The model-related plots input data object has been loaded from the following file:
-%1", bdl_final.eval.plots_dat.file)
+%1", dnnb_final.eval.plots_dat.file)
 } else {
-  plots.args <- init.plots_args(targets = bdl_final.eval.result$targets,
-                                predicted.probabilities = bdl_final.eval.result$predicted.probs,
-                                predicted.values = bdl_final.eval.result$predicted.values,
+  plots.args <- init.plots_args(targets = dnnb_final.eval.result$targets,
+                                predicted.probabilities = dnnb_final.eval.result$predicted.probs,
+                                predicted.values = dnnb_final.eval.result$predicted.values,
                                 alg_name = "DL Basic Tuned",
-                                plots_dat.file = bdl_final.eval.plots_dat.file,
-                                cm.export.img_file = bdl_final.eval.conf.mx.img_file,
+                                plots_dat.file = dnnb_final.eval.plots_dat.file,
+                                cm.export.img_file = dnnb_final.eval.conf.mx.img_file,
                                 cm.print.image = T)
 }
 
-rm(bdl_final.eval.result)
+rm(dnnb_final.eval.result)
 
 #'Run the helper script specifically designed to visualize 
 #'the model evaluation results:
@@ -757,10 +736,10 @@ stopifnot(exists("plots.dat"),
 put_log("Saving the model-related plots input data object to file...")
 
 saveRDS(plots.dat,
-        file = bdl_final.eval.plots_dat.file)
+        file = dnnb_final.eval.plots_dat.file)
 
 put_log("The model-related plots input data object has been saved to the following file:
-%1", bdl_final.eval.plots_dat.file)
+%1", dnnb_final.eval.plots_dat.file)
 
 # put_log("The Basic DL Model per-class accuracy:,
 # %1", capture.output(plots.dat$PCA$acc.by_class))

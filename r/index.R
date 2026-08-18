@@ -53,21 +53,7 @@ source(ds.prepare_flattened.script.path,
        keep.source = TRUE)
 
 ## kNN+PCA MCC Model -----------------------------------------------------------
-
-knn_pca.data.dir = file.path(models_data.dir, "knn-pca")
-
-if(!dir.exists(knn_pca.data.dir))
-  dir.create(knn_pca.data.dir)
-
-knn_pca.data.plots.dat.dir <- file.path(knn_pca.data.dir, 
-                                          "plots.dat")
-
-if(!dir.exists(knn_pca.data.plots.dat.dir))
-  dir.create(knn_pca.data.plots.dat.dir)
-
-
-
-### Build & Tune the kNN+PCA Model ---------------------------------------------
+### Build & Tune the kNN+PCA MCC Model -----------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path))
 
 source(knn_pca.tune.script.path, 
@@ -77,7 +63,7 @@ source(knn_pca.tune.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Re-Train kNN+PCA Model with the Best `k` Value ------------------------------
+### Re-Train kNN+PCA MCC Model with the Best `k` Value -------------------------
 stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
 
 source(knn_pca.retrain.best_k.script.path, 
@@ -87,19 +73,8 @@ source(knn_pca.retrain.best_k.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Random Forest (RF) Model ----------------------------------------------------
-data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
-
-if(!dir.exists(data.models.random_forest.dir))
-  dir.create(data.models.random_forest.dir)
-
-data.models.rf.plots.dat.dir <- file.path(data.models.random_forest.dir, 
-                                          "plots.dat")
-
-if(!dir.exists(data.models.rf.plots.dat.dir))
-  dir.create(data.models.rf.plots.dat.dir)
-
-### RF Tuning ------------------------------------------------------------------
+## Random Forest (RF) MCC Model ------------------------------------------------
+### RF MCC Model Tuning --------------------------------------------------------
 stopifnot(file.exists(rf_tuning.script.path))
 
 source(rf_tuning.script.path, 
@@ -109,7 +84,7 @@ source(rf_tuning.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### RF Re-Training with the Best Parameters ------------------------------------
+### Retraining the RF MCC Model with the Best Found Parameters -----------------
 stopifnot(file.exists(rf_retraining.best_par.script.path))
 
 source(rf_retraining.best_par.script.path, 
@@ -119,45 +94,65 @@ source(rf_retraining.best_par.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Basic Deep Learning (BDL) Model ----------------------------------------------
-stopifnot(file.exists(dnn_basic.script.path))
+## DNN-Based Basic MCC Model ---------------------------------------------------
+stopifnot(file.exists(dnn_basic.script.path,
+                      dnn_basic.eval.script.path,
+                      dnn_basic.eval.visuals.script.path,
+                      my_emnist.split.file_path))
 
-dnn_basic.tuning.dir <- file.path(data.dnn_basic.dir,
-                                 "tuning")
-if(!dir.exists(dnn_basic.tuning.dir))
-  dir.create(dnn_basic.tuning.dir)
+dnn_basic.model.file_path <- file.path(data.dnn_mcc.basic.dir, 
+                                       "dnn_basic.pre-trained.model.keras")
 
-source(dnn_basic.script.path, 
+dnn_basic.model.train_history.file_path <- file.path(data.dnn_mcc.basic.dir, 
+                                                     "dnn_basic.model.train_history.bak.rds")
+
+dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
+                                       "dnnb_mcc.eval.result.rds")
+
+
+if(!file.exists(dnnb_mcc.eval.result.file)) {
+  if(!file.exists(dnn_basic.model.file_path)) {
+    source(dnn_basic.script.path, 
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
+  }
+  source(dnn_basic.eval.script.path,
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
+}
+
+source(dnn_basic.eval.visuals.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Tuning BDL Model -----------------------------------------------------------
+## Tuning the DNN-Based Basic MCC Model ---------------------------------------
 
-dnn_basic.keras_tuner.dir <- file.path(dnn_basic.tuning.dir, "keras-tuner")
+dnn_mcc.final.eval.result.file <- file.path(dnn_mcc.tuner.dir,
+                                        "dnnb_final.eval.result.rds")
 
-if(!dir.exists(dnn_basic.keras_tuner.dir))
-  dir.create(dnn_basic.keras_tuner.dir)
-
-bdl_final.eval.result.file <- file.path(dnn_basic.keras_tuner.dir,
-                                        "bdl_final.eval.result.rds")
-
-if(file.exists(bdl_final.eval.result.file)) {
+if(file.exists(dnn_mcc.final.eval.result.file)) {
   put_log("Loading the BDL MCC Final Model Evaluation Result object...")
-  bdl_final.eval.result <- readRDS(bdl_final.eval.result.file)
+  dnnb_final.eval.result <- readRDS(dnn_mcc.final.eval.result.file)
   
   put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
 from the following file:
-%1", bdl_final.eval.result.file)
+%1", dnn_mcc.final.eval.result.file)
 } else {
   
 }
 
-stopifnot(file.exists(dnn_basic.tuner.script.path))
+stopifnot(file.exists(dnn_mcc.tuner.script.path))
 
-source(dnn_basic.tuner.script.path, 
+source(dnn_mcc.tuner.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -171,43 +166,13 @@ source(dnn_basic.tuner.script.path,
 
 open_logfile(".ds.prepare.train&test.balanced_sets")
 
-data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "multiclass")
-
-if(!dir.exists(data.cnn_mcc.dir))
-  dir.create(data.cnn_mcc.dir)
-
 cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
                                         "x3d.test_set.rds")
-
-data.cnn_mcc.basic.dir <- file.path(data.cnn_mcc.dir, "basic")
-
-if(!dir.exists(data.cnn_mcc.basic.dir))
-  dir.create(data.cnn_mcc.basic.dir)
-
-cnn_mcc.basic.plots.dat.dir <- file.path(data.cnn_mcc.basic.dir, "plots.dat")
-
-if(!dir.exists(cnn_mcc.basic.plots.dat.dir))
-  dir.create(cnn_mcc.basic.plots.dat.dir)
 
 cnn_mcc.basic.file_path <- file.path(data.cnn_mcc.basic.dir, 
                                      "cnn.pre-trained.multiclass.model.keras")
 cnn_mcc.basic.train_history.file_path <- file.path(data.cnn_mcc.basic.dir,
                                              "cnn_mcc.train_history.backup.rds")
-
-data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
-
-if(!dir.exists(data.cnn_mcc.tuner.dir))
-  dir.create(data.cnn_mcc.tuner.dir)
-
-data.cnn_mcc.tuner.best.dir <- file.path(data.cnn_mcc.tuner.dir, "best")
-
-if(!dir.exists(data.cnn_mcc.tuner.best.dir))
-  dir.create(data.cnn_mcc.tuner.best.dir)
-
-cnn_mcc.best.plots.dat.dir <- file.path(data.cnn_mcc.tuner.best.dir, "plots.dat")
-
-if(!dir.exists(cnn_mcc.best.plots.dat.dir))
-  dir.create(cnn_mcc.best.plots.dat.dir)
 
 cnn_mcc.final.file <- file.path(data.cnn_mcc.tuner.best.dir, 
                                      "cnn_mcc.final-model.keras")

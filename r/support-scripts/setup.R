@@ -172,7 +172,6 @@ source(log_func_script.file_path,
        keep.source = TRUE)
 
 ## Init Project Directories ----------------------------------------------------
-
 ### `R` Script Directories -----------------------------------------------------
 
 put_log("Root directory for the `R` scripts:
@@ -184,11 +183,14 @@ put_log("Root directory for the support scripts:
 put_log("Root directory for the custom functions definition scripts:
 %1", support_functions.dir)
 
+#### Directories for Model Scripts ---------------------------------------------
 model_scripts.dir <- file.path(r_scripts.dir, "models")
 stopifnot(dir.exists(model_scripts.dir))
 
 put_log("Root directory for the project models' scripts:
 %1", model_scripts.dir)
+
+##### Directories for Shallow Learning Model Scripts ---------------------------
 
 models.knn_pca_scripts.dir <- file.path(model_scripts.dir, "kNN+PCA")
 stopifnot(dir.exists(models.knn_pca_scripts.dir))
@@ -202,7 +204,8 @@ stopifnot(dir.exists(models.rf_scripts.dir))
 put_log("Root directory for the `RF MCC` model's scripts:
 %1", models.rf_scripts.dir)
 
-#' ******************************
+##### Directories for Deep Learning Model Scripts ------------------------------
+###### Directories for DNN-Based Scripts ---------------------------------------
 
 models.dnn.scripts.dir <- file.path(model_scripts.dir, "dnn")
 stopifnot(dir.exists(models.dnn.scripts.dir))
@@ -210,15 +213,19 @@ stopifnot(dir.exists(models.dnn.scripts.dir))
 put_log("Root directory for the Basic DNN-Based model's scripts:
 %1", models.dnn.scripts.dir)
 
-models.dnn_basic.scripts.dir <- file.path(models.dnn.scripts.dir, "basic")
-stopifnot(dir.exists(models.dnn_basic.scripts.dir))
+dnn_mcc.basic.scripts.dir <- file.path(models.dnn.scripts.dir, "basic")
+stopifnot(dir.exists(dnn_mcc.basic.scripts.dir))
 
 put_log("Root directory for the Basic DNN-Based model's scripts:
-%1", models.dnn_basic.scripts.dir)
+%1", dnn_mcc.basic.scripts.dir)
 
-#' ******************************
+dnn_mcc.tuner.scripts.dir <- file.path(models.dnn.scripts.dir, "tuner")
+stopifnot(dir.exists(dnn_mcc.tuner.scripts.dir))
 
+put_log("Root directory for the Basic DNN-Based model's scripts:
+%1", dnn_mcc.tuner.scripts.dir)
 
+###### Directories for CNN-Based Scripts ---------------------------------------
 
 models.cnn_scripts.dir <- file.path(model_scripts.dir, "cnn")
 stopifnot(dir.exists(models.cnn_scripts.dir))
@@ -248,6 +255,8 @@ put_log("Root directory for the `CNN-Based MCC` model tuner's scripts:
 ### Data Directories -----------------------------------------------------------
 
 data.dir <- "data"
+
+#### Raw Data Directories ------------------------------------------------------
 raw_data.dir <- file.path(data.dir, "raw")
 
 put_log("Root directory for the raw image data:
@@ -270,7 +279,7 @@ img.validation_root.dir <- file.path(raw_data.chars.dir, "Validation")
 put_log("Root directory for the Validation raw image data:
 %1", img.validation_root.dir)
 
-
+#### Directories for Project Datasets ------------------------------------------
 dataset.dir <- file.path(data.dir, "dataset")
 if(!dir.exists(dataset.dir))
   dir.create(dataset.dir)
@@ -294,7 +303,7 @@ if(!dir.exists(final_test.data.dir))
 put_log("Root directory for the Final Test data:
 %1", final_test.data.dir)
 
-
+#### Directories for Model Data ------------------------------------------------
 models_data.dir <- file.path(data.dir, "models")
 if(!dir.exists(models_data.dir))
   dir.create(models_data.dir)
@@ -302,22 +311,96 @@ if(!dir.exists(models_data.dir))
 put_log("Root directory for the project models data:
 %1", models_data.dir)
 
+##### Directories for Shallow Learning Model Data ------------------------------
+###### Directories for kNN+PCA Model Data --------------------------------------
+knn_pca.data.dir = file.path(models_data.dir, "knn-pca")
 
+if(!dir.exists(knn_pca.data.dir))
+  dir.create(knn_pca.data.dir)
+
+knn_pca.data.plots.dat.dir <- file.path(knn_pca.data.dir, 
+                                        "plots.dat")
+
+###### Directories for Random Forest Model Data --------------------------------
+if(!dir.exists(knn_pca.data.plots.dat.dir))
+  dir.create(knn_pca.data.plots.dat.dir)
+
+data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
+
+if(!dir.exists(data.models.random_forest.dir))
+  dir.create(data.models.random_forest.dir)
+
+data.models.rf.plots.dat.dir <- file.path(data.models.random_forest.dir, 
+                                          "plots.dat")
+
+if(!dir.exists(data.models.rf.plots.dat.dir))
+  dir.create(data.models.rf.plots.dat.dir)
+
+##### Directories for Deep Learning Model Data ----------------------------------
 
 dl.keras3.dir <- file.path(models_data.dir, "dl.keras3")
 
 if(!dir.exists(dl.keras3.dir))
   dir.create(dl.keras3.dir)
 
-data.dnn_basic.dir <- file.path(dl.keras3.dir, "dnn_basic")
+###### Directories for DNN-Based Data -------------------------------------------
+data.dnn_mcc.dir <- file.path(dl.keras3.dir, "dnn-mcc")
 
-if(!dir.exists(data.dnn_basic.dir))
-  dir.create(data.dnn_basic.dir)
+if(!dir.exists(data.dnn_mcc.dir))
+  dir.create(data.dnn_mcc.dir)
+
+data.dnn_mcc.basic.dir <- file.path(data.dnn_mcc.dir, "basic")
+
+if(!dir.exists(data.dnn_mcc.basic.dir))
+  dir.create(data.dnn_mcc.basic.dir)
+
+dnn_mcc.basic.plots.dat.dir <- file.path(data.dnn_mcc.basic.dir, "plots.dat")
+
+if(!dir.exists(dnn_mcc.basic.plots.dat.dir))
+  dir.create(dnn_mcc.basic.plots.dat.dir)
+
+dnn_mcc.tuner.dir <- file.path(data.dnn_mcc.dir,
+                                  "tuner")
+if(!dir.exists(dnn_mcc.tuner.dir))
+  dir.create(dnn_mcc.tuner.dir)
+
+###### Directories for CNN-Based Data -------------------------------------------
 
 data.dl.cnn.dir <- file.path(dl.keras3.dir, "cnn")
 
 if(!dir.exists(data.dl.cnn.dir))
   dir.create(data.dl.cnn.dir)
+
+data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "multiclass")
+
+if(!dir.exists(data.cnn_mcc.dir))
+  dir.create(data.cnn_mcc.dir)
+
+data.cnn_mcc.basic.dir <- file.path(data.cnn_mcc.dir, "basic")
+
+if(!dir.exists(data.cnn_mcc.basic.dir))
+  dir.create(data.cnn_mcc.basic.dir)
+
+cnn_mcc.basic.plots.dat.dir <- file.path(data.cnn_mcc.basic.dir, "plots.dat")
+
+if(!dir.exists(cnn_mcc.basic.plots.dat.dir))
+  dir.create(cnn_mcc.basic.plots.dat.dir)
+
+data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
+
+if(!dir.exists(data.cnn_mcc.tuner.dir))
+  dir.create(data.cnn_mcc.tuner.dir)
+
+data.cnn_mcc.tuner.best.dir <- file.path(data.cnn_mcc.tuner.dir, "best")
+
+if(!dir.exists(data.cnn_mcc.tuner.best.dir))
+  dir.create(data.cnn_mcc.tuner.best.dir)
+
+cnn_mcc.best.plots.dat.dir <- file.path(data.cnn_mcc.tuner.best.dir, "plots.dat")
+
+if(!dir.exists(cnn_mcc.best.plots.dat.dir))
+  dir.create(cnn_mcc.best.plots.dat.dir)
+
 
 
 ## Init Project Script Paths ---------------------------------------------------
@@ -343,12 +426,24 @@ rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir,
                                                 "rf-retraining.best-par.R")
 stopifnot(file.exists(rf_retraining.best_par.script.path))
 
-dnn_basic.script.path <- file.path(models.dnn_basic.scripts.dir, "dnn-basic.R")
+### DNN-Based MCC Scripts ------------------------------------------------------
+
+dnn_basic.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnn-basic.R")
 stopifnot(file.exists(dnn_basic.script.path))
 
-dnn_basic.tuner.script.path <- file.path(models.dnn_basic.scripts.dir, 
-                                        "dl-basic.tuner.R")
-stopifnot(file.exists(dnn_basic.tuner.script.path))
+dnn_basic.eval.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnn-basic.evaluation.R")
+stopifnot(file.exists(dnn_basic.eval.script.path))
+
+dnn_basic.eval.visuals.script.path <- file.path(dnn_mcc.basic.scripts.dir, 
+                                                "dnn-basic.eval.visuals.R")
+stopifnot(file.exists(dnn_basic.eval.visuals.script.path))
+
+dnn_mcc.tuner.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
+                                        "dnn-mcc.tuner.R")
+stopifnot(file.exists(dnn_mcc.tuner.script.path))
+
+
+### CNN-Based Basic Scripts ----------------------------------------------------
 
 cnn_mcc.script.path <- file.path(cnn_mcc.scripts.dir, "cnn-mcc.basic.R")
 stopifnot(file.exists(cnn_mcc.script.path))
