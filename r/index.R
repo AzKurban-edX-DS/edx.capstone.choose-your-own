@@ -94,7 +94,8 @@ source(rf_retraining.best_par.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## DNN-Based Basic MCC Model ---------------------------------------------------
+## DNN-Based MCC Model ---------------------------------------------------
+### DNN-Based Basic MCC Model ---------------------------------------------------
 stopifnot(file.exists(dnn_basic.script.path,
                       dnn_basic.eval.script.path,
                       dnn_basic.eval.visuals.script.path,
@@ -119,6 +120,7 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
            verbose = TRUE,
            keep.source = TRUE)
   }
+  
   source(dnn_basic.eval.script.path,
          catch.aborts = TRUE,
          echo = TRUE,
@@ -134,25 +136,42 @@ source(dnn_basic.eval.visuals.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Tuning the DNN-Based Basic MCC Model ---------------------------------------
+### DNN-Based MCC Model Tuning -------------------------------------------------
 
-dnn_mcc.final.eval.result.file <- file.path(dnn_mcc.tuner.dir,
-                                        "dnnb_final.eval.result.rds")
+tdnn_mcc.final.eval.result.file <- file.path(dnn_mcc.tuner.dir,
+                                        "tdnn_mcc.final.eval.result.rds")
 
-if(file.exists(dnn_mcc.final.eval.result.file)) {
-  put_log("Loading the BDL MCC Final Model Evaluation Result object...")
-  dnnb_final.eval.result <- readRDS(dnn_mcc.final.eval.result.file)
+stopifnot(file.exists(dnn_mcc.tuner.script.path,
+                      tdnn_mcc.final.retrain.script.path,
+                      tdnn_mcc.final.eval.script.path,
+                      tdnn_mcc.final.eval.visuals.script.path))
+
+if(!file.exists(tdnn_mcc.final.eval.result.file)) {
+  if(!file.exists()) {
+    source(dnn_mcc.tuner.script.path, 
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
+  }
   
-  put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
-from the following file:
-%1", dnn_mcc.final.eval.result.file)
-} else {
+  source(tdnn_mcc.final.retrain.script.path,
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
   
+  source(tdnn_mcc.final.eval.script.path,
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
 }
 
-stopifnot(file.exists(dnn_mcc.tuner.script.path))
-
-source(dnn_mcc.tuner.script.path, 
+source(tdnn_mcc.final.eval.visuals.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

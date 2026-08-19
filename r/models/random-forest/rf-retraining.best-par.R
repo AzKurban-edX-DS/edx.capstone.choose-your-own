@@ -255,7 +255,7 @@ The model-related plots input data object has been loaded from the following fil
   plots.args <- init.plots_args(targets = fit_rf.mtry_best$test$targets,
                                 predicted.probabilities = fit_rf.mtry_best$test$votes,
                                 predicted.values = fit_rf.mtry_best$test$predicted,
-                                alg_name = "Random Forest",
+                                alg_name = "RF MCC",
                                 plots_dat.file = rf_tuned.eval.plots_dat.file,
                                 cm.export.img_file = rf_tuned.eval.conf.mx.img_file,
                                 cm.print.image = T)

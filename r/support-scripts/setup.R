@@ -434,6 +434,7 @@ rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir,
 stopifnot(file.exists(rf_retraining.best_par.script.path))
 
 ### DNN-Based MCC Scripts ------------------------------------------------------
+#### DNN-Based Basic MCC Scripts -----------------------------------------------
 
 dnn_basic.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnn-basic.R")
 stopifnot(file.exists(dnn_basic.script.path))
@@ -445,10 +446,23 @@ dnn_basic.eval.visuals.script.path <- file.path(dnn_mcc.basic.scripts.dir,
                                                 "dnn-basic.eval.visuals.R")
 stopifnot(file.exists(dnn_basic.eval.visuals.script.path))
 
+#### DNN-Based MCC Tuner-Related Scripts ---------------------------------
+
 dnn_mcc.tuner.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
-                                        "dnn-mcc.tuner.R")
+                                       "dnn-mcc.tuner.R")
 stopifnot(file.exists(dnn_mcc.tuner.script.path))
 
+tdnn_mcc.final.retrain.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
+                                       "tdnn-mcc.final.retrain.R")
+stopifnot(file.exists(tdnn_mcc.final.retrain.script.path))
+
+tdnn_mcc.final.eval.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
+                                       "tdnn-mcc.final.eval.R")
+stopifnot(file.exists(tdnn_mcc.final.eval.script.path))
+
+tdnn_mcc.final.eval.visuals.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
+                                       "tdnn-mcc.final.eval.visuals.R")
+stopifnot(file.exists(tdnn_mcc.final.eval.visuals.script.path))
 
 ### CNN-Based Basic Scripts ----------------------------------------------------
 

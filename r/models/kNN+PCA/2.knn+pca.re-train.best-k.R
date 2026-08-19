@@ -328,7 +328,7 @@ The model-related plots input data object has been loaded from the following fil
   plots.args <- init.plots_args(targets = knn_pca.eval.results$targets,
                                 predicted.probabilities = knn_pca.eval.results$predicted.probs,
                                 predicted.values = knn_pca.eval.results$predicted,
-                                alg_name = "kNN+PCA",
+                                alg_name = "kNN+PCA MCC",
                                 plots_dat.file = knn_pca.eval.plots_dat.file,
                                 cm.export.img_file = knn_pca.eval.conf.mx.img_file,
                                 cm.print.image = T)

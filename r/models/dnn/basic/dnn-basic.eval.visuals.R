@@ -5,8 +5,11 @@
 ## Plotting the DNNB MCC Model Evaluation Results ------------------------------
 open_logfile(".dl-basic.eval-results.visualization")
 
-stopifnot(file.exists(model_visualization.shared.script.path),
-          file.exists(dnnb_mcc.eval.result.file))
+stopifnot(file.exists(model_visualization.shared.script.path,
+                      dnnb_mcc.eval.result.file))
+
+if(!dir.exists(dnn_mcc.basic.plots.dat.dir))
+  dir.create(dnn_mcc.basic.plots.dat.dir)
 
 dnnb_mcc.eval.conf.mx.img_file <- file.path(dnn_mcc.basic.plots.dat.dir,
                                              "dnn-basic.mcc.eval.confusion-matrix.png")
@@ -36,7 +39,7 @@ from the following file:
   plots.args <- init.plots_args(targets = dnnb_mcc.eval.result$targets,
                                 predicted.probabilities = dnnb_mcc.eval.result$predicted.probs,
                                 predicted.values = dnnb_mcc.eval.result$predicted.values,
-                                alg_name = "DL Basics",
+                                alg_name = "DNN MCC Basics",
                                 plots_dat.file = dnnb_mcc.eval.plots_dat.file,
                                 cm.export.img_file = dnnb_mcc.eval.conf.mx.img_file,
                                 cm.print.image = T)
