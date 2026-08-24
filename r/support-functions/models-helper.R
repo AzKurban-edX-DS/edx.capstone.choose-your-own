@@ -337,10 +337,8 @@ dnn_mcc.tunable_model <- function(hp,
   
   # For `loss` argument, Use sparse_categorical_crossentropy if labels are integers
   model|>compile(loss = "sparse_categorical_crossentropy",
-    optimizer =  keras3::optimizer_adamax(hp$get('learning_rate')),
-    metrics = "accuracy"
-  )
-  
+                 optimizer =  keras3::optimizer_adamax(hp$get('learning_rate')),
+                 metrics = "accuracy")
   return(model)
 }
 

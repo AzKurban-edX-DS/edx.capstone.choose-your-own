@@ -6,7 +6,7 @@ open_logfile(".dnnb-mcc.model.training")
 
 stopifnot(file.exists(my_emnist.split.file_path))
 
-# Basic Deep Learning Multiclass Classifier (BDL MCC)  Model
+# Dense Neural Network Based Basic Multiclass Classifier (DNNB MCC)  Model
 
 # References:
 # MNIST Handwritten Digit Recognition in Keras
@@ -19,16 +19,16 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.split.file_path)
-
-put_log("The Split Flatten Dataset has the following structure:
-%1", capture.output(str(ds)))
-
-x_train <- ds$train$x
-y_train <- ds$train$class_groups$classID
-
-stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
-stopifnot(nrow(x_train) == length(y_train))
+# ds <- load_datasets(my_emnist.split.file_path)
+# 
+# put_log("The Split Flatten Dataset has the following structure:
+# %1", capture.output(str(ds)))
+# 
+# x_train <- ds$train$x
+# y_train <- ds$train$class_groups$classID
+# 
+# stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+# stopifnot(nrow(x_train) == length(y_train))
 
 ### Converting labels factor to categorical -----------------------------------
 # Reference: 
@@ -36,9 +36,12 @@ stopifnot(nrow(x_train) == length(y_train))
 # https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
 # https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
 
+y.idx <- y_train + 1
+y_labels <- Y.Labels[y.idx]
+str(y_labels)
 
-y_train.cat <- to_categorical(y_train)
-rm(y_train)
+y_train.cat <- to_categorical(y_labels)
+# rm(y_train)
 
 colnames(y_train.cat) <- Y.Labels
 dim(y_train.cat)
@@ -135,14 +138,15 @@ dnn_basic.checkpoint.file_path <-
 n.input_shape <- ncol(x_train)
 # 784
 
-#### Defining & Compiling the Basic DL MCC Model -------------------------------
+#### Defining & Compiling the Basic DNNB MCC Model -------------------------------
 
 n.input_shape <- ncol(x_train)
 # 784
 
-dnn_basic.inputs <- layer_input(shape = c(n.input_shape))
+dnn_basic.inputs <- layer_input(shape = c(28, 28))
 
 dnn_basic.outputs <- dnn_basic.inputs |>
+  layer_flatten() |>
   layer_dense(units = n.hl.units, activation = "relu") |>
   layer_dropout(rate = 0.25) |> 
   layer_dense(units = N.classes, activation = "softmax")
@@ -150,15 +154,12 @@ dnn_basic.outputs <- dnn_basic.inputs |>
 
 dnn_basic.model <- keras_model(dnn_basic.inputs, dnn_basic.outputs)
 
-dnn_basic.model |> compile(
-  loss = "categorical_crossentropy",
-  optimizer = keras3::optimizer_adamax(0.001),
-  metrics = "accuracy"
-)
-
+dnn_basic.model |> compile(  loss = "sparse_categorical_crossentropy",
+                             optimizer = keras3::optimizer_adamax(0.001),
+                             metrics = "accuracy")
 summary(dnn_basic.model)
 
-### Training the Basic DL MCC Model --------------------------------------------
+### Training the Basic DNNB MCC Model --------------------------------------------
 
 dnn_basic.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -168,47 +169,49 @@ dnn_basic.callbacks <- list(
                             verbose = 1)
 )
 
-put_log("Training the BDL MCC Model...")
+put_log("Training the BDNNB MCC Model...")
 start <- put_start_date()
 
-dnn_basic.train_history <- dnn_basic.model |> 
+# dnn_basic.train_history <- tdnn_mcc.final |> 
+dnn_basic.train_history <- dnn_basic.model |>
   fit(x_train, 
-      y_train.cat, 
+      y_train, 
+      # y_train.cat, 
       epochs = 100, 
       # batch_size = 128, 
       callbacks = dnn_basic.callbacks,
       validation_split = 0.2
   )
 
-put_log("Saving pre-trained BDL MCC Model...")
+put_log("Saving pre-trained BDNNB MCC Model...")
 keras3::save_model(dnn_basic.model,
                    filepath = dnn_basic.model.file_path,
                    overwrite = FALSE)
 
-put_log("The BDL MCC Model has been trained 
+put_log("The BDNNB MCC Model has been trained 
 and saved in the following file:
   %1", dnn_basic.model.file_path)
 
-put_log("Saving the BDL MCC Model History...")
+put_log("Saving the BDNNB MCC Model History...")
 saveRDS(dnn_basic.train_history,
         file = dnn_basic.model.train_history.file_path)
 
-put_log("The BDL MCC Model History has been trained 
+put_log("The BDNNB MCC Model History has been trained 
 and saved in the following file:
   %1", dnn_basic.model.train_history.file_path)
 put_end_date(start)
 
 
 
-rm(x_train,
-   y_train.cat)
+# rm(x_train,
+#    y_train.cat)
 
-put_log("The trained Basic DL MCC Model summary:
+put_log("The trained Basic DNNB MCC Model summary:
 %1", dnn_basic.model)
 
 plot(dnn_basic.train_history)
 
-put_log("Structure of the Basic DL MCC Model training history:
+put_log("Structure of the Basic DNNB MCC Model training history:
 %1", capture.output(str(dnn_basic.train_history)))
 
 rm(dnn_basic.train_history)
