@@ -267,6 +267,127 @@ build.dnn_basic.model <- function(hp) {
   model
 }
 
+dl.tune.hwr_model <- function(dl.build_model,
+                              x_train,
+                              y_train,
+                              tuner_project.dir,
+                              tuner_checkpoints.file,
+                              input_shape = c(28, 28),
+                              dropout.rate = 0.2,
+                              learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
+                              min_layers = 2L,
+                              max_layers = 20L,
+                              min_units = 39,
+                              max_units = 784,
+                              units.tune_step = 32,
+                              max_trials = 5,
+                              tune_new_entries = TRUE,
+                              objective = 'val_accuracy',
+                              project_name = 'DL.ModelTuner',
+                              validation_split = 0.2,
+                              validation_data = NULL,
+                              epochs = 100) {
+  dl.tune_model(dl.build_model,
+                x_train,
+                y_train,
+                tuner_project.dir,
+                tuner_checkpoints.file,
+                input_shape,
+                N.classes,
+                dropout.rate,
+                learning_rate,
+                min_layers,
+                max_layers,
+                min_units,
+                max_units,
+                units.tune_step,
+                max_trials,
+                tune_new_entries,
+                objective,
+                project_name,
+                validation_split,
+                validation_data,
+                epochs)
+}
+
+dl.tune_model <- function(dl.build_model,
+                          x_train,
+                          y_train,
+                          tuner_project.dir,
+                          tuner_checkpoints.file,
+                          input_shape = c(28, 28),
+                          n.outputs,
+                          dropout.rate = 0.2,
+                          learning_rate = c(1e-1, 1e-2, 1e-3, 1e-4),
+                          min_layers = 2L,
+                          max_layers = 20L,
+                          min_units = 39,
+                          max_units = 784,
+                          units.tune_step = 32,
+                          max_trials = 5,
+                          tune_new_entries = TRUE,
+                          objective = 'val_accuracy',
+                          project_name = 'DL.ModelTuner',
+                          validation_split = 0.2,
+                          validation_data = NULL,
+                          epochs = 100) {
+  
+  stopifnot(dir.exists(tuner_project.dir))
+  hp = HyperParameters()
+  
+  # Choice of one value among a predefined set of possible values.
+  # Choice(name, values, ordered = NULL, default = NULL, parent_name = NULL, parent_values = NULL)
+  hp$Choice('learning_rate', learning_rate)
+  
+  hp$Int('num_layers', 
+         min_layers,
+         max_layers)
+  
+  callback_list <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = tuner_checkpoints.file,
+                              monitor = "val_loss",
+                              save_best_only = TRUE,
+                              verbose = 1)
+  )
+  
+  
+  for (i in seq(max_layers)) {
+    hp$Int(paste0("units_", i),
+           min_value = min_units,
+           max_value = max_units,
+           step = units.tune_step)    
+  }
+  
+  tuner = RandomSearch(
+    hypermodel =  function(hp) dl.build_model(hp,
+                                              input_shape,
+                                              n.outputs,
+                                              dropout.rate),
+    max_trials = max_trials,
+    hyperparameters = hp,
+    tune_new_entries = tune_new_entries,
+    objective = objective,
+    directory = tuner_project.dir,
+    project_name = project_name)
+  
+  if(is.null(validation_data)){
+    tuner %>% fit_tuner(x = x_train,
+                        y = y_train,
+                        callbacks = callback_list,
+                        validation_split = validation_split,
+                        epochs = epochs)
+  } else {
+    tuner %>% fit_tuner(x = x_train,
+                        y = y_train,
+                        callbacks = callback_list,
+                        validation_data = validation_data,
+                        epochs = epochs)
+  }
+  
+  tuner
+}
+
 cnn_mcc.tunable_model <- function(hp,
                                    input_shape = c(28L, 28L, 1),
                                    n.outputs,
@@ -306,15 +427,10 @@ cnn_mcc.tunable_model <- function(hp,
   return(model)
 }
 
-dnn_mcc.tuner.build_model <- function(hp) {
-  dnn_mcc.tunable_model(hp,
-                        n.outputs = N.classes)
-}
-
 dnn_mcc.tunable_model <- function(hp,
                                   input_shape = c(28, 28),
                                   n.outputs,
-                                  dropout.rate = 0.25) {
+                                  dropout.rate = 0.2) {
   
   model_inputs <- layer_input(shape = input_shape)
   layer <- model_inputs |> layer_flatten()

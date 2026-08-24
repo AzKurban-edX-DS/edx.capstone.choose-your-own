@@ -2,8 +2,12 @@
 # Tuned DNN-Based MCC (TDNN MCC) Final Model Evaluation
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+open_logfile(".tdnn-mcc.final.evaluation")
+
+stopifnot(file.exists(tdnn_mcc.final.file,
+                      ds28x28.split.train_0.8.backup.file))
+
 ## Prepare a Test Set for the TDNN MCC Final Model Evaluation ------------------
-open_logfile(".tdnn-mcc.final.eval.test-set")
 start <- put_start_date()
 
 put_log("Loading the Test Set of 28x28-size image data...")
@@ -91,25 +95,34 @@ log_close()
 
 ## TDNN MCC Final Model Evaluation ---------------------------------------------
 
-put_log("Evaluating TDNN MCC Final Model...")
-dnn_mcc.final.eval.result <- dnn_mcc.final_model |> evaluate(x_test, y_test)
-put_log("TDNN MCC Final Model evaluation result:
-%1", capture.output(str(dnn_mcc.final.eval.result)))
+put_log("Loading pre-trained TDNN MCC Final Model...")
+
+tdnn_mcc.final <- keras3::load_model(tdnn_mcc.final.file)
+
+put_log("The TDNN MCC Final Model has been loaded from the backup file:
+%1", tdnn_mcc.final.file)
+
+
+
+put_log("Evaluating the TDNN MCC Final Model...")
+tdnn_mcc.final.eval.result <- tdnn_mcc.final |> evaluate(x_test, y_test)
+put_log("The TDNN MCC Final Model evaluation result:
+%1", capture.output(str(tdnn_mcc.final.eval.result)))
 # List of 2
-# $ accuracy: num 0.9
-# $ loss    : num 0.374
+# $ accuracy: num 0.89
+# $ loss    : num 0.381
 
 
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-dnn_mcc.final.preds <- dnn_mcc.final_model |> predict(x_test)
-str(dnn_mcc.final.preds)
+tdnn_mcc.final.preds <- tdnn_mcc.final |> predict(x_test)
+str(tdnn_mcc.final.preds)
 # put_end_date(start)
 # Time difference of  mins
 
-colnames(dnn_mcc.final.preds) <- Y.Labels
-head(dnn_mcc.final.preds[,1:5])
+colnames(tdnn_mcc.final.preds) <- Y.Labels
+head(tdnn_mcc.final.preds[,1:5])
 #                 #            $            &            @            0
 # [1,] 1.291058e-08 2.551113e-09 1.649115e-10 3.021582e-07 1.282524e-06
 # [2,] 1.855945e-11 2.930238e-11 1.776997e-09 3.246364e-06 1.664781e-08
@@ -117,66 +130,66 @@ head(dnn_mcc.final.preds[,1:5])
 # [4,] 1.167588e-09 1.428053e-10 3.141675e-11 4.189771e-10 1.695369e-07
 # [5,] 9.645254e-13 3.239760e-12 2.698784e-14 9.448751e-12 2.331821e-09
 # [6,] 2.562272e-10 2.353311e-13 3.094632e-13 2.608500e-11 4.482589e-08
-dim(dnn_mcc.final.preds)
+dim(tdnn_mcc.final.preds)
 #> [1] 33228    39
 
-dnn_mcc.final.eval.result$predicted.probs <- dnn_mcc.final.preds
-str(dnn_mcc.final.eval.result)
+tdnn_mcc.final.eval.result$predicted.probs <- tdnn_mcc.final.preds
+str(tdnn_mcc.final.eval.result)
 
-dnn_mcc.final.preds.ts <- as_tensor(dnn_mcc.final.preds)
-str(dnn_mcc.final.preds.ts)
+tdnn_mcc.final.preds.ts <- as_tensor(tdnn_mcc.final.preds)
+str(tdnn_mcc.final.preds.ts)
 #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
 
-dnn_mcc.final.predictions <- dnn_mcc.final.preds.ts |> op_argmax(2)
-dnn_mcc.final.predictions
+tdnn_mcc.final.predictions <- tdnn_mcc.final.preds.ts |> op_argmax(2)
+tdnn_mcc.final.predictions
 #> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
-dim(dnn_mcc.final.predictions)
+dim(tdnn_mcc.final.predictions)
 #> [1] 33228
-# dnn_mcc.final.predictions$numpy()
+# tdnn_mcc.final.predictions$numpy()
 
 
 # y_test
 # as.integer(y_test)
 
-dnn_mcc.final.pred.values.idx <- dnn_mcc.final.predictions$numpy()
-head(dnn_mcc.final.pred.values.idx)
-min(dnn_mcc.final.pred.values.idx)
-max(dnn_mcc.final.pred.values.idx)
+tdnn_mcc.final.pred.values.idx <- tdnn_mcc.final.predictions$numpy()
+# head(tdnn_mcc.final.pred.values.idx)
+# min(tdnn_mcc.final.pred.values.idx)
+# max(tdnn_mcc.final.pred.values.idx)
 
-dnn_mcc.final.pred.values <- Y.Labels[dnn_mcc.final.pred.values.idx]
-head(dnn_mcc.final.pred.values)
+tdnn_mcc.final.pred.values <- Y.Labels[tdnn_mcc.final.pred.values.idx]
+head(tdnn_mcc.final.pred.values)
 
-dnn_mcc.final.eval.result$predicted.values <- dnn_mcc.final.pred.values
-str(dnn_mcc.final.eval.result)
+tdnn_mcc.final.eval.result$predicted.values <- tdnn_mcc.final.pred.values
+str(tdnn_mcc.final.eval.result)
 
 
 y_test.idx <- y_test + 1
 y_test.labels <- Y.Labels[y_test.idx]
 
-dnn_mcc.final.eval.result$targets <- y_test.labels
+tdnn_mcc.final.eval.result$targets <- y_test.labels
 
 rm(y_test.labels,
    y_test.idx,
-   dnn_mcc.final.pred.values,
-   dnn_mcc.final.pred.values.idx,
-   dnn_mcc.final.predictions,
-   dnn_mcc.final.preds.ts,
-   dnn_mcc.final.preds)
+   tdnn_mcc.final.pred.values,
+   tdnn_mcc.final.pred.values.idx,
+   tdnn_mcc.final.predictions,
+   tdnn_mcc.final.preds.ts,
+   tdnn_mcc.final.preds)
 
-put_log("Saving the BDL MCC Model  Evaluation Result object...")
-saveRDS(dnn_mcc.final.eval.result,
-        file = tdnn_mcc.final.eval.result.file)
+put_log("Saving the TDNN MCC Final Model Evaluation Result object...")
+saveRDS(tdnn_mcc.final.eval.result,
+        file = tdnn_mcc.final.eval_result.file)
 
-put_log("The BDL MCC Model  Evaluation Result object has been trained 
-and saved in the following file:
-  %1", tdnn_mcc.final.eval.result.file)
+put_log("The TDNN MCC Final Model Evaluation Result object 
+has been saved in the following file:
+  %1", tdnn_mcc.final.eval_result.file)
 
 
 rm(x_test,
    y_test)
 
-# dnn_mcc.accuracy <- mean(dnn_mcc.final.pred.values.idx == y_test.idx)
-put_log("The overall Basic `DL MCC` Model accuracy: %1", 
-        dnn_mcc.final.eval.result$accuracy)
+# dnn_mcc.accuracy <- mean(tdnn_mcc.final.pred.values.idx == y_test.idx)
+put_log("The overall TDNN MCC Final Model accuracy: %1", 
+        tdnn_mcc.final.eval.result$accuracy)
 # 0.898338750451427
 

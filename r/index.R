@@ -138,31 +138,55 @@ source(dnn_basic.eval.visuals.script.path,
 
 ### DNN-Based MCC Model Tuning -------------------------------------------------
 
-tdnn_mcc.final.eval.result.file <- file.path(dnn_mcc.tuner.dir,
-                                        "tdnn_mcc.final.eval.result.rds")
-
 stopifnot(file.exists(dnn_mcc.tuner.script.path,
                       tdnn_mcc.final.retrain.script.path,
                       tdnn_mcc.final.eval.script.path,
                       tdnn_mcc.final.eval.visuals.script.path))
 
-if(!file.exists(tdnn_mcc.final.eval.result.file)) {
-  if(!file.exists()) {
-    source(dnn_mcc.tuner.script.path, 
+tdnn_mcc.best_hp.config <- file.path(dnn_mcc.tuner.dir,
+                                               "dnn-mcc.tuner.best-hp.config.rds")
+
+tdnn_mcc.final.file <- file.path(dnn_mcc.tuner.dir, 
+                                     "tdnn-mcc.final-model.keras")
+
+tdnn_mcc.final.train_history.file <- file.path(dnn_mcc.tuner.dir, 
+                                                      "tdnn-mcc.final-train-history.rds")
+
+tdnn_mcc.final.eval_result.file <- file.path(dnn_mcc.tuner.dir,
+                                        "tdnn-mcc.final.eval-result.rds")
+
+if(!file.exists(tdnn_mcc.final.eval_result.file)) {
+  if(!file.exists(tdnn_mcc.final.file)) {
+    if(!file.exists(tdnn_mcc.best_hp.config)) {
+      source(dnn_mcc.tuner.script.path, 
+             catch.aborts = TRUE,
+             echo = TRUE,
+             spaced = TRUE,
+             verbose = TRUE,
+             keep.source = TRUE)
+    }
+
+    source(tdnn_mcc.final.retrain.script.path,
            catch.aborts = TRUE,
            echo = TRUE,
            spaced = TRUE,
            verbose = TRUE,
            keep.source = TRUE)
+  } else if(file.exists(tdnn_mcc.final.train_history.file)){
+    print_log("Loading the Tuned DNN MCC Final Model Train History...")
+    tdnn_mcc.final.train_history <- readRDS(tdnn_mcc.final.train_history.file)
+    
+    print_log("The Tuned DNN MCC Final Model Train History has been loaded 
+from the following file:
+%1", tdnn_mcc.final.train_history.file)
+    
+    plot(tdnn_mcc.final.train_history)
+    # rm(tdnn_mcc.final.train_history)
+  } else {
+    warning("The Tuned DNN MCC Final Model History backup file does not exist:
+%1", tdnn_mcc.final.train_history.file)
   }
-  
-  source(tdnn_mcc.final.retrain.script.path,
-         catch.aborts = TRUE,
-         echo = TRUE,
-         spaced = TRUE,
-         verbose = TRUE,
-         keep.source = TRUE)
-  
+
   source(tdnn_mcc.final.eval.script.path,
          catch.aborts = TRUE,
          echo = TRUE,

@@ -88,38 +88,38 @@ rm(ds)
 
 ## DNNB MCC Model Evaluation ---------------------------------------------------
 
-put_log("Loading pre-trained BDL MCC Model...")
+put_log("Loading pre-trained DNN-Based Basic MCC Model...")
 dnn_basic.model <- keras3::load_model(dnn_basic.model.file_path)
 
-put_log("The BDL MCC Model has been loaded from the backup file:
+put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
 %1", dnn_basic.model.file_path)
 
 if(file.exists(dnn_basic.model.train_history.file_path)){
-  put_log("Loading the BDL MCC Model Train History...")
+  put_log("Loading the DNN-Based Basic MCC Model Train History...")
   
   dnn_basic.train_history <- readRDS(dnn_basic.model.train_history.file_path)
   
-  put_log("The BDL MCC Model has been loaded from the backup file:
+  put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
 %1", dnn_basic.model.train_history.file_path)
 
   plot(dnn_basic.train_history) 
-  rm(dnn_basic.train_history)
+  # rm(dnn_basic.train_history)
 } else {
-  warning("The BDL MCC Model backup does not exist:
+  warning("The DNN-Based Basic MCC Model History backup file does not exist:
 ", dnn_basic.model.train_history.file_path)
 }
 
-put_log("Evaluating DL Model...")
+put_log("Evaluating DNN-Based Basic MCC Model...")
 dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test.cat)
-put_log("DL Model evaluation result:
+put_log("DNN-Based Basic MCC Model evaluation result:
 %1", capture.output(str(dnnb_mcc.eval.result)))
 # List of 2
-#  $ accuracy: num 0.897
-#  $ loss    : num 0.314
+#  $ accuracy: num 0.898
+#  $ loss    : num 0.316
 
-put_log("The overall Basic DL MCC Model evaluation accuracy: %1",
+put_log("The overall DNN-Based Basic MCC Model evaluation accuracy: %1",
         dnnb_mcc.eval.result$accuracy)
-# 0.898338750451427
+# 0.898158192634583
 
 
 put_end_date(start)
@@ -161,22 +161,23 @@ head(dnnb_mcc.eval.result$predicted.values)
 
 dnnb_mcc.eval.result$targets <- y_test
 
+dnn_basic.accuracy <- mean(dnnb.pred.values.idx == as.integer(y_test))
+put_log("The overall DNN-Based Basic MCC Model accuracy: %1",dnn_basic.accuracy)
+# 0.898158179848321
+
 rm(dnnb.preds.ts,
    dnnb.predictions,
-   dnnb.pred.values.idx)
+   dnnb.pred.values.idx,
+   dnn_basic.train_history)
 
-put_log("Saving the BDL MCC Model  Evaluation Result object...")
+put_log("Saving the DNN-Based Basic MCC Model  Evaluation Result object...")
 saveRDS(dnnb_mcc.eval.result,
         file = dnnb_mcc.eval.result.file)
 
-put_log("The BDL MCC Model  Evaluation Result object has been trained 
+put_log("The DNN-Based Basic MCC Model  Evaluation Result object has been trained 
 and saved in the following file:
   %1", dnnb_mcc.eval.result.file)
 put_end_date(start)
-
-# dnn_basic.accuracy <- mean(dnnb.pred.values.idx == as.integer(y_test))
-# put_log("The overall Basic `DL MCC` Model accuracy: %1",dnn_basic.accuracy)
-# 0.898338750451427
 
 rm(x_test,
    y_test,

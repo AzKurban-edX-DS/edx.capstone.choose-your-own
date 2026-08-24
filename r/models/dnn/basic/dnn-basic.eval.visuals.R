@@ -39,7 +39,8 @@ from the following file:
   plots.args <- init.plots_args(targets = dnnb_mcc.eval.result$targets,
                                 predicted.probabilities = dnnb_mcc.eval.result$predicted.probs,
                                 predicted.values = dnnb_mcc.eval.result$predicted.values,
-                                alg_name = "DNN MCC Basics",
+                                model_type = "Basic MCC",
+                                alg_name = "DNN",
                                 plots_dat.file = dnnb_mcc.eval.plots_dat.file,
                                 cm.export.img_file = dnnb_mcc.eval.conf.mx.img_file,
                                 cm.print.image = T)

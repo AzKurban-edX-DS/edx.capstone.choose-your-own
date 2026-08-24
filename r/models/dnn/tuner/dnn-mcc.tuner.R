@@ -1,8 +1,8 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# DNN-Based MCC  Model Tuning
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# DNN-Based MCC (DNN MCC)  Model Tuning
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%s%%%%%%
 
-# Basic Deep Learning Multiclass Classifier (BDL MCC)  Model Tuning
+# DNN-Bsase Learning Multiclass Classifier (DNN MCC)  Model Tuning
 
 # References:
 # R interface to Keras Tuner
@@ -12,12 +12,14 @@
 # June 9, 2020 by Chris
 # https://machinecurve.com/index.php/2020/06/09/automating-neural-network-configuration-with-keras-tuner
 
-# Disable the elapsed time limit for expressions
-options(timeout = max(1000, getOption("timeout")))
-options(expressions = 50000) # Increases nesting limit if needed
+open_logfile(".dnn-mccl.model-tuning")
+stopifnot(dir.exists(dnn_mcc.tuner.dir))
 
-## Prepare a Training Set for the Model Tuning ------------------------------------
-open_logfile(".prepare-train-set-for-dl.model-tuning")
+# Disable the elapsed time limit for expressions
+# options(timeout = max(1000, getOption("timeout")))
+# options(expressions = 50000) # Increases nesting limit if needed
+
+## Prepare a Training Set for the DNN MCC Model Tuning ------------------------------------
 start <- put_start_date()
 stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
 
@@ -103,37 +105,14 @@ put_log("The Training Set is balanced by the set of Classes:
 }
 
 rm(y.train.groups)
-log_close()
 
-## Tuning the  BDL MCC Model ---------------------------------------------------
-open_logfile(paste0(".dl-basic-model.tuning_", 
-                    paste0("x_train(",
-                           str_flatten(shape(x_train), 
-                                       collapse = ","),")")))
+## Tuning the  DNN MCC Model ---------------------------------------------------
+
 ### Init the Model Tuner Paths --------------------------------------------
 
-dnn_mcc.final.file_path <- file.path(dnn_mcc.tuner.dir, 
-                                      "dnn-mcc.final-model.keras")
 
-dnnb.final_model.train_history.file_path <- file.path(dnn_mcc.tuner.dir, 
-                                                    "dnn_mcc.final_model.train_history.rds")
-
-dnn_mcc.tune.plot_img.dir <- file.path(dnn_mcc.tuner.dir, "plot.img")
-
-if(!dir.exists(dnn_mcc.tune.plot_img.dir))
-  dir.create(dnn_mcc.tune.plot_img.dir)
-
-dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tune.plot_img.dir, 
+dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
                                                "tuner.best-model.png")
-dnn_mcc.final_model.plot_img.file <- file.path(dnn_mcc.tune.plot_img.dir, 
-                                               "tuner.final-model.png")
-
-dnn_mcc.final.conf_mx.bak <- file.path(dnn_mcc.tune.plot_img.dir, 
-                                               "tuner-final.confusion-matrix.rds")
-
-dnn_mcc.final.conf_mx.img <- file.path(dnn_mcc.tune.plot_img.dir, 
-                                               "tuner-final.confusion-matrix.png")
-
 
 dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints")
@@ -144,40 +123,84 @@ dnn_mcc.tuner.checkpoint.file_path <-
   file.path(dnn_mcc.tuner.checkpoints.dir, 
             "dnn_mcc.tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
-dnn_mcc.best.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
-                                            "checkpoints.best")
-if(!dir.exists(dnn_mcc.best.checkpoints.dir))
-  dir.create(dnn_mcc.best.checkpoints.dir)
-
-dnn_mcc.best.checkpoint.file_path <- 
-  file.path(dnn_mcc.best.checkpoints.dir, 
-            "dnn_mcc.best.{epoch:02d}-{val_loss:.2f}.keras")
-
 ### Process the Tuning ---------------------------------------------------------
 if(!is.null(dev.list())) dev.off()
 
-put_log("Tuning the DL Basic Model on the full Train Dataset (`x_train`) of shape: %1...",
+put_log("Tuning the DNN MCC Model on the full Train Dataset (`x_train`) of shape: %1...",
         paste0("(", str_flatten(shape(x_train), 
                                 collapse = ","),")"))
 start <- put_start_date()
 # Log Start Time: 2026-06-29 09:22:51.209273
 
-dnn_mcc.tuner <- dl.tune.hwr_model(dnn_mcc.tunable_model,
-                                    x_train,
-                                    y_train,
-                                    dnn_mcc.tuner.dir,
-                                    dnn_mcc.tuner.checkpoint.file_path,
-                                    project_name = "DL.Basic.Tuner")
+# dnn_mcc.tuner <- dl.tune.hwr_model(dnn_mcc.tunable_model,
+#                                     x_train,
+#                                     y_train,
+#                                     dnn_mcc.tuner.dir,
+#                                     dnn_mcc.tuner.checkpoint.file_path,
+#                                     project_name = "DNN-MCC.Tuner")
+
+
+hp = HyperParameters()
+dnn_mcc.tuner.max_layers <- 20L
+
+# Choice of one value among a predefined set of possible values.
+# Choice(name, values, ordered = NULL, default = NULL, parent_name = NULL, parent_values = NULL)
+hp$Choice('learning_rate', 
+          c(1e-1, 
+            1e-2, 
+            1e-3, 
+            1e-4))
+
+hp$Int('num_layers', 
+       min_value = 2L,
+       max_value = dnn_mcc.tuner.max_layers)
+
+dnn_mcc.callback_list <- list(
+  callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+  callback_model_checkpoint(filepath = dnn_mcc.tuner.checkpoint.file_path,
+                            monitor = "val_loss",
+                            save_best_only = TRUE,
+                            verbose = 1)
+)
+
+for (i in seq(dnn_mcc.tuner.max_layers)) {
+  hp$Int(paste0("units_", i),
+         min_value = N.classes,
+         max_value = 28*28,
+         step = 32)    
+}
+
+dnn_mcc.tuner = RandomSearch(
+  hypermodel =  dnn_mcc.tuner.build_model,
+  # hypermodel =  function(hp) dnn_mcc.tunable_model(hp,
+  #                                           c(28, 28),
+  #                                           N.classes,
+  #                                           0.2),
+  max_trials = 5,
+  hyperparameters = hp,
+  tune_new_entries = T,
+  objective =  'val_accuracy',
+  directory = dnn_mcc.tuner.dir,
+  project_name = "DNN-MCC.Tuner"
+  )
+
+dnn_mcc.tuner |> fit_tuner(x = x_train,
+                           y = y_train,
+                           callbacks = dnn_mcc.callback_list,
+                           validation_split = 0.2,
+                           epochs = 100L)
+
+
 rm(x_train,
    y_train)
 
-put_log("The DL Basic Model Tuning has been completed.")
+put_log("The DNN MCC Model Tuning has been completed.")
 put_end_date(start)
 
 # Best val_accuracy So Far: 0.8961053490638733
 # Total elapsed time: 03h 38m 12s
 
-put_log("The DL Basic Tuning Results Summary:
+put_log("The DNN MCC Tuning Results Summary:
 %1", capture.output(dnn_mcc.tuner$results_summary()))
 
 # <keras_tuner.src.tuners.randomsearch.RandomSearch object at 0x000001F3BD376D90>
@@ -185,11 +208,11 @@ put_log("The DL Basic Tuning Results Summary:
 class(dnn_mcc.tuner)
 
 # This prints a summary of the search space and lists the top trial results
-dnnb.model_tuner.result <- kerastuneR::plot_tuner(dnn_mcc.tuner)
+dnn_mcc.tuner.results <- kerastuneR::plot_tuner(dnn_mcc.tuner)
 # the list will show the plot and the data.frame of tuning results
 
-put_log("The DL Basic Tuning Results:
-%1", capture.output(dnnb.model_tuner.result))
+put_log("The DNN MCC Tuning Results:
+%1", capture.output(dnn_mcc.tuner.results))
 {
   # [[1]]
   # 
@@ -214,7 +237,7 @@ put_log("The DL Basic Tuning Results:
   # 5      231      199      583      263       71        19 0.8117780
 }
 
-rm(dnnb.model_tuner.result)
+rm(dnn_mcc.tuner.results)
 
 # This prints the top trials, their hyperparameters, and execution details
 dnn_mcc.tuner |> results_summary(num_trials = 1L)
@@ -274,218 +297,48 @@ dnn_mcc.best_trial$metrics$get_history('val_accuracy')
 rm(dnn_mcc.tuner.best_trials,
    dnn_mcc.best_trial)
 
+### Extract & Save the Best Hyper-parameter Configuration ----------------------
+
+
+# dnn_mcc.tuner.best_trial.ls <- dnn_mcc.tuner$oracle$get_best_trials(num_trials = 10L)
+# str(dnn_mcc.tuner.best_trial.ls)
+# 
+# dnn_mcc.tuner.best_trial.last_epochs <- sapply(dnn_mcc.tuner.best_trial.ls, 
+#                                                function(trial){
+#                                                  trial$best_step
+#                                                })
+# 
+# dnn_mcc.retrain_epochs <- max(dnn_mcc.tuner.best_trial.last_epochs)
+
+
+dnn_mcc.tuner.best_hp.ls <- dnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
+# str(dnn_mcc.tuner.best_hp.ls)
+
+dnn_mcc.tuner.best_hp <- dnn_mcc.tuner.best_hp.ls[[1]]
+
+
+# class(dnn_mcc.tuner.best_hp)
+# [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
+# [2] "python.builtin.object"        
+
+#dnn_mcc.tuner.best_hp
+# <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
+
+put_log("The best Hyperparameters values:
+%1", capture.output(dnn_mcc.tuner.best_hp$values))
+
+dnn_mcc.best_hp.config <- dnn_mcc.tuner.best_hp$get_config()
+put_log("The best Hyperparameters configuration:
+%1", capture.output(dnn_mcc.best_hp.config))
+
+put_log("Saving the Best Hyper-parameter Configuration...")
+saveRDS(dnn_mcc.best_hp.config,
+        file = tdnn_mcc.best_hp.config)
+
+put_log("The Best Hyper-parameter Configuration has been saved in the following file:
+  %1", tdnn_mcc.best_hp.config)
+
 log_close()
 # Log Elapsed Time: 0 00:10:44
 
-## Prepare a Training Set for Re-training the Final Model -----------------------
-open_logfile(".train-set.prepare.retraining.final-dl.model")
-start <- put_start_date()
-stopifnot(file.exists(ds28x28.split.train_0.8.backup.file))
-
-put_log("Loading the Training Set of 28x28-size image data...")
-train_set <- load.train_set(ds28x28.split.train_0.8.backup.file)
-
-put_log("The Training Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.1.backup.file)
-
-
-put_log("The Training Set object structure is as follows:
-%1", capture.output(str(train_set)))
-
-x_train <- train_set$x
-# storage.mode(x_train) <- "integer"
-
-# x_train <- x_train[seq(1e4),,]
-str(x_train)
-dim(x_train)
-
-y.train.groups <- train_set$class_groups
-rm(train_set)
-
-stopifnot(sum(as.character(y.train.groups$classID) != rownames(x_train)) == 0)
-
-
-y_train <- as.array(as.integer(y.train.groups$classID) - 1)
-str(y_train)
-dim(y_train)
-
-stopifnot(min(y_train) == 0,
-          max(y_train) == 38,
-          dim(y_train) == nrow(x_train))
-
-### Size of the Training Set by Class ------------------------------------------
-
-put_log("The Training Set is balanced by the set of Classes:
-%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #        3407
-  #  2 $        3407
-  #  3 &        3407
-  #  4 @        3407
-  #  5 0        3407
-  #  6 1        3407
-  #  7 2        3407
-  #  8 3        3407
-  #  9 4        3407
-  # 10 5        3407
-  # 11 6        3407
-  # 12 7        3407
-  # 13 8        3407
-  # 14 9        3407
-  # 15 A        3407
-  # 16 B        3407
-  # 17 C        3407
-  # 18 D        3407
-  # 19 E        3407
-  # 20 F        3407
-  # 21 G        3407
-  # 22 H        3407
-  # 23 I        3407
-  # 24 J        3407
-  # 25 K        3407
-  # 26 L        3407
-  # 27 M        3407
-  # 28 N        3407
-  # 29 P        3407
-  # 30 Q        3407
-  # 31 R        3407
-  # 32 S        3407
-  # 33 T        3407
-  # 34 U        3407
-  # 35 V        3407
-  # 36 W        3407
-  # 37 X        3407
-  # 38 Y        3407
-  # 39 Z        3407
-  invisible(NULL)
-}
-
-rm(y.train.groups)
-log_close()
-
-## Re-training the Final Model --------------------------------------------------
-
-open_logfile("re-training.best.dnn_mcc-model")
-
-
-if(file.exists(dnn_mcc.final.file_path)) {
-  put_log("Loading pre-trained BDL MCC Model...")
-  
-  dnn_mcc.final_model <- keras3::load_model(dnn_mcc.final.file_path)
-  
-  put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dnn_mcc.final.file_path)
-  
-  if(file.exists(dnnb.final_model.train_history.file_path)){
-    put_log("Loading the BDL MCC Model Train History...")
-    
-    dnnb.final_model.train_history <- readRDS(dnnb.final_model.train_history.file_path)
-    
-    put_log("The BDL MCC Model has been loaded from the backup file:
-%1", dnnb.final_model.train_history.file_path)
-  } else {
-    warning("The BDL MCC Model backup does not exist:
-", dnnb.final_model.train_history.file_path)
-  }
-} else {
-  dnn_mcc.tuner.best_trial.ls <- dnn_mcc.tuner$oracle$get_best_trials(num_trials = 10L)
-  str(dnn_mcc.tuner.best_trial.ls)
-  
-  dnn_mcc.tuner.best_trial.last_epochs <- sapply(dnn_mcc.tuner.best_trial.ls, 
-                                                  function(trial){
-                                                    trial$best_step
-                                                  })
-  
-  dnn_mcc.retrain_epochs <- max(dnn_mcc.tuner.best_trial.last_epochs)
-  
-  
-  dnn_mcc.tuner.best_hp.ls <- dnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
-  # str(dnn_mcc.tuner.best_hp.ls)
-  
-  dnn_mcc.tuner.best_hp <- dnn_mcc.tuner.best_hp.ls[[1]]
-  
-  put_log("The best Hyperparameters configuration:
-%1", capture.output(dnn_mcc.tuner.best_hp$get_config()))
-  
-  class(dnn_mcc.tuner.best_hp)
-  # [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
-  # [2] "python.builtin.object"        
-  
-  dnn_mcc.tuner.best_hp
-  # <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
-  
-  put_log("The best Hyperparameters values:
-%1", capture.output(dnn_mcc.tuner.best_hp$values))
-  
-  # 1. Re-build a clean model structure using the winning hyperparams
-  dnn_mcc.final_model <- dnn_mcc.tuner$hypermodel$build(dnn_mcc.tuner.best_hp)
-  # print(dnn_mcc.final_model)
-  # dnn_mcc.final_model$summary()
-  
-  put_log("The Final tuned BDL Model Summary: 
-%1", capture.output(dnn_mcc.final_model))
-  
-  dnn_mcc.final_model |> plot_keras_model(to_file = dnn_mcc.final_model.plot_img.file,
-                                           show_shapes = T)
-  
-  #best_models <- tuner |> get_best_models(num_models = 1L)
-  # best_5_models[[1]] %>% plot_keras_model()
-  
-  dnn_mcc.best.callbacks <- list(
-    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = dnn_mcc.best.checkpoint.file_path,
-                              monitor = "val_loss",
-                              save_best_only = TRUE,
-                              verbose = 1)
-  )
-  
-  put_log("Training the BDL MCC Model...")
-  start <- put_start_date()
-  
-  dnnb.final_model.train_history <- dnn_mcc.final_model |> 
-    fit(x_train, 
-        y_train, 
-        epochs = dnn_mcc.retrain_epochs, 
-        # batch_size = 128, 
-        callbacks = dnn_mcc.best.callbacks,
-        validation_split = 0.2
-    )
-  
-  put_log("Saving re-trained final BDL MCC Model...")
-  keras3::save_model(dnn_mcc.final_model,
-                     filepath = dnn_mcc.final.file_path,
-                     overwrite = TRUE)
-  
-  put_log("The re-trained final BDL MCC Model has been trained 
-and saved in the following file:
-  %1", dnn_mcc.final.file_path)
-  
-  put_log("Saving the BDL MCC Model History...")
-  saveRDS(dnnb.final_model.train_history,
-          file = dnnb.final_model.train_history.file_path)
-  
-  put_log("The re-trained final BDL MCC Model History has been trained 
-and saved in the following file:
-  %1", dnnb.final_model.train_history.file_path)
-  put_end_date(start)
-  # Time difference of 38.48235 mins
-}
-
-rm(x_train,
-   y_train,
-   dnn_mcc.tuner)
-
-put_log("The re-trained `BDL MCC` Model has been trained with the following results
-%1", dnn_mcc.final_model)
-
-plot(dnnb.final_model.train_history)
-str(dnnb.final_model.train_history)
-
-rm(dnnb.final_model.train_history)
-
-log_close()
-# Log Elapsed Time: 0 00:13:05
 
