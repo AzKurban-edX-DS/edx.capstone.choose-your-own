@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 open_logfile(".dnnb-mcc.model.evaluation")
 
-stopifnot(file.exists(dnn_basic.model.file_path))
+stopifnot(file.exists(dnn_basic.model.file))
 start <- put_start_date()
 
 ## Prepare a Test Set for DNN-Based Basic MCC Model ----------------------------
@@ -94,38 +94,37 @@ log_close()
 ## DNNB MCC Model Evaluation ---------------------------------------------------
 
 put_log("Loading pre-trained DNN-Based Basic MCC Model...")
-dnn_basic.model <- keras3::load_model(dnn_basic.model.file_path)
+dnn_basic.model <- keras3::load_model(dnn_basic.model.file)
 
 put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
-%1", dnn_basic.model.file_path)
+%1", dnn_basic.model.file)
 
-if(file.exists(dnn_basic.model.train_history.file_path)){
+if(file.exists(dnn_basic.model.train_history.file)){
   put_log("Loading the DNN-Based Basic MCC Model Train History...")
   
-  dnn_basic.train_history <- readRDS(dnn_basic.model.train_history.file_path)
+  dnn_basic.train_history <- readRDS(dnn_basic.model.train_history.file)
   
   put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
-%1", dnn_basic.model.train_history.file_path)
+%1", dnn_basic.model.train_history.file)
 
   plot(dnn_basic.train_history) 
   # rm(dnn_basic.train_history)
 } else {
   warning("The DNN-Based Basic MCC Model History backup file does not exist:
-", dnn_basic.model.train_history.file_path)
+", dnn_basic.model.train_history.file)
 }
 
 put_log("Evaluating DNN-Based Basic MCC Model...")
-# dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test.cat)
 dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test)
 put_log("DNN-Based Basic MCC Model evaluation result:
 %1", capture.output(str(dnnb_mcc.eval.result)))
 # List of 2
 # $ accuracy: num 0.898
-# $ loss    : num 0.319
+# $ loss    : num 0.321
 
 put_log("The overall DNN-Based Basic MCC Model evaluation accuracy: %1",
         dnnb_mcc.eval.result$accuracy)
-# 0.897375702857971
+# 0.897526204586029
 
 
 put_end_date(start)
@@ -153,9 +152,9 @@ str(dnnb.preds.ts)
 
 dnnb.predictions <- dnnb.preds.ts |> op_argmax(2)
 dnnb.predictions
-#> tf.Tensor([13  4 21 ... 19  5  1], shape=(684467), dtype=int32)
+#> tf.Tensor([11  7 15 ... 24 30  7], shape=(33228), dtype=int32)
 shape(dnnb.predictions)
-#> [1] 33228
+#> shape(33228)
 # dnnb.predictions$numpy()
 
 
@@ -165,12 +164,15 @@ head(dnnb.pred.values.idx)
 dnnb_mcc.eval.result$predicted.values <- Y.Labels[dnnb.pred.values.idx]
 head(dnnb_mcc.eval.result$predicted.values)
 
-dnnb_mcc.eval.result$targets <- y_test
+stopifnot(min(y_test) == 0,
+          max(y_test) == 38)
 
-dnn_basic.accuracy <- mean(dnnb.pred.values.idx == as.integer(y_test))
+targets.idx <- y_test + 1
+dnnb_mcc.eval.result$targets <- Y.Labels[targets.idx]
+
+dnn_basic.accuracy <- mean(dnnb.pred.values.idx == targets.idx)
 put_log("The overall DNN-Based Basic MCC Model accuracy: %1",dnn_basic.accuracy)
-# 0.898158179848321
-# 0.898489236831665
+# 0.89752618273745
 
 rm(dnnb.preds.ts,
    dnnb.predictions,

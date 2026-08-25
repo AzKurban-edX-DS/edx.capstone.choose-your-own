@@ -7,7 +7,8 @@
 open_logfile(".tdnn-fmcc.eval-results.visualization")
 
 stopifnot(file.exists(model_visualization.shared.script.path,
-                      tdnn_mcc.final.eval_result.file))
+                      tdnn_mcc.final.eval_result.file),
+          dir.exists(dnn_mcc.tuner.dir))
 
 if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
   dir.create(dnn_mcc.tuner.plots.dat.dir)

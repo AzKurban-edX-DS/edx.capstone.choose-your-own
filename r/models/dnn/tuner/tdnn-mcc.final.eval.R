@@ -5,7 +5,8 @@
 open_logfile(".tdnn-mcc.final.evaluation")
 
 stopifnot(file.exists(tdnn_mcc.final.file,
-                      ds28x28.split.train_0.8.backup.file))
+                      ds28x28.split.train_0.8.backup.file),
+          dir.exists(dnn_mcc.tuner.dir))
 
 ## Prepare a Test Set for the TDNN MCC Final Model Evaluation ------------------
 start <- put_start_date()
@@ -111,7 +112,8 @@ put_log("The TDNN MCC Final Model evaluation result:
 # List of 2
 # $ accuracy: num 0.89
 # $ loss    : num 0.381
-
+# $ accuracy        : num 0.873
+# $ loss            : num 0.419
 
 put_end_date(start)
 # Time difference of 1.668308 mins
@@ -192,4 +194,6 @@ rm(x_test,
 put_log("The overall TDNN MCC Final Model accuracy: %1", 
         tdnn_mcc.final.eval.result$accuracy)
 # 0.898338750451427
-
+# 0.872517168521881
+# 2HL: 0.906163454055786
+# 5HL: 0.906584799289703

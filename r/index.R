@@ -100,10 +100,10 @@ stopifnot(file.exists(dnn_basic.script.path,
                       my_emnist.split.file_path))
 
 #### Init Paths ----------------------------------------------------------------
-dnn_basic.model.file_path <- file.path(data.dnn_mcc.basic.dir, 
+dnn_basic.model.file <- file.path(data.dnn_mcc.basic.dir, 
                                        "dnn_basic.pre-trained.model.keras")
 
-dnn_basic.model.train_history.file_path <- file.path(data.dnn_mcc.basic.dir, 
+dnn_basic.model.train_history.file <- file.path(data.dnn_mcc.basic.dir, 
                                                      "dnn_basic.model.train_history.bak.rds")
 
 dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
@@ -111,7 +111,7 @@ dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
 
 #### Run Scripts ---------------------------------------------------------------
 if(!file.exists(dnnb_mcc.eval.result.file)) {
-  if(!file.exists(dnn_basic.model.file_path)) {
+  if(!file.exists(dnn_basic.model.file)) {
     source(dnn_basic.script.path, 
            catch.aborts = TRUE,
            echo = TRUE,

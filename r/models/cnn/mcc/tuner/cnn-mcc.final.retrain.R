@@ -18,7 +18,6 @@ put_log("Loading and splitting the Train 28x28 Image Data Array
 into a Default Train and Test Sets...")
 
 split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
-                                       seed = N.classes,
                                        test_ratio = 0.2)
 
 put_log("The Default Split Dataset object structure:

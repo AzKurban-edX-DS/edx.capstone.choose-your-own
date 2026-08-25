@@ -187,20 +187,20 @@ dnn_basic.train_history <- dnn_basic.model |>
 
 put_log("Saving pre-trained BDNNB MCC Model...")
 keras3::save_model(dnn_basic.model,
-                   filepath = dnn_basic.model.file_path,
+                   filepath = dnn_basic.model.file,
                    overwrite = T)
 
 put_log("The BDNNB MCC Model has been trained 
 and saved in the following file:
-  %1", dnn_basic.model.file_path)
+  %1", dnn_basic.model.file)
 
 put_log("Saving the BDNNB MCC Model History...")
 saveRDS(dnn_basic.train_history,
-        file = dnn_basic.model.train_history.file_path)
+        file = dnn_basic.model.train_history.file)
 
 put_log("The BDNNB MCC Model History has been trained 
 and saved in the following file:
-  %1", dnn_basic.model.train_history.file_path)
+  %1", dnn_basic.model.train_history.file)
 put_end_date(start)
 
 

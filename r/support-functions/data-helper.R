@@ -382,18 +382,18 @@ plot_image <- function(image_file) {
 }
 
 ## Data processing -------------------------------------------------------------
-split.img28x28mx_array <- function(backup.file,
+split.img28x28mx_array <- function(file,
                                    seed = NA,
                                    seed.default = TRUE,
                                    test_ratio = 0.2) {
-  stopifnot(file.exists(backup.file))
+  stopifnot(file.exists(file))
   
   put_log("Function `split.img28x28mx_array`:
 Loading the Binary Image 28x28 array set from the backup file...")
-  img28x28mx.set <- readRDS(backup.file)
+  img28x28mx.set <- readRDS(file)
   put_log("Function `split.img28x28mx_array`:
 The Binary Image 28x28 array set has been loaded from the following file:
-%1", backup.file)
+%1", file)
   
   put_log("Function `split.img28x28mx_array`:
 Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")

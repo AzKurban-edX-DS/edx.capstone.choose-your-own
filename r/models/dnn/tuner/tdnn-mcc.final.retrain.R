@@ -4,8 +4,9 @@
 
 open_logfile(".re-training.tuned-final.dnn_mcc-model")
 
-stopifnot(file.exists(ds28x28.split.train_0.8.backup.file,
-                      tdnn_mcc.best_hp.config))
+stopifnot(dir.exists(dnn_mcc.tuner.dir),
+          file.exists(ds28x28.split.train_0.8.backup.file,
+                      tdnn_mcc.best_hp.config.file))
 
 start <- put_start_date()
 
@@ -15,7 +16,7 @@ put_log("Loading the Training Set of 28x28-size image data...")
 train_set <- load.train_set(ds28x28.split.train_0.8.backup.file)
 
 put_log("The Training Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.1.backup.file)
+%1", ds28x28.split.train_0.8.backup.file)
 
 
 put_log("The Training Set object structure is as follows:
@@ -99,9 +100,6 @@ rm(y.train.groups)
 
 tdnn_mcc.final.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                            "checkpoints.final")
-if(!dir.exists(tdnn_mcc.final.checkpoints.dir))
-  dir.create(tdnn_mcc.final.checkpoints.dir)
-
 tdnn_mcc.final.checkpoints.file_path <- 
   file.path(tdnn_mcc.final.checkpoints.dir, 
             "dnn_mcc.best.{epoch:02d}-{val_loss:.2f}.keras")
@@ -109,20 +107,26 @@ tdnn_mcc.final.checkpoints.file_path <-
 tdnn_mcc.final.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
                                                "tuner.final-model.png")
 
+if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
+  dir.create(dnn_mcc.tuner.plots.dat.dir)
+
+if(!dir.exists(tdnn_mcc.final.checkpoints.dir))
+  dir.create(tdnn_mcc.final.checkpoints.dir)
+
 ### Process Re-trainnng --------------------------------------------------------
 
 put_log("Loading the Best Hyper-parameter Configuration from file...")
-dnn_mcc.best_hp.config <- readRDS(tdnn_mcc.best_hp.config)
+tdnn_mcc.best_hp.config <- readRDS(tdnn_mcc.best_hp.config.file)
 
 put_log("The Best Hyper-parameter Configuration has been loaded from the following file:
-  %1", tdnn_mcc.best_hp.config)
+  %1", tdnn_mcc.best_hp.config.file)
 
 # restored_hp <- HyperParameters$from_config(loaded_config)
-#dnn_mcc.tuner.best_hp <- kerastuneR::HyperParameters$from_config(dnn_mcc.best_hp.config)
+#dnn_mcc.tuner.best_hp <- kerastuneR::HyperParameters$from_config(tdnn_mcc.best_hp.config)
 
 # Build the HyperParameters object from the configuration
 kt <- import("keras_tuner")
-dnn_mcc.tuner.best_hp <- kt$HyperParameters$from_config(dnn_mcc.best_hp.config)
+dnn_mcc.tuner.best_hp <- kt$HyperParameters$from_config(tdnn_mcc.best_hp.config)
 
 
 # 1. Re-build a clean model structure using the winning hyperparams
@@ -194,7 +198,10 @@ str(tdnn_mcc.final.train_history)
 rm(tdnn_mcc.final.train_history)
 
 log_close()
-# Log Elapsed Time: 0 00:27:02
-
+# =========================================================================
+# Log End Time: 2026-08-26 01:07:16.121161
+# Log Elapsed Time: 0 00:07:53
+# =========================================================================
+  
 
 

@@ -13,22 +13,29 @@
 # https://machinecurve.com/index.php/2020/06/09/automating-neural-network-configuration-with-keras-tuner
 
 open_logfile(".dnn-mccl.model-tuning")
-stopifnot(dir.exists(dnn_mcc.tuner.dir))
+
+stopifnot(file.exists(ds28x28.split.train_0.1.backup.file),
+          exists("dnn_mcc.tuner.dir"),
+          exists("tdnn_mcc.best_hp.config.file"))
 
 # Disable the elapsed time limit for expressions
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
 
-## Prepare a Training Set for the DNN MCC Model Tuning ------------------------------------
-start <- put_start_date()
-stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
+## Prepare Input Datasets for the DNN MCC Model Tuning -------------------------
 
-put_log("Loading the Training Set of 28x28-size image data...")
-train_set <- load.train_set(ds28x28.split.train_0.1.backup.file)
+put_log("Loading the Input Datasets of 28x28-size image data...")
+ds <- load_datasets(ds28x28.split.train_0.1.backup.file)
+train_set <- ds$train
+test_set <- ds$test
+rm(ds)
 
-put_log("The Training Set of 28x28-size image data has been loaded from the following file:
+put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
 %1", ds28x28.split.train_0.1.backup.file)
 
+### Prepare a Training Set -----------------------------------------------------
+start <- put_start_date()
+stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
 
 put_log("The Training Set object structure is as follows:
 %1", capture.output(str(train_set)))
@@ -54,7 +61,7 @@ stopifnot(min(y_train) == 0,
           max(y_train) == 38,
           dim(y_train) == nrow(x_train))
 
-### Size of the Training Set by Class ------------------------------------------
+#### Size of the Training Set by Class -----------------------------------------
 
 put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
@@ -106,8 +113,47 @@ put_log("The Training Set is balanced by the set of Classes:
 
 rm(y.train.groups)
 
-## Tuning the  DNN MCC Model ---------------------------------------------------
+### Prepare a Test Set ----------------------------------------------------------
+start <- put_start_date()
 
+put_log("The Test Set object structure is as follows:
+%1", capture.output(str(test_set)))
+
+x_test <- test_set$x
+# storage.mode(x_test) <- "integer"
+
+# x_test <- x_test[seq(1e4),,]
+str(x_test)
+dim(x_test)
+
+y.test.groups <- test_set$class_groups
+rm(test_set)
+
+stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
+
+y_test <- as.array(as.integer(y.test.groups$classID) - 1)
+str(y_test)
+dim(y_test)
+
+stopifnot(min(y_test) == 0,
+          max(y_test) == 38,
+          dim(y_test) == nrow(x_test))
+
+#### Size of the Test Set by Class ------------------------------------------
+
+put_log("The Test Set is balanced by the set of Classes:
+%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+
+  invisible(NULL)
+}
+
+rm(y.test.groups)
+
+## Tuning the  DNN MCC Model ---------------------------------------------------
 ### Init the Model Tuner Paths --------------------------------------------
 
 
@@ -116,12 +162,18 @@ dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
 
 dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints")
-if(!dir.exists(dnn_mcc.tuner.checkpoints.dir))
-  dir.create(dnn_mcc.tuner.checkpoints.dir)
-
 dnn_mcc.tuner.checkpoint.file_path <- 
   file.path(dnn_mcc.tuner.checkpoints.dir, 
             "dnn_mcc.tuner.{epoch:02d}-{val_loss:.2f}.keras")
+
+if(!dir.exists(dnn_mcc.tuner.dir))
+  dir.create(dnn_mcc.tuner.dir)
+
+if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
+  dir.create(dnn_mcc.tuner.plots.dat.dir)
+
+if(!dir.exists(dnn_mcc.tuner.checkpoints.dir))
+  dir.create(dnn_mcc.tuner.checkpoints.dir)
 
 ### Process the Tuning ---------------------------------------------------------
 if(!is.null(dev.list())) dev.off()
@@ -140,8 +192,8 @@ start <- put_start_date()
 #                                     project_name = "DNN-MCC.Tuner")
 
 
-hp = HyperParameters()
-dnn_mcc.tuner.max_layers <- 20L
+hp <- HyperParameters()
+dnn_mcc.tuner.max_layers <- 5L
 
 # Choice of one value among a predefined set of possible values.
 # Choice(name, values, ordered = NULL, default = NULL, parent_name = NULL, parent_values = NULL)
@@ -154,6 +206,11 @@ hp$Choice('learning_rate',
 hp$Int('num_layers', 
        min_value = 2L,
        max_value = dnn_mcc.tuner.max_layers)
+
+hp$Float('dropout_rate', 
+       min_value = 0.1,
+       max_value = 0.5,
+       step = 0.05)
 
 dnn_mcc.callback_list <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -187,12 +244,11 @@ dnn_mcc.tuner = RandomSearch(
 dnn_mcc.tuner |> fit_tuner(x = x_train,
                            y = y_train,
                            callbacks = dnn_mcc.callback_list,
-                           validation_split = 0.2,
+                           # validation_split = 0.2,
+                           validation_data = tuple(x_test, y_test),
                            epochs = 100L)
-
-
-rm(x_train,
-   y_train)
+# rm(x_train,
+#    y_train)
 
 put_log("The DNN MCC Model Tuning has been completed.")
 put_end_date(start)
@@ -327,18 +383,18 @@ dnn_mcc.tuner.best_hp <- dnn_mcc.tuner.best_hp.ls[[1]]
 put_log("The best Hyperparameters values:
 %1", capture.output(dnn_mcc.tuner.best_hp$values))
 
-dnn_mcc.best_hp.config <- dnn_mcc.tuner.best_hp$get_config()
+tdnn_mcc.best_hp.config <- dnn_mcc.tuner.best_hp$get_config()
 put_log("The best Hyperparameters configuration:
-%1", capture.output(dnn_mcc.best_hp.config))
+%1", capture.output(tdnn_mcc.best_hp.config))
 
 put_log("Saving the Best Hyper-parameter Configuration...")
-saveRDS(dnn_mcc.best_hp.config,
-        file = tdnn_mcc.best_hp.config)
+saveRDS(tdnn_mcc.best_hp.config,
+        file = tdnn_mcc.best_hp.config.file)
 
 put_log("The Best Hyper-parameter Configuration has been saved in the following file:
-  %1", tdnn_mcc.best_hp.config)
+  %1", tdnn_mcc.best_hp.config.file)
 
 log_close()
-# Log Elapsed Time: 0 00:10:44
-
+# Log End Time: 2026-08-26 00:50:05.99562
+# Log Elapsed Time: 0 00:48:52
 
