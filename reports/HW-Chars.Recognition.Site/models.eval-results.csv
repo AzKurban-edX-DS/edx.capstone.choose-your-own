@@ -1,0 +1,7 @@
+Model,Accuracy,Error,0.2 Test,0.1 Train
+kNN+PCA,,,,
+Random Forest,,,,
+DNN-Based-Basic MCC,,,,
+Tuned DNN MCC Final,,,,
+CNN-Based-Basic MCC,,,,
+Tuned CNN MCC Final,,,,

@@ -3,6 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 open_logfile(".dnnb-mcc.model.training")
+start <- put_start_date()
 
 stopifnot(file.exists(my_emnist.split.file_path))
 
@@ -13,46 +14,45 @@ stopifnot(file.exists(my_emnist.split.file_path))
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-## Preparing a Training Set -------------------------------------------------- 
-start <- put_start_date()
+## Prepare a Training Set for DNN-Based Basic MCC Model ------------------------
+
+put_log("Loading the Training Set of 28x28-size image data...")
+train_set <- load.train_set(ds28x28.split.train_0.8.backup.file)
+
+put_log("The Training Set of 28x28-size image data has been loaded from the following file:
+%1", ds28x28.split.train_0.8.backup.file)
 
 
-put_log("Loading the Split Flattened Dataset from the backup file...")
+put_log("The Training Set object structure is as follows:
+%1", capture.output(str(train_set)))
 
-# ds <- load_datasets(my_emnist.split.file_path)
-# 
-# put_log("The Split Flatten Dataset has the following structure:
-# %1", capture.output(str(ds)))
-# 
-# x_train <- ds$train$x
-# y_train <- ds$train$class_groups$classID
-# 
-# stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
-# stopifnot(nrow(x_train) == length(y_train))
+x_train <- train_set$x
+# storage.mode(x_train) <- "integer"
 
-### Converting labels factor to categorical -----------------------------------
-# Reference: 
-#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
-# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
-# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
+# x_train <- x_train[seq(1e4),,]
+str(x_train)
+dim(x_train)
 
-y.idx <- y_train + 1
-y_labels <- Y.Labels[y.idx]
-str(y_labels)
+y.train.groups <- train_set$class_groups
+rm(train_set)
 
-y_train.cat <- to_categorical(y_labels)
-# rm(y_train)
+stopifnot(sum(as.character(y.train.groups$classID) != rownames(x_train)) == 0)
 
-colnames(y_train.cat) <- Y.Labels
-dim(y_train.cat)
-str(y_train.cat)
-head(y_train.cat)
-# max(y_train.cat)
 
-### Size of the Training Set by Class ----------------------------------------
-put_log("The Train set is balanced with respect to the set of classes:
-%1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
-  # # A tibble: 39 × 2
+y_train <- as.array(as.integer(y.train.groups$classID) - 1)
+str(y_train)
+dim(y_train)
+
+stopifnot(min(y_train) == 0,
+          max(y_train) == 38,
+          dim(y_train) == nrow(x_train))
+
+### Size of the Training Set by Class ------------------------------------------
+
+put_log("The Training Set is balanced by the set of Classes:
+%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
+{
+  # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
   #  1 #        3407
@@ -94,12 +94,19 @@ put_log("The Train set is balanced with respect to the set of classes:
   # 37 X        3407
   # 38 Y        3407
   # 39 Z        3407
+  invisible(NULL)
+}
+
+rm(y.train.groups)
 
 ## Analyzing Image Data --------------------------------------------------------
+
 max_img_pixels <- max(rowSums(x_train))
-put_log("The maximum number of pixels in the Training Set images is as follows: %1",
-        max_img_pixels)
+# put_log("The maximum number of pixels in the Training Set images is as follows: %1",
+#         max_img_pixels)
 #> 593
+
+
 
 # References:
 # https://community.deeplearning.ai/t/number-of-the-hidden-units-in-hidden-layers/24916
@@ -134,11 +141,7 @@ dnn_basic.checkpoint.file_path <-
             "dnn_basic.{epoch:02d}-{val_loss:.2f}.keras")
 
 ## Building DNNB MCC Model -----------------------------------------------------
-
-n.input_shape <- ncol(x_train)
-# 784
-
-#### Defining & Compiling the Basic DNNB MCC Model -------------------------------
+### Defining & Compiling the Basic DNNB MCC Model -----------------------------
 
 n.input_shape <- ncol(x_train)
 # 784
@@ -154,9 +157,9 @@ dnn_basic.outputs <- dnn_basic.inputs |>
 
 dnn_basic.model <- keras_model(dnn_basic.inputs, dnn_basic.outputs)
 
-dnn_basic.model |> compile(  loss = "sparse_categorical_crossentropy",
-                             optimizer = keras3::optimizer_adamax(0.001),
-                             metrics = "accuracy")
+dnn_basic.model |> compile(loss = "sparse_categorical_crossentropy",
+                           optimizer = keras3::optimizer_adamax(0.001),
+                           metrics = "accuracy")
 summary(dnn_basic.model)
 
 ### Training the Basic DNNB MCC Model --------------------------------------------
@@ -176,7 +179,6 @@ start <- put_start_date()
 dnn_basic.train_history <- dnn_basic.model |>
   fit(x_train, 
       y_train, 
-      # y_train.cat, 
       epochs = 100, 
       # batch_size = 128, 
       callbacks = dnn_basic.callbacks,
@@ -186,7 +188,7 @@ dnn_basic.train_history <- dnn_basic.model |>
 put_log("Saving pre-trained BDNNB MCC Model...")
 keras3::save_model(dnn_basic.model,
                    filepath = dnn_basic.model.file_path,
-                   overwrite = FALSE)
+                   overwrite = T)
 
 put_log("The BDNNB MCC Model has been trained 
 and saved in the following file:
@@ -214,6 +216,6 @@ plot(dnn_basic.train_history)
 put_log("Structure of the Basic DNNB MCC Model training history:
 %1", capture.output(str(dnn_basic.train_history)))
 
-rm(dnn_basic.train_history)
+# rm(dnn_basic.train_history)
 log_close()
 # Log Elapsed Time: 0 00:04:07

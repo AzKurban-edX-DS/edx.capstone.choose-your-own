@@ -3,43 +3,47 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 open_logfile(".dnnb-mcc.model.evaluation")
 
-stopifnot(file.exists(dnn_basic.model.file_path,
-                      my_emnist.split.file_path))
-
-## Preparing a Test Set ------------------------------------------------------ 
+stopifnot(file.exists(dnn_basic.model.file_path))
 start <- put_start_date()
 
-put_log("Loading the Split Flattened Dataset from the backup file...")
+## Prepare a Test Set for DNN-Based Basic MCC Model ----------------------------
 
-ds <- load_datasets(my_emnist.split.file_path)
+put_log("Loading the Test Set of 28x28-size image data...")
+test_set <- load.test_set(ds28x28.split.train_0.8.backup.file)
 
-put_log("The Split Flatten Dataset has the following structure:
-%1", capture.output(str(ds)))
+put_log("The Test Set of 28x28-size image data has been loaded from the following file:
+%1", ds28x28.split.train_0.8.backup.file)
 
-x_test <- ds$test$x
 
-y_test <- ds$test$class_groups$classID
+put_log("The Test Set object structure is as follows:
+%1", capture.output(str(test_set)))
 
-stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
-stopifnot(nrow(x_test) == length(y_test))
+x_test <- test_set$x
+# storage.mode(x_test) <- "integer"
 
-### Converting labels factor to categorical -----------------------------------
-# Reference: 
-#> Deep Learning with R and Keras: Build a Handwritten Digit Classifier in 10 Minutes
-# https://www.appsilon.com/post/r-keras-mnist#:~:text=do%20that%20next.-,Model%20Training,function%20to%20train%20the%20model.
-# https://www.r-bloggers.com/2021/02/deep-learning-with-r-and-keras-build-a-handwritten-digit-classifier-in-10-minutes/
+# x_test <- x_test[seq(1e4),,]
+str(x_test)
+dim(x_test)
 
-y_test.cat <- to_categorical(y_test)
-colnames(y_test.cat) <- Y.Labels
-dim(y_test.cat)
-str(y_test.cat)
-head(y_test.cat)
+y.test.groups <- test_set$class_groups
+rm(test_set)
 
-### Size of the Test Set by Class --------------------------------------------
-put_log("The Test set is balanced with respect to the set of classes:
-%1", capture.output(print(ds$test$class_groups$groupByClass, n = N.classes)))
+stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
+
+y_test <- as.array(as.integer(y.test.groups$classID) - 1)
+str(y_test)
+dim(y_test)
+
+stopifnot(min(y_test) == 0,
+          max(y_test) == 38,
+          dim(y_test) == nrow(x_test))
+
+### Size of the Test Set by Class ------------------------------------------
+
+put_log("The Test Set is balanced by the set of Classes:
+%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
 {
-  # # A tibble: 39 × 2
+  # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
   #  1 #         852
@@ -80,11 +84,12 @@ put_log("The Test set is balanced with respect to the set of classes:
   # 36 W         852
   # 37 X         852
   # 38 Y         852
-  # 39 Z         852
+  # 39 Z         852  
   invisible(NULL)
 }
 
-rm(ds)
+rm(y.test.groups)
+log_close()
 
 ## DNNB MCC Model Evaluation ---------------------------------------------------
 
@@ -110,16 +115,17 @@ if(file.exists(dnn_basic.model.train_history.file_path)){
 }
 
 put_log("Evaluating DNN-Based Basic MCC Model...")
-dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test.cat)
+# dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test.cat)
+dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test)
 put_log("DNN-Based Basic MCC Model evaluation result:
 %1", capture.output(str(dnnb_mcc.eval.result)))
 # List of 2
-#  $ accuracy: num 0.898
-#  $ loss    : num 0.316
+# $ accuracy: num 0.898
+# $ loss    : num 0.319
 
 put_log("The overall DNN-Based Basic MCC Model evaluation accuracy: %1",
         dnnb_mcc.eval.result$accuracy)
-# 0.898158192634583
+# 0.897375702857971
 
 
 put_end_date(start)
@@ -164,11 +170,12 @@ dnnb_mcc.eval.result$targets <- y_test
 dnn_basic.accuracy <- mean(dnnb.pred.values.idx == as.integer(y_test))
 put_log("The overall DNN-Based Basic MCC Model accuracy: %1",dnn_basic.accuracy)
 # 0.898158179848321
+# 0.898489236831665
 
 rm(dnnb.preds.ts,
    dnnb.predictions,
-   dnnb.pred.values.idx,
-   dnn_basic.train_history)
+   # dnn_basic.train_history,
+   dnnb.pred.values.idx)
 
 put_log("Saving the DNN-Based Basic MCC Model  Evaluation Result object...")
 saveRDS(dnnb_mcc.eval.result,
@@ -179,9 +186,9 @@ and saved in the following file:
   %1", dnnb_mcc.eval.result.file)
 put_end_date(start)
 
-rm(x_test,
-   y_test,
-   y_test.cat)
+# rm(x_test,
+#    y_test,
+#    y_test.cat)
 
 log_close()
 
