@@ -40,71 +40,127 @@ cnn_mcc.basic.checkpoint.file_path <-
 cnn_mcc.basic.plot_img.file <- file.path(cnn_mcc.basic.plots.dat.dir,
                                          "cnn-mcc.basic-model.png")
 
-## Prepare a Training Set for the Model Training ---------------------------------
+### Prepare a Training Set for the Model Training ---------------------------------
+put_log("Loading and splitting the Train 28x28 Image Data Array 
+into a Default Train and Test Sets...")
 
-put_log("Loading the Training Set of 28x28x1-shape image data...")
+split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
+                                       seed = N.classes,
+                                       test_ratio = 0.9)
 
-train_set <- load28x28x1.train_set(ds28x28.split.train_0.8.backup.file)
-put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+put_log("The Default Split Dataset object structure:
+%1", capture.output(str(split3d.list)))
 
-x_train <- train_set$x
+x3d.train_set <- split3d.list$train_set
+# str(x3d.train_set)
 
-y_train <- train_set$class_groups$classID
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
+which contains a training sample stored in the `x_train` variable having the following shape:
+%1", capture.output(shape(x3d.train_set$x.train)))
+# shape(132912, 28, 28)
 
-stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0,
-          length(y_train) == nrow(x_train))
+x3d.test_set <- split3d.list$test_set
+# str(x3d.test_set)
 
-### Size of the Training Set by Class ------------------------------------------
+put_log("The Test Set data is stored in the object `x3d.test_set`, 
+having the following structure:
+%1", capture.output(str(x3d.test_set)))
+
+put_log("Saving the Test Set to backup file for later use...")
+saveRDS(x3d.test_set,
+        file = cnn_mcc.basic.x3d.test_set.bakup)
+
+put_log("The Test Set for Basic CNN MCC Model has been saved to the following file:
+%1", cnn_mcc.basic.x3d.test_set.bakup)
+
+rm(split3d.list,
+   x3d.test_set)
+
+x3d_train <- x3d.train_set$x.train
+
+y.train.groups <- ds.get_classIDs.grouped(x3d_train)
+y_train <- y.train.groups$classID
+
+
+put_log("Reshaping the Training Set to make it compatible with the Convolutional Neural Network (CNN)...")
+# Add channel into the dimension
+x_train <- array_reshape(x3d_train, 
+                         c(nrow(x3d.train_set$x.train), 
+                           n.img_rows, 
+                           n.img_cols, 
+                           1))
+
+put_log("The Training Set has been reshaped as follows:
+%1", capture.output(shape(x_train)))
+# shape(132912, 28, 28)
+
+str(x_train)
+dim(x_train)
+shape(x_train)
+
+
+rm(x3d.train_set,
+   x3d_train)
+
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+
+# y_train <- as.array(as.integer(y_train) - 1)
+# str(y_train)
+# dim(y_train)
+# 
+# stopifnot(min(y_train) == 0)
+# stopifnot(max(y_train) == 38)
+stopifnot(length(y_train) == nrow(x_train))
+
 put_log("The Training Set is balanced by the set of Classes:
-%1", capture.output(print(train_set$class_groups$groupByClass, n = N.classes)))
+%1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
-#  1 #        3407
-#  2 $        3407
-#  3 &        3407
-#  4 @        3407
-#  5 0        3407
-#  6 1        3407
-#  7 2        3407
-#  8 3        3407
-#  9 4        3407
-# 10 5        3407
-# 11 6        3407
-# 12 7        3407
-# 13 8        3407
-# 14 9        3407
-# 15 A        3407
-# 16 B        3407
-# 17 C        3407
-# 18 D        3407
-# 19 E        3407
-# 20 F        3407
-# 21 G        3407
-# 22 H        3407
-# 23 I        3407
-# 24 J        3407
-# 25 K        3407
-# 26 L        3407
-# 27 M        3407
-# 28 N        3407
-# 29 P        3407
-# 30 Q        3407
-# 31 R        3407
-# 32 S        3407
-# 33 T        3407
-# 34 U        3407
-# 35 V        3407
-# 36 W        3407
-# 37 X        3407
-# 38 Y        3407
-# 39 Z        3407
+  #  1 #         425
+  #  2 $         425
+  #  3 &         425
+  #  4 @         425
+  #  5 0         425
+  #  6 1         425
+  #  7 2         425
+  #  8 3         425
+  #  9 4         425
+  # 10 5         425
+  # 11 6         425
+  # 12 7         425
+  # 13 8         425
+  # 14 9         425
+  # 15 A         425
+  # 16 B         425
+  # 17 C         425
+  # 18 D         425
+  # 19 E         425
+  # 20 F         425
+  # 21 G         425
+  # 22 H         425
+  # 23 I         425
+  # 24 J         425
+  # 25 K         425
+  # 26 L         425
+  # 27 M         425
+  # 28 N         425
+  # 29 P         425
+  # 30 Q         425
+  # 31 R         425
+  # 32 S         425
+  # 33 T         425
+  # 34 U         425
+  # 35 V         425
+  # 36 W         425
+  # 37 X         425
+  # 38 Y         425
+  # 39 Z         425  
   invisible(NULL)
 }
 
-rm(train_set)
+rm(y.train.groups)
 
 str(x_train)
 str(y_train)
