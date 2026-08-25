@@ -23,14 +23,8 @@ source(setup_script.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## Prepare Input Datasets ------------------------------------------------------
+### Prepare Input Datasets -----------------------------------------------------
 stopifnot(file.exists(prepare_ds.script.path))
-
-ds28x28.split.train_0.8.backup.file <- file.path(train.data.dir, 
-                                                 "ds28x28.split.train_0.8.backup.rds")
-
-ds28x28.split.train_0.1.backup.file <- file.path(train.data.dir, 
-                                                 "ds28x28.split.train_0.1.backup.rds")
 
 source(prepare_ds.script.path, 
        catch.aborts = TRUE,
@@ -39,11 +33,15 @@ source(prepare_ds.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Load Flatten Datasets ---------------------------------------------------
+#### Prepare Flatten Datasets --------------------------------------------------
 ds.prepare_flattened.script.path <- file.path(support_scripts.dir, 
                                          "prepare-flattened-datasets.R")
 
-stopifnot(file.exists(ds.prepare_flattened.script.path))
+ds.load_flattened.script.path <- file.path(support_scripts.dir, 
+                                         "load-flattened-dataset.R")
+
+stopifnot(file.exists(ds.prepare_flattened.script.path,
+                      ds.load_flattened.script.path))
 
 source(ds.prepare_flattened.script.path, 
        catch.aborts = TRUE,
@@ -94,13 +92,14 @@ source(rf_retraining.best_par.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-## DNN-Based MCC Model ---------------------------------------------------
-### DNN-Based Basic MCC Model ---------------------------------------------------
+## DNN-Based MCC Model ---------------------------------------------------------
+### DNN-Based Basic MCC Model --------------------------------------------------
 stopifnot(file.exists(dnn_basic.script.path,
                       dnn_basic.eval.script.path,
                       dnn_basic.eval.visuals.script.path,
                       my_emnist.split.file_path))
 
+#### Init Paths ----------------------------------------------------------------
 dnn_basic.model.file_path <- file.path(data.dnn_mcc.basic.dir, 
                                        "dnn_basic.pre-trained.model.keras")
 
@@ -110,7 +109,7 @@ dnn_basic.model.train_history.file_path <- file.path(data.dnn_mcc.basic.dir,
 dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
                                        "dnnb_mcc.eval.result.rds")
 
-
+#### Run Scripts ---------------------------------------------------------------
 if(!file.exists(dnnb_mcc.eval.result.file)) {
   if(!file.exists(dnn_basic.model.file_path)) {
     source(dnn_basic.script.path, 
@@ -143,7 +142,8 @@ stopifnot(file.exists(dnn_mcc.tuner.script.path,
                       tdnn_mcc.final.eval.script.path,
                       tdnn_mcc.final.eval.visuals.script.path))
 
-tdnn_mcc.best_hp.config <- file.path(dnn_mcc.tuner.dir,
+#### Init Paths ----------------------------------------------------------------
+tdnn_mcc.best_hp.config.file <- file.path(dnn_mcc.tuner.dir,
                                                "dnn-mcc.tuner.best-hp.config.rds")
 
 tdnn_mcc.final.file <- file.path(dnn_mcc.tuner.dir, 
@@ -154,10 +154,11 @@ tdnn_mcc.final.train_history.file <- file.path(dnn_mcc.tuner.dir,
 
 tdnn_mcc.final.eval_result.file <- file.path(dnn_mcc.tuner.dir,
                                         "tdnn-mcc.final.eval-result.rds")
+#### Run Scripts ---------------------------------------------------------------
 
 if(!file.exists(tdnn_mcc.final.eval_result.file)) {
   if(!file.exists(tdnn_mcc.final.file)) {
-    if(!file.exists(tdnn_mcc.best_hp.config)) {
+    if(!file.exists(tdnn_mcc.best_hp.config.file)) {
       source(dnn_mcc.tuner.script.path, 
              catch.aborts = TRUE,
              echo = TRUE,

@@ -86,7 +86,8 @@ if(!require(rsvg))
 library(reticulate)
 
 py_require(python_version = "3.11")
-py_require()
+#py_require()
+
 # Tell reticulate to use this new environment for the rest of your session
 use_miniconda("mini.r-tensorflow_py3.11", required = TRUE)
 py_require()
@@ -409,6 +410,19 @@ if(!dir.exists(cnn_mcc.best.plots.dat.dir))
   dir.create(cnn_mcc.best.plots.dat.dir)
 
 
+
+## Init Input Data Paths -------------------------------------------------------
+my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+
+ds28x28.split.train_0.8.backup.file <- file.path(train.data.dir, 
+                                                 "ds28x28.split.train_0.8.backup.rds")
+
+ds28x28.split.train_0.1.backup.file <- file.path(train.data.dir, 
+                                                 "ds28x28.split.train_0.1.backup.rds")
+
+my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+
+my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
 
 ## Init Project Script Paths ---------------------------------------------------
 prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")

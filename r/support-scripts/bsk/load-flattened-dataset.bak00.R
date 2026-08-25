@@ -2,9 +2,11 @@
 # Load Flatten Dataset
 #%%%%%%%%%%%%%%%%%%%%%
 
-stopifnot(file.exists(my_emnist.file_path))
-
+## Open log: Load Input Data ---------------------------------------------------
+open_logfile(".load-input-data")
 ## Load Flatten Dataset --------------------------------------------------------
+
+stopifnot(file.exists(my_emnist.file_path))
 start <- put_start_date()
           
 put_log("Loading the Flattened Training Dataset from the backup file...")
@@ -83,7 +85,7 @@ put_log("The number of handwritten character images by class:
 # 37 X      5106
 # 38 Y      6762
 # 39 Z      4866
-invisible()
+invisible(NULL)
 }
 
 max(y.chars$n)
@@ -100,4 +102,55 @@ y.chars$classID[which.min(y.chars$n)]
 
 # clean up Environment
 
-rm(x, y.chars)
+rm(y.chars)
+
+## Split the Flatten Dataset into a Train & Test Sets with 20% Test Ratio ------
+stopifnot(exists("my_emnist.split.file_path"))
+
+put_log("Splitting the Flattened Training Dataset into a Train and Test Sets with 20% Test Ratio...")
+
+set.seed(N.classes)
+ds_flatten.split_list <- sample_train_test_sets.mx(x, my_emnist.set$img.file_path)
+
+put_log("The Flattened Training Dataset has been split into a Train and Test Sets:
+%1", capture.output(str(ds_flatten.split_list)))
+
+put_log("Saving a backup copy of a split dataset...")
+
+saveRDS(ds_flatten.split_list, 
+        my_emnist.split.file_path)
+
+rm(ds_flatten.split_list)
+
+put_log("The backup copy of a split dataset has been saved in the following file:
+%1", my_emnist.split.file_path)
+
+## Split the Dataset into Sets with 90% Test Ratio (10% for Training Set) ---------
+my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
+
+put_log("Splitting the Flattened Training Dataset into a Train and Test Sets 
+with 90% Test Ratio (10% for Training Set)...")
+
+set.seed(N.classes)
+ds_flatten.0.1split_list <- sample_train_test_sets.mx(x, 
+                                                      my_emnist.set$img.file_path,
+                                                      test.ratio = 0.9)
+rm(x)
+rm(my_emnist.set)
+
+put_log("The Flattened Training Dataset has been split into a Train and Test Sets 
+with 90% Test Ration (10% for Training Set):
+%1", capture.output(str(ds_flatten.0.1split_list)))
+
+put_log("Saving a backup copy of a split dataset (10% for Training Set)...")
+
+saveRDS(ds_flatten.0.1split_list, 
+        my_emnist.0.1split.file_path)
+
+rm(ds_flatten.0.1split_list)
+
+put_log("The backup copy of a split dataset (10% for Training Set) has been saved in the following file:
+%1", my_emnist.0.1split.file_path)
+
+## Close Log -------------------------------------------------------------------
+log_close()
