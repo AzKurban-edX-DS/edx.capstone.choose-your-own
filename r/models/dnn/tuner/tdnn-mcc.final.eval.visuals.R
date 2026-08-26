@@ -2,7 +2,7 @@
 # Visualizing the Tuned DNN-Based MCC (TDNN MCC) Final Model Evaluation Results
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-## Plotting the TDNN MCC Final Model Evaluation Results -----------------------------
+# Plotting the TDNN MCC Final Model Evaluation Results -----------------------------
 
 open_logfile(".tdnn-fmcc.eval-results.visualization")
 
@@ -44,6 +44,8 @@ from the following file:
                                 model_type = "Tuned MCC",
                                 alg_name = "DNN",
                                 plots_dat.file = tdnn_mcc.final.eval.plots_dat.file,
+                                pca.export_img.file_name = "tdnn.final.eval.pca.png",
+                                pca.export_img.dir = dnn_mcc.tuner.plots.dat.dir,
                                 cm.export.img_file = tdnn_mcc.final.eval.conf.mx.img_file,
                                 cm.print.image = T)
 }

@@ -481,6 +481,10 @@ create.plot_args <- function(targets,
                              pca.plot_name = "Class-wise Evaluation Result",
                              pca.color = "black",
                              pca.fill = "steelblue",
+                             pca.export_img.file_name = NULL,
+                             pca.export_img.dir = NULL,
+                             pca.export_img.width = NA,
+                             pca.export_img.height = NA,
                              cm.plot_title = NULL,
                              cm.plot_name = "Confusion Matrix",
                              cm.palette = "Greens",
@@ -509,8 +513,17 @@ create.plot_args <- function(targets,
                          roc.plot_name = roc.plot_name,
                          pca.plot_title = pca.plot_title,
                          pca.plot_name = pca.plot_name,
-                         pca.fill = pca.fill,
                          pca.color = pca.color,
+                         pca.fill = pca.fill,
+                         pca.export_img.file_name = pca.export_img.file_name,
+                         pca.export_img.dir = pca.export_img.dir,
+                         pca.export_img.width = pca.export_img.width,
+                         pca.export_img.height = pca.export_img.height,
+                         cm.plot_title = cm.plot_title,
+                         cm.plot_name = cm.plot_name,
+                         cm.palette = cm.palette,
+                         cm.font.size = cm.font.size,
+                         cm.font.color = cm.font.color,
                          cm.plot_title = cm.plot_title,
                          cm.plot_name = cm.plot_name,
                          cm.palette = cm.palette,
@@ -566,6 +579,10 @@ init.plots_args.default <- function(targets,
                                     pca.plot_name = "Per-Class Accuracy",
                                     pca.color = "black",
                                     pca.fill = "steelblue",
+                                    pca.export_img.file_name = NULL,
+                                    pca.export_img.dir = NULL,
+                                    pca.export_img.width = NA,
+                                    pca.export_img.height = NA,
                                     cm.plot_title = NULL,
                                     cm.plot_name = "Confusion Matrix",
                                     cm.palette = "Greens",
@@ -591,6 +608,10 @@ init.plots_args.default <- function(targets,
                    pca.plot_name = pca.plot_name,
                    pca.color = pca.color,
                    pca.fill = pca.fill,
+                   pca.export_img.file_name = pca.export_img.file_name,
+                   pca.export_img.dir = pca.export_img.dir,
+                   pca.export_img.width = pca.export_img.width,
+                   pca.export_img.height = pca.export_img.height,
                    cm.plot_title = cm.plot_title,
                    cm.plot_name = cm.plot_name,
                    cm.palette = cm.palette,
@@ -770,7 +791,7 @@ Plotting the ROC curves...")
 }
 
 ### Plotting Per-Class Accuracy (PCA) Bar Charts -------------------------------
-
+#### Calculating PCA & Constructing Bar Chart ----------------------------------
 #' Calculates `PCA` values as part of the `Multiclass Classifier` (`MCC`) model's 
 #' evaluation process.
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
@@ -879,6 +900,8 @@ barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
   stopifnot(class(x$predicted.values) == "factor" && 
               sum(levels(x$predicted.values) != levels(Y.Labels)) == 0)
   
+  stopifnot(!is.null(x$pca.export_img.file_name))
+  
   barPlot.accuracy_by_class(x$targets,
                             x$predicted.values,
                             x$pca.plot_title,
@@ -886,7 +909,11 @@ barPlot.accuracy_by_class.modelEvalResultPlotArgs <- function(x) {
                             x$model_type,
                             x$alg_name,
                             x$pca.color,
-                            x$pca.fill)
+                            x$pca.fill,
+                            x$pca.export_img.file_name,
+                            x$pca.export_img.dir,
+                            x$pca.export_img.width,
+                            x$pca.export_img.height)
 }
 
 #' @details
@@ -912,7 +939,14 @@ barPlot.accuracy_by_class.default <- function(targets,
                                               model_type = "Multiclass Classifier",
                                               alg_name = NULL,
                                               color = "black",
-                                              fill = "steelblue") {
+                                              fill = "steelblue",
+                                              export_img.file_name = NULL,
+                                              export_img.dir = NULL,
+                                              export_img.width = NA,
+                                              export_img.height = NA) {
+  
+  stopifnot(!is.null(export_img.file_name))
+  
   
   stopifnot(class(predicted.values) == "factor" && 
               sum(levels(predicted.values) != levels(Y.Labels)) == 0)
@@ -928,7 +962,11 @@ barPlot.accuracy_by_class.default <- function(targets,
   x <- structure(list(acc.by_class = per_class.accuracy,
                       title = plot_title,
                       color = color,
-                      fill = fill),
+                      fill = fill,
+                      export_img.file_name = export_img.file_name,
+                      export_img.dir = export_img.dir,
+                      export_img.width = export_img.width,
+                      export_img.height = export_img.height),
                  class = "perClassAccValues")
   
   barPlot.accuracy_by_class(x)
@@ -950,6 +988,23 @@ Plotting a bar chart of the model's per-class accuracies...")
                                           .color = x$color,
                                           .fill = x$fill)
   print(bar_plot)
+  
+  stopifnot(!is.null(x$export_img.file_name))
+  
+  if(!is.null(x$export_img.file_name)) {
+    put_log("Function `barPlot.accuracy_by_class.perClassAccValues`: 
+Saving a bar chart of the model's per-class accuracies to image file...")
+    
+    ggsave(x$export_img.file_name,
+           path = x$export_img.dir,
+           width = x$export_img.width,
+           height = x$export_img.height)
+    
+    put_log("Function `barPlot.accuracy_by_class.perClassAccValues`: 
+The bar chart of the model's per-class accuracies has been saved to the following file:
+%1", file.path(x$export_img.dir, x$export_img.file_name))
+  }
+  
   return(x)
 }
 
