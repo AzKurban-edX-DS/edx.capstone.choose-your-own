@@ -94,25 +94,33 @@ source(rf_retraining.best_par.script.path,
 
 ## DNN-Based MCC Model ---------------------------------------------------------
 ### DNN-Based Basic MCC Model --------------------------------------------------
-stopifnot(file.exists(dnn_basic.script.path,
-                      dnn_basic.eval.script.path,
-                      dnn_basic.eval.visuals.script.path,
+stopifnot(file.exists(dnnb_mcc.script.path,
+                      dnnb_mcc.eval.script.path,
                       my_emnist.split.file_path))
 
 #### Init Paths ----------------------------------------------------------------
-dnn_basic.model.file <- file.path(data.dnn_mcc.basic.dir, 
-                                       "dnn_basic.pre-trained.model.keras")
+dnnb_mcc.file <- file.path(data.dnn_mcc.basic.dir, 
+                                       "dnnb_mcc.pre-trained.model.keras")
 
-dnn_basic.model.train_history.file <- file.path(data.dnn_mcc.basic.dir, 
-                                                     "dnn_basic.model.train_history.bak.rds")
+dnnb_mcc.train_history.file <- file.path(data.dnn_mcc.basic.dir, 
+                                                     "dnnb_mcc.train_history.bak.rds")
 
 dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
                                        "dnnb_mcc.eval.result.rds")
 
+dnnb_mcc.eval.conf.mx.img_file <- file.path(dnn_mcc.basic.plots.dat.dir,
+                                            "dnn-basic.mcc.eval.confusion-matrix.png")
+
+dnnb_mcc.eval.plots_dat.file <- file.path(dnn_mcc.basic.plots.dat.dir,
+                                          "dnn-basic,mcc.eval.plots_dat.rds")
+
+if(!dir.exists(dnn_mcc.basic.plots.dat.dir))
+  dir.create(dnn_mcc.basic.plots.dat.dir)
+
 #### Run Scripts ---------------------------------------------------------------
 if(!file.exists(dnnb_mcc.eval.result.file)) {
-  if(!file.exists(dnn_basic.model.file)) {
-    source(dnn_basic.script.path, 
+  if(!file.exists(dnnb_mcc.file)) {
+    source(dnnb_mcc.script.path, 
            catch.aborts = TRUE,
            echo = TRUE,
            spaced = TRUE,
@@ -120,7 +128,7 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
            keep.source = TRUE)
   }
   
-  source(dnn_basic.eval.script.path,
+  source(dnnb_mcc.eval.script.path,
          catch.aborts = TRUE,
          echo = TRUE,
          spaced = TRUE,
@@ -128,7 +136,36 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
          keep.source = TRUE)
 }
 
-source(dnn_basic.eval.visuals.script.path,
+stopifnot(file.exists(model_visualization.shared.script.path))
+
+put_log("Loading the BDL MCC Model Evaluation Result object...")
+dnnb_mcc.eval.result <- readRDS(dnnb_mcc.eval.result.file)
+
+put_log("The BDL MCC Model Evaluation Result object has been loaded 
+from the following file:
+%1", dnnb_mcc.eval.result.file)
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+plots.args <- init.plots_args(targets = dnnb_mcc.eval.result$targets,
+                              predicted.probabilities = dnnb_mcc.eval.result$predicted.probs,
+                              predicted.values = dnnb_mcc.eval.result$predicted.values,
+                              plots_dat.file = dnnb_mcc.eval.plots_dat.file,
+                              model_type = "Basic MCC",
+                              alg_name = "DNN",
+                              pca.export_img.file_name = "dnn-mcc.basic.eval.pca.png",
+                              pca.export_img.dir = dnn_mcc.basic.plots.dat.dir,
+                              cm.export.img_file = dnnb_mcc.eval.conf.mx.img_file,
+                              cm.print.image = T)
+
+put_log("The `plots.args` object of class `%1` has been created for use to generate 
+a visual representation of the DNNB MCC model evaluation results.",
+        class(plots.args))
+
+rm(dnnb_mcc.eval.result)
+
+source(model_visualization.shared.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

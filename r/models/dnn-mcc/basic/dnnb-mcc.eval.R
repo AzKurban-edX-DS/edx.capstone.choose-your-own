@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 open_logfile(".dnnb-mcc.model.evaluation")
 
-stopifnot(file.exists(dnn_basic.model.file))
+stopifnot(file.exists(dnnb_mcc.file))
 start <- put_start_date()
 
 ## Prepare a Test Set for DNN-Based Basic MCC Model ----------------------------
@@ -94,28 +94,28 @@ log_close()
 ## DNNB MCC Model Evaluation ---------------------------------------------------
 
 put_log("Loading pre-trained DNN-Based Basic MCC Model...")
-dnn_basic.model <- keras3::load_model(dnn_basic.model.file)
+dnnb_mcc <- keras3::load_model(dnnb_mcc.file)
 
 put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
-%1", dnn_basic.model.file)
+%1", dnnb_mcc.file)
 
-if(file.exists(dnn_basic.model.train_history.file)){
+if(file.exists(dnnb_mcc.train_history.file)){
   put_log("Loading the DNN-Based Basic MCC Model Train History...")
   
-  dnn_basic.train_history <- readRDS(dnn_basic.model.train_history.file)
+  dnnb_mcc.train_history <- readRDS(dnnb_mcc.train_history.file)
   
   put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
-%1", dnn_basic.model.train_history.file)
+%1", dnnb_mcc.train_history.file)
 
-  plot(dnn_basic.train_history) 
-  # rm(dnn_basic.train_history)
+  plot(dnnb_mcc.train_history) 
+  # rm(dnnb_mcc.train_history)
 } else {
   warning("The DNN-Based Basic MCC Model History backup file does not exist:
-", dnn_basic.model.train_history.file)
+", dnnb_mcc.train_history.file)
 }
 
 put_log("Evaluating DNN-Based Basic MCC Model...")
-dnnb_mcc.eval.result <- dnn_basic.model |> evaluate(x_test, y_test)
+dnnb_mcc.eval.result <- dnnb_mcc |> evaluate(x_test, y_test)
 put_log("DNN-Based Basic MCC Model evaluation result:
 %1", capture.output(str(dnnb_mcc.eval.result)))
 # List of 2
@@ -130,7 +130,7 @@ put_log("The overall DNN-Based Basic MCC Model evaluation accuracy: %1",
 put_end_date(start)
 # Time difference of 1.668308 mins
 
-dnnb_mcc.eval.result$predicted.probs <- dnn_basic.model |> predict(x_test) 
+dnnb_mcc.eval.result$predicted.probs <- dnnb_mcc |> predict(x_test) 
 put_end_date(start)
 # Time difference of  mins
 
@@ -170,13 +170,13 @@ stopifnot(min(y_test) == 0,
 targets.idx <- y_test + 1
 dnnb_mcc.eval.result$targets <- Y.Labels[targets.idx]
 
-dnn_basic.accuracy <- mean(dnnb.pred.values.idx == targets.idx)
-put_log("The overall DNN-Based Basic MCC Model accuracy: %1",dnn_basic.accuracy)
+dnnb_mcc.accuracy <- mean(dnnb.pred.values.idx == targets.idx)
+put_log("The overall DNN-Based Basic MCC Model accuracy: %1",dnnb_mcc.accuracy)
 # 0.89752618273745
 
 rm(dnnb.preds.ts,
    dnnb.predictions,
-   # dnn_basic.train_history,
+   # dnnb_mcc.train_history,
    dnnb.pred.values.idx)
 
 put_log("Saving the DNN-Based Basic MCC Model  Evaluation Result object...")

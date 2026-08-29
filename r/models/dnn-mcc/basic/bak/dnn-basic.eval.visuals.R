@@ -57,8 +57,7 @@ source(model_visualization.shared.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-rm(plots.args,
-   fit_rf.mtry_best)
+rm(plots.args)
 
 stopifnot(exists("plots.dat"),
           !is.null(plots.dat$ROC),

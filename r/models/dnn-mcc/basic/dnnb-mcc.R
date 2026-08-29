@@ -136,9 +136,9 @@ dnn_mcc.basic.checkpoints.dir <- file.path(data.dnn_mcc.basic.dir,
 if(!dir.exists(dnn_mcc.basic.checkpoints.dir))
   dir.create(dnn_mcc.basic.checkpoints.dir)
 
-dnn_basic.checkpoint.file_path <- 
+dnnb_mcc.checkpoint.file_path <- 
   file.path(dnn_mcc.basic.checkpoints.dir, 
-            "dnn_basic.{epoch:02d}-{val_loss:.2f}.keras")
+            "dnnb_mcc.{epoch:02d}-{val_loss:.2f}.keras")
 
 ## Building DNNB MCC Model -----------------------------------------------------
 ### Defining & Compiling the Basic DNNB MCC Model -----------------------------
@@ -146,27 +146,27 @@ dnn_basic.checkpoint.file_path <-
 n.input_shape <- ncol(x_train)
 # 784
 
-dnn_basic.inputs <- layer_input(shape = c(28, 28))
+dnnb_mcc.inputs <- layer_input(shape = c(28, 28))
 
-dnn_basic.outputs <- dnn_basic.inputs |>
+dnnb_mcc.outputs <- dnnb_mcc.inputs |>
   layer_flatten() |>
   layer_dense(units = n.hl.units, activation = "relu") |>
   layer_dropout(rate = 0.25) |> 
   layer_dense(units = N.classes, activation = "softmax")
 
 
-dnn_basic.model <- keras_model(dnn_basic.inputs, dnn_basic.outputs)
+dnnb_mcc <- keras_model(dnnb_mcc.inputs, dnnb_mcc.outputs)
 
-dnn_basic.model |> compile(loss = "sparse_categorical_crossentropy",
+dnnb_mcc |> compile(loss = "sparse_categorical_crossentropy",
                            optimizer = keras3::optimizer_adamax(0.001),
                            metrics = "accuracy")
-summary(dnn_basic.model)
+summary(dnnb_mcc)
 
 ### Training the Basic DNNB MCC Model --------------------------------------------
 
-dnn_basic.callbacks <- list(
+dnnb_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dnn_basic.checkpoint.file_path,
+  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file_path,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)
@@ -175,32 +175,32 @@ dnn_basic.callbacks <- list(
 put_log("Training the BDNNB MCC Model...")
 start <- put_start_date()
 
-# dnn_basic.train_history <- tdnn_mcc.final |> 
-dnn_basic.train_history <- dnn_basic.model |>
+# dnnb_mcc.train_history <- tdnn_mcc.final |> 
+dnnb_mcc.train_history <- dnnb_mcc |>
   fit(x_train, 
       y_train, 
       epochs = 100, 
       # batch_size = 128, 
-      callbacks = dnn_basic.callbacks,
+      callbacks = dnnb_mcc.callbacks,
       validation_split = 0.2
   )
 
 put_log("Saving pre-trained BDNNB MCC Model...")
-keras3::save_model(dnn_basic.model,
-                   filepath = dnn_basic.model.file,
+keras3::save_model(dnnb_mcc,
+                   filepath = dnnb_mcc.file,
                    overwrite = T)
 
 put_log("The BDNNB MCC Model has been trained 
 and saved in the following file:
-  %1", dnn_basic.model.file)
+  %1", dnnb_mcc.file)
 
 put_log("Saving the BDNNB MCC Model History...")
-saveRDS(dnn_basic.train_history,
-        file = dnn_basic.model.train_history.file)
+saveRDS(dnnb_mcc.train_history,
+        file = dnnb_mcc.train_history.file)
 
 put_log("The BDNNB MCC Model History has been trained 
 and saved in the following file:
-  %1", dnn_basic.model.train_history.file)
+  %1", dnnb_mcc.train_history.file)
 put_end_date(start)
 
 
@@ -209,13 +209,13 @@ put_end_date(start)
 #    y_train.cat)
 
 put_log("The trained Basic DNNB MCC Model summary:
-%1", dnn_basic.model)
+%1", dnnb_mcc)
 
-plot(dnn_basic.train_history)
+plot(dnnb_mcc.train_history)
 
 put_log("Structure of the Basic DNNB MCC Model training history:
-%1", capture.output(str(dnn_basic.train_history)))
+%1", capture.output(str(dnnb_mcc.train_history)))
 
-# rm(dnn_basic.train_history)
+# rm(dnnb_mcc.train_history)
 log_close()
 # Log Elapsed Time: 0 00:04:07

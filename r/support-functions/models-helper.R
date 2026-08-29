@@ -213,7 +213,7 @@ x.binarize <- function(x) {
   (x > 0.5)*1
 }
 
-dnn_basic.model.sequential = function(hp) {
+dnnb_mcc.sequential = function(hp) {
   
   model = keras_model_sequential() %>% 
     layer_flatten(input_shape = c(28,28))
@@ -230,7 +230,7 @@ dnn_basic.model.sequential = function(hp) {
   return(model)
 }
 
-build.dnn_basic.model <- function(hp) {
+build.dnnb_mcc <- function(hp) {
   n.inputs <- 28*28
  
   model_inputs <- layer_input(shape = c(n.inputs))
@@ -342,7 +342,7 @@ dnn_mcc.tunable_model <- function(hp,
 }
 
 #' @param class.labels Multiclass Classifier Class Labels   
-predict.dnn_basic.model <- function(model,
+predict.dnnb_mcc <- function(model,
                              x.test,
                              class.labels) {
   put_log("Evaluating DL Model...")
@@ -362,7 +362,7 @@ predict.dnn_basic.model <- function(model,
   
   predictions <- preds.ts |> op_argmax(2)
   
-  put_log("Function `predict.dnn_basic.model`:
+  put_log("Function `predict.dnnb_mcc`:
 Predictions have been constructed:
 %1", capture.output(str(predictions)))
   put_end_date(start)
@@ -454,6 +454,8 @@ cnn.binclass.get_prediction_values <- function(preds) {
 #' @param targets Target values of the `Test Set` used for the model's evaluation.
 #' @param predicted.probabilities Predicted probability values 
 #' obtained as a result of the model's evaluation.
+#' @param plots_dat.file File path to save the`plots.dat` object created during 
+#' the construction of a visual representation of the model evaluation results. 
 #' @param predicted.values Predicted values obtained as a result 
 #' of the model's evaluation.
 #' @param model_type Type of model: in `This Project`, it can be one of the following:
@@ -507,6 +509,7 @@ create.plot_args <- function(targets,
   return (structure(list(targets = targets,
                          predicted.probabilities = predicted.probabilities,
                          predicted.values = predicted.values,
+                         plots_dat.file = plots_dat.file,
                          model_type = model_type,
                          alg_name = alg_name,
                          roc.plot_title = roc.plot_title,
@@ -555,6 +558,9 @@ init.plots_args <- function(x, ...) {
 #' obtained as a result of the model's evaluation.
 #' @param predicted.values Predicted values obtained as a result 
 #' of the model's evaluation.
+#' @param plots_dat.file File path to save the`plots.dat` object created during 
+#' the construction of a visual representation of the model evaluation results. 
+#' 
 #' @param model_type Type of model: in `This Project`, it can be one of the following:
 #' - `Multiclass Classifier`;
 #' - `Binary Classifier`.
@@ -567,6 +573,7 @@ init.plots_args <- function(x, ...) {
 #' @param pca.fill `PCA` plot fill color.
 #' @param cm.plot_title `Confusion Matrix` (`CM`) plot title.
 #' @param cm.plot_name `CM` plot name.
+#' @returns 
 init.plots_args.default <- function(targets,
                                     predicted.probabilities,
                                     predicted.values,
@@ -596,37 +603,46 @@ init.plots_args.default <- function(targets,
                                     cm.export.img_file = NULL,
                                     cm.backup.file = NULL) {
   
-  
-  create.plot_args(targets = targets,
-                   predicted.probabilities = predicted.probabilities,
-                   predicted.values = predicted.values,
-                   model_type = model_type,
-                   alg_name = alg_name,
-                   roc.plot_title = roc.plot_title,
-                   roc.plot_name = roc.plot_name,
-                   pca.plot_title = pca.plot_title,
-                   pca.plot_name = pca.plot_name,
-                   pca.color = pca.color,
-                   pca.fill = pca.fill,
-                   pca.export_img.file_name = pca.export_img.file_name,
-                   pca.export_img.dir = pca.export_img.dir,
-                   pca.export_img.width = pca.export_img.width,
-                   pca.export_img.height = pca.export_img.height,
-                   cm.plot_title = cm.plot_title,
-                   cm.plot_name = cm.plot_name,
-                   cm.palette = cm.palette,
-                   cm.font.size = cm.font.size,
-                   cm.font.color = cm.font.color,
-                   cm.add_normalized = cm.add_normalized,
-                   cm.add_col_percentages = cm.add_col_percentages,
-                   cm.add_row_percentages = cm.add_row_percentages,
-                   cm.print.plot_object = cm.print.plot_object,
-                   cm.print.image = cm.print.image,
-                   cm.export.img_file = cm.export.img_file,
-                   cm.backup.file = cm.backup.file)
+  if(file.exists(plots_dat.file)) {
+    plots.args <- init.plots_args(dnnb_mcc.eval.plots_dat.file)
+    
+    if(class(plots.args) == 'plotsDat')
+      return(plots.args)
+  } else {
+    create.plot_args(targets = targets,
+                     predicted.probabilities = predicted.probabilities,
+                     predicted.values = predicted.values,
+                     plots_dat.file,
+                     model_type = model_type,
+                     alg_name = alg_name,
+                     roc.plot_title = roc.plot_title,
+                     roc.plot_name = roc.plot_name,
+                     pca.plot_title = pca.plot_title,
+                     pca.plot_name = pca.plot_name,
+                     pca.color = pca.color,
+                     pca.fill = pca.fill,
+                     pca.export_img.file_name = pca.export_img.file_name,
+                     pca.export_img.dir = pca.export_img.dir,
+                     pca.export_img.width = pca.export_img.width,
+                     pca.export_img.height = pca.export_img.height,
+                     cm.plot_title = cm.plot_title,
+                     cm.plot_name = cm.plot_name,
+                     cm.palette = cm.palette,
+                     cm.font.size = cm.font.size,
+                     cm.font.color = cm.font.color,
+                     cm.add_normalized = cm.add_normalized,
+                     cm.add_col_percentages = cm.add_col_percentages,
+                     cm.add_row_percentages = cm.add_row_percentages,
+                     cm.print.plot_object = cm.print.plot_object,
+                     cm.print.image = cm.print.image,
+                     cm.export.img_file = cm.export.img_file,
+                     cm.backup.file = cm.backup.file)
+  }
 }
 
-
+#' @param plots_dat.file File path to the backup copy of the`plots.dat` object 
+#' created during the construction of a visual representation 
+#' of the model evaluation results. 
 init.plots_args.character <- function(plots_dat.file) {
   stopifnot(file.exists(plots_dat.file))
 
@@ -790,7 +806,7 @@ Plotting the ROC curves...")
   }
 }
 
-### Plotting Per-Class Accuracy (PCA) Bar Charts -------------------------------
+### Plotting Per-Class Accuracy (PCA) Bar Chart --------------------------------
 #### Calculating PCA & Constructing Bar Chart ----------------------------------
 #' Calculates `PCA` values as part of the `Multiclass Classifier` (`MCC`) model's 
 #' evaluation process.

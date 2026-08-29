@@ -102,7 +102,7 @@ shape(y_train)
 # hp$Int('num_layers', 2L, 20L)
 
 # tuner = RandomSearch(
-#   hypermodel =  dnn_basic.model.sequential,
+#   hypermodel =  dnnb_mcc.sequential,
 #   # hypermodel =  mnist_model,
 #   max_trials = 5,
 #   hyperparameters = hp,
@@ -118,7 +118,7 @@ shape(y_train)
 #                     validation_split = 0.2,  # Uses 20% of the data for validation
 #                     epochs = 5)
                     
-tuner <- dl.tune.hwr_model(dl.build_model = dnn_basic.tunable_model,
+tuner <- dl.tune.hwr_model(dl.build_model = dnnb_mcc.tunable_model,
                            x_train = x_train,
                            y_train = y_train,
                            mnist_prj.dir,

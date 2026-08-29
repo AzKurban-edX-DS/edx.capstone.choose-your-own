@@ -102,7 +102,7 @@ hp$Choice('learning_rate', c(1e-1, 1e-2, 1e-3, 1e-4))
 hp$Int('num_layers', 2L, 20L)
 
 tuner = RandomSearch(
-  hypermodel =  dnn_basic.model.sequential,
+  hypermodel =  dnnb_mcc.sequential,
   # hypermodel =  mnist_model,
   max_trials = 5,
   hyperparameters = hp,

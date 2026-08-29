@@ -208,19 +208,19 @@ put_log("Root directory for the `RF MCC` model's scripts:
 ##### Directories for Deep Learning Model Scripts ------------------------------
 ###### Directories for DNN-Based Scripts ---------------------------------------
 
-models.dnn.scripts.dir <- file.path(model_scripts.dir, "dnn")
-stopifnot(dir.exists(models.dnn.scripts.dir))
+models.dnn_mcc.scripts.dir <- file.path(model_scripts.dir, "dnn-mcc")
+stopifnot(dir.exists(models.dnn_mcc.scripts.dir))
 
 put_log("Root directory for the Basic DNN-Based model's scripts:
-%1", models.dnn.scripts.dir)
+%1", models.dnn_mcc.scripts.dir)
 
-dnn_mcc.basic.scripts.dir <- file.path(models.dnn.scripts.dir, "basic")
+dnn_mcc.basic.scripts.dir <- file.path(models.dnn_mcc.scripts.dir, "basic")
 stopifnot(dir.exists(dnn_mcc.basic.scripts.dir))
 
 put_log("Root directory for the Basic DNN-Based model's scripts:
 %1", dnn_mcc.basic.scripts.dir)
 
-dnn_mcc.tuner.scripts.dir <- file.path(models.dnn.scripts.dir, "tuner")
+dnn_mcc.tuner.scripts.dir <- file.path(models.dnn_mcc.scripts.dir, "tuner")
 stopifnot(dir.exists(dnn_mcc.tuner.scripts.dir))
 
 put_log("Root directory for the Basic DNN-Based model's scripts:
@@ -450,15 +450,11 @@ stopifnot(file.exists(rf_retraining.best_par.script.path))
 ### DNN-Based MCC Scripts ------------------------------------------------------
 #### DNN-Based Basic MCC Scripts -----------------------------------------------
 
-dnn_basic.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnn-basic.R")
-stopifnot(file.exists(dnn_basic.script.path))
+dnnb_mcc.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnnb-mcc.R")
+stopifnot(file.exists(dnnb_mcc.script.path))
 
-dnn_basic.eval.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnn-basic.evaluation.R")
-stopifnot(file.exists(dnn_basic.eval.script.path))
-
-dnn_basic.eval.visuals.script.path <- file.path(dnn_mcc.basic.scripts.dir, 
-                                                "dnn-basic.eval.visuals.R")
-stopifnot(file.exists(dnn_basic.eval.visuals.script.path))
+dnnb_mcc.eval.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnnb-mcc.eval.R")
+stopifnot(file.exists(dnnb_mcc.eval.script.path))
 
 #### DNN-Based MCC Tuner-Related Scripts ---------------------------------
 
@@ -473,10 +469,6 @@ stopifnot(file.exists(tdnn_mcc.final.retrain.script.path))
 tdnn_mcc.final.eval.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
                                        "tdnn-mcc.final.eval.R")
 stopifnot(file.exists(tdnn_mcc.final.eval.script.path))
-
-tdnn_mcc.final.eval.visuals.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
-                                       "tdnn-mcc.final.eval.visuals.R")
-stopifnot(file.exists(tdnn_mcc.final.eval.visuals.script.path))
 
 ### CNN-Based Basic Scripts ----------------------------------------------------
 
