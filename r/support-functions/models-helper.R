@@ -604,10 +604,15 @@ init.plots_args.default <- function(targets,
                                     cm.backup.file = NULL) {
   
   if(file.exists(plots_dat.file)) {
-    plots.args <- init.plots_args(dnnb_mcc.eval.plots_dat.file)
+    put_log("Function `init.plots_args.default`:
+Loading the model-related plots input data object from the backup file...")
+    plots_dat <- readRDS(plots_dat.file)
     
-    if(class(plots.args) == 'plotsDat')
-      return(plots.args)
+    put_log("Function `init.plots_args.default`:
+The model-related plots input data object has been loaded from the following file:
+%1", plots_dat.file)
+    
+    return(plots_dat)
   } else {
     create.plot_args(targets = targets,
                      predicted.probabilities = predicted.probabilities,
@@ -638,23 +643,6 @@ init.plots_args.default <- function(targets,
                      cm.export.img_file = cm.export.img_file,
                      cm.backup.file = cm.backup.file)
   }
-}
-
-#' @param plots_dat.file File path to the backup copy of the`plots.dat` object 
-#' created during the construction of a visual representation 
-#' of the model evaluation results. 
-init.plots_args.character <- function(plots_dat.file) {
-  stopifnot(file.exists(plots_dat.file))
-
-  put_log("Function `init.plots_args.character`:
-Loading the model-related plots input data object from the backup file...")
-  plots_args <- readRDS(plots_dat.file)
-  
-  put_log("Function `init.plots_args.character`:
-The model-related plots input data object has been loaded from the following file:
-%1", plots_dat.file)
-  
-  return(plots_args)
 }
 
 ### Plotting ROC Curves --------------------------------------------------------

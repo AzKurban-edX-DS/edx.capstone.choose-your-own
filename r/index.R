@@ -112,7 +112,7 @@ dnnb_mcc.eval.conf.mx.img_file <- file.path(dnn_mcc.basic.plots.dat.dir,
                                             "dnn-basic.mcc.eval.confusion-matrix.png")
 
 dnnb_mcc.eval.plots_dat.file <- file.path(dnn_mcc.basic.plots.dat.dir,
-                                          "dnn-basic,mcc.eval.plots_dat.rds")
+                                          "dnn-basic.mcc.eval.plots_dat.rds")
 
 if(!dir.exists(dnn_mcc.basic.plots.dat.dir))
   dir.create(dnn_mcc.basic.plots.dat.dir)
@@ -165,6 +165,8 @@ a visual representation of the DNNB MCC model evaluation results.",
 
 rm(dnnb_mcc.eval.result)
 
+#'Run the helper script specifically designed to visualize 
+#'the MCC models evaluation results:
 source(model_visualization.shared.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
@@ -176,8 +178,7 @@ source(model_visualization.shared.script.path,
 
 stopifnot(file.exists(dnn_mcc.tuner.script.path,
                       tdnn_mcc.final.retrain.script.path,
-                      tdnn_mcc.final.eval.script.path,
-                      tdnn_mcc.final.eval.visuals.script.path))
+                      tdnn_mcc.final.eval.script.path))
 
 #### Init Paths ----------------------------------------------------------------
 tdnn_mcc.best_hp.config.file <- file.path(dnn_mcc.tuner.dir,
@@ -191,6 +192,22 @@ tdnn_mcc.final.train_history.file <- file.path(dnn_mcc.tuner.dir,
 
 tdnn_mcc.final.eval_result.file <- file.path(dnn_mcc.tuner.dir,
                                         "tdnn-mcc.final.eval-result.rds")
+
+tdnn_mcc.final.eval.plots_dat.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
+                                          "tdnn-mcc.final.eval.plots_dat.rds")
+
+tdnn_mcc.final.eval.conf.mx.img_file <- file.path(dnn_mcc.tuner.plots.dat.dir,
+                                                  "tdnn-mcc.final.eval.confusion-matrix.png")
+
+tdnn_mcc.final.eval.plots_dat.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
+                                                "tdnn-mcc.final.eval.plots_dat.rds")
+
+if(!dir.exists(dnn_mcc.tuner.dir))
+  dir.create(dnn_mcc.tuner.dir)
+
+if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
+  dir.create(dnn_mcc.tuner.plots.dat.dir)
+
 #### Run Scripts ---------------------------------------------------------------
 
 if(!file.exists(tdnn_mcc.final.eval_result.file)) {
@@ -210,19 +227,6 @@ if(!file.exists(tdnn_mcc.final.eval_result.file)) {
            spaced = TRUE,
            verbose = TRUE,
            keep.source = TRUE)
-  } else if(file.exists(tdnn_mcc.final.train_history.file)){
-    print_log("Loading the Tuned DNN MCC Final Model Train History...")
-    tdnn_mcc.final.train_history <- readRDS(tdnn_mcc.final.train_history.file)
-    
-    print_log("The Tuned DNN MCC Final Model Train History has been loaded 
-from the following file:
-%1", tdnn_mcc.final.train_history.file)
-    
-    plot(tdnn_mcc.final.train_history)
-    # rm(tdnn_mcc.final.train_history)
-  } else {
-    warning("The Tuned DNN MCC Final Model History backup file does not exist:
-%1", tdnn_mcc.final.train_history.file)
   }
 
   source(tdnn_mcc.final.eval.script.path,
@@ -233,7 +237,30 @@ from the following file:
          keep.source = TRUE)
 }
 
-source(tdnn_mcc.final.eval.visuals.script.path,
+put_log("Loading the BDL MCC Final Model Evaluation Result object...")
+tdnn_mcc.final.eval.result <- readRDS(tdnn_mcc.final.eval_result.file)
+
+put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
+from the following file:
+%1", tdnn_mcc.final.eval_result.file)
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+plots.args <- init.plots_args(targets = tdnn_mcc.final.eval.result$targets,
+                              predicted.probabilities = tdnn_mcc.final.eval.result$predicted.probs,
+                              predicted.values = tdnn_mcc.final.eval.result$predicted.values,
+                              model_type = "Tuned MCC",
+                              alg_name = "DNN",
+                              plots_dat.file = tdnn_mcc.final.eval.plots_dat.file,
+                              pca.export_img.file_name = "tdnn.final.eval.pca.png",
+                              pca.export_img.dir = dnn_mcc.tuner.plots.dat.dir,
+                              cm.export.img_file = tdnn_mcc.final.eval.conf.mx.img_file,
+                              cm.print.image = T)
+
+#'Run the helper script specifically designed to visualize 
+#'the MCC models evaluation results:
+source(model_visualization.shared.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

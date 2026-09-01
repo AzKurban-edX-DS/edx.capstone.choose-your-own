@@ -166,12 +166,6 @@ dnn_mcc.tuner.checkpoint.file_path <-
   file.path(dnn_mcc.tuner.checkpoints.dir, 
             "dnn_mcc.tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
-if(!dir.exists(dnn_mcc.tuner.dir))
-  dir.create(dnn_mcc.tuner.dir)
-
-if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
-  dir.create(dnn_mcc.tuner.plots.dat.dir)
-
 if(!dir.exists(dnn_mcc.tuner.checkpoints.dir))
   dir.create(dnn_mcc.tuner.checkpoints.dir)
 
