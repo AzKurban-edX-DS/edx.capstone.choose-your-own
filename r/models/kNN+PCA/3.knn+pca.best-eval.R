@@ -79,7 +79,7 @@ rm(ds)
 
 put_log("Loading the `kNN+PCA MCC` Model (trained for the best `k` value) from the backup file...")
 
-k_best.nn_pca.model -> readRDS(k_best.nn_pca.model.backup.path)
+k_best.nn_pca.model <- readRDS(k_best.nn_pca.model.backup.path)
 put_end_date(start)
 # Time difference of 
 
@@ -111,8 +111,8 @@ knn_pca.eval.results$predicted <-
 
 put_end_date(start)
 
-knn_pca.eval.results$accuracy <- mean(k_best.nn_pca.predicted == y_test)
-# [1] 0.8625557
+knn_pca.eval.results$accuracy <- mean(knn_pca.eval.results$predicted == y_test)
+# [1] 0.8661671
 
 knn_pca.eval.results$targets <- y_test
 
