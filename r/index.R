@@ -107,6 +107,8 @@ if(!file.exists(knn_pca.eval.results.backup)) {
          keep.source = TRUE)
 }
 
+open_logfile(".visual.eval-results.k(best)nn+pca")
+
 put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
 
 knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
@@ -144,6 +146,8 @@ source(model_visualization.shared.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+log_close()
 
 ## Random Forest (RF) MCC Model ------------------------------------------------
 ### RF MCC Model Tuning --------------------------------------------------------

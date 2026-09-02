@@ -131,8 +131,11 @@ rm(x_test,
 
 put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
 %1", knn_pca.eval.results$accuracy)
-#> [1] 0.862555675935958
+#> [1] 0.866167087998074
 
 log_close()
-# Log Elapsed Time: 0 02:15:36
+# =========================================================================
+# Log End Time: 2026-09-02 14:02:46.323803
+# Log Elapsed Time: 0 02:16:51
+# =========================================================================
 
