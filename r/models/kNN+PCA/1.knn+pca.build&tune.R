@@ -11,12 +11,15 @@
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
 
+open_logfile(".pre-train-model.k1-8nn+pca")
+
+stopifnot(file.exists(my_emnist.0.1split.file_path),
+          exists("k1_8nn_pca.model.backup.path"))
+
+
 
 ## Prepare Input Datasets ------------------------------------------------------
 
-stopifnot(file.exists(my_emnist.0.1split.file_path))
-
-open_logfile(".knn+pca.load-split.10%train.balanced_sample")
 start <- put_start_date()
 
 ### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
@@ -87,35 +90,19 @@ rm(ds)
 
 stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
 stopifnot(nrow(x_train) == length(y_train))
-log_close()
 
 ## Model Building & Tuning -----------------------------------------------------
-open_logfile(".pre-train-model.k1-8nn+pca")
 
 # if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-k1_8nn_pca.model.backup.path <-
-  file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
+put_log("Training Model `kNN+PCA` on the 10% size Training Set..." )
 
-if (file.exists(k1_8nn_pca.model.backup.path)) {
-  put_log("Loading pre-trained `kNN+PCA MCC` Model 
-(tuned for `k` values ranged from 1 to 8) from the backup file...")
-  
-  k1_8nn_pca.model <- readRDS(k1_8nn_pca.model.backup.path)
-  put_end_date(start)
-  # Time difference of 
-  
-  put_log("The pre-trained Model has been loaded from the following file:
-%1", k1_8nn_pca.model.backup.path)
-} else {
-  put_log("Training Model `kNN+PCA` on the 10% size Training Set..." )
-  
-  start <- put_start_date()
-  #flush.console()
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-  
+start <- put_start_date()
+#flush.console()
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 k.values <- seq_len(8)
 
 # The model will be tuned by *k* parameter ranging from 1 to 8 on 10% size sample of the Training Set.
@@ -124,46 +111,45 @@ k.values <- seq_len(8)
 # Dimension reduction with PCA
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
 
-  k1_8nn_pca.model <- caret::train(x_train, y_train, method = "knn", 
-                                preProcess = "pca",
-                                trControl = trainControl("cv", 
-                                                         number = 5, 
-                                                         p = 0.95,
-                                                         preProcOptions = list(thresh = 0.9),
-                                                         verboseIter = TRUE),
-                                tuneGrid = data.frame(k = k.values))
-  rm(x_train)
-  rm(y_train)
-  
-  stopCluster(cl)
-  stopImplicitCluster()
-  rm(cl)
-  
-  # Aggregating results
-  # Selecting tuning parameters
-  # Fitting k = 5 on full training set
-  # Warning in pre_process_options(method, column_types) :
-  #   The following pre-processing methods were eliminated: 'pca', 'center', 'scale'  
-    
-  put_end_date(start)
-  # Time difference of 27.84693 mins
+k1_8nn_pca.model <- caret::train(x_train, y_train, method = "knn", 
+                                 preProcess = "pca",
+                                 trControl = trainControl("cv", 
+                                                          number = 5, 
+                                                          p = 0.95,
+                                                          preProcOptions = list(thresh = 0.9),
+                                                          verboseIter = TRUE),
+                                 tuneGrid = data.frame(k = k.values))
+rm(x_train)
+rm(y_train)
 
-  put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
+stopCluster(cl)
+stopImplicitCluster()
+rm(cl)
 
-  put_log("Saving the pre-trained model in the backup file...")
+# Aggregating results
+# Selecting tuning parameters
+# Fitting k = 5 on full training set
+# Warning in pre_process_options(method, column_types) :
+#   The following pre-processing methods were eliminated: 'pca', 'center', 'scale'  
 
-    saveRDS(k1_8nn_pca.model, 
-          file = k1_8nn_pca.model.backup.path)
-  
-  put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
+put_end_date(start)
+# Time difference of 27.84693 mins
+
+put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
+
+put_log("Saving the pre-trained model in the backup file...")
+
+saveRDS(k1_8nn_pca.model, 
+        file = k1_8nn_pca.model.backup.path)
+
+put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
 for *k* values ranged from 1 to 8 has been backed up in the following file:
 `%1`", k1_8nn_pca.model.backup.path)
 
-  put_end_date(start)
-  # Time difference of 27.88649 mins
-}
+put_end_date(start)
+# Time difference of 27.88649 mins
 
-### The Tuning Results Visualization & Analysis -------------------------------
+### The Model Tuning Results Quick Analysis ------------------------------------
 
 put_log("The pre-trained `kNN+PCA MCC` Model tuned result:
 %1", capture.output(k1_8nn_pca.model))

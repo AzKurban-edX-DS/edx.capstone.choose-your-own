@@ -440,6 +440,12 @@ knn_pca.retrain.best_k.script.path <- file.path(models.knn_pca_scripts.dir,
                                                 "2.knn+pca.re-train.best-k.R")
 stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
 
+knn_pca.best.eval.script.path <- file.path(models.knn_pca_scripts.dir, 
+                                                "3.knn+pca.best-eval.R")
+stopifnot(file.exists(knn_pca.best.eval.script.path))
+
+
+
 rf_tuning.script.path <- file.path(models.rf_scripts.dir, "rf-tuning.R")
 stopifnot(file.exists(rf_tuning.script.path))
 

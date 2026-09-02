@@ -7,14 +7,16 @@
 
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
-## Prepare Input Datasets ------------------------------------------------------
+open_logfile(".re-train-model.k5(best)nn+pca")
 
-stopifnot(file.exists(my_emnist.split.file_path))
+stopifnot(file.exists(my_emnist.split.file_path,
+                      k1_8nn_pca.model.backup.path),
+          exists("k_best.nn_pca.model.backup.path"))
 
-open_logfile(".split.80%train.balanced_subset")
+## Prepare Train Datasets ------------------------------------------------------
+
+
 start <- put_start_date()
-
-### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -76,127 +78,65 @@ y_train <- ds$train$class_groups$classID
 stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
 stopifnot(nrow(x_train) == length(y_train))
 
-x_test <- ds$test$x
-
-put_log("The Test set is balanced with respect to the set of classes:
-%1", capture.output(print(ds$test$class_groups$groupByClass, n = N.classes)))
-{
-  # # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #         852
-  #  2 $         852
-  #  3 &         852
-  #  4 @         852
-  #  5 0         852
-  #  6 1         852
-  #  7 2         852
-  #  8 3         852
-  #  9 4         852
-  # 10 5         852
-  # 11 6         852
-  # 12 7         852
-  # 13 8         852
-  # 14 9         852
-  # 15 A         852
-  # 16 B         852
-  # 17 C         852
-  # 18 D         852
-  # 19 E         852
-  # 20 F         852
-  # 21 G         852
-  # 22 H         852
-  # 23 I         852
-  # 24 J         852
-  # 25 K         852
-  # 26 L         852
-  # 27 M         852
-  # 28 N         852
-  # 29 P         852
-  # 30 Q         852
-  # 31 R         852
-  # 32 S         852
-  # 33 T         852
-  # 34 U         852
-  # 35 V         852
-  # 36 W         852
-  # 37 X         852
-  # 38 Y         852
-  # 39 Z         852
-  invisible(NULL)
-}
-
-y_test <- ds$test$class_groups$classID
-
-stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
-stopifnot(nrow(x_test) == length(y_test))
-
 rm(ds)
-log_close()
 
-
-
-
-## Re-Train kNN+PCA Model with the best *k% Parameter on the full Dataset ---------
+## Re-Train kNN+PCA Model with the best *k% Parameter on the full Dataset ------
 # (The training takes about half an hour)
-open_logfile(".re-train-model.k5(best)nn+pca")
 
-k_best.nn_pca.model.backup.path <-
-  file.path(knn_pca.data.dir, "k_best.nn+pca.rds")
+put_log("Training Model `kNN+PCA` on the 80% size Training Set..." )
 
-if (file.exists(k_best.nn_pca.model.backup.path)) {
-  put_log("Loading the `kNN+PCA MCC` Model (trained for the best `k` value) from the backup file...")
-  
-  k_best.nn_pca.model <- readRDS(k_best.nn_pca.model.backup.path)
-  put_end_date(start)
-  # Time difference of 
-  
-  put_log("The `kNN+PCA MCC` Model trained for the best `k` value 
-has been loaded from the following backup file:
-%1", k_best.nn_pca.model.backup.path)
-} else {
-  put_log("Training Model `kNN+PCA` on the 80% size Training Set..." )
-  
-  start <- put_start_date()
+start <- put_start_date()
 
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-  
-  #flush.console()
-  k_best.nn_pca.model <- caret::train(x_train, 
-                                      y_train, 
-                                      method = "knn", 
-                                      preProcess = "pca",
-                                      trControl = trainControl("cv", 
-                                                               number = 5, 
-                                                               p = 0.95,
-                                                               preProcOptions = list(thresh = 0.9),
-                                                               verboseIter = TRUE),
-                                      tuneGrid = data.frame(k = k1_8nn.best)) # *k* = 5
-  stopCluster(cl)
-  stopImplicitCluster()
-  rm(cl)
-  
-  # Aggregating results
-  # Fitting final model on full training set
-  # Warning: The following pre-processing methods were eliminated: 'pca', 'center', 'scale'
-  
-  put_end_date(start)
-  # Sun Jul 5 08:18:14 2026 
-  # Time difference of 1.875516 hours
- 
-  put_log("The Model `kNN+PCA` has been trained on the 80% size Training Set")
-  
-  put_log("Saving `kNN+PCAM`odel in the backup file: `...")
-  
-  saveRDS(k_best.nn_pca.model, 
-          file = k_best.nn_pca.model.backup.path)
-  put_end_date(start)
-  # Time difference of 1.880165 hours
-  
-  put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
+put_log("Loading pre-trained `kNN+PCA MCC` Model 
+(tuned for `k` values ranged from 1 to 8) from the backup file...")
+
+k1_8nn_pca.model <- readRDS(k1_8nn_pca.model.backup.path)
+put_end_date(start)
+# Time difference of 
+
+put_log("The pre-trained Model has been loaded from the following file:
+%1", k1_8nn_pca.model.backup.path)
+
+k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
+
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+#flush.console()
+k_best.nn_pca.model <- caret::train(x_train, 
+                                    y_train, 
+                                    method = "knn", 
+                                    preProcess = "pca",
+                                    trControl = trainControl("cv", 
+                                                             number = 5, 
+                                                             p = 0.95,
+                                                             preProcOptions = list(thresh = 0.9),
+                                                             verboseIter = TRUE),
+                                    tuneGrid = data.frame(k = k1_8nn.best)) # *k* = 5
+stopCluster(cl)
+stopImplicitCluster()
+rm(cl)
+
+# Aggregating results
+# Fitting final model on full training set
+# Warning: The following pre-processing methods were eliminated: 'pca', 'center', 'scale'
+
+put_end_date(start)
+# Sun Jul 5 08:18:14 2026 
+# Time difference of 1.875516 hours
+
+put_log("The Model `kNN+PCA` has been trained on the 80% size Training Set")
+
+put_log("Saving `kNN+PCAM`odel in the backup file: `...")
+
+saveRDS(k_best.nn_pca.model, 
+        file = k_best.nn_pca.model.backup.path)
+put_end_date(start)
+# Time difference of 1.880165 hours
+
+put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
-}
+
 
 rm(x_train,
    y_train)
@@ -204,161 +144,3 @@ rm(x_train,
 log_close()
 # Log Elapsed Time: 0 01:51:26
 
-## Constructing Predictions on kNN+PCA (for best *k* Parameter value) --------
-open_logfile(".x.test.flatten.predict.k(best)nn+pca")
-
-knn_pca.eval.results.backup <-
-  file.path(knn_pca.data.dir, "knn+pca.eval-results.rds")
-
-
-start <- put_start_date()
-# Thu Apr 9 09:14:47 2026
-
-if (file.exists(knn_pca.eval.results.backup)) {
-  put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
-  
-  knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
-  put_end_date(start)
-  # Time difference of 
-
-  put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
-%1...", knn_pca.eval.results.backup)
-} else {
-  knn_pca.eval.results <- list()
-  
-  put_log("Constructing predictions using the `kNN+PCA MCC` Model trained for the best *k* value...")
-  
-  if(!exists("k_best.nn_pca.model")) {
-    stopifnot(file.exists(k_best.nn_pca.model.backup.path))
-    
-    put_log("Loading the `kNN+PCA MCC` Model (trained for the best `k` value) from the backup file...")
-    
-    k_best.nn_pca.model -> readRDS(k_best.nn_pca.model.backup.path)
-    put_end_date(start)
-    # Time difference of 
-    
-    put_log("The `kNN+PCA MCC` Model trained for the best `k` value 
-has been loaded from the following backup file:
-%1", k_best.nn_pca.model.backup.path)
-  }
-  
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-
-  knn_pca.eval.results$predicted.probs <- caret::predict.train(k_best.nn_pca.model, 
-                                                               newdata = x_test,
-                                                               type = "prob",
-                                                               verbose = TRUE)
-  put_end_date(start)
-
-  stopCluster(cl)
-  stopImplicitCluster()
-  put_end_date(start)
-  # Time difference of 2.354987 hours
-  
-  knn_pca.eval.results$predicted <- 
-    predicted_probs2classes(as.matrix(knn_pca.eval.results$predicted.probs), 
-                            Y.Labels)
-  
-  put_end_date(start)
-  
-  knn_pca.eval.results$accuracy <- mean(k_best.nn_pca.predicted == y_test)
-  # [1] 0.8625557
-  
-  knn_pca.eval.results$targets <- y_test
-  
-  
-  put_log("Saving the Tuned `kNN+PCA MCC` Model evaluation results...")
-  saveRDS(knn_pca.eval.results,
-          file = knn_pca.eval.results.backup)
-  
-  put_log("The evaluation results of the tuned `kNN+PCA MCC` Model has been saved 
-to the following file:
-%1", knn_pca.eval.results.backup)
-  
-}
-
-  rm(x_test,
-     k_best.nn_pca.model,
-     y_test)
-
-put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
-%1", knn_pca.eval.results$accuracy)
-#> [1] 0.862555675935958
-
-log_close()
-# Log Elapsed Time: 0 02:15:36
-
-## Visualizing the Evaluation Results ------------------------------------------
-
-open_logfile(".k(best)nn+pca.eval-results.visualization")
-
-stopifnot(file.exists(model_visualization.shared.script.path))
-
-if(!dir.exists(knn_pca.data.plots.dat.dir))
-  dir.create(knn_pca.data.plots.dat.dir)
-
-knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
-                                           "knn+pca-tuned.eval.confusion-matrix.png")
-
-knn_pca.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
-                            "knn+pca-tuned.eval.plots_dat.rds")
-
-#' Initialize the `plots.args` object containing argument values 
-#' for the visualization helper functions being called in the following script 
-#' about to launch:
-if(file.exists(knn_pca.eval.plots_dat.file)) {
-  put_log("Function `init.plots_args`:
-Loading the model-related plots input data object from the backup file...")
-  plots.args <- init.plots_args(knn_pca.eval.plots_dat.file)
-  
-  put_log("Function `init.plots_args`:
-The model-related plots input data object has been loaded from the following file:
-%1", knn_pca.eval.plots_dat.file)
-} else {
-  if (!exists("knn_pca.eval.results")) {
-    stopifnot(file.exists(knn_pca.eval.results.backup))
-    put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
-    knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
-    
-    put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
-%1...", knn_pca.eval.results.backup)
-  } 
-
-  plots.args <- init.plots_args(targets = knn_pca.eval.results$targets,
-                                predicted.probabilities = knn_pca.eval.results$predicted.probs,
-                                predicted.values = knn_pca.eval.results$predicted,
-                                alg_name = "kNN+PCA MCC",
-                                plots_dat.file = knn_pca.eval.plots_dat.file,
-                                cm.export.img_file = knn_pca.eval.conf.mx.img_file,
-                                cm.print.image = T)
-}
-
-#'Run the helper script specifically designed to visualize 
-#'the model evaluation results:
-source(model_visualization.shared.script.path,
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-rm(plots.args)
-
-stopifnot(exists("plots.dat"),
-          !is.null(plots.dat$ROC),
-          !is.null(plots.dat$PCA),
-          !is.null(plots.dat$CM))
-
-put_log("Saving the model-related plots input data object to file...")
-
-saveRDS(plots.dat,
-        file = knn_pca.eval.plots_dat.file)
-
-put_log("The model-related plots input data object has been saved to the following file:
-%1", knn_pca.eval.plots_dat.file)
-
-rm(plots.dat,
-   knn_pca.eval.results)
-
-log_close()

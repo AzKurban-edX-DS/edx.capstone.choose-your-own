@@ -51,20 +51,94 @@ source(ds.prepare_flattened.script.path,
        keep.source = TRUE)
 
 ## kNN+PCA MCC Model -----------------------------------------------------------
-### Build & Tune the kNN+PCA MCC Model -----------------------------------------
-stopifnot(file.exists(knn_pca.tune.script.path))
+stopifnot(file.exists(knn_pca.tune.script.path,
+                      knn_pca.retrain.best_k.script.path,
+                      knn_pca.best.eval.script.path))
+#### Init Paths ----------------------------------------------------------------
 
-source(knn_pca.tune.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+k1_8nn_pca.model.backup.path <-
+  file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
 
-### Re-Train kNN+PCA MCC Model with the Best `k` Value -------------------------
-stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
+k_best.nn_pca.model.backup.path <-
+  file.path(knn_pca.data.dir, "k_best.nn+pca.rds")
 
-source(knn_pca.retrain.best_k.script.path, 
+knn_pca.eval.results.backup <-
+  file.path(knn_pca.data.dir, "knn+pca.eval-results.rds")
+
+
+knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
+                                           "knn+pca-tuned.eval.confusion-matrix.png")
+
+knn_pca.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
+                                         "knn+pca-tuned.eval.plots_dat.rds")
+
+if(!dir.exists(knn_pca.data.plots.dat.dir))
+  dir.create(knn_pca.data.plots.dat.dir)
+
+#### Run Scripts ---------------------------------------------------------------
+
+if(!file.exists(knn_pca.eval.results.backup)) {
+  if(!file.exists(k_best.nn_pca.model.backup.path)) {
+    if(!file.exists(k1_8nn_pca.model.backup.path)) {
+      # Build & Tune the kNN+PCA MCC Model
+      source(knn_pca.tune.script.path, 
+             catch.aborts = TRUE,
+             echo = TRUE,
+             spaced = TRUE,
+             verbose = TRUE,
+             keep.source = TRUE)
+    }
+    
+    # Re-Train kNN+PCA MCC Model with the Best `k` Value
+    source(knn_pca.retrain.best_k.script.path, 
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
+  }
+  
+  # Evaluate the best kNN+PCA MCC Model
+  source(knn_pca.best.eval.script.path, 
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
+}
+
+put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
+
+knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
+put_end_date(start)
+# Time difference of 
+
+put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
+%1...", knn_pca.eval.results.backup)
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+plots.args <- init.plots_args(targets = knn_pca.eval.results$targets,
+                              predicted.probabilities = knn_pca.eval.results$predicted.probs,
+                              predicted.values = knn_pca.eval.results$predicted,
+                              model_type = "MCC",
+                              alg_name = "kNN+PCA",
+                              pca.export_img.file_name = "knn+pca-mcc.best.eval.pca.png",
+                              pca.export_img.dir = knn_pca.data.plots.dat.dir,
+                              plots_dat.file = knn_pca.eval.plots_dat.file,
+                              cm.export.img_file = knn_pca.eval.conf.mx.img_file,
+                              cm.print.image = T)
+
+put_log("The `plots.args` object of class `%1` has been created for use to generate 
+a visual representation of the DNNB MCC model evaluation results.",
+        class(plots.args))
+
+# rm(knn_pca.eval.results)
+
+#'Run the helper script specifically designed to visualize 
+#'the MCC models evaluation results:
+source(model_visualization.shared.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
