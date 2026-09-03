@@ -193,13 +193,13 @@ put_log("Root directory for the project models' scripts:
 
 ##### Directories for Shallow Learning Model Scripts ---------------------------
 
-models.knn_pca_scripts.dir <- file.path(model_scripts.dir, "kNN+PCA")
+models.knn_pca_scripts.dir <- file.path(model_scripts.dir, "knn+pca-mcc")
 stopifnot(dir.exists(models.knn_pca_scripts.dir))
 
 put_log("Root directory for the `kNN+PCA MCC` models' scripts:
 %1", models.knn_pca_scripts.dir)
 
-models.rf_scripts.dir <- file.path(model_scripts.dir, "random-forest")
+models.rf_scripts.dir <- file.path(model_scripts.dir, "rf-mcc")
 stopifnot(dir.exists(models.rf_scripts.dir))
 
 put_log("Root directory for the `RF MCC` model's scripts:
@@ -314,7 +314,7 @@ put_log("Root directory for the project models data:
 
 ##### Directories for Shallow Learning Model Data ------------------------------
 ###### Directories for kNN+PCA Model Data --------------------------------------
-knn_pca.data.dir = file.path(models_data.dir, "knn-pca")
+knn_pca.data.dir = file.path(models_data.dir, "knn+pca-mcc")
 
 if(!dir.exists(knn_pca.data.dir))
   dir.create(knn_pca.data.dir)
@@ -327,7 +327,7 @@ if(!dir.exists(knn_pca.data.plots.dat.dir))
 
 ###### Directories for Random Forest Model Data --------------------------------
 
-data.models.random_forest.dir <- file.path(models_data.dir, "random-forest")
+data.models.random_forest.dir <- file.path(models_data.dir, "rf-mcc")
 
 if(!dir.exists(data.models.random_forest.dir))
   dir.create(data.models.random_forest.dir)
