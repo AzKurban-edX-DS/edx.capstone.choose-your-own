@@ -161,9 +161,6 @@ if(!dir.exists(data.models.rf.tuning.dir))
 fit_rf.mtry_default.backup.path <- file.path(data.models.rf.dir, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
 
-fit_rf.fine_tuned.backup.path <- file.path(data.models.rf.tuning.dir, 
-                                           "fit_rf.fine-tuned.ntree200.back.rds")
-
 if(file.exists(fit_rf.mtry_default.backup.path)) {
   put_log("Loading data of the `RF MCC` model, 
 trained with the default `mtry` parameter value, from the backup file...")
