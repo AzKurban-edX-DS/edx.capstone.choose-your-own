@@ -152,9 +152,6 @@ log_close()
 #if(!is.null(dev.list())) dev.off()
 graphics.off()
 
-
-data.models.rf.tuning.dir <- file.path(data.models.rf.dir, "tuning")
-
 if(!dir.exists(data.models.rf.tuning.dir))
   dir.create(data.models.rf.tuning.dir)
 

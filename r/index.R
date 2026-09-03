@@ -156,6 +156,8 @@ stopifnot(file.exists(rf_tuning.script.path,
 
 ### Init Paths ----------------------------------------------------------------
 
+data.models.rf.tuning.dir <- file.path(data.models.rf.dir, "tuning")
+
 fit_rf.fine_tuned.backup.path <- file.path(data.models.rf.tuning.dir, 
                                            "fit_rf.fine-tuned.ntree200.back.rds")
 
@@ -167,6 +169,9 @@ rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
 
 rf_tuned.eval.plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
                                           "rf-tuned.eval.plots_dat.rds")
+
+if(!dir.exists(data.models.rf.tuning.dir))
+  dir.create(data.models.rf.tuning.dir)
 
 if(!dir.exists(data.models.rf.plots.dat.dir))
   dir.create(data.models.rf.plots.dat.dir)
