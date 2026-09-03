@@ -152,8 +152,7 @@ log_close()
 ## Random Forest (RF) MCC Model ------------------------------------------------
 
 stopifnot(file.exists(rf_tuning.script.path,
-                      rf_retraining.best_par.script.path,
-                      rf_mcc.best.eval.script.path))
+                      rf_retraining.best_par.script.path))
 
 ### Init Paths ----------------------------------------------------------------
 
