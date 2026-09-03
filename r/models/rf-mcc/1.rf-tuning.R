@@ -145,8 +145,6 @@ stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0)
 stopifnot(nrow(x_test) == length(y_test))
 rm(ds)
 
-log_close()
-
 ## Pre-Train RF MC` model with the default mtry value & ntree = 500 ------------
 
 #if(!is.null(dev.list())) dev.off()
