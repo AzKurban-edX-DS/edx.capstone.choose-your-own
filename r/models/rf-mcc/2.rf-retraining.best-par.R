@@ -16,7 +16,7 @@ open_logfile(".fit_rf.re-train.mtry_best.ntree400")
 
 stopifnot(file.exists(my_emnist.split.file_path,
                       fit_rf.fine_tuned.backup.path),
-          dir.exists(data.models.random_forest.dir))
+          dir.exists(data.models.rf.dir))
 
 start <- put_start_date()
 

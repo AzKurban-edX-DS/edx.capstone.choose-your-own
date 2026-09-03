@@ -153,16 +153,16 @@ log_close()
 graphics.off()
 
 
-models.rf.tune.path = file.path(data.models.random_forest.dir, "tune")
+data.models.rf.tuning.dir <- file.path(data.models.rf.dir, "tuning")
 
-if(!dir.exists(models.rf.tune.path))
-  dir.create(models.rf.tune.path)
+if(!dir.exists(data.models.rf.tuning.dir))
+  dir.create(data.models.rf.tuning.dir)
 
-fit_rf.mtry_default.backup.path <- file.path(data.models.random_forest.dir, 
+fit_rf.mtry_default.backup.path <- file.path(data.models.rf.dir, 
                                              "fit_rf.mtry_default.ntree500.back.rds")
 
-
-start <- put_start_date()
+fit_rf.fine_tuned.backup.path <- file.path(data.models.rf.tuning.dir, 
+                                           "fit_rf.fine-tuned.ntree200.back.rds")
 
 if(file.exists(fit_rf.mtry_default.backup.path)) {
   put_log("Loading data of the `RF MCC` model, 
@@ -246,7 +246,7 @@ log_close()
 ### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
 open_logfile(".fit_rf.coarse_tune.mtry.step1")
 
-fit_rf.mtry.coarse_tuned.backup.path <- file.path(models.rf.tune.path, 
+fit_rf.mtry.coarse_tuned.backup.path <- file.path(data.models.rf.tuning.dir, 
                                            "fit_rf.mtry-coarse_tuned.ntree200.back.rds")
 
 start <- put_start_date()
@@ -367,7 +367,7 @@ log_close()
 ### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
 open_logfile(".fit_rf.fine-tune_mtry.step2")
 
-fit_rf.mtry.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
+fit_rf.mtry.fine_tuned.backup.path <- file.path(data.models.rf.tuning.dir, 
                                                 "fit_rf.mtry-fine_tuned.ntree200.back.rds")
 
 start <- put_start_date()

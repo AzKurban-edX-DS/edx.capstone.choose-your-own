@@ -327,12 +327,12 @@ if(!dir.exists(knn_pca.data.plots.dat.dir))
 
 ###### Directories for Random Forest Model Data --------------------------------
 
-data.models.random_forest.dir <- file.path(models_data.dir, "rf-mcc")
+data.models.rf.dir <- file.path(models_data.dir, "rf-mcc")
 
-if(!dir.exists(data.models.random_forest.dir))
-  dir.create(data.models.random_forest.dir)
+if(!dir.exists(data.models.rf.dir))
+  dir.create(data.models.rf.dir)
 
-data.models.rf.plots.dat.dir <- file.path(data.models.random_forest.dir, 
+data.models.rf.plots.dat.dir <- file.path(data.models.rf.dir, 
                                           "plots.dat")
 
 if(!dir.exists(data.models.rf.plots.dat.dir))

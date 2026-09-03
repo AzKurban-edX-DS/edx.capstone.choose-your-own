@@ -156,10 +156,7 @@ stopifnot(file.exists(rf_tuning.script.path,
 
 ### Init Paths ----------------------------------------------------------------
 
-fit_rf.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
-                                                 "fit_rf.fine-tuned.ntree200.back.rds")
-
-fit_rf.final.backup.path <- file.path(data.models.random_forest.dir, 
+fit_rf.final.backup.path <- file.path(data.models.rf.dir, 
                                       "fit_rf.final.ntree400.back.rds")
 
 
