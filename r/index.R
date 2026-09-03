@@ -150,25 +150,109 @@ source(model_visualization.shared.script.path,
 log_close()
 
 ## Random Forest (RF) MCC Model ------------------------------------------------
-### RF MCC Model Tuning --------------------------------------------------------
-stopifnot(file.exists(rf_tuning.script.path))
 
-source(rf_tuning.script.path, 
+stopifnot(file.exists(rf_tuning.script.path,
+                      rf_retraining.best_par.script.path,
+                      rf_mcc.best.eval.script.path))
+
+### Init Paths ----------------------------------------------------------------
+
+fit_rf.fine_tuned.backup.path <- file.path(models.rf.tune.path, 
+                                                 "fit_rf.fine-tuned.ntree200.back.rds")
+
+fit_rf.final.backup.path <- file.path(data.models.random_forest.dir, 
+                                      "fit_rf.final.ntree400.back.rds")
+
+
+model.eval.results.backup <-
+  file.path(model.data.dir, "model.eval-results.rds")
+
+
+rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
+                                            "rf-tuned.eval.confusion-matrix.png")
+
+rf_tuned.eval.plots_dat.file <- file.path(data.models.rf.plots.dat.dir,
+                                          "rf-tuned.eval.plots_dat.rds")
+
+if(!dir.exists(data.models.rf.plots.dat.dir))
+  dir.create(data.models.rf.plots.dat.dir)
+
+### Run Scripts ----------------------------------------------------------------
+
+if(!file.exists(fit_rf.final.backup.path)) {
+  if(!file.exists(fit_rf.fine_tuned.backup.path)) {
+    # Build & Tune the RF MCC Model
+    source(rf_tuning.script.path, 
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
+  }
+  
+  # Re-Train RF MCC Model with the Best `k` Value
+  source(rf_retraining.best_par.script.path, 
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
+}
+
+open_logfile(".visual.eval-results.rf-final")
+
+put_log("Loading data of the fine-tuned `RF MCC` Model by the `mtry` parameter...")
+fit_rf.final <- readRDS(fit_rf.final.backup.path)
+
+put_log("The data of the fine-tuned `RF MCC` Model, 
+trained with the best `mtry` parameter value, has been loaded from the following backup file:
+%1", fit_rf.final.backup.path)
+
+put_log("The results of the fine-tuning `RF MCC` Model (after being trained with the best `mtry` parameter value
+on an 80% sample of the`Training Set` dataset and tested on the remaining 20% of the `Training Set`) 
+are as follows:
+%1", capture.output(fit_rf.final))
+put_end_date(start)
+# Time difference of 6.260901 hours
+
+plot(fit_rf.final,
+     main = "Fine-tuning Results of the `RF MCC` Model by the `mtry` Parameter")
+
+put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model, 
+trained with the best `mtry` parameter value, is as follows:
+%1", fit_rf.final$test$accuracy)
+# 0.886029854339713
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+plots.args <- init.plots_args(targets = fit_rf.final$test$targets,
+                              predicted.probabilities = fit_rf.final$test$votes,
+                              predicted.values = fit_rf.final$test$predicted,
+                              model_type = "MCC",
+                              alg_name = "RF",
+                              pca.export_img.file_name = "rf-mcc.final.eval.pca.png",
+                              pca.export_img.dir = data.models.rf.plots.dat.dir,
+                              plots_dat.file = rf_tuned.eval.plots_dat.file,
+                              cm.export.img_file = rf_tuned.eval.conf.mx.img_file,
+                              cm.print.image = T)
+
+put_log("The `plots.args` object of class `%1` has been created for use to generate 
+a visual representation of the DNNB MCC model evaluation results.",
+        class(plots.args))
+
+# rm(fit_rf.final)
+
+#'Run the helper script specifically designed to visualize 
+#'the MCC models evaluation results:
+source(model_visualization.shared.script.path,
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Retraining the RF MCC Model with the Best Found Parameters -----------------
-stopifnot(file.exists(rf_retraining.best_par.script.path))
-
-source(rf_retraining.best_par.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+log_close()
 
 ## DNN-Based MCC Model ---------------------------------------------------------
 ### DNN-Based Basic MCC Model --------------------------------------------------

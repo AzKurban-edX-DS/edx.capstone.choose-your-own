@@ -12,12 +12,14 @@
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
 
-## Prepare Input Datasets ------------------------------------------------------
+open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 
 stopifnot(file.exists(my_emnist.0.1split.file_path))
 
-open_logfile(".rf.load-split.10%train.balanced_sample")
 start <- put_start_date()
+
+## Prepare Input Datasets ------------------------------------------------------
+
 
 ### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
 
@@ -146,7 +148,6 @@ rm(ds)
 log_close()
 
 ## Pre-Train RF MC` model with the default mtry value & ntree = 500 ------------
-open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 
 #if(!is.null(dev.list())) dev.off()
 graphics.off()
@@ -237,6 +238,7 @@ pre-trained with the default `mtry` parameter value, is as follows:
 
 rm(fit_rf.mtry_default,
    rf_conf.mx.mtry_default)
+
 log_close()
 # Log Elapsed Time: 0 00:10:43
 
@@ -498,138 +500,77 @@ log_close()
 ### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
 open_logfile(".fit_rf.final-tune_mtry.step3")
 
-fit_rf.mtry.final_tuned.backup.path <- file.path(models.rf.tune.path, 
-                                                 "fit_rf.mtry-final_tuned.ntree200.back.rds")
-
 start <- put_start_date()
 
-if(file.exists(fit_rf.mtry.final_tuned.backup.path)) {
-  put_log("Loading the `RF MCC` model final tuned with `mtry` parameter values from the backup file...")
+put_log("Final Tuning the `RF MCC` model by `mtry` parameter values...")
+
+mtry.seq <- seq(mtry.fine_tune.values[acc.fine_tuned.max.idx-1] + 1, 
+                mtry.fine_tune.values[length(mtry.fine_tune.values)] - 1) 
+
+mtry.final_tune.values <- mtry.seq[mtry.seq != mtry.fine_tune.values[c(acc.fine_tuned.max.idx,
+                                                                       acc.fine_tuned.max.idx + 1)]]
+rm(mtry.seq)
+start <- put_start_date()
+
+# Reference:
+# The code snippet below was copied from the following resource:
+# https://www.geeksforgeeks.org/machine-learning/how-to-track-progress-while-building-model-with-the-caret-package/
+
+# Start of copied code snippet:
+{  
+  # Define the control function for cross-validation with custom functions
+  custom_control <- trainControl(
+    method = "cv",
+    number = 5,
+    verboseIter = TRUE,
+    # index = createFolds(y_train, k = 5),
+    savePredictions = "final",
+    summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
+    classProbs = FALSE
+  )
   
-  fit.bak <- readRDS(fit_rf.mtry.final_tuned.backup.path)
-  fit_rf.mtry.final_tuned <- fit.bak$fit
-  mtry.final_tune.values <- fit.bak$mtry
-  rm(fit.bak)
-  
-  put_log("The `RF MCC` model, final tuned with `mtry` parameter values, 
-has been loaded from the following backup file:
-%1", fit_rf.mtry.final_tuned.backup.path)
-  put_end_date(start)
-} else {
-  put_log("Final Tuning the `RF MCC` model by `mtry` parameter values...")
-  
-  mtry.seq <- seq(mtry.fine_tune.values[acc.fine_tuned.max.idx-1] + 1, 
-                  mtry.fine_tune.values[length(mtry.fine_tune.values)] - 1) 
-  
-  mtry.final_tune.values <- mtry.seq[mtry.seq != mtry.fine_tune.values[c(acc.fine_tuned.max.idx,
-                                                                         acc.fine_tuned.max.idx + 1)]]
-  rm(mtry.seq)
-  start <- put_start_date()
-  
-  # Reference:
-  # The code snippet below was copied from the following resource:
-  # https://www.geeksforgeeks.org/machine-learning/how-to-track-progress-while-building-model-with-the-caret-package/
-  
-  # Start of copied code snippet:
-  {  
-    # Define the control function for cross-validation with custom functions
-    custom_control <- trainControl(
-      method = "cv",
-      number = 5,
-      verboseIter = TRUE,
-      # index = createFolds(y_train, k = 5),
-      savePredictions = "final",
-      summaryFunction = multiClassSummary,  # Use multiClassSummary for multi-class problems
-      classProbs = FALSE
-    )
-    
-    # Custom progress functions
-    startFun <- function(x) {
-      cat("Starting training iteration", x, "\n")
-    }
-    endFun <- function(x) {
-      cat("Ending training iteration", x, "\n")
-    }
-    
-    # Assign custom functions to the control object
-    custom_control$start <- startFun
-    custom_control$end <- endFun
+  # Custom progress functions
+  startFun <- function(x) {
+    cat("Starting training iteration", x, "\n")
   }
-  # End of copied code snippet
+  endFun <- function(x) {
+    cat("Ending training iteration", x, "\n")
+  }
   
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-  
-  set.seed(N.classes)
-  fit_rf.mtry.final_tuned <- train(x_train, 
-                                   y_train,
-                                   method = "rf",
-                                   ntree = 200,
-                                   trControl = custom_control,
-                                   tuneGrid = data.frame(mtry = mtry.final_tune.values))
-  stopCluster(cl)
-  stopImplicitCluster()
-  
-  put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
-  put_end_date(start)
-  # Time difference of 27.74778 mins
-  
-  put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
-  saveRDS(list(fit = fit_rf.mtry.final_tuned,
-               mtry = mtry.final_tune.values),
-          file = fit_rf.mtry.final_tuned.backup.path)
-  put_log("The `RF MCC` model trained with the default `mtry` parameter value 
-has been saved to the following backup file:
-%1", fit_rf.mtry.final_tuned.backup.path)
-  put_end_date(start)
-  # Time difference of 32.83442 mins
-  
+  # Assign custom functions to the control object
+  custom_control$start <- startFun
+  custom_control$end <- endFun
 }
+# End of copied code snippet
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
 
-put_log("Below are results of tuning the model by `mtry` parameter values, 
-trained using `Random Forest` method on a 10% sample of the`Training Set` dataset:
-%1", capture.output(fit_rf.mtry.final_tuned$results[,1:3]))
+set.seed(N.classes)
+fit_rf.fine_tuned <- train(x_train, 
+                           y_train,
+                           method = "rf",
+                           ntree = 200,
+                           trControl = custom_control,
+                           tuneGrid = data.frame(mtry = mtry.final_tune.values))
+stopCluster(cl)
+stopImplicitCluster()
 
-{
-  #   mtry  Accuracy     Kappa
-  # 1   42 0.8299246 0.8254489
-  # 2   43 0.8302262 0.8257585
-  # 3   45 0.8301056 0.8256347
-  # 4   46 0.8293816 0.8248916
-  # 5   48 0.8299849 0.8255108
-  # 6   49 0.8298643 0.8253870
-  invisible(NULL)
-}
+put_log("The `RF MCC` model has been tuned by `mtry` parameter values.")
 put_end_date(start)
+# Time difference of 27.74778 mins
 
-put_log("Confusion matrix obtained from the evaluation of the finally tuned model:
-%1", capture.output(confusionMatrix(fit_rf.mtry.final_tuned)))
+put_log("Saving the `RF MCC` model trained with the default `mtry` parameter value to the backup file...")
+saveRDS(list(fit = fit_rf.fine_tuned,
+             mtry = mtry.final_tune.values),
+        file = fit_rf.fine_tuned.backup.path)
+put_log("The `RF MCC` model trained with the default `mtry` parameter value 
+has been saved to the following backup file:
+%1", fit_rf.fine_tuned.backup.path)
+put_end_date(start)
+# Time difference of 32.83442 mins
 
-ggplot(fit_rf.mtry.final_tuned)
-
-acc.final_tuned.max <- max(fit_rf.mtry.final_tuned$results$Accuracy)
-
-put_log("The best accuracy obtained from the evaluation of the fine-tuned model:
-%1", capture.output(acc.final_tuned.max))
-# 0.8302262
-
-acc.final_tuned.max.idx <- which.max(fit_rf.mtry.final_tuned$results$Accuracy)
-# 2
-mtry.final_tuned.best <- mtry.final_tune.values[acc.final_tuned.max.idx]
-# 43
-
-stopifnot(mtry.final_tuned.best == fit_rf.mtry.final_tuned$bestTune)
-
-fit_rf.mtry.best <- ifelse(acc.final_tuned.max > acc.fine_tuned.max, 
-                    mtry.final_tuned.best,
-                    mtry.fine_tuned.best)
-
-put_log("The best parameter value obtained as a result of the RF Model tuning:
-%1", capture.output(fit_rf.mtry.best))
-# 44
-
-rm(fit_rf.mtry.final_tuned)
+rm(fit_rf.fine_tuned)
 log_close()
 # Log Elapsed Time: 0 00:21:16
 

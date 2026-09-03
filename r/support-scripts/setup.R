@@ -432,26 +432,35 @@ model_visualization.shared.script.path <- file.path(model_scripts.dir,
                                                     "model-visualization.shared.R")
 stopifnot(file.exists(model_visualization.shared.script.path))
 
+### Shallow Learning MCC Model -------------------------------------------------
+#### kNN+PCA MCC Model-Related Scripts -----------------------------------------
+
 knn_pca.tune.script.path <- file.path(models.knn_pca_scripts.dir, 
                                       "1.knn+pca.build&tune.R")
-stopifnot(file.exists(knn_pca.tune.script.path))
 
 knn_pca.retrain.best_k.script.path <- file.path(models.knn_pca_scripts.dir, 
                                                 "2.knn+pca.re-train.best-k.R")
-stopifnot(file.exists(knn_pca.retrain.best_k.script.path))
 
 knn_pca.best.eval.script.path <- file.path(models.knn_pca_scripts.dir, 
                                                 "3.knn+pca.best-eval.R")
-stopifnot(file.exists(knn_pca.best.eval.script.path))
 
+stopifnot(file.exists((knn_pca.tune.script.path),
+                      knn_pca.retrain.best_k.script.path,
+                      knn_pca.best.eval.script.path))
 
+#### Random Forest (RF) MCC Model-Related Scripts ------------------------------
 
-rf_tuning.script.path <- file.path(models.rf_scripts.dir, "rf-tuning.R")
-stopifnot(file.exists(rf_tuning.script.path))
+rf_tuning.script.path <- file.path(models.rf_scripts.dir, "1.rf-tuning.R")
 
 rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir, 
-                                                "rf-retraining.best-par.R")
-stopifnot(file.exists(rf_retraining.best_par.script.path))
+                                                "2.rf-retraining.best-par.R")
+
+rf_mcc.best.eval.script.path <- file.path(models.rf_scripts.dir, 
+                                          "3.rf-mcc.best.eval.R")
+
+stopifnot(file.exists(rf_tuning.script.path,
+                      rf_retraining.best_par.script.path,
+                      rf_mcc.best.eval.script.path))
 
 ### DNN-Based MCC Scripts ------------------------------------------------------
 #### DNN-Based Basic MCC Scripts -----------------------------------------------
