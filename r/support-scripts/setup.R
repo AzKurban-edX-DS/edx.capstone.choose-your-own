@@ -454,13 +454,8 @@ rf_tuning.script.path <- file.path(models.rf_scripts.dir, "1.rf-tuning.R")
 
 rf_retraining.best_par.script.path <- file.path(models.rf_scripts.dir, 
                                                 "2.rf-retraining.best-par.R")
-
-rf_mcc.best.eval.script.path <- file.path(models.rf_scripts.dir, 
-                                          "3.rf-mcc.best.eval.R")
-
 stopifnot(file.exists(rf_tuning.script.path,
-                      rf_retraining.best_par.script.path,
-                      rf_mcc.best.eval.script.path))
+                      rf_retraining.best_par.script.path))
 
 ### DNN-Based MCC Scripts ------------------------------------------------------
 #### DNN-Based Basic MCC Scripts -----------------------------------------------
