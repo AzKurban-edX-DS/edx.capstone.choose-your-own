@@ -159,11 +159,6 @@ stopifnot(file.exists(rf_tuning.script.path,
 fit_rf.final.backup.path <- file.path(data.models.rf.dir, 
                                       "fit_rf.final.ntree400.back.rds")
 
-
-model.eval.results.backup <-
-  file.path(model.data.dir, "model.eval-results.rds")
-
-
 rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                             "rf-tuned.eval.confusion-matrix.png")
 
