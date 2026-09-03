@@ -232,7 +232,10 @@ rm(fit_rf.mtry_default,
    rf_conf.mx.mtry_default)
 
 log_close()
-# Log Elapsed Time: 0 00:10:43
+# =========================================================================
+# Log End Time: 2026-09-03 08:11:12.878878
+# Log Elapsed Time: 0 00:10:32
+# =========================================================================
 
 ## Tune `RF MCC` model with `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) & ntree = 200 ----
 ### Step 1. Coarse Tuning: `mtry` ranged from sqrt(p)/2 to 2*sqrt(p) by step 6 ----
@@ -354,7 +357,10 @@ put_log("The best parameter value obtained as a result of the coarse tuning:
  #   44
 
 log_close()
-# Log Elapsed Time: 0 00:27:05
+# =========================================================================
+# Log End Time: 2026-09-03 08:37:43.864967
+# Log Elapsed Time: 0 00:26:30
+# =========================================================================
 
 ### Step 2. Fine Tuning: `mtry` ranged from 38 to 50 by step 3 ----
 open_logfile(".fit_rf.fine-tune_mtry.step2")
@@ -487,7 +493,10 @@ put_log("The best parameter value obtained as a result of the coarse tuning:
 rm(fit_rf.mtry.coarse_tuned,
    fit_rf.mtry.fine_tuned)
 log_close()
-# Log Elapsed Time: 0 00:19:10
+# =========================================================================
+# Log End Time: 2026-09-03 08:56:07.877546
+# Log Elapsed Time: 0 00:18:23
+# =========================================================================
 
 ### Step 3. Final Tuning: `mtry` ranged from 42 to 49 ------------------------
 open_logfile(".fit_rf.final-tune_mtry.step3")
@@ -560,9 +569,11 @@ put_log("The `RF MCC` model trained with the default `mtry` parameter value
 has been saved to the following backup file:
 %1", fit_rf.fine_tuned.backup.path)
 put_end_date(start)
-# Time difference of 32.83442 mins
 
 rm(fit_rf.fine_tuned)
 log_close()
-# Log Elapsed Time: 0 00:21:16
+# =========================================================================
+# Log End Time: 2026-09-03 09:12:52.30923
+# Log Elapsed Time: 0 00:16:44
+# =========================================================================
 
