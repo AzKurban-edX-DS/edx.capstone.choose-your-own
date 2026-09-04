@@ -197,12 +197,14 @@ put_log("The re-trained `BDL MCC` Model has been trained with the following resu
 plot(tdnn_mcc.final.train_history)
 str(tdnn_mcc.final.train_history)
 
+## Finalizing ------------------------------------------------------------------
+
 rm(tdnn_mcc.final.train_history)
 
 log_close()
 # =========================================================================
-# Log End Time: 2026-08-26 01:07:16.121161
-# Log Elapsed Time: 0 00:07:53
+# Log End Time: 2026-09-03 23:59:49.347239
+# Log Elapsed Time: 0 00:10:53
 # =========================================================================
   
 
