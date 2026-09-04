@@ -92,7 +92,6 @@ put_log("The Test Set is balanced by the set of Classes:
 }
 
 rm(y.test.groups)
-log_close()
 
 ## DNNB MCC Model Evaluation ---------------------------------------------------
 
