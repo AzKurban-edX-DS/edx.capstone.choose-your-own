@@ -1,6 +1,9 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # DNN-Based Basic (DNNB) MCC Model Evaluation 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+## Setup -----------------------------------------------------------------------
+
 open_logfile(".dnnb-mcc.model.evaluation")
 
 stopifnot(file.exists(dnnb_mcc.file))
@@ -187,6 +190,8 @@ put_log("The DNN-Based Basic MCC Model  Evaluation Result object has been traine
 and saved in the following file:
   %1", dnnb_mcc.eval.result.file)
 put_end_date(start)
+
+## Finalizing ------------------------------------------------------------------
 
 # rm(x_test,
 #    y_test,

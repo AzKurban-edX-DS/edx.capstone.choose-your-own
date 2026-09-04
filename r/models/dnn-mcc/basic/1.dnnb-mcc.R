@@ -2,6 +2,7 @@
 # DNN-Based Basic (DNNB) MCC  Model
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+## Setup -----------------------------------------------------------------------
 open_logfile(".dnnb-mcc.model.training")
 start <- put_start_date()
 
@@ -216,6 +217,12 @@ plot(dnnb_mcc.train_history)
 put_log("Structure of the Basic DNNB MCC Model training history:
 %1", capture.output(str(dnnb_mcc.train_history)))
 
-# rm(dnnb_mcc.train_history)
+
+## Finalizing ------------------------------------------------------------------
+
+rm(dnnb_mcc.train_history)
 log_close()
-# Log Elapsed Time: 0 00:04:07
+# =========================================================================
+# Log End Time: 2026-09-03 23:20:23.963723
+# Log Elapsed Time: 0 00:04:06
+# =========================================================================

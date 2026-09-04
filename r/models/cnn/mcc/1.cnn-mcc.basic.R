@@ -10,8 +10,8 @@
 # [*] Deep Learning Using R with keras (CNN) 
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-## Setup
-open_logfile(".prepare-dataset-for-cnn-basic.model")
+open_logfile(".cnn-mcc.basic.model-building")
+
 start <- put_start_date()
 stopifnot(file.exists(train.img28x28mx.array.file_path),
           dir.exists(data.cnn_mcc.basic.dir))
@@ -131,7 +131,6 @@ head(y_train.cat)
 
 
 ## Basic CNN MCC Model building --------------------------------------------------------------
-open_logfile(".cnn-basic.model-building")
 start <- put_start_date()
 
 cnn_mcc.basic.batch_size <- 128
@@ -278,18 +277,5 @@ rm(x_train,
    y_train.cat,
    cnn_mcc.basic.callbacks)
 
-log_close()
-# Log Elapsed Time: 0 00:00:58
-## Evaluate Basic CNN MCC Model ------------------------------------------------
-open_logfile(".cnn-basic.model.start-evaluation")
-
-stopifnot(file.exists(cnn_mcc.basic.evaluation.script.path))
-
-source(cnn_mcc.basic.evaluation.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
 
 log_close()

@@ -450,11 +450,19 @@ cnn_mcc.final.train_history.file <- file.path(data.cnn_mcc.tuner.best.dir,
                                               "cnn.mcc-final.train-history.rds")
 
 #### Build Basic CNN MCC Model -------------------------------------------------
-stopifnot(file.exists(cnn_mcc.script.path))
+stopifnot(file.exists(cnn_mcc.basic.script.path))
 
 put_log("Defining and training a CNN-based Multiclass Classifier Model...")
 
-source(cnn_mcc.script.path, 
+source(cnn_mcc.basic.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+# Evaluate the pre-trained Basic CNN MCC Model 
+source(cnn_mcc.basic.eval.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

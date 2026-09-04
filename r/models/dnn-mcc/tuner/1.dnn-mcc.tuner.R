@@ -12,6 +12,8 @@
 # June 9, 2020 by Chris
 # https://machinecurve.com/index.php/2020/06/09/automating-neural-network-configuration-with-keras-tuner
 
+## Setup -----------------------------------------------------------------------
+
 open_logfile(".dnn-mccl.model-tuning")
 
 stopifnot(file.exists(ds28x28.split.train_0.1.backup.file),
@@ -387,6 +389,8 @@ saveRDS(tdnn_mcc.best_hp.config,
 
 put_log("The Best Hyper-parameter Configuration has been saved in the following file:
   %1", tdnn_mcc.best_hp.config.file)
+
+## Finalizing ------------------------------------------------------------------
 
 log_close()
 # Log End Time: 2026-08-26 00:50:05.99562

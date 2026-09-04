@@ -460,34 +460,34 @@ stopifnot(file.exists(rf_tuning.script.path,
 ### DNN-Based MCC Scripts ------------------------------------------------------
 #### DNN-Based Basic MCC Scripts -----------------------------------------------
 
-dnnb_mcc.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnnb-mcc.R")
+dnnb_mcc.script.path <- file.path(dnn_mcc.basic.scripts.dir, "1.dnnb-mcc.R")
 stopifnot(file.exists(dnnb_mcc.script.path))
 
-dnnb_mcc.eval.script.path <- file.path(dnn_mcc.basic.scripts.dir, "dnnb-mcc.eval.R")
+dnnb_mcc.eval.script.path <- file.path(dnn_mcc.basic.scripts.dir, "2.dnnb-mcc.eval.R")
 stopifnot(file.exists(dnnb_mcc.eval.script.path))
 
 #### DNN-Based MCC Tuner-Related Scripts ---------------------------------
 
 dnn_mcc.tuner.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
-                                       "dnn-mcc.tuner.R")
+                                       "1.dnn-mcc.tuner.R")
 stopifnot(file.exists(dnn_mcc.tuner.script.path))
 
 tdnn_mcc.final.retrain.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
-                                       "tdnn-mcc.final.retrain.R")
+                                       "2.tdnn-mcc.final.retrain.R")
 stopifnot(file.exists(tdnn_mcc.final.retrain.script.path))
 
 tdnn_mcc.final.eval.script.path <- file.path(dnn_mcc.tuner.scripts.dir, 
-                                       "tdnn-mcc.final.eval.R")
+                                       "3.tdnn-mcc.final.eval.R")
 stopifnot(file.exists(tdnn_mcc.final.eval.script.path))
 
 ### CNN-Based Basic Scripts ----------------------------------------------------
 
-cnn_mcc.script.path <- file.path(cnn_mcc.scripts.dir, "cnn-mcc.basic.R")
-stopifnot(file.exists(cnn_mcc.script.path))
+cnn_mcc.basic.script.path <- file.path(cnn_mcc.scripts.dir, "1.cnn-mcc.basic.R")
+stopifnot(file.exists(cnn_mcc.basic.script.path))
 
-cnn_mcc.evaluation.script.path <- file.path(cnn_mcc.scripts.dir, 
-                                            "cnn-mcc.basic.eval.R")
-stopifnot(file.exists(cnn_mcc.evaluation.script.path))
+cnn_mcc.basic.eval.script.path <- file.path(cnn_mcc.scripts.dir, 
+                                            "2.cnn-mcc.basic.eval.R")
+stopifnot(file.exists(cnn_mcc.basic.eval.script.path))
 
 cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner_scripts.dir, 
                                             "cnn-mcc.hyper-model.R")

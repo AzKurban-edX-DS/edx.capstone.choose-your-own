@@ -2,6 +2,8 @@
 # Re-train Tuned DNN-Based MCC (TDNN MCC) Final Model
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+## Setup -----------------------------------------------------------------------
+
 open_logfile(".re-training.tuned-final.dnn_mcc-model")
 
 stopifnot(dir.exists(dnn_mcc.tuner.dir),

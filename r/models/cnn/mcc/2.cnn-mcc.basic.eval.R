@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".basic-cnn-model.eval.setup")
+open_logfile(".basic-cnn-model.evaluation")
 stopifnot(file.exists(cnn_mcc.x3d.test_set.bakup))
 
 ### Init File Paths ------------------------------------------------------------

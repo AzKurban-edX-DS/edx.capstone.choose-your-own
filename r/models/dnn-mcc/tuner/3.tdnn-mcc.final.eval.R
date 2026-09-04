@@ -2,6 +2,8 @@
 # Tuned DNN-Based MCC (TDNN MCC) Final Model Evaluation
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+## Setup -----------------------------------------------------------------------
+
 open_logfile(".tdnn-mcc.final.evaluation")
 
 stopifnot(dir.exists(dnn_mcc.tuner.dir),
@@ -92,7 +94,6 @@ put_log("The Test Set is balanced by the set of Classes:
 }
 
 rm(y.test.groups)
-log_close()
 
 ## TDNN MCC Final Model Evaluation ---------------------------------------------
 
@@ -200,9 +201,6 @@ has been saved in the following file:
   %1", tdnn_mcc.final.eval_result.file)
 
 
-rm(x_test,
-   y_test)
-
 # dnn_mcc.accuracy <- mean(tdnn_mcc.final.pred.values.idx == y_test.idx)
 put_log("The overall TDNN MCC Final Model accuracy: %1", 
         tdnn_mcc.final.eval.result$accuracy)
@@ -210,3 +208,13 @@ put_log("The overall TDNN MCC Final Model accuracy: %1",
 # 0.872517168521881
 # 2HL: 0.906163454055786
 # 5HL: 0.906584799289703
+
+## Finalizing ------------------------------------------------------------------
+
+rm(x_test,
+   y_test)
+
+log_close()
+
+
+
