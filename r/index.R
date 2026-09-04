@@ -297,6 +297,8 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
          keep.source = TRUE)
 }
 
+open_logfile(".dnnb-mcc.visual.eval-results")
+
 stopifnot(file.exists(model_visualization.shared.script.path))
 
 put_log("Loading the BDL MCC Model Evaluation Result object...")
@@ -334,6 +336,8 @@ source(model_visualization.shared.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+log_close()
 
 ### DNN-Based MCC Model Tuning -------------------------------------------------
 
@@ -398,6 +402,8 @@ if(!file.exists(tdnn_mcc.final.eval_result.file)) {
          keep.source = TRUE)
 }
 
+open_logfile(".tdnn-mcc.visual.eval-results")
+
 put_log("Loading the BDL MCC Final Model Evaluation Result object...")
 tdnn_mcc.final.eval.result <- readRDS(tdnn_mcc.final.eval_result.file)
 
@@ -428,6 +434,7 @@ source(model_visualization.shared.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()
 ## CNN-based Multiclass Classifier (CNN MCC) Model ----------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
