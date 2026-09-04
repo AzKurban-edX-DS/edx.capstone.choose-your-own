@@ -12,6 +12,7 @@
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
 
+## Setup -----------------------------------------------------------------------
 open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 
 stopifnot(file.exists(my_emnist.0.1split.file_path))
@@ -21,7 +22,7 @@ start <- put_start_date()
 ## Prepare Input Datasets ------------------------------------------------------
 
 
-### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ---------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -569,6 +570,8 @@ put_log("The `RF MCC` model trained with the default `mtry` parameter value
 has been saved to the following backup file:
 %1", fit_rf.fine_tuned.backup.path)
 put_end_date(start)
+
+## Finalizing ------------------------------------------------------------------
 
 rm(fit_rf.fine_tuned)
 log_close()

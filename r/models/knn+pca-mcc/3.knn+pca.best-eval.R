@@ -1,10 +1,14 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # kNN+PCA MCC: The Best Model Evaluation
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+## Setup -----------------------------------------------------------------------
+
+open_logfile(".eval.k(best)nn+pca")
+
 stopifnot(file.exists(my_emnist.split.file_path,
                       k_best.nn_pca.model.backup.path))
 
-open_logfile(".eval.k(best)nn+pca")
 start <- put_start_date()
 
 ## Prepare Test Datasets -------------------------------------------------------
@@ -125,13 +129,16 @@ put_log("The evaluation results of the tuned `kNN+PCA MCC` Model has been saved
 to the following file:
 %1", knn_pca.eval.results.backup)
 
+put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
+%1", knn_pca.eval.results$accuracy)
+#> [1] 0.866167087998074
+
+## Finalizing ------------------------------------------------------------------
+
 rm(x_test,
    k_best.nn_pca.model,
    y_test)
 
-put_log("Accuracy of the predicted data for the `kNN+PCA MCC` Model tuned by *k* parameter:
-%1", knn_pca.eval.results$accuracy)
-#> [1] 0.866167087998074
 
 log_close()
 # =========================================================================

@@ -7,6 +7,8 @@
 
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
+## Setup -----------------------------------------------------------------------
+
 open_logfile(".re-train-model.k5(best)nn+pca")
 
 stopifnot(file.exists(my_emnist.split.file_path,
@@ -137,6 +139,7 @@ put_end_date(start)
 put_log("The Model `kNN+PCA` trained on the 80% size Training Set has been cached in file:
 `%1`", k_best.nn_pca.model.backup.path)
 
+## Finalizing ------------------------------------------------------------------
 
 rm(x_train,
    y_train)

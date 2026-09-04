@@ -8,6 +8,8 @@
 
 # Reference: https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro
 
+## Setup -----------------------------------------------------------------------
+
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
 
@@ -215,6 +217,8 @@ k1_8nn.best
 
 # Accuracy was used to select the optimal model using the largest value.
 # The final value used for the model was k = 5.
+
+## Finalizing ------------------------------------------------------------------
 
 rm(k1_8nn_pca.model)
 log_close()
