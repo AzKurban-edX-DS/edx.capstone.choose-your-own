@@ -286,7 +286,7 @@ img.validation_root.dir <- file.path(raw_data.chars.dir, "Validation")
 put_log("Root directory for the Validation raw image data:
 %1", img.validation_root.dir)
 
-#### Directories for Project Datasets ------------------------------------------
+#### Directories for the Project Datasets ------------------------------------------
 dataset.dir <- file.path(data.dir, "dataset")
 if(!dir.exists(dataset.dir))
   dir.create(dataset.dir)
@@ -310,7 +310,8 @@ if(!dir.exists(final_test.data.dir))
 put_log("Root directory for the Final Test data:
 %1", final_test.data.dir)
 
-#### Directories for Model Data ------------------------------------------------
+#### Models' Data Directories --------------------------------------------------
+
 models_data.dir <- file.path(data.dir, "models")
 if(!dir.exists(models_data.dir))
   dir.create(models_data.dir)
@@ -318,7 +319,7 @@ if(!dir.exists(models_data.dir))
 put_log("Root directory for the project models data:
 %1", models_data.dir)
 
-##### Directories for Shallow Learning Model Data ------------------------------
+##### Directories for Shallow Learning Models' Data ----------------------------
 ###### Directories for kNN+PCA Model Data --------------------------------------
 knn_pca.data.dir = file.path(models_data.dir, "knn+pca-mcc")
 
@@ -344,7 +345,7 @@ data.models.rf.plots.dat.dir <- file.path(data.models.rf.dir,
 if(!dir.exists(data.models.rf.plots.dat.dir))
   dir.create(data.models.rf.plots.dat.dir)
 
-##### Directories for Deep Learning Model Data ----------------------------------
+##### Directories for Deep Learning Models' Data -------------------------------
 
 dl.keras3.dir <- file.path(models_data.dir, "dl.keras3")
 
@@ -390,12 +391,12 @@ data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "mcc")
 if(!dir.exists(data.cnn_mcc.dir))
   dir.create(data.cnn_mcc.dir)
 
-data.cnn_mcc.basic.dir <- file.path(data.cnn_mcc.dir, "basic")
+data.cnnb_mcc.dir <- file.path(data.cnn_mcc.dir, "basic")
 
-if(!dir.exists(data.cnn_mcc.basic.dir))
-  dir.create(data.cnn_mcc.basic.dir)
+if(!dir.exists(data.cnnb_mcc.dir))
+  dir.create(data.cnnb_mcc.dir)
 
-cnnb_mcc.plots.dat.dir <- file.path(data.cnn_mcc.basic.dir, "plots.dat")
+cnnb_mcc.plots.dat.dir <- file.path(data.cnnb_mcc.dir, "plots.dat")
 
 if(!dir.exists(cnnb_mcc.plots.dat.dir))
   dir.create(cnnb_mcc.plots.dat.dir)

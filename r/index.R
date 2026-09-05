@@ -478,13 +478,13 @@ stopifnot(file.exists(cnnb_mcc.script.path,
 # cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
 #                                         "x3d.test_set.rds")
 
-cnnb_mcc.file <- file.path(data.cnn_mcc.basic.dir, 
+cnnb_mcc.file <- file.path(data.cnnb_mcc.dir, 
                            "cnnb_mcc.pre-trained.keras")
 
-cnnb_mcc.train_history.file <- file.path(data.cnn_mcc.basic.dir, 
+cnnb_mcc.train_history.file <- file.path(data.cnnb_mcc.dir, 
                                          "cnnb_mcc.train_history.rds")
 
-cnnb_mcc.eval.result.file <- file.path(data.cnn_mcc.basic.dir,
+cnnb_mcc.eval.result.file <- file.path(data.cnnb_mcc.dir,
                                        "cnnb_mcc.eval.result.rds")
 
 cnnb_mcc.plot_img.file <- file.path(cnnb_mcc.plots.dat.dir,
@@ -496,8 +496,8 @@ cnnb_mcc.eval.cm_img.file <- file.path(cnnb_mcc.plots.dat.dir,
 cnnb_mcc.eval.plots_dat.file <- file.path(cnnb_mcc.plots.dat.dir,
                                           "cnnb_mcc.eval.plots_dat.rds")
 
-if(!dir.exists(data.cnn_mcc.basic.dir))
-  dir.create(data.cnn_mcc.basic.dir)
+if(!dir.exists(data.cnnb_mcc.dir))
+  dir.create(data.cnnb_mcc.dir)
 
 if(!dir.exists(cnnb_mcc.plots.dat.dir))
   dir.create(cnnb_mcc.plots.dat.dir)
