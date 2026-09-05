@@ -258,25 +258,31 @@ log_close()
 stopifnot(file.exists(dnnb_mcc.script.path,
                       dnnb_mcc.eval.script.path,
                       my_emnist.split.file_path))
-
 #### Init Paths ----------------------------------------------------------------
 dnnb_mcc.file <- file.path(data.dnn_mcc.basic.dir, 
-                                       "dnnb_mcc.pre-trained.model.keras")
+                                       "dnnb_mcc.pre-trained.keras")
 
 dnnb_mcc.train_history.file <- file.path(data.dnn_mcc.basic.dir, 
-                                                     "dnnb_mcc.train_history.bak.rds")
+                                                     "dnnb_mcc.train_history.rds")
 
 dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
                                        "dnnb_mcc.eval.result.rds")
 
-dnnb_mcc.eval.conf.mx.img_file <- file.path(dnn_mcc.basic.plots.dat.dir,
-                                            "dnn-basic.mcc.eval.confusion-matrix.png")
+dnnb_mcc.plot_img.file <- file.path(dnnb_mcc.plots.dat.dir,
+                                    "dnnb_mcc.model.png")
 
-dnnb_mcc.eval.plots_dat.file <- file.path(dnn_mcc.basic.plots.dat.dir,
-                                          "dnn-basic.mcc.eval.plots_dat.rds")
 
-if(!dir.exists(dnn_mcc.basic.plots.dat.dir))
-  dir.create(dnn_mcc.basic.plots.dat.dir)
+dnnb_mcc.eval.cm_img.file <- file.path(dnnb_mcc.plots.dat.dir,
+                                            "dnnb_mcc.eval.cm.png")
+
+dnnb_mcc.eval.plots_dat.file <- file.path(dnnb_mcc.plots.dat.dir,
+                                          "dnnb_mcc.eval.plots_dat.rds")
+
+if(!dir.exists(data.dnn_mcc.basic.dir))
+  dir.create(data.dnn_mcc.basic.dir)
+
+if(!dir.exists(dnnb_mcc.plots.dat.dir))
+  dir.create(dnnb_mcc.plots.dat.dir)
 
 #### Run Scripts ---------------------------------------------------------------
 if(!file.exists(dnnb_mcc.eval.result.file)) {
@@ -298,13 +304,39 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
 }
 
 open_logfile(".dnnb-mcc.visual.eval-results")
+stopifnot(file.exists(dnnb_mcc.file,
+                      dnnb_mcc.eval.result.file,
+                      model_visualization.shared.script.path))
 
-stopifnot(file.exists(model_visualization.shared.script.path))
+put_log("Loading pre-trained DNN-Based Basic MCC Model...")
+dnnb_mcc <- keras3::load_model(dnnb_mcc.file)
 
-put_log("Loading the BDL MCC Model Evaluation Result object...")
+put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
+%1", dnnb_mcc.file)
+
+dnnb_mcc |> plot_keras_model(to_file = dnnb_mcc.plot_img.file,
+                             show_shapes = T)
+rm(dnnb_mcc)
+
+if(file.exists(dnnb_mcc.train_history.file)){
+  put_log("Loading the DNN-Based Basic MCC Model Train History...")
+  
+  dnnb_mcc.train_history <- readRDS(dnnb_mcc.train_history.file)
+  
+  put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
+%1", dnnb_mcc.train_history.file)
+  
+  plot(dnnb_mcc.train_history) 
+  # rm(dnnb_mcc.train_history)
+} else {
+  warning("The DNN-Based Basic MCC Model History backup file does not exist:
+", dnnb_mcc.train_history.file)
+}
+
+put_log("Loading the DNNB MCC Model Evaluation Result object...")
 dnnb_mcc.eval.result <- readRDS(dnnb_mcc.eval.result.file)
 
-put_log("The BDL MCC Model Evaluation Result object has been loaded 
+put_log("The DNNB MCC Model Evaluation Result object has been loaded 
 from the following file:
 %1", dnnb_mcc.eval.result.file)
 
@@ -317,9 +349,9 @@ plots.args <- init.plots_args(targets = dnnb_mcc.eval.result$targets,
                               plots_dat.file = dnnb_mcc.eval.plots_dat.file,
                               model_type = "Basic MCC",
                               alg_name = "DNN",
-                              pca.export_img.file_name = "dnn-mcc.basic.eval.pca.png",
-                              pca.export_img.dir = dnn_mcc.basic.plots.dat.dir,
-                              cm.export.img_file = dnnb_mcc.eval.conf.mx.img_file,
+                              pca.export_img.file_name = "dnnb-mcc.eval.pca.png",
+                              pca.export_img.dir = dnnb_mcc.plots.dat.dir,
+                              cm.export.img_file = dnnb_mcc.eval.cm_img.file,
                               cm.print.image = T)
 
 put_log("The `plots.args` object of class `%1` has been created for use to generate 
@@ -404,10 +436,10 @@ if(!file.exists(tdnn_mcc.final.eval_result.file)) {
 
 open_logfile(".tdnn-mcc.visual.eval-results")
 
-put_log("Loading the BDL MCC Final Model Evaluation Result object...")
+put_log("Loading the DNNB MCC Final Model Evaluation Result object...")
 tdnn_mcc.final.eval.result <- readRDS(tdnn_mcc.final.eval_result.file)
 
-put_log("The BDL MCC Final Model Evaluation Result object has been loaded 
+put_log("The DNNB MCC Final Model Evaluation Result object has been loaded 
 from the following file:
 %1", tdnn_mcc.final.eval_result.file)
 
@@ -435,49 +467,139 @@ source(model_visualization.shared.script.path,
        keep.source = TRUE)
 
 log_close()
-## CNN-based Multiclass Classifier (CNN MCC) Model ----------------------------
+## CNN-based MCC Model ---------------------------------------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
-#### Initial Paths -------------------------------------------------------------
+### CNN-Based Basic MCC Model --------------------------------------------------
+stopifnot(file.exists(cnnb_mcc.script.path,
+                      cnnb_mcc.eval.script.path))
+#### Init Paths ----------------------------------------------------------------
 
-open_logfile(".ds.prepare.train&test.balanced_sets")
+# cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
+#                                         "x3d.test_set.rds")
 
-cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
-                                        "x3d.test_set.rds")
+cnnb_mcc.file <- file.path(data.cnn_mcc.basic.dir, 
+                           "cnnb_mcc.pre-trained.keras")
 
-cnn_mcc.basic.file_path <- file.path(data.cnn_mcc.basic.dir, 
-                                     "cnn.pre-trained.multiclass.model.keras")
-cnn_mcc.basic.train_history.file_path <- file.path(data.cnn_mcc.basic.dir,
-                                             "cnn_mcc.train_history.backup.rds")
+cnnb_mcc.train_history.file <- file.path(data.cnn_mcc.basic.dir, 
+                                         "cnnb_mcc.train_history.rds")
+
+cnnb_mcc.eval.result.file <- file.path(data.cnn_mcc.basic.dir,
+                                       "cnnb_mcc.eval.result.rds")
+
+cnnb_mcc.plot_img.file <- file.path(cnnb_mcc.plots.dat.dir,
+                                    "cnnb_mcc.model.png")
+
+cnnb_mcc.eval.cm_img.file <- file.path(cnnb_mcc.plots.dat.dir,
+                                       "cnnb_mcc.eval.cm.png")
+
+cnnb_mcc.eval.plots_dat.file <- file.path(cnnb_mcc.plots.dat.dir,
+                                          "cnnb_mcc.eval.plots_dat.rds")
+
+if(!dir.exists(data.cnn_mcc.basic.dir))
+  dir.create(data.cnn_mcc.basic.dir)
+
+if(!dir.exists(cnnb_mcc.plots.dat.dir))
+  dir.create(cnnb_mcc.plots.dat.dir)
+
+#### Run Scripts ---------------------------------------------------------------
+
+if(!file.exists(cnnb_mcc.eval.result.file)) {
+  if(!file.exists(cnnb_mcc.file)) {
+    source(cnnb_mcc.script.path, 
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
+  }
+  
+  source(cnnb_mcc.eval.script.path,
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
+}
+
+open_logfile(".cnnb-mcc.visual.eval-results")
+
+stopifnot(file.exists(cnnb_mcc.file,
+                      cnnb_mcc.eval.result.file,
+                      model_visualization.shared.script.path))
+
+put_log("Loading the pre-trained CNN-based Multiclass Classifier model...")
+cnnb_mcc <- keras3::load_model(cnnb_mcc.file)
+put_log("The pre-trained CNN-based Multiclass Classifier model 
+has been loaded from the following backup file:
+%1", cnnb_mcc.file)
+
+cnnb_mcc |> plot_keras_model(to_file = cnnb_mcc.plot_img.file,
+                             show_shapes = T)
+rm(cnnb_mcc)
+
+if(file.exists(cnnb_mcc.train_history.file)){
+  put_log("Loading the model training history...")
+  cnn_mcc.train_history <- readRDS(cnnb_mcc.train_history.file)
+  put_log("The model training history has been loaded from the backup file:
+%1", cnnb_mcc.train_history.file)
+  
+  plot(cnn_mcc.train_history)
+  rm(cnn_mcc.train_history)
+} else {
+  warning("The CNNB MCC model history backup does not exist:
+", cnnb_mcc.train_history.file)
+}
+
+put_log("Loading the CNNB MCC Model Evaluation Result object...")
+cnnb_mcc.eval.result <- readRDS(cnnb_mcc.eval.result.file)
+
+put_log("The CNNB MCC Model Evaluation Result object has been loaded 
+from the following file:
+%1", cnnb_mcc.eval.result.file)
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+plots.args <- init.plots_args(targets = cnnb_mcc.eval.result$targets,
+                              predicted.probabilities = cnnb_mcc.eval.result$predicted.probs,
+                              predicted.values = cnnb_mcc.eval.result$predicted.values,
+                              plots_dat.file = cnnb_mcc.eval.plots_dat.file,
+                              model_type = "Basic MCC",
+                              alg_name = "CNN",
+                              pca.export_img.file_name = "cnn-mcc.eval.pca.png",
+                              pca.export_img.dir = cnnb_mcc.plots.dat.dir,
+                              cm.export.img_file = cnnb_mcc.eval.cm_img.file,
+                              cm.print.image = T)
+
+put_log("The `plots.args` object of class `%1` has been created for use to generate 
+a visual representation of the CNNB MCC model evaluation results.",
+        class(plots.args))
+
+rm(cnnb_mcc.eval.result)
+
+#'Run the helper script specifically designed to visualize 
+#'the MCC models evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+log_close()
+
+### CNN-Based MCC Model Tuning -------------------------------------------------
+#### Init Paths ----------------------------------------------------------------
 
 cnn_mcc.final.file <- file.path(data.cnn_mcc.tuner.best.dir, 
-                                     "cnn_mcc.final-model.keras")
+                                "cnn_mcc.final-model.keras")
 
 cnn_mcc.final.train_history.file <- file.path(data.cnn_mcc.tuner.best.dir, 
                                               "cnn.mcc-final.train-history.rds")
 
-#### Build Basic CNN MCC Model -------------------------------------------------
-stopifnot(file.exists(cnn_mcc.basic.script.path))
 
-put_log("Defining and training a CNN-based Multiclass Classifier Model...")
-
-source(cnn_mcc.basic.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-# Evaluate the pre-trained Basic CNN MCC Model 
-source(cnn_mcc.basic.eval.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-
-#### Tuning CNN MCC Model ------------------------------------------------------
+#### Run Scripts ---------------------------------------------------------------
 
 if(file.exists(cnn_mcc.final.file)) {
   if(file.exists(cnn_mcc.final.train_history.file)){

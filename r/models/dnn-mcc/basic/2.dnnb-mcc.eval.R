@@ -4,12 +4,12 @@
 
 ## Setup -----------------------------------------------------------------------
 
-open_logfile(".dnnb-mcc.model.evaluation")
+open_logfile(".dnnb-mcc.evaluation")
 
 stopifnot(file.exists(dnnb_mcc.file))
-start <- put_start_date()
+start <- pust_start_date()
 
-## Prepare a Test Set for DNN-Based Basic MCC Model ----------------------------
+## Preparing a Test Set for the Model Evaluation Job --------------------------
 
 put_log("Loading the Test Set of 28x28-size image data...")
 test_set <- load.test_set(ds28x28.split.train_0.8.backup.file)
@@ -116,7 +116,7 @@ if(file.exists(dnnb_mcc.train_history.file)){
 ", dnnb_mcc.train_history.file)
 }
 
-put_log("Evaluating DNN-Based Basic MCC Model...")
+put_log("Evaluating the pre-trained DNNB MCC Model...")
 dnnb_mcc.eval.result <- dnnb_mcc |> evaluate(x_test, y_test)
 put_log("DNN-Based Basic MCC Model evaluation result:
 %1", capture.output(str(dnnb_mcc.eval.result)))
@@ -148,22 +148,22 @@ head(dnnb_mcc.eval.result$predicted.probs[,1:5])
 dim(dnnb_mcc.eval.result$predicted.probs)
 #> [1] 33228    39
 
-dnnb.preds.ts <- as_tensor(dnnb_mcc.eval.result$predicted.probs)
-str(dnnb.preds.ts)
+dnnb_mcc.preds.ts <- as_tensor(dnnb_mcc.eval.result$predicted.probs)
+str(dnnb_mcc.preds.ts)
 #> <tf.Tensor: shape=(684467, 39), dtype=float64, numpy=…>
 
-dnnb.predictions <- dnnb.preds.ts |> op_argmax(2)
-dnnb.predictions
+dnnb_mcc.predictions <- dnnb_mcc.preds.ts |> op_argmax(2)
+dnnb_mcc.predictions
 #> tf.Tensor([11  7 15 ... 24 30  7], shape=(33228), dtype=int32)
-shape(dnnb.predictions)
+shape(dnnb_mcc.predictions)
 #> shape(33228)
-# dnnb.predictions$numpy()
+# dnnb_mcc.predictions$numpy()
 
 
-dnnb.pred.values.idx <- dnnb.predictions$numpy()
-head(dnnb.pred.values.idx)
+dnnb_mcc.pred.values.idx <- dnnb_mcc.predictions$numpy()
+head(dnnb_mcc.pred.values.idx)
 
-dnnb_mcc.eval.result$predicted.values <- Y.Labels[dnnb.pred.values.idx]
+dnnb_mcc.eval.result$predicted.values <- Y.Labels[dnnb_mcc.pred.values.idx]
 head(dnnb_mcc.eval.result$predicted.values)
 
 stopifnot(min(y_test) == 0,
@@ -172,14 +172,14 @@ stopifnot(min(y_test) == 0,
 targets.idx <- y_test + 1
 dnnb_mcc.eval.result$targets <- Y.Labels[targets.idx]
 
-dnnb_mcc.accuracy <- mean(dnnb.pred.values.idx == targets.idx)
+dnnb_mcc.accuracy <- mean(dnnb_mcc.pred.values.idx == targets.idx)
 put_log("The overall DNN-Based Basic MCC Model accuracy: %1",dnnb_mcc.accuracy)
 # 0.89752618273745
 
-rm(dnnb.preds.ts,
-   dnnb.predictions,
+rm(dnnb_mcc.preds.ts,
+   dnnb_mcc.predictions,
    # dnnb_mcc.train_history,
-   dnnb.pred.values.idx)
+   dnnb_mcc.pred.values.idx)
 
 put_log("Saving the DNN-Based Basic MCC Model  Evaluation Result object...")
 saveRDS(dnnb_mcc.eval.result,

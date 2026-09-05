@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".dnnb-mcc.model.training")
+open_logfile(".dnnb-mcc.model-building")
 start <- put_start_date()
 
 stopifnot(file.exists(my_emnist.split.file_path))
@@ -15,7 +15,7 @@ stopifnot(file.exists(my_emnist.split.file_path))
 # https://nextjournal.com/gkoehler/digit-recognition-with-keras
 # ref.bib: DL_R3_E2-S7.3
 
-## Prepare a Training Set for DNN-Based Basic MCC Model ------------------------
+## Prepare a Data Set for the Model Training -----------------------------------
 
 put_log("Loading the Training Set of 28x28-size image data...")
 train_set <- load.train_set(ds28x28.split.train_0.8.backup.file)
@@ -132,17 +132,17 @@ contained in the training set.",
 
 ## Init DNNB MCC Model Paths ---------------------------------------------------
 
-dnn_mcc.basic.checkpoints.dir <- file.path(data.dnn_mcc.basic.dir,
+dnnb_mcc.checkpoints.dir <- file.path(data.dnn_mcc.basic.dir,
                                             "checkpoints")
-if(!dir.exists(dnn_mcc.basic.checkpoints.dir))
-  dir.create(dnn_mcc.basic.checkpoints.dir)
+if(!dir.exists(dnnb_mcc.checkpoints.dir))
+  dir.create(dnnb_mcc.checkpoints.dir)
 
-dnnb_mcc.checkpoint.file_path <- 
-  file.path(dnn_mcc.basic.checkpoints.dir, 
+dnnb_mcc.checkpoint.file_path.tmpl <- 
+  file.path(dnnb_mcc.checkpoints.dir, 
             "dnnb_mcc.{epoch:02d}-{val_loss:.2f}.keras")
 
 ## Building DNNB MCC Model -----------------------------------------------------
-### Defining & Compiling the Basic DNNB MCC Model -----------------------------
+### Defining & Compiling the model ---------------------------------------------
 
 n.input_shape <- ncol(x_train)
 # 784
@@ -163,11 +163,11 @@ dnnb_mcc |> compile(loss = "sparse_categorical_crossentropy",
                            metrics = "accuracy")
 summary(dnnb_mcc)
 
-### Training the Basic DNNB MCC Model --------------------------------------------
+### Training the model ---------------------------------------------------------
 
 dnnb_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file_path,
+  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file_path.tmpl,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)
@@ -212,7 +212,7 @@ put_end_date(start)
 put_log("The trained Basic DNNB MCC Model summary:
 %1", dnnb_mcc)
 
-plot(dnnb_mcc.train_history)
+# plot(dnnb_mcc.train_history)
 
 put_log("Structure of the Basic DNNB MCC Model training history:
 %1", capture.output(str(dnnb_mcc.train_history)))

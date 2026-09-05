@@ -10,37 +10,14 @@
 # [*] Deep Learning Using R with keras (CNN) 
 # https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-open_logfile(".cnn-mcc.basic.model-building")
+## Setup -----------------------------------------------------------------------
+
+open_logfile(".cnnb-mcc.model-building")
 
 start <- put_start_date()
-stopifnot(file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.basic.dir))
+stopifnot(file.exists(train.img28x28mx.array.file_path))
 
-### Init File Paths -----------------------------------------------------------
-
-data.cnn_mcc.basic.tensorboard.dir <- file.path(data.cnn_mcc.basic.dir, "tensorboard")
-
-if(!dir.exists(data.cnn_mcc.basic.tensorboard.dir))
-  dir.create(data.cnn_mcc.basic.tensorboard.dir)
-
-data.cnn_mcc.basic.tensorboard.logs.dir <- file.path(data.cnn_mcc.basic.tensorboard.dir, "logs")
-
-if(!dir.exists(data.cnn_mcc.basic.tensorboard.logs.dir))
-  dir.create(data.cnn_mcc.basic.tensorboard.logs.dir)
-
-data.cnn_mcc.basic.checkpoints.dir <- file.path(data.cnn_mcc.basic.dir, "checkpoints")
-
-if(!dir.exists(data.cnn_mcc.basic.checkpoints.dir))
-  dir.create(data.cnn_mcc.basic.checkpoints.dir)
-
-cnn_mcc.basic.checkpoint.file_path <- 
-  file.path(data.cnn_mcc.basic.checkpoints.dir, 
-            "{epoch:02d}-{val_loss:.2f}.keras")
-
-cnn_mcc.basic.plot_img.file <- file.path(cnn_mcc.basic.plots.dat.dir,
-                                         "cnn-mcc.basic-model.png")
-
-## Prepare a Training Set for the Model Training ---------------------------------
+## Prepare a Data Set for the Model Training -----------------------------------
 
 put_log("Loading the Training Set of 28x28x1-shape image data...")
 
@@ -129,6 +106,30 @@ head(y_train.cat)
 # [5,] 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 # [6,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0
 
+
+## Init File Paths -----------------------------------------------------------
+
+data.cnn_mcc.basic.tensorboard.dir <- file.path(data.cnn_mcc.basic.dir, "tensorboard")
+
+if(!dir.exists(data.cnn_mcc.basic.tensorboard.dir))
+  dir.create(data.cnn_mcc.basic.tensorboard.dir)
+
+data.cnn_mcc.basic.tensorboard.logs.dir <- file.path(data.cnn_mcc.basic.tensorboard.dir, "logs")
+
+if(!dir.exists(data.cnn_mcc.basic.tensorboard.logs.dir))
+  dir.create(data.cnn_mcc.basic.tensorboard.logs.dir)
+
+data.cnn_mcc.basic.checkpoints.dir <- file.path(data.cnn_mcc.basic.dir, "checkpoints")
+
+if(!dir.exists(data.cnn_mcc.basic.checkpoints.dir))
+  dir.create(data.cnn_mcc.basic.checkpoints.dir)
+
+cnn_mcc.basic.checkpoint.file_path <- 
+  file.path(data.cnn_mcc.basic.checkpoints.dir, 
+            "{epoch:02d}-{val_loss:.2f}.keras")
+
+cnn_mcc.basic.plot_img.file <- file.path(cnn_mcc.basic.plots.dat.dir,
+                                         "cnn-mcc.basic-model.png")
 
 ## Basic CNN MCC Model building --------------------------------------------------------------
 start <- put_start_date()

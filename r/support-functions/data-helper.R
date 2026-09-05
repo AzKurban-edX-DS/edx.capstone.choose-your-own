@@ -216,6 +216,7 @@ load28x28x1.test_set <- function(backup.file) {
                        28, 
                        1))
   list(x = x,
+       files = ds.test$files,
        class_groups = ds.test$class_groups)
 } 
 

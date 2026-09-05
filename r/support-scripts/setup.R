@@ -247,6 +247,12 @@ stopifnot(dir.exists(cnn_mcc.scripts.dir))
 put_log("Root directory for the `CNN-Based MCC` model's scripts:
 %1", cnn_mcc.scripts.dir)
 
+cnn_mcc.basic.scripts.dir <- file.path(cnn_mcc.scripts.dir, "basic")
+stopifnot(dir.exists(cnn_mcc.basic.scripts.dir))
+
+put_log("Root directory for the `CNN-Based Basic MCC` model's scripts:
+%1", cnn_mcc.basic.scripts.dir)
+
 cnn_mcc.tuner_scripts.dir <- file.path(cnn_mcc.scripts.dir, "tuner")
 stopifnot(dir.exists(cnn_mcc.tuner_scripts.dir))
 
@@ -356,10 +362,10 @@ data.dnn_mcc.basic.dir <- file.path(data.dnn_mcc.dir, "basic")
 if(!dir.exists(data.dnn_mcc.basic.dir))
   dir.create(data.dnn_mcc.basic.dir)
 
-dnn_mcc.basic.plots.dat.dir <- file.path(data.dnn_mcc.basic.dir, "plots.dat")
+dnnb_mcc.plots.dat.dir <- file.path(data.dnn_mcc.basic.dir, "plots.dat")
 
-if(!dir.exists(dnn_mcc.basic.plots.dat.dir))
-  dir.create(dnn_mcc.basic.plots.dat.dir)
+if(!dir.exists(dnnb_mcc.plots.dat.dir))
+  dir.create(dnnb_mcc.plots.dat.dir)
 
 dnn_mcc.tuner.dir <- file.path(data.dnn_mcc.dir,
                                   "tuner")
@@ -389,10 +395,10 @@ data.cnn_mcc.basic.dir <- file.path(data.cnn_mcc.dir, "basic")
 if(!dir.exists(data.cnn_mcc.basic.dir))
   dir.create(data.cnn_mcc.basic.dir)
 
-cnn_mcc.basic.plots.dat.dir <- file.path(data.cnn_mcc.basic.dir, "plots.dat")
+cnnb_mcc.plots.dat.dir <- file.path(data.cnn_mcc.basic.dir, "plots.dat")
 
-if(!dir.exists(cnn_mcc.basic.plots.dat.dir))
-  dir.create(cnn_mcc.basic.plots.dat.dir)
+if(!dir.exists(cnnb_mcc.plots.dat.dir))
+  dir.create(cnnb_mcc.plots.dat.dir)
 
 data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
 
@@ -480,14 +486,16 @@ tdnn_mcc.final.eval.script.path <- file.path(dnn_mcc.tuner.scripts.dir,
                                        "3.tdnn-mcc.final.eval.R")
 stopifnot(file.exists(tdnn_mcc.final.eval.script.path))
 
-### CNN-Based Basic Scripts ----------------------------------------------------
+### CNN-Based Scripts ----------------------------------------------------------
+#### CNN-Based Basic MCC Scripts -----------------------------------------------
+cnnb_mcc.script.path <- file.path(cnn_mcc.basic.scripts.dir, "1.cnnb-mcc.R")
+stopifnot(file.exists(cnnb_mcc.script.path))
 
-cnn_mcc.basic.script.path <- file.path(cnn_mcc.scripts.dir, "1.cnn-mcc.basic.R")
-stopifnot(file.exists(cnn_mcc.basic.script.path))
+cnnb_mcc.eval.script.path <- file.path(cnn_mcc.basic.scripts.dir, 
+                                            "2.cnnb-mcc.eval.R")
+stopifnot(file.exists(cnnb_mcc.eval.script.path))
 
-cnn_mcc.basic.eval.script.path <- file.path(cnn_mcc.scripts.dir, 
-                                            "2.cnn-mcc.basic.eval.R")
-stopifnot(file.exists(cnn_mcc.basic.eval.script.path))
+#### CNN-Based MCC Tuner-Related Scripts ---------------------------------
 
 cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner_scripts.dir, 
                                             "cnn-mcc.hyper-model.R")
