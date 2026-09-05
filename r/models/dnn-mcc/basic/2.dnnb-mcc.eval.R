@@ -7,7 +7,7 @@
 open_logfile(".dnnb-mcc.evaluation")
 
 stopifnot(file.exists(dnnb_mcc.file))
-start <- pust_start_date()
+start <- put_start_date()
 
 ## Preparing a Test Set for the Model Evaluation Job --------------------------
 
