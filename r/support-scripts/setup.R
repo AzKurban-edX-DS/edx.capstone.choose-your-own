@@ -385,7 +385,7 @@ data.dl.cnn.dir <- file.path(dl.keras3.dir, "cnn")
 if(!dir.exists(data.dl.cnn.dir))
   dir.create(data.dl.cnn.dir)
 
-data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "multiclass")
+data.cnn_mcc.dir <- file.path(data.dl.cnn.dir, "mcc")
 
 if(!dir.exists(data.cnn_mcc.dir))
   dir.create(data.cnn_mcc.dir)
