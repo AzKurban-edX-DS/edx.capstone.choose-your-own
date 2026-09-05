@@ -107,7 +107,7 @@ rm(test_set)
 
 ## CNNB MCC Model Evaluation ---------------------------------------------------
 
-cnnb_mcc.eval.result.file <- file.path(data.cnnb_mcc.basic.dir,
+cnnb_mcc.eval.result.file <- file.path(data.cnnb_mcc.dir,
                                        "cnnb_mcc.eval.result.rds")
 
 put_log("Loading the pre-trained CNN-based Multiclass Classifier model...")
