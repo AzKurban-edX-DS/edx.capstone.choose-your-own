@@ -253,11 +253,11 @@ stopifnot(dir.exists(cnn_mcc.basic.scripts.dir))
 put_log("Root directory for the `CNN-Based Basic MCC` model's scripts:
 %1", cnn_mcc.basic.scripts.dir)
 
-cnn_mcc.tuner_scripts.dir <- file.path(cnn_mcc.scripts.dir, "tuner")
-stopifnot(dir.exists(cnn_mcc.tuner_scripts.dir))
+cnn_mcc.tuner.scripts.dir <- file.path(cnn_mcc.scripts.dir, "tuner")
+stopifnot(dir.exists(cnn_mcc.tuner.scripts.dir))
 
 put_log("Root directory for the `CNN-Based MCC` model tuner's scripts:
-%1", cnn_mcc.tuner_scripts.dir)
+%1", cnn_mcc.tuner.scripts.dir)
 
 ### Data Directories -----------------------------------------------------------
 
@@ -498,28 +498,26 @@ stopifnot(file.exists(cnnb_mcc.eval.script.path))
 
 #### CNN-Based MCC Tuner-Related Scripts ---------------------------------
 
-cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner_scripts.dir, 
+cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
                                             "cnn-mcc.hyper-model.R")
 stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
 
-cnn_mcc.model_tuner.script.path <- file.path(cnn_mcc.tuner_scripts.dir, 
-                                            "cnn-mcc.model-tuner.R")
-stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+cnn_mcc.tuner.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
+                                            "1.cnn-mcc.tuner.R")
+stopifnot(file.exists(cnn_mcc.tuner.script.path))
 
-cnn_mcc_final.retrain.script.path <- 
-  file.path(cnn_mcc.tuner_scripts.dir, 
-            "cnn-mcc.final.retrain.R")
+tcnn_mcc.final.retrain.script.path <- 
+  file.path(cnn_mcc.tuner.scripts.dir, "2.tcnn-mcc.final.retrain.R")
 
-stopifnot(file.exists(cnn_mcc_final.retrain.script.path))
+stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
 
-cnn_mcc_final.eval.script.path <- 
-  file.path(cnn_mcc.tuner_scripts.dir, 
-            "cnn-mcc.final.eval.R")
+tcnn_mcc.final.eval.script.path <- 
+  file.path(cnn_mcc.tuner.scripts.dir, "3.tcnn-mcc.final.eval.R")
 
-stopifnot(file.exists(cnn_mcc_final.eval.script.path))
+stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
 
 # edx.capstone.choose-your-own/r/models/cnn/mcc/tuner/cnn-mcc.retrain-best.R
-stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+stopifnot(file.exists(cnn_mcc.tuner.script.path))
 
 cnn_binary.r_scripts.dir <- file.path(cnn._binary.scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))

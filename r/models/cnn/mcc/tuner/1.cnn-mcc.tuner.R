@@ -476,11 +476,11 @@ cnn_mcc.best_trial$metrics$get_history('val_accuracy')
 #    cnn_mcc.best_trial)
 
 ### Re-training the Final Tuned CNN MCC Model ----------------------------------
-stopifnot(file.exists(cnn_mcc_final.retrain.script.path))
+stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
 
 put_log("Re-training the CNN-based Multiclass Classifier Model...")
 
-# source(cnn_mcc_final.retrain.script.path, 
+# source(tcnn_mcc.final.retrain.script.path, 
 #        catch.aborts = TRUE,
 #        echo = TRUE,
 #        spaced = TRUE,

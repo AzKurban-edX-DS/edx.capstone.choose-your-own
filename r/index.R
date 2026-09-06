@@ -619,19 +619,19 @@ if(file.exists(cnn_mcc.final.file)) {
   }
   
   put_log("Evaluating the tuned and re-trained Final CNN MCC Model")
-  stopifnot(file.exists(cnn_mcc_final.eval.script.path))
+  stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
   
-  # source(cnn_mcc_final.eval.script.path, 
+  # source(tcnn_mcc.final.eval.script.path, 
   #        catch.aborts = TRUE,
   #        echo = TRUE,
   #        spaced = TRUE,
   #        verbose = TRUE,
   #        keep.source = TRUE)
 } else {
-    stopifnot(file.exists(cnn_mcc.model_tuner.script.path))
+    stopifnot(file.exists(cnn_mcc.tuner.script.path))
     
     put_log("Tuning the CNN-based Multiclass Classifier Model...")
-    source(cnn_mcc.model_tuner.script.path, 
+    source(cnn_mcc.tuner.script.path, 
            catch.aborts = TRUE,
            echo = TRUE,
            spaced = TRUE,

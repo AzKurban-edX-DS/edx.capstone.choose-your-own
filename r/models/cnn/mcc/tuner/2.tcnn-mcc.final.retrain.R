@@ -240,9 +240,9 @@ str(cnn_mcc.final.train_history)
 
 ### Evaluating the Re-trained Model --------------------------------------------
 
-stopifnot(file.exists(cnn_mcc_final.eval.script.path))
+stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
 
-# source(cnn_mcc_final.eval.script.path, 
+# source(tcnn_mcc.final.eval.script.path, 
 #        catch.aborts = TRUE,
 #        echo = TRUE,
 #        spaced = TRUE,
