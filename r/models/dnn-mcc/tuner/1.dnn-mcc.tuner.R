@@ -178,15 +178,6 @@ put_log("Tuning the DNN MCC Model on the full Train Dataset (`x_train`) of shape
         paste0("(", str_flatten(shape(x_train), 
                                 collapse = ","),")"))
 start <- put_start_date()
-# Log Start Time: 2026-06-29 09:22:51.209273
-
-# dnn_mcc.tuner <- dl.tune.hwr_model(dnn_mcc.tunable_model,
-#                                     x_train,
-#                                     y_train,
-#                                     dnn_mcc.tuner.dir,
-#                                     dnn_mcc.tuner.checkpoint.file_path,
-#                                     project_name = "DNN-MCC.Tuner")
-
 
 hp <- HyperParameters()
 dnn_mcc.tuner.max_layers <- 5L
@@ -225,10 +216,6 @@ for (i in seq(dnn_mcc.tuner.max_layers)) {
 
 dnn_mcc.tuner = RandomSearch(
   hypermodel =  dnn_mcc.tuner.build_model,
-  # hypermodel =  function(hp) dnn_mcc.tunable_model(hp,
-  #                                           c(28, 28),
-  #                                           N.classes,
-  #                                           0.2),
   max_trials = 5,
   hyperparameters = hp,
   tune_new_entries = T,
