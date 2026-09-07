@@ -3,30 +3,13 @@
 #%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".setup.cnn_mcc.model-tuner")
+open_logfile(".cnn_mcc.model-tuning")
+
+stopifnot(file.exists(train.img28x28mx.array.file_path))
+
 start <- put_start_date()
-stopifnot(file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.tuner.best.dir))
 
-### Init File Paths -----------------------------------------------------------
-
-cnn_mcc.best_model.file <- file.path(data.cnn_mcc.tuner.best.dir, 
-                                     "cnn_mcc.best-model.keras")
-
-cnn_mcc.tuner.best.plot_img.file <- file.path(cnn_mcc.best.plots.dat.dir,
-                                               "cnn-mcc.tuner.best-model.png")
-
-data.cnn_mcc.tuner.checkpoints.dir <- file.path(data.cnn_mcc.tuner.dir, "checkpoints")
-
-if(!dir.exists(data.cnn_mcc.tuner.checkpoints.dir))
-  dir.create(data.cnn_mcc.tuner.checkpoints.dir)
-
-
-cnn_mcc.checkpoint.tuner.file_path <- 
-  file.path(data.cnn_mcc.tuner.checkpoints.dir, 
-            "{epoch:02d}-{val_loss:.2f}.keras")
-
-### Prepare a Training Set for the Model Training ------------------------------
+## Prepare a Training Set for the Model Training ------------------------------
 put_log("Loading and splitting the Train 28x28 Image Data Array 
 into a Default Train and Test Sets...")
 
@@ -145,10 +128,26 @@ dim(x_train)
 rm(x3d.train_set,
    x3d_train)
 
-log_close()
+## Tuning the CNN MCC Model ----------------------------------------------------
+### Init the Model Tuner Paths -------------------------------------------------
 
-## Tuning CNN MCC Model --------------------------------------------------------
-open_logfile(".run.cnn_mcc.model-tuner")
+cnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.dir, 
+                                     "cnn_mcc.best-model.keras")
+
+cnn_mcc.tuner.best.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                               "cnn-mcc.tuner.best-model.png")
+
+data.cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints")
+
+if(!dir.exists(data.cnn_mcc.tuner.checkpoints.dir))
+  dir.create(data.cnn_mcc.tuner.checkpoints.dir)
+
+
+cnn_mcc.checkpoint.tuner.file_path <- 
+  file.path(data.cnn_mcc.tuner.checkpoints.dir, 
+            "{epoch:02d}-{val_loss:.2f}.keras")
+
+### Process the Tuning ---------------------------------------------------------
 
 cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes)
 
@@ -156,7 +155,7 @@ cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                            objective = 'val_accuracy',
                            # max_epochs = 100,
                            hyperband_iterations = 2,
-                           directory = data.cnn_mcc.tuner.dir,
+                           directory = cnn_mcc.tuner.dir,
                            project_name = 'CNN-MCC.Tuning')
 
 # cnn_mcc.tuner <- RandomSearch(cnn_mcc.hypermodel,
@@ -164,7 +163,7 @@ cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
 #                            # hyperparameters = cnn_mcc.hypermodel,
 #                            seed = length(y_train),
 #                            max_trials = 5,
-#                            directory = data.cnn_mcc.tuner.dir,
+#                            directory = cnn_mcc.tuner.dir,
 #                            project_name = 'CNN-MCC.RS-Tuning')
 
 cnn_mcc.callbacks <- list(
@@ -472,13 +471,10 @@ cnn_mcc.best_trial$best_step
 
 cnn_mcc.best_trial$metrics$get_history('val_accuracy')
 
-# rm(cnn_mcc.tuner.best_trials,
-#    cnn_mcc.best_trial)
-
-### Re-training the Final Tuned CNN MCC Model ----------------------------------
-stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
-
-put_log("Re-training the CNN-based Multiclass Classifier Model...")
+## Finalizing ------------------------------------------------------------------
+# stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
+# 
+# put_log("Re-training the CNN-based Multiclass Classifier Model...")
 
 # source(tcnn_mcc.final.retrain.script.path, 
 #        catch.aborts = TRUE,
@@ -486,6 +482,11 @@ put_log("Re-training the CNN-based Multiclass Classifier Model...")
 #        spaced = TRUE,
 #        verbose = TRUE,
 #        keep.source = TRUE)
+
+put_end_date(start)
+
+# rm(cnn_mcc.tuner.best_trials,
+#    cnn_mcc.best_trial)
 
 log_close()
 # Log Elapsed Time: 18:30:48

@@ -8,8 +8,7 @@ start <- put_start_date()
 
 stopifnot(exists("cnn_mcc.tuner"),
           file.exists(train.img28x28mx.array.file_path),
-          dir.exists(data.cnn_mcc.tuner.best.dir),
-          exists("cnn_mcc.final.file"))
+          exists("tcnn_mcc.final.file"))
 
 
 
@@ -139,11 +138,11 @@ log_close()
 ### Init File Paths ------------------------------------------------------------
 open_logfile(".cnn_mcc.retrain-best")
 
-cnn_mcc.tuner.final.plot_img.file <- file.path(data.cnn_mcc.tuner.best.dir,
+cnn_mcc.tuner.final.plot_img.file <- file.path(cnn_mcc.tuner.dir,
                                               "cnn-mcc.tuner.final-model.png")
 
-data.cnn_mcc.tuner.best.checkpoints.dir <- file.path(data.cnn_mcc.tuner.best.dir,
-                                                     "checkpoints")
+# data.cnn_mcc.tuner.best.checkpoints.dir <- file.path(cnn_mcc.tuner.dir,
+#                                                      "checkpoints")
 
 if(!dir.exists(data.cnn_mcc.tuner.best.checkpoints.dir))
   dir.create(data.cnn_mcc.tuner.best.checkpoints.dir)
@@ -182,12 +181,6 @@ cnn_mcc.final <- cnn_mcc.tuner$hypermodel$build(cnn_mcc.tuner.best_hp)
 put_log("The Final tuned tuned Final Model Summary: 
 %1", capture.output(cnn_mcc.final))
 
-cnn_mcc.final |> plot_keras_model(to_file = cnn_mcc.tuner.final.plot_img.file,
-                                        show_shapes = T)
-
-#best_models <- tuner |> get_best_models(num_models = 1L)
-# best_5_models[[1]] %>% plot_keras_model()
-
 cnn_mcc.best.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
   callback_model_checkpoint(filepath = cnn_mcc.best.checkpoint.file,
@@ -198,7 +191,7 @@ cnn_mcc.best.callbacks <- list(
 put_log("Training the tuned Final MCC Model...")
 start <- put_start_date()
 
-cnn_mcc.final.train_history <- cnn_mcc.final |> 
+tcnn_mcc.final.train_history <- cnn_mcc.final |> 
   fit(x_train, 
       y_train.cat, 
       epochs = 100, 
@@ -209,20 +202,20 @@ cnn_mcc.final.train_history <- cnn_mcc.final |>
 
 put_log("Saving re-trained final tuned Final MCC Model...")
 keras3::save_model(cnn_mcc.final,
-                   filepath = cnn_mcc.final.file,
+                   filepath = tcnn_mcc.final.file,
                    overwrite = TRUE)
 
 put_log("The re-trained final tuned Final MCC Model has been trained 
 and saved in the following file:
-  %1", cnn_mcc.final.file)
+  %1", tcnn_mcc.final.file)
 
 put_log("Saving the tuned Final MCC Model History...")
-saveRDS(cnn_mcc.final.train_history,
-        file = cnn_mcc.final.train_history.file)
+saveRDS(tcnn_mcc.final.train_history,
+        file = tcnn_mcc.final.train_history.file)
 
 put_log("The re-trained final tuned Final MCC Model History has been trained 
 and saved in the following file:
-  %1", cnn_mcc.final.train_history.file)
+  %1", tcnn_mcc.final.train_history.file)
 put_end_date(start)
 # Time difference of 38.48235 mins
 
@@ -233,10 +226,10 @@ put_end_date(start)
 put_log("The re-trained `tuned Final MCC` Model has been trained with the following results
 %1", cnn_mcc.final)
 
-plot(cnn_mcc.final.train_history)
-str(cnn_mcc.final.train_history)
+plot(tcnn_mcc.final.train_history)
+str(tcnn_mcc.final.train_history)
 
-# rm(cnn_mcc.final.train_history)
+# rm(tcnn_mcc.final.train_history)
 
 ### Evaluating the Re-trained Model --------------------------------------------
 
