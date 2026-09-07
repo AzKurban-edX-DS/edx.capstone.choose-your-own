@@ -98,26 +98,7 @@ rm(y.test.groups)
 ## TDNN MCC Final Model Evaluation ---------------------------------------------
 
 put_log("Loading pre-trained TDNN MCC Final Model...")
-
 tdnn_mcc.final <- keras3::load_model(tdnn_mcc.final.file)
-
-put_log("The TDNN MCC Final Model has been loaded from the backup file:
-%1", tdnn_mcc.final.file)
-
-if(file.exists(tdnn_mcc.final.train_history.file)){
-  print_log("Loading the Tuned DNN MCC Final Model Train History...")
-  tdnn_mcc.final.train_history <- readRDS(tdnn_mcc.final.train_history.file)
-  
-  print_log("The Tuned DNN MCC Final Model Train History has been loaded 
-from the following file:
-%1", tdnn_mcc.final.train_history.file)
-  
-  plot(tdnn_mcc.final.train_history)
-  # rm(tdnn_mcc.final.train_history)
-} else {
-  warning("The Tuned DNN MCC Final Model History backup file does not exist:
-%1", tdnn_mcc.final.train_history.file)
-}
 
 put_log("Evaluating the TDNN MCC Final Model...")
 tdnn_mcc.final.eval.result <- tdnn_mcc.final |> evaluate(x_test, y_test)

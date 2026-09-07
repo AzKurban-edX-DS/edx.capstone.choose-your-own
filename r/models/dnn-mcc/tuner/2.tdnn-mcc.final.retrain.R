@@ -106,9 +106,6 @@ tdnn_mcc.final.checkpoints.file_path <-
   file.path(tdnn_mcc.final.checkpoints.dir, 
             "dnn_mcc.best.{epoch:02d}-{val_loss:.2f}.keras")
 
-tdnn_mcc.final.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
-                                               "tuner.final-model.png")
-
 if(!dir.exists(dnn_mcc.tuner.plots.dat.dir))
   dir.create(dnn_mcc.tuner.plots.dat.dir)
 
@@ -141,12 +138,6 @@ tdnn_mcc.final <- dnn_mcc.tuner.build_model(dnn_mcc.tuner.best_hp)
 
 put_log("The Tuned DNN-Based Final Model Summary: 
 %1", capture.output(tdnn_mcc.final))
-
-tdnn_mcc.final |> plot_keras_model(to_file = tdnn_mcc.final.plot_img.file,
-                                        show_shapes = T)
-
-#best_models <- tuner |> get_best_models(num_models = 1L)
-# best_5_models[[1]] %>% plot_keras_model()
 
 tdnn_mcc.final.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),

@@ -306,7 +306,8 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
 open_logfile(".dnnb-mcc.visual.eval-results")
 stopifnot(file.exists(dnnb_mcc.file,
                       dnnb_mcc.eval.result.file,
-                      model_visualization.shared.script.path))
+                      model_visualization.shared.script.path),
+          exists("dnnb_mcc.plot_img.file"))
 
 put_log("Loading pre-trained DNN-Based Basic MCC Model...")
 dnnb_mcc <- keras3::load_model(dnnb_mcc.file)
@@ -379,7 +380,7 @@ stopifnot(file.exists(dnn_mcc.tuner.script.path,
 
 #### Init Paths ----------------------------------------------------------------
 tdnn_mcc.best_hp.config.file <- file.path(dnn_mcc.tuner.dir,
-                                               "dnn-mcc.tuner.best-hp.config.rds")
+                                               "tdnn-mcc.best-hp.config.rds")
 
 tdnn_mcc.final.file <- file.path(dnn_mcc.tuner.dir, 
                                      "tdnn-mcc.final-model.keras")
@@ -389,6 +390,10 @@ tdnn_mcc.final.train_history.file <- file.path(dnn_mcc.tuner.dir,
 
 tdnn_mcc.final.eval_result.file <- file.path(dnn_mcc.tuner.dir,
                                         "tdnn-mcc.final.eval-result.rds")
+
+tdnn_mcc.final.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
+                                          "tdnn_mcc.final-model.png")
+
 
 tdnn_mcc.final.eval.plots_dat.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
                                           "tdnn-mcc.final.eval.plots_dat.rds")
@@ -435,12 +440,41 @@ if(!file.exists(tdnn_mcc.final.eval_result.file)) {
 }
 
 open_logfile(".tdnn-mcc.visual.eval-results")
+stopifnot(file.exists(tdnn_mcc.final.file,
+                      tdnn_mcc.final.eval_result.file,
+                      model_visualization.shared.script.path),
+          exists("tdnn_mcc.final.plot_img.file"))
 
-put_log("Loading the DNNB MCC Final Model Evaluation Result object...")
+put_log("Loading pre-trained TDNN MCC Final Model...")
+tdnn_mcc.final <- keras3::load_model(tdnn_mcc.final.file)
+
+put_log("The TDNN MCC Final Model has been loaded from the backup file:
+%1", tdnn_mcc.final.file)
+
+tdnn_mcc.final |> plot_keras_model(to_file = tdnn_mcc.final.plot_img.file,
+                             show_shapes = T)
+rm(tdnn_mcc.final)
+
+if(file.exists(tdnn_mcc.final.train_history.file)){
+  print_log("Loading the Tuned DNN MCC Final Model Train History...")
+  tdnn_mcc.final.train_history <- readRDS(tdnn_mcc.final.train_history.file)
+  
+  print_log("The Tuned DNN MCC Final Model Train History has been loaded 
+from the following file:
+%1", tdnn_mcc.final.train_history.file)
+  
+  plot(tdnn_mcc.final.train_history)
+  # rm(tdnn_mcc.final.train_history)
+} else {
+  warning("The Tuned DNN MCC Final Model History backup file does not exist:
+%1", tdnn_mcc.final.train_history.file)
+}
+
+put_log("Loading the Tuned DNN-Based MCC Final Model Evaluation Result object...")
 tdnn_mcc.final.eval.result <- readRDS(tdnn_mcc.final.eval_result.file)
 
-put_log("The DNNB MCC Final Model Evaluation Result object has been loaded 
-from the following file:
+put_log("The Tuned DNN-Based MCC Final Model Evaluation Result object 
+has been loaded from the following file:
 %1", tdnn_mcc.final.eval_result.file)
 
 #' Initialize the `plots.args` object containing argument values 
@@ -473,6 +507,7 @@ log_close()
 ### CNN-Based Basic MCC Model --------------------------------------------------
 stopifnot(file.exists(cnnb_mcc.script.path,
                       cnnb_mcc.eval.script.path))
+
 #### Init Paths ----------------------------------------------------------------
 
 # cnn_mcc.x3d.test_set.bakup <- file.path(data.cnn_mcc.dir,
@@ -591,53 +626,126 @@ log_close()
 
 ### CNN-Based MCC Model Tuning -------------------------------------------------
 #### Init Paths ----------------------------------------------------------------
+tcnn_mcc.best_hp.config.file <- file.path(cnn_mcc.tuner.dir,
+                                          "tcnn-mcc.best-hp.config.rds")
 
-cnn_mcc.final.file <- file.path(data.cnn_mcc.tuner.best.dir, 
-                                "cnn_mcc.final-model.keras")
+tcnn_mcc.final.file <- file.path(cnn_mcc.tuner.dir, 
+                                 "tcnn-mcc.final-model.keras")
 
-cnn_mcc.final.train_history.file <- file.path(data.cnn_mcc.tuner.best.dir, 
-                                              "cnn.mcc-final.train-history.rds")
+tcnn_mcc.final.train_history.file <- file.path(cnn_mcc.tuner.dir, 
+                                               "tcnn-mcc.final-train-history.rds")
+
+tcnn_mcc.final.eval_result.file <- file.path(cnn_mcc.tuner.dir,
+                                             "tcnn-mcc.final.eval-result.rds")
+
+tcnn_mcc.final.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir, 
+                                          "tcnn_mcc.final-model.png")
+
+tcnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                                "tcnn-mcc.final.eval.plots_dat.rds")
+
+tcnn_mcc.final.eval.conf.mx.img_file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                                  "tcnn-mcc.final.eval.confusion-matrix.png")
+
+tcnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                                "tcnn-mcc.final.eval.plots_dat.rds")
+
+if(!dir.exists(cnn_mcc.tuner.dir))
+  dir.create(cnn_mcc.tuner.dir)
+
+if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
+  dir.create(cnn_mcc.tuner.plots.dat.dir)
 
 
 #### Run Scripts ---------------------------------------------------------------
 
-if(file.exists(cnn_mcc.final.file)) {
-  if(file.exists(cnn_mcc.final.train_history.file)){
-    put_log("Loading the tuned Final MCC Model Train History...")
+if(!file.exists(tcnn_mcc.final.eval_result.file)) {
+  if(!file.exists(tcnn_mcc.final.file)) {
+    if(!file.exists(tcnn_mcc.best_hp.config.file)) {
+      source(cnn_mcc.tuner.script.path, 
+             catch.aborts = TRUE,
+             echo = TRUE,
+             spaced = TRUE,
+             verbose = TRUE,
+             keep.source = TRUE)
+    }
     
-    cnn_mcc.final.train_history <- readRDS(cnn_mcc.final.train_history.file)
-    
-    put_log("The Tuned Final MCC Model Training History has been loaded from the backup file:
-%1", cnn_mcc.final.train_history.file)
-    
-    put_log("The Tuned Final MCC Model Training History Summary:
-%1", capture.output(cnn_mcc.final.train_history))
-    plot(cnn_mcc.final.train_history)
-  } else {
-    warning("The tuned Final MCC Model backup does not exist:
-", cnn_mcc.final.train_history.file)
-  }
-  
-  put_log("Evaluating the tuned and re-trained Final CNN MCC Model")
-  stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
-  
-  # source(tcnn_mcc.final.eval.script.path, 
-  #        catch.aborts = TRUE,
-  #        echo = TRUE,
-  #        spaced = TRUE,
-  #        verbose = TRUE,
-  #        keep.source = TRUE)
-} else {
-    stopifnot(file.exists(cnn_mcc.tuner.script.path))
-    
-    put_log("Tuning the CNN-based Multiclass Classifier Model...")
-    source(cnn_mcc.tuner.script.path, 
+    source(tcnn_mcc.final.retrain.script.path,
            catch.aborts = TRUE,
            echo = TRUE,
            spaced = TRUE,
            verbose = TRUE,
            keep.source = TRUE)
+  }
+  
+  source(tcnn_mcc.final.eval.script.path,
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
 }
+
+open_logfile(".tcnn-mcc.visual.eval-results")
+stopifnot(file.exists(tcnn_mcc.final.file,
+                      tcnn_mcc.final.eval_result.file,
+                      model_visualization.shared.script.path),
+          exists("tcnn_mcc.final.plot_img.file"))
+
+put_log("Loading pre-trained Tuned CNN-Based MCC Final Model...")
+tcnn_mcc.final <- keras3::load_model(tcnn_mcc.final.file)
+
+put_log("The Tuned CNN-Based MCC Final Model has been loaded from the backup file:
+%1", tcnn_mcc.final.file)
+
+tcnn_mcc.final |> plot_keras_model(to_file = tcnn_mcc.final.plot_img.file,
+                                   show_shapes = T)
+rm(tcnn_mcc.final)
+
+if(file.exists(tcnn_mcc.final.train_history.file)){
+  print_log("Loading the Tuned CNN-Based MCC Final Model Train History...")
+  tcnn_mcc.final.train_history <- readRDS(tcnn_mcc.final.train_history.file)
+  
+  print_log("The Tuned CNN-Based MCC Final Model Train History has been loaded 
+from the following file:
+%1", tcnn_mcc.final.train_history.file)
+  
+  plot(tcnn_mcc.final.train_history)
+  rm(tcnn_mcc.final.train_history)
+} else {
+  warning("The Tuned DNN MCC Final Model History backup file does not exist:
+%1", tcnn_mcc.final.train_history.file)
+}
+
+put_log("Loading the Tuned CNN-Based MCC Final Model Evaluation Result object...")
+tcnn_mcc.final.eval.result <- readRDS(tcnn_mcc.final.eval_result.file)
+
+put_log("The Tuned CNN-Based MCC Final Model Evaluation Result object 
+has been loaded from the following file:
+%1", tcnn_mcc.final.eval_result.file)
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+plots.args <- init.plots_args(targets = tcnn_mcc.final.eval.result$targets,
+                              predicted.probabilities = tcnn_mcc.final.eval.result$predicted.probs,
+                              predicted.values = tcnn_mcc.final.eval.result$predicted.values,
+                              model_type = "Tuned MCC",
+                              alg_name = "CNN",
+                              plots_dat.file = tcnn_mcc.final.eval.plots_dat.file,
+                              pca.export_img.file_name = "tcnn.final.eval.pca.png",
+                              pca.export_img.dir = cnn_mcc.tuner.plots.dat.dir,
+                              cm.export.img_file = tcnn_mcc.final.eval.conf.mx.img_file,
+                              cm.print.image = T)
+
+#'Run the helper script specifically designed to visualize 
+#'the MCC models evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
 
 log_close()
 

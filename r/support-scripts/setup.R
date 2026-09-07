@@ -401,22 +401,15 @@ cnnb_mcc.plots.dat.dir <- file.path(data.cnnb_mcc.dir, "plots.dat")
 if(!dir.exists(cnnb_mcc.plots.dat.dir))
   dir.create(cnnb_mcc.plots.dat.dir)
 
-data.cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
+cnn_mcc.tuner.dir <- file.path(data.cnn_mcc.dir, "tuner")
 
-if(!dir.exists(data.cnn_mcc.tuner.dir))
-  dir.create(data.cnn_mcc.tuner.dir)
+if(!dir.exists(cnn_mcc.tuner.dir))
+  dir.create(cnn_mcc.tuner.dir)
 
-data.cnn_mcc.tuner.best.dir <- file.path(data.cnn_mcc.tuner.dir, "best")
+cnn_mcc.tuner.plots.dat.dir <- file.path(cnn_mcc.tuner.dir, "plots.dat")
 
-if(!dir.exists(data.cnn_mcc.tuner.best.dir))
-  dir.create(data.cnn_mcc.tuner.best.dir)
-
-cnn_mcc.best.plots.dat.dir <- file.path(data.cnn_mcc.tuner.best.dir, "plots.dat")
-
-if(!dir.exists(cnn_mcc.best.plots.dat.dir))
-  dir.create(cnn_mcc.best.plots.dat.dir)
-
-
+if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
+  dir.create(cnn_mcc.tuner.plots.dat.dir)
 
 ## Init Input Data Paths -------------------------------------------------------
 my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
@@ -488,7 +481,8 @@ tdnn_mcc.final.eval.script.path <- file.path(dnn_mcc.tuner.scripts.dir,
 stopifnot(file.exists(tdnn_mcc.final.eval.script.path))
 
 ### CNN-Based Scripts ----------------------------------------------------------
-#### CNN-Based Basic MCC Scripts -----------------------------------------------
+#### CNN-Based MCC Scripts -----------------------------------------------------
+##### CNN-Based Basic (CNNB) MCC Scripts ----------------------------------------
 cnnb_mcc.script.path <- file.path(cnn_mcc.basic.scripts.dir, "1.cnnb-mcc.R")
 stopifnot(file.exists(cnnb_mcc.script.path))
 
@@ -496,7 +490,7 @@ cnnb_mcc.eval.script.path <- file.path(cnn_mcc.basic.scripts.dir,
                                             "2.cnnb-mcc.eval.R")
 stopifnot(file.exists(cnnb_mcc.eval.script.path))
 
-#### CNN-Based MCC Tuner-Related Scripts ---------------------------------
+##### CNN-Based MCC Tuner-Related Scripts --------------------------------------
 
 cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
                                             "cnn-mcc.hyper-model.R")
@@ -516,8 +510,7 @@ tcnn_mcc.final.eval.script.path <-
 
 stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
 
-# edx.capstone.choose-your-own/r/models/cnn/mcc/tuner/cnn-mcc.retrain-best.R
-stopifnot(file.exists(cnn_mcc.tuner.script.path))
+#### CNN-Based Binary Classifier BC Scripts ------------------------------------
 
 cnn_binary.r_scripts.dir <- file.path(cnn._binary.scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))

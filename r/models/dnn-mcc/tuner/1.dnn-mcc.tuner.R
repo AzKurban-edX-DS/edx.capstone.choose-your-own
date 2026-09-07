@@ -156,7 +156,7 @@ put_log("The Test Set is balanced by the set of Classes:
 rm(y.test.groups)
 
 ## Tuning the  DNN MCC Model ---------------------------------------------------
-### Init the Model Tuner Paths --------------------------------------------
+### Init the Model Tuner Paths -------------------------------------------------
 
 
 dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
