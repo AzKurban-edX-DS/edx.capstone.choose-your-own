@@ -13,7 +13,7 @@
 ## Setup -----------------------------------------------------------------------
 
 open_logfile(".cnnb-mcc.model-building")
-stopifnot(file.exists(train.img28x28mx.array.file_path),
+stopifnot(file.exists(ds28x28.split.train_0.8.backup.file),
           exists("cnnb_mcc.file"),
           exists("cnnb_mcc.train_history.file"))
 
