@@ -20,6 +20,8 @@ stopifnot(file.exists(ds28x28.split.train_0.1.backup.file),
           exists("dnn_mcc.tuner.dir"),
           exists("tdnn_mcc.best_hp.config.file"))
 
+start <- put_start_date()
+
 # Disable the elapsed time limit for expressions
 # options(timeout = max(1000, getOption("timeout")))
 # options(expressions = 50000) # Increases nesting limit if needed
@@ -358,6 +360,11 @@ put_log("The Best Hyper-parameter Configuration has been saved in the following 
   %1", tdnn_mcc.best_hp.config.file)
 
 ## Finalizing ------------------------------------------------------------------
+
+# rm(tdnn_mcc.best_trials,
+#    tdnn_mcc.best_trial)
+
+put_end_date(start)
 
 log_close()
 # =========================================================================
