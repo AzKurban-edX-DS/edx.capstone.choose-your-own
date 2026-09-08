@@ -160,7 +160,7 @@ rm(y.test.groups)
 
 
 dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
-                                               "tuner.best-model.png")
+                                               "tdnn-mcc.best-model.png")
 
 dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints")
@@ -338,30 +338,10 @@ rm(dnn_mcc.tuner.best_trials,
 
 ### Extract & Save the Best Hyper-parameter Configuration ----------------------
 
-
-# dnn_mcc.tuner.best_trial.ls <- dnn_mcc.tuner$oracle$get_best_trials(num_trials = 10L)
-# str(dnn_mcc.tuner.best_trial.ls)
-# 
-# dnn_mcc.tuner.best_trial.last_epochs <- sapply(dnn_mcc.tuner.best_trial.ls, 
-#                                                function(trial){
-#                                                  trial$best_step
-#                                                })
-# 
-# dnn_mcc.retrain_epochs <- max(dnn_mcc.tuner.best_trial.last_epochs)
-
-
 dnn_mcc.tuner.best_hp.ls <- dnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
 # str(dnn_mcc.tuner.best_hp.ls)
 
 dnn_mcc.tuner.best_hp <- dnn_mcc.tuner.best_hp.ls[[1]]
-
-
-# class(dnn_mcc.tuner.best_hp)
-# [1] "keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters"
-# [2] "python.builtin.object"        
-
-#dnn_mcc.tuner.best_hp
-# <keras_tuner.src.engine.hyperparameters.hyperparameters.HyperParameters object at 0x000001F55F89D010>
 
 put_log("The best Hyperparameters values:
 %1", capture.output(dnn_mcc.tuner.best_hp$values))
