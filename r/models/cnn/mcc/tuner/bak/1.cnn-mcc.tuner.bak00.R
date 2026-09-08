@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%%
-# CNN MCC Model Tuning
-#%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%
+# Convolutional Neuron Network-Based Multiclass Classifier (CNN MCC)  Model Tuning
+#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
 open_logfile(".cnn_mcc.model-tuning")
@@ -9,47 +9,44 @@ stopifnot(file.exists(train.img28x28mx.array.file_path))
 
 start <- put_start_date()
 
-## Prepare Input Datasets for the DNN MCC Model Tuning -------------------------
+## Prepare a Training Set for the Model Training ------------------------------
+put_log("Loading and splitting the Train 28x28 Image Data Array 
+into a Default Train and Test Sets...")
 
-put_log("Loading the Input Datasets of 28x28-size image data...")
-ds <- load28x28x1.datasets(ds28x28.split.train_0.1.backup.file)
-train_set <- ds$train
-test_set <- ds$test
-rm(ds)
+split3d.list <- split.img28x28mx_array(train.img28x28mx.array.file_path,
+                                       test_ratio = 0.9)
 
-put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.1.backup.file)
+put_log("The Default Split Dataset object structure:
+%1", capture.output(str(split3d.list)))
 
-### Prepare a Training Set -----------------------------------------------------
-start <- put_start_date()
-stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
+x3d.train_set <- split3d.list$train_set
+# str(x3d.train_set)
 
-put_log("The Training Set object structure is as follows:
-%1", capture.output(str(train_set)))
+put_log("The Training Set has been saved in the object `x3d.train_set`, 
+which contains a training sample stored in the `x_train` variable having the following shape:
+%1", capture.output(shape(x3d.train_set$x.train)))
+# shape(132912, 28, 28)
 
-x_train <- train_set$x
-# storage.mode(x_train) <- "integer"
+x3d.test_set <- split3d.list$test_set
+# str(x3d.test_set)
 
-# x_train <- x_train[seq(1e4),,]
-str(x_train)
-shape(x_train)
+put_log("The Test Set data is stored in the object `x3d.test_set`, 
+having the following structure:
+%1", capture.output(str(x3d.test_set)))
 
-y.train.groups <- train_set$class_groups
-rm(train_set)
+put_log("Saving the Test Set to backup file for later use...")
+saveRDS(x3d.test_set,
+        file = cnn_mcc.x3d.test_set.bakup)
 
-stopifnot(sum(as.character(y.train.groups$classID) != rownames(x_train)) == 0)
+put_log("The Test Set for Basic CNN MCC Model has been saved to the following file:
+%1", cnn_mcc.x3d.test_set.bakup)
 
+rm(split3d.list,
+   x3d.test_set)
 
-y_train <- as.array(as.integer(y.train.groups$classID) - 1)
-str(y_train)
-dim(y_train)
+x3d_train <- x3d.train_set$x.train
 
-stopifnot(min(y_train) == 0,
-          max(y_train) == 38,
-          dim(y_train) == nrow(x_train))
-
-#### Size of the Training Set by Class -----------------------------------------
-
+y.train.groups <- ds.get_classIDs.grouped(x3d_train)
 put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
@@ -94,109 +91,60 @@ put_log("The Training Set is balanced by the set of Classes:
   # 36 W         425
   # 37 X         425
   # 38 Y         425
-  # 39 Z         425
+  # 39 Z         425  
   invisible(NULL)
 }
 
+y_train <- y.train.groups$classID
 rm(y.train.groups)
 
-### Prepare a Test Set ----------------------------------------------------------
-start <- put_start_date()
+stopifnot(sum(as.character(y_train) != rownames(x3d_train)) == 0)
+y_train <- as.array(as.integer(y_train) - 1)
+str(y_train)
+dim(y_train)
 
-put_log("The Test Set object structure is as follows:
-%1", capture.output(str(test_set)))
+stopifnot(min(y_train) == 0)
+stopifnot(max(y_train) == 38)
 
-x_test <- test_set$x
-# storage.mode(x_test) <- "integer"
+put_log("Reshaping the Training Set to make it compatible
+with the Convolutional Neural Network (CNN)...")
 
-# x_test <- x_test[seq(1e4),,]
-str(x_test)
-dim(x_test)
+# Add channel into the dimension
+x_train <- array_reshape(x3d_train, 
+                         c(nrow(x3d.train_set$x.train), 
+                           n.img_rows, 
+                           n.img_cols, 
+                           1))
 
-y.test.groups <- test_set$class_groups
-rm(test_set)
+stopifnot(length(y_train) == nrow(x_train))
 
-stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
+put_log("The Training Set has been reshaped as follows:
+%1", capture.output(shape(x_train)))
+# shape(132912, 28, 28)
 
-y_test <- as.array(as.integer(y.test.groups$classID) - 1)
-str(y_test)
-dim(y_test)
+str(x_train)
+dim(x_train)
 
-stopifnot(min(y_test) == 0,
-          max(y_test) == 38,
-          dim(y_test) == nrow(x_test))
-
-#### Size of the Test Set by Class ------------------------------------------
-
-put_log("The Test Set is balanced by the set of Classes:
-%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #        3834
-  #  2 $        3834
-  #  3 &        3834
-  #  4 @        3834
-  #  5 0        3834
-  #  6 1        3834
-  #  7 2        3834
-  #  8 3        3834
-  #  9 4        3834
-  # 10 5        3834
-  # 11 6        3834
-  # 12 7        3834
-  # 13 8        3834
-  # 14 9        3834
-  # 15 A        3834
-  # 16 B        3834
-  # 17 C        3834
-  # 18 D        3834
-  # 19 E        3834
-  # 20 F        3834
-  # 21 G        3834
-  # 22 H        3834
-  # 23 I        3834
-  # 24 J        3834
-  # 25 K        3834
-  # 26 L        3834
-  # 27 M        3834
-  # 28 N        3834
-  # 29 P        3834
-  # 30 Q        3834
-  # 31 R        3834
-  # 32 S        3834
-  # 33 T        3834
-  # 34 U        3834
-  # 35 V        3834
-  # 36 W        3834
-  # 37 X        3834
-  # 38 Y        3834
-  # 39 Z        3834
-  invisible(NULL)
-}
-
-rm(y.test.groups)
-
-
-
+rm(x3d.train_set,
+   x3d_train)
 
 ## Tuning the CNN MCC Model ----------------------------------------------------
 ### Init the Model Tuner Paths -------------------------------------------------
 
-tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.dir, 
-                                     "tcnn_mcc.best-model.keras")
+cnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.dir, 
+                                     "cnn_mcc.best-model.keras")
 
-tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
-                                               "tcnn-mcc.best-model.png")
+cnn_mcc.tuner.best.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                               "cnn-mcc.tuner.best-model.png")
 
-cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints")
+data.cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints")
 
-if(!dir.exists(cnn_mcc.tuner.checkpoints.dir))
-  dir.create(cnn_mcc.tuner.checkpoints.dir)
+if(!dir.exists(data.cnn_mcc.tuner.checkpoints.dir))
+  dir.create(data.cnn_mcc.tuner.checkpoints.dir)
 
-cnn_mcc.tuner.checkpoints.file_path <- 
-  file.path(cnn_mcc.tuner.checkpoints.dir, 
+
+cnn_mcc.checkpoint.tuner.file_path <- 
+  file.path(data.cnn_mcc.tuner.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
 ### Process the Tuning ---------------------------------------------------------
@@ -210,9 +158,17 @@ cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                            directory = cnn_mcc.tuner.dir,
                            project_name = 'CNN-MCC.Tuning')
 
-tcnn_mcc.callbacks <- list(
+# cnn_mcc.tuner <- RandomSearch(cnn_mcc.hypermodel,
+#                            objective = 'val_accuracy',
+#                            # hyperparameters = cnn_mcc.hypermodel,
+#                            seed = length(y_train),
+#                            max_trials = 5,
+#                            directory = cnn_mcc.tuner.dir,
+#                            project_name = 'CNN-MCC.RS-Tuning')
+
+cnn_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = cnn_mcc.tuner.checkpoints.file_path,
+  callback_model_checkpoint(filepath = cnn_mcc.checkpoint.tuner.file_path,
                             # monitor = "val_loss",
                             # mode = "auto",
                             save_best_only = TRUE,
@@ -220,10 +176,15 @@ tcnn_mcc.callbacks <- list(
 
 cnn_mcc.tuner |> fit_tuner(x = x_train,
                            y = y_train,
-                           callbacks = tcnn_mcc.callbacks,
-                           # validation_split = 0.2,
-                           validation_data = tuple(x_test, y_test),
-                           epochs = 100L)
+                           callbacks = cnn_mcc.callbacks,
+                           validation_split = 0.2,
+                           epochs = 100)
+
+# cnn_mcc.tuner$search(x = x_train,
+#                      y = y_train,
+#                      callbacks = cnn_mcc.callbacks,
+#                      validation_split = 0.2,
+#                      epochs = 30)
 
 ### CNN MCC Model Tuning Results Summary ---------------------------------------
 put_log("The Model Tuning Results Summary:
@@ -426,7 +387,6 @@ put_log("The Model Tuning Results Summary:
 # Score: 0.8708899021148682
 invisible()
 }
-
 ### CNN MCC Model Tuning Results: Best Trial Summary ---------------------------
 
 # This prints the top trials, their hyperparameters, and execution details
@@ -467,6 +427,15 @@ put_log("The CNN MCC Tuning Results:
 
 ### Retrieving the Best Model --------------------------------------------------
 
+# Retrieve the best model from the search
+
+# put_log("Loading the CNN MCC Model Tuner object...")
+# cnn_mcc.tuner <- readRDS(cnn_mcc.best_model.file)
+# 
+# put_log("The CNN MCC Model Tuner object has been loaded from the following file:
+#   %1", cnn_mcc.best_model.file)
+# put_end_date(start)
+
 cnn_mcc.tuner
 
 class(cnn_mcc.tuner)
@@ -474,62 +443,50 @@ class(cnn_mcc.tuner)
 # [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
 # [5] "python.builtin.object"                      
 
-tcnn_mcc.best_models <- kerastuneR::get_best_models(tuner = cnn_mcc.tuner, num_models = 1L)
-tcnn_mcc.best_model <- tcnn_mcc.best_models[[1]]
-rm(tcnn_mcc.best_models)
+cnn_mcc.best_models <- kerastuneR::get_best_models(tuner = cnn_mcc.tuner, num_models = 1L)
+cnn_mcc.best_model <- cnn_mcc.best_models[[1]]
+rm(cnn_mcc.best_models)
 
 put_log("Saving the CNN MCC Best Model...")
-keras3::save_model(tcnn_mcc.best_model,
-                   file = tcnn_mcc.best_model.file,
+keras3::save_model(cnn_mcc.best_model,
+                   file = cnn_mcc.best_model.file,
                    overwrite = TRUE)
 
 put_log("The CNN MCC Best Model object has been saved in the following file:
-  %1", tcnn_mcc.best_model.file)
+  %1", cnn_mcc.best_model.file)
 put_end_date(start)
 
-tcnn_mcc.best_model$summary()
+cnn_mcc.best_model$summary()
 # View completed epochs of this best model
 # If restore_best_weights = TRUE, this tells you the optimal epoch
-# best_epoch <- tcnn_mcc.best_model$history$params$epochs
+# best_epoch <- cnn_mcc.best_model$history$params$epochs
 
-tcnn_mcc.best_model |> plot_keras_model(to_file = tcnn_mcc.best_model.plot_img.file,
+cnn_mcc.best_model |> plot_keras_model(to_file = cnn_mcc.tuner.best.plot_img.file,
                                         show_shapes = TRUE)
 
-tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
-tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
-tcnn_mcc.best_trial$summary()
-tcnn_mcc.best_trial$best_step
+cnn_mcc.tuner.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
+cnn_mcc.best_trial <- cnn_mcc.tuner.best_trials[[1]]
+cnn_mcc.best_trial$summary()
+cnn_mcc.best_trial$best_step
 
-tcnn_mcc.best_trial$metrics$get_history('val_accuracy')
-
-### Extract & Save the Best Hyper-parameter Configuration ----------------------
-
-cnn_mcc.tuner.best_hp.ls <- cnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
-# str(cnn_mcc.tuner.best_hp.ls)
-
-cnn_mcc.tuner.best_hp <- cnn_mcc.tuner.best_hp.ls[[1]]
-
-put_log("The best Hyperparameters values:
-%1", capture.output(cnn_mcc.tuner.best_hp$values))
-
-tcnn_mcc.best_hp.config <- cnn_mcc.tuner.best_hp$get_config()
-put_log("The best Hyperparameters configuration:
-%1", capture.output(tcnn_mcc.best_hp.config))
-
-put_log("Saving the Best Hyper-parameter Configuration...")
-saveRDS(tcnn_mcc.best_hp.config,
-        file = tcnn_mcc.best_hp.config.file)
-
-put_log("The Best Hyper-parameter Configuration has been saved in the following file:
-  %1", tcnn_mcc.best_hp.config.file)
-
+cnn_mcc.best_trial$metrics$get_history('val_accuracy')
 
 ## Finalizing ------------------------------------------------------------------
+# stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
+# 
+# put_log("Re-training the CNN-based Multiclass Classifier Model...")
 
-# rm(tcnn_mcc.best_trials,
-#    tcnn_mcc.best_trial)
+# source(tcnn_mcc.final.retrain.script.path, 
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
 
 put_end_date(start)
+
+# rm(cnn_mcc.tuner.best_trials,
+#    cnn_mcc.best_trial)
 
 log_close()
 # Log Elapsed Time: 18:30:48

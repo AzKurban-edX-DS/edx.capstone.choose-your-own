@@ -687,6 +687,7 @@ if(!file.exists(tcnn_mcc.final.eval_result.file)) {
 }
 
 open_logfile(".tcnn-mcc.visual.eval-results")
+
 stopifnot(file.exists(tcnn_mcc.final.file,
                       tcnn_mcc.final.eval_result.file,
                       model_visualization.shared.script.path),

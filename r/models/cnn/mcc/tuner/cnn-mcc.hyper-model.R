@@ -55,7 +55,9 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                           activation = "relu")
 
           layer <- layer |>
-            layer_max_pooling_2d()
+            layer_max_pooling_2d(
+              # pool_size = list(2L, 2L)
+              )
 
         }
 

@@ -220,6 +220,31 @@ load28x28x1.test_set <- function(backup.file) {
        class_groups = ds.test$class_groups)
 } 
 
+load28x28x1.datasets <- function(backup.file) {
+  ds <- load_datasets(backup.file)
+  
+  train <- list()
+  train$x <- array_reshape(ds$train$x, 
+                           c(nrow(ds$train$x), 
+                             28L, 
+                             28L, 
+                             1L))
+  
+  train$class_groups <- ds$train$class_groups
+  
+  test <- list()
+  test$x <- array_reshape(ds$test$x, 
+                          c(nrow(ds$test$x), 
+                            28L, 
+                            28L, 
+                            1L))
+  
+  test$class_groups <- ds$test$class_groups
+  test$files <- ds$test$files
+
+  list(train = train,
+       test = test)
+} 
 
 
 ## Image Processing ------------------------------------------------------------
