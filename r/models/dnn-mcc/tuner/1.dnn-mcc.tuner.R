@@ -159,7 +159,7 @@ rm(y.test.groups)
 ### Init the Model Tuner Paths -------------------------------------------------
 
 
-dnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
+tdnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
                                                "tdnn-mcc.best-model.png")
 
 dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
@@ -199,7 +199,7 @@ hp$Float('dropout_rate',
        max_value = 0.5,
        step = 0.05)
 
-dnn_mcc.callback_list <- list(
+tdnn_mcc.callback_list <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
   callback_model_checkpoint(filepath = dnn_mcc.tuner.checkpoint.file_path,
                             monitor = "val_loss",
@@ -226,7 +226,7 @@ dnn_mcc.tuner = RandomSearch(
 
 dnn_mcc.tuner |> fit_tuner(x = x_train,
                            y = y_train,
-                           callbacks = dnn_mcc.callback_list,
+                           callbacks = tdnn_mcc.callback_list,
                            # validation_split = 0.2,
                            validation_data = tuple(x_test, y_test),
                            epochs = 100L)
@@ -314,27 +314,27 @@ dnn_mcc.tuner |> results_summary(num_trials = 1L)
 }
 
 # Retrieve the best model from the search
-dnn_mcc.best_models <- kerastuneR::get_best_models(tuner = dnn_mcc.tuner, num_models = 1L)
-dnn_mcc.best_model <- dnn_mcc.best_models[[1]]
-rm(dnn_mcc.best_models)
+tdnn_mcc.best_models <- kerastuneR::get_best_models(tuner = dnn_mcc.tuner, num_models = 1L)
+tdnn_mcc.best_model <- tdnn_mcc.best_models[[1]]
+rm(tdnn_mcc.best_models)
 
-dnn_mcc.best_model$summary()
+tdnn_mcc.best_model$summary()
 # View completed epochs of this best model
 # If restore_best_weights = TRUE, this tells you the optimal epoch
-# best_epoch <- dnn_mcc.best_model$history$params$epochs
+# best_epoch <- tdnn_mcc.best_model$history$params$epochs
 
-dnn_mcc.best_model |> plot_keras_model(to_file = dnn_mcc.best_model.plot_img.file,
+tdnn_mcc.best_model |> plot_keras_model(to_file = tdnn_mcc.best_model.plot_img.file,
                                         show_shapes = TRUE)
 
 dnn_mcc.tuner.best_trials <- dnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
-dnn_mcc.best_trial <- dnn_mcc.tuner.best_trials[[1]]
-dnn_mcc.best_trial$summary()
-dnn_mcc.best_trial$best_step
+tdnn_mcc.best_trial <- dnn_mcc.tuner.best_trials[[1]]
+tdnn_mcc.best_trial$summary()
+tdnn_mcc.best_trial$best_step
 
-dnn_mcc.best_trial$metrics$get_history('val_accuracy')
+tdnn_mcc.best_trial$metrics$get_history('val_accuracy')
 
 rm(dnn_mcc.tuner.best_trials,
-   dnn_mcc.best_trial)
+   tdnn_mcc.best_trial)
 
 ### Extract & Save the Best Hyper-parameter Configuration ----------------------
 
