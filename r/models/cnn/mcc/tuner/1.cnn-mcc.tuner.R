@@ -182,7 +182,17 @@ rm(y.test.groups)
 
 
 ## Tuning the CNN MCC Model ----------------------------------------------------
+cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
+                                         learning_rate = 1e-4)
+
+project.name <- 'cnn-mcc.tuning.lr1e-4'
+
 ### Init the Model Tuner Paths -------------------------------------------------
+
+cnn_mcc.tuning_logs.dir <- file.path(cnn_mcc.tuner.dir,"logs")
+
+cnn_mcc.tuning.log <- file.path(cnn_mcc.tuning_logs.dir, 
+                                paste0(project.name, '.log'))
 
 tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.dir, 
                                      "tcnn_mcc.best-model.keras")
@@ -191,6 +201,9 @@ tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
                                                "tcnn-mcc.best-model.png")
 
 cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints")
+
+if(!dir.exists(cnn_mcc.tuning_logs.dir))
+  dir.create(cnn_mcc.tuning_logs.dir)
 
 if(!dir.exists(cnn_mcc.tuner.checkpoints.dir))
   dir.create(cnn_mcc.tuner.checkpoints.dir)
@@ -201,14 +214,12 @@ cnn_mcc.tuner.checkpoints.file_path <-
 
 ### Process the Tuning ---------------------------------------------------------
 
-cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes)
-
 cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                            objective = 'val_accuracy',
                            # max_epochs = 100,
                            hyperband_iterations = 2,
                            directory = cnn_mcc.tuner.dir,
-                           project_name = 'CNN-MCC.Tuning')
+                           project_name = project.name)
 
 tcnn_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -217,13 +228,19 @@ tcnn_mcc.callbacks <- list(
                             # mode = "auto",
                             save_best_only = TRUE,
                             verbose = 1))
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
 
+# Run the tuner fit process
 cnn_mcc.tuner |> fit_tuner(x = x_train,
                            y = y_train,
                            callbacks = tcnn_mcc.callbacks,
                            # validation_split = 0.2,
                            validation_data = tuple(x_test, y_test),
                            epochs = 100L)
+
+stopCluster(cl)
+stopImplicitCluster()
 
 ### CNN MCC Model Tuning Results Summary ---------------------------------------
 put_log("The Model Tuning Results Summary:
@@ -533,16 +550,3 @@ put_end_date(start)
 
 log_close()
 # Log Elapsed Time: 18:30:48
-
-
-
-
-
-
-
-
-
-
-
-
-

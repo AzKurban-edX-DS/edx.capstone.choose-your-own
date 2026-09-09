@@ -25,12 +25,9 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
   inherit = kerastuneR::HyperModel_class(),
   list(
     
-    `__init__` = function(self, 
-                          num_classes,
-                          learning_rate) {
+    `__init__` = function(self, num_classes) {
       
       self$num_classes = num_classes
-      self$learning_rate = learning_rate
       NULL
     },
     
@@ -91,7 +88,11 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
 
       model <- keras_model(input_layer, output_layer) |>
         compile(
-          optimizer = keras3::optimizer_adamax(learning_rate = self$learning_rate),
+          optimizer = keras3::optimizer_adamax(
+            hp$Float('learning_rate',
+                     min_value = 1e-4,
+                     max_value = 1e-2,
+                     sampling = 'log')),
           loss = 'sparse_categorical_crossentropy',
           metrics = 'accuracy')
       
