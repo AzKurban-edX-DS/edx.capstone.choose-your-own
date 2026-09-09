@@ -670,20 +670,20 @@ if(!file.exists(tcnn_mcc.final.eval_result.file)) {
              keep.source = TRUE)
     }
     
-    source(tcnn_mcc.final.retrain.script.path,
-           catch.aborts = TRUE,
-           echo = TRUE,
-           spaced = TRUE,
-           verbose = TRUE,
-           keep.source = TRUE)
+    # source(tcnn_mcc.final.retrain.script.path,
+    #        catch.aborts = TRUE,
+    #        echo = TRUE,
+    #        spaced = TRUE,
+    #        verbose = TRUE,
+    #        keep.source = TRUE)
   }
   
-  source(tcnn_mcc.final.eval.script.path,
-         catch.aborts = TRUE,
-         echo = TRUE,
-         spaced = TRUE,
-         verbose = TRUE,
-         keep.source = TRUE)
+  # source(tcnn_mcc.final.eval.script.path,
+  #        catch.aborts = TRUE,
+  #        echo = TRUE,
+  #        spaced = TRUE,
+  #        verbose = TRUE,
+  #        keep.source = TRUE)
 }
 
 open_logfile(".tcnn-mcc.visual.eval-results")
