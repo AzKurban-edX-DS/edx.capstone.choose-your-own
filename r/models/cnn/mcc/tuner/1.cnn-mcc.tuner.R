@@ -200,16 +200,16 @@ tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.dir,
 tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
                                                "tcnn-mcc.best-model.png")
 
-cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints")
+cnn_mcc.tuner.checkpoints.lr1e_4.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints.lr1e-4")
 
 if(!dir.exists(cnn_mcc.tuning_logs.dir))
   dir.create(cnn_mcc.tuning_logs.dir)
 
-if(!dir.exists(cnn_mcc.tuner.checkpoints.dir))
-  dir.create(cnn_mcc.tuner.checkpoints.dir)
+if(!dir.exists(cnn_mcc.tuner.checkpoints.lr1e_4.dir))
+  dir.create(cnn_mcc.tuner.checkpoints.lr1e_4.dir)
 
 cnn_mcc.tuner.checkpoints.file_path <- 
-  file.path(cnn_mcc.tuner.checkpoints.dir, 
+  file.path(cnn_mcc.tuner.checkpoints.lr1e_4.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
 ### Process the Tuning ---------------------------------------------------------
