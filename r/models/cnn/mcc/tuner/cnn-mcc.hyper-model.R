@@ -35,33 +35,39 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     },
     
     build = function(self, hp) { # [2]
+      put_log("Building next model for tuning...")
+      
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
+      layer <- input_layer
 
       for (i in 1:hp$Int('conv_blocs',
                          min_value = 2,
                          max_value = 5,
                          default = 3)) {
+        
 
         conv_filters <- hp$Int(paste0('filters_', i),
                                min_value = 32,
                                max_value = 256,
                                step = 32)
+          put_log("Processing the Convolution block %1 with filters %2...", 
+                  i, conv_filters)
 
         for (j in 1:2) {
           # conv_filters <- 32L*j
           
-          layer <- input_layer |>
+          put_log("Adding Convolution layer %1 for Block %2
+with filters %3...", j, i, conv_filters)
+          
+          layer <- layer |>
             layer_conv_2d(filters = conv_filters,
                           kernel_size = c(3L, 3L),
                           # padding = 'same',
                           # strides = list(1L, 1L),
-                          activation = "relu")
-
-          layer <- layer |>
+                          activation = "relu") |>
             layer_max_pooling_2d(
               # pool_size = list(2L, 2L)
               )
-
         }
 
       }
@@ -94,6 +100,8 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
           optimizer = keras3::optimizer_adamax(learning_rate = self$learning_rate),
           loss = 'sparse_categorical_crossentropy',
           metrics = 'accuracy')
+      
+      put_log("The next model for tuning has been compiled.")
       
       return(model)
     }

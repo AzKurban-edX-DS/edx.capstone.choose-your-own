@@ -185,25 +185,25 @@ rm(y.test.groups)
 cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
                                          learning_rate = 1e-4)
 
-project.name <- 'cnn-mcc.tuning.lr1e-4'
+project.name <- 'project1'
 
 ### Init the Model Tuner Paths -------------------------------------------------
 
-cnn_mcc.tuning_logs.dir <- file.path(cnn_mcc.tuner.dir,"logs")
+cnn_mcc.tuner.lr1e_4.dir <- file.path(cnn_mcc.tuner.dir,"lr1e-4")
 
-cnn_mcc.tuning.log <- file.path(cnn_mcc.tuning_logs.dir, 
-                                paste0(project.name, '.log'))
+# cnn_mcc.tuner.lr1e_4.plots.dat.dir <- file.path(cnn_mcc.tuner.lr1e_4.dir,
+#                                                 'plots.dat')
 
-tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.dir, 
-                                     "tcnn_mcc.best-model.keras")
+tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.lr1e_4.dir, 
+                                     "best-model.keras")
 
-tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
-                                               "tcnn-mcc.best-model.png")
+tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.lr1e_4.dir,
+                                               "best-model.png")
 
-cnn_mcc.tuner.checkpoints.lr1e_4.dir <- file.path(cnn_mcc.tuner.dir, "checkpoints.lr1e-4")
-
-if(!dir.exists(cnn_mcc.tuning_logs.dir))
-  dir.create(cnn_mcc.tuning_logs.dir)
+cnn_mcc.tuner.checkpoints.lr1e_4.dir <- file.path(cnn_mcc.tuner.lr1e_4.dir, 
+                                                  "checkpoints")
+if(!dir.exists(cnn_mcc.tuner.lr1e_4.dir))
+  dir.create(cnn_mcc.tuner.lr1e_4.dir)
 
 if(!dir.exists(cnn_mcc.tuner.checkpoints.lr1e_4.dir))
   dir.create(cnn_mcc.tuner.checkpoints.lr1e_4.dir)
@@ -218,7 +218,7 @@ cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                            objective = 'val_accuracy',
                            # max_epochs = 100,
                            hyperband_iterations = 2,
-                           directory = cnn_mcc.tuner.dir,
+                           directory = cnn_mcc.tuner.lr1e_4.dir,
                            project_name = project.name)
 
 tcnn_mcc.callbacks <- list(

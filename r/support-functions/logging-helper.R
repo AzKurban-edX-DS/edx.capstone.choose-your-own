@@ -1,13 +1,18 @@
 # Logging Helper functions
 
-open_logfile <- function(file_name){
-  log_file_name <- as.character(Sys.time()) |> 
+str_get.sys.time <- function() {
+  as.character(Sys.time()) |> 
     str_replace_all(':', '_') |> 
-    str_replace(' ', 'T') |>
+    str_replace(' ', 'T')
+}
+
+open_logfile <- function(file_name){
+  log_file_name <- str_get.sys.time() |>
     str_c(file_name)
   
   log_open(file_name = log_file_name)
 }
+
 print_start_date <- function(){
   print(date())
   Sys.time()
