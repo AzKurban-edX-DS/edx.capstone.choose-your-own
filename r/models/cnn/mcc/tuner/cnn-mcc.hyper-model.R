@@ -46,9 +46,9 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                          max_value = 5,
                          default = 3)
       
-      put_log("Processin %1 Convolution Blocks...", conv_blocks)
+      put_log("Processing %1 Convolution Blocks...", conv_blocks)
       
-      conv_filters <- hp$Int(paste0('filters_', i),
+      conv_filters <- hp$Int('conv_filters',
                              min_value = 32,
                              max_value = 256,
                              step = 32)
