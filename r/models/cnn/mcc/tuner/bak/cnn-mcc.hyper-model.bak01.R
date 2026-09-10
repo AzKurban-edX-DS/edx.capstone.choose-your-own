@@ -41,6 +41,19 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
       layer <- input_layer
 
+      # conv_filters0 <- hp$Int('filters_0',
+      #                        min_value = 32,
+      #                        max_value = 256,
+      #                        step = 32)
+      
+      # layer <- input_layer |>
+      #   layer_conv_2d(filters = conv_filters0,
+      #                 kernel_size = c(3L, 3L),
+      #                 # padding = 'same',
+      #                 # strides = list(1L, 1L),
+      #                 activation = "relu") |>
+      #   layer_max_pooling_2d()
+      
       conv_blocks <- hp$Int('conv_blocks',
                          min_value = 1,
                          max_value = 5,
@@ -72,9 +85,34 @@ with filters %2...", i, conv_filters0)
           layer_max_pooling_2d()
         
         put_log("Max pooling layer has been added to Block %1", i)
+        
+        
+#         for (j in 1:2) {
+#           # conv_filters <- 32L*j
+#           
+#           put_log("Adding Convolution layer %1 for Block %2
+# with filters %3...", j, i, conv_filters)
+#           
+#           layer <- layer |>
+#             layer_conv_2d(filters = conv_filters0,
+#                           kernel_size = c(3L, 3L),
+#                           # padding = 'same',
+#                           # strides = list(1L, 1L),
+#                           activation = "relu") |>
+#             layer_max_pooling_2d()
+#             put_log("Max pooling layer has been added to Block %1", i)
+#           # layer <- layer |>
+#           #   layer_max_pooling_2d(
+#           #     # pool_size = list(2L, 2L)
+#           #   )
+#         }
 
       }
 
+      # put_log("Adding Max pooling layer...")
+      # layer <- layer |> layer_max_pooling_2d()
+      # put_log("Max pooling layer has been added")
+      
       put_log("Adding the final dense hidden layer...")
       
       layer <- layer |>
