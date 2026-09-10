@@ -54,14 +54,11 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                              step = 32)
       
       for (i in 1:conv_blocks) {
-        
-
           put_log("Processing the Convolution block %1 with filters %2...", 
                   i, conv_filters)
 
-        
         put_log("Adding Convolution layer for Block %1
-with filters %2...", i, conv_filters0)
+with filters %2...", i, conv_filters)
         
         layer <- layer |>
           layer_conv_2d(filters = conv_filters*i,
