@@ -43,6 +43,8 @@ str.build <- function(str.template, ...,
   arg_ls <- list(...)
   str <- str.template
   
+  if(length(arg_ls) == 0) return(str)
+  
   for (i in seq_len(length(arg_ls))) {
     str <- str |>
       str_replace_all(paste0("%", as.character(i)), 

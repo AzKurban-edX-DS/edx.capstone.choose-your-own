@@ -9,6 +9,9 @@
 # [1] R interface to Keras Tuner
 # https://eagerai.github.io/kerastuneR/#r-interface-to-keras-tuner [1]
 
+# Basic CNN Architecture: The 5 Key Layers Simplified for 2026
+# https://amityonline.com/blog/basic-cnn-architecture
+
 # [2] Hyperparameter tuning with Keras Tuner
 # https://blog.tensorflow.org/2020/01/hyperparameter-tuning-with-keras-tuner.html
 
@@ -27,52 +30,94 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     `__init__` = function(self, 
                           num_classes,
-                          learning_rate) {
+                          learning_rate = NULL) {
       
       self$num_classes = num_classes
       self$learning_rate = learning_rate
+      self$max_blocks = 5
       NULL
     },
     
     build = function(self, hp) { # [2]
-      put_log("Building next model for tuning with learning rate %1...",
-              self$learning_rate)
-      
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
       layer <- input_layer
 
-      conv_blocks <- hp$Int('conv_blocks',
-                         min_value = 1,
-                         max_value = 5,
-                         default = 3)
+      # max_blocks <- ifelse(is.null(self$max_blocks), 5, self$max_blocks)
       
-      put_log("Processing %1 Convolution Blocks...", conv_blocks)
+      put_log("Maximum number of Convolution Blocks: %1", self$max_blocks)
+      
+      conv_blocks <- hp$Int('conv_blocks',
+                         min_value = 2,
+                         max_value = self$max_blocks,
+                         default = 2)
       
       conv_filters <- hp$Int('conv_filters',
                              min_value = 32,
                              max_value = 256,
                              step = 32)
       
+      kr <- hp$Choice('kernel_size',
+                      c(2L, 3L))
+        
+      lr <- self$learning_rate
+      
+      if(is.null(lr))
+        lr <- hp$Choice('learning_rate', 
+                        c(1e-1, 
+                          1e-2, 
+                          1e-3, 
+                          1e-4))
+      
+      put_log("Building next model for tuning with learning rate %1...",
+              lr)
+      
+      put_log("Adding %1 Convolution Blocks to the CNN MCC Model...", 
+              conv_blocks)
+      
       for (i in 1:conv_blocks) {
-          put_log("Processing the Convolution block %1 with filters %2...", 
-                  i, conv_filters)
-
-        put_log("Adding Convolution layer for Block %1
-with filters %2...", i, conv_filters)
         
-        layer <- layer |>
-          layer_conv_2d(filters = conv_filters*i,
-                        kernel_size = c(3L, 3L),
-                        # padding = 'same',
-                        # strides = list(1L, 1L),
-                        activation = "relu") |>
-          layer_max_pooling_2d()
+        lfilters <- conv_filters * i
         
-        put_log("Max pooling layer has been added to Block %1", i)
+        put_log("Adding the Conv Block %1 with %2 filters & kernel size = %3 
+for the Conv_2d layer...", 
+                i, lfilters, kr)
 
+        addCB.failed <- FALSE
+        
+        layer <- tryCatch(
+          {
+            layer |>
+              layer_conv_2d(filters = lfilters,
+                            kernel_size = kr,
+                            # padding = 'same',
+                            # strides = list(1L, 1L),
+                            activation = "relu") |>
+              layer_max_pooling_2d()
+          },
+          error = function(e) {
+            put_log("Failed to add Convolution Block %1
+Error Details:
+%2
+%3", i, paste('Error:', conditionMessage(e)))
+            
+            for(call in as.character(sys.calls())) {
+              put_log(call)
+            }
+
+            addCB.failed <- TRUE
+          }
+        )
+        
+        if(addCB.failed) {
+          self$max_blocks <- (i - 1)
+          return(NULL)
+        }
+        
+        put_log("The Convolution Block %1 has been added to the CNN MCC Model.", i)
       }
 
-      put_log("Adding the final dense hidden layer...")
+      put_log("Adding the final dense hidden layers block...")
+      
       
       layer <- layer |>
         layer_dropout(hp$Float('dropout1',
@@ -103,7 +148,7 @@ with filters %2...", i, conv_filters)
       
       model <- keras_model(input_layer, output_layer) |>
         compile(
-          optimizer = keras3::optimizer_adamax(learning_rate = self$learning_rate),
+          optimizer = keras3::optimizer_adamax(learning_rate = lr),
           loss = 'sparse_categorical_crossentropy',
           metrics = 'accuracy')
       

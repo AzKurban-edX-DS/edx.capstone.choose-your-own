@@ -181,23 +181,29 @@ rm(y.test.groups)
 
 
 
-## Model Tuning ----------------------------------------------------------------
-cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes)
+## Tuning the CNN MCC Model ----------------------------------------------------
+cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
+                                         learning_rate = 1e-4)
+
+project.name <- 'project1'
 
 ### Init the Model Tuner Paths -------------------------------------------------
 
-cnn_mcc.tuner.prj1.dir <- file.path(cnn_mcc.tuner.dir,"project1")
+cnn_mcc.tuner.lr1e_4.dir <- file.path(cnn_mcc.tuner.dir,"lr1e-4")
 
-tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.prj1.dir, 
+# cnn_mcc.tuner.lr1e_4.plots.dat.dir <- file.path(cnn_mcc.tuner.lr1e_4.dir,
+#                                                 'plots.dat')
+
+tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.lr1e_4.dir, 
                                      "best-model.keras")
 
-tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.prj1.dir,
+tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.lr1e_4.dir,
                                                "best-model.png")
 
-cnn_mcc.tuner.checkpoints.lr1e_4.dir <- file.path(cnn_mcc.tuner.prj1.dir, 
+cnn_mcc.tuner.checkpoints.lr1e_4.dir <- file.path(cnn_mcc.tuner.lr1e_4.dir, 
                                                   "checkpoints")
-if(!dir.exists(cnn_mcc.tuner.prj1.dir))
-  dir.create(cnn_mcc.tuner.prj1.dir)
+if(!dir.exists(cnn_mcc.tuner.lr1e_4.dir))
+  dir.create(cnn_mcc.tuner.lr1e_4.dir)
 
 if(!dir.exists(cnn_mcc.tuner.checkpoints.lr1e_4.dir))
   dir.create(cnn_mcc.tuner.checkpoints.lr1e_4.dir)
@@ -212,8 +218,8 @@ cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                            objective = 'val_accuracy',
                            # max_epochs = 100,
                            hyperband_iterations = 2,
-                           directory = cnn_mcc.tuner.prj1.dir,
-                           project_name = 'tuner.dat')
+                           directory = cnn_mcc.tuner.lr1e_4.dir,
+                           project_name = project.name)
 
 tcnn_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -236,7 +242,7 @@ cnn_mcc.tuner |> fit_tuner(x = x_train,
 stopCluster(cl)
 stopImplicitCluster()
 
-### Tuning Results Summary -----------------------------------------------------
+### CNN MCC Model Tuning Results Summary ---------------------------------------
 put_log("The Model Tuning Results Summary:
 %1", capture.output(cnn_mcc.tuner$results_summary()))
 {
@@ -438,7 +444,7 @@ put_log("The Model Tuning Results Summary:
 invisible()
 }
 
-#### Tuning Results: Best Trial Summary ----------------------------------------
+### CNN MCC Model Tuning Results: Best Trial Summary ---------------------------
 
 # This prints the top trials, their hyperparameters, and execution details
 put_log("CNN MCC Model Tuning Results, Best Trial Summary:
@@ -468,7 +474,7 @@ put_log("CNN MCC Model Tuning Results, Best Trial Summary:
 # tuner/trial_id: 0228
 # Score: 0.8739064931869507
 
-### Tuning Results Visualization -----------------------------------------------
+### CNN MCC Model Tuning Results Visualization ---------------------------------
 # This prints a summary of the search space and lists the top trial results
 cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
 # the list will show the plot and the data.frame of tuning results
