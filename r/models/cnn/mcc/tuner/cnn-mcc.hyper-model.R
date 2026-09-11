@@ -95,11 +95,11 @@ for the Conv_2d layer...",
 
         if("try-error" %in% class(add_block.result)) {
           put_log("Failed to add Convolution Block %1", i)
-          put_log(add_block.result)
+          # put_log(capture.output(str(add_block.result)))
           
-          for(call in as.character(sys.calls())) {
-            put_log(call)
-          }
+          # for(call in as.character(sys.calls())) {
+          #   put_log(call)
+          # }
 
           put_log("The Convolution Block %1 HAS NOT BEEN ADDED to the CNN MCC Model.
 Building the model with %2 Conv Blocks", i, i -1)
