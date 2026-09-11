@@ -109,8 +109,11 @@ Error Details:
         )
         
         if(addCB.failed) {
+          put_log("The Convolution Block %1 HAS NOT BEEN ADDED to the CNN MCC Model.
+Building the model with %2 Conv Blocks", i, i -1)
+          
           self$max_blocks <- (i - 1)
-          return(NULL)
+          break
         }
         
         put_log("The Convolution Block %1 has been added to the CNN MCC Model.", i)
