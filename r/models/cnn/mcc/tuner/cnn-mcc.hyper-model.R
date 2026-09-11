@@ -95,8 +95,9 @@ for the Conv_2d layer...",
 
         if("try-error" %in% class(add_block.result)) {
           put_log("Failed to add Convolution Block %1", i)
-          # put_log(capture.output(str(add_block.result)))
+          put_log(add_block.result)
           
+          # put_log("Sys call stack are as follows:")
           # for(call in as.character(sys.calls())) {
           #   put_log(call)
           # }
