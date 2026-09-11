@@ -82,33 +82,25 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
 for the Conv_2d layer...", 
                 i, lfilters, kr)
 
-        addCB.failed <- FALSE
-        
-        layer <- tryCatch(
+        add_block.result <- try(
           {
-            layer |>
+            layer <- layer |>
               layer_conv_2d(filters = lfilters,
                             kernel_size = kr,
                             # padding = 'same',
                             # strides = list(1L, 1L),
                             activation = "relu") |>
               layer_max_pooling_2d()
-          },
-          error = function(e) {
-            put_log("Failed to add Convolution Block %1
-Error Details:
-%2
-%3", i, paste('Error:', conditionMessage(e)))
-            
-            for(call in as.character(sys.calls())) {
-              put_log(call)
-            }
+          }, silent = TRUE)
 
-            addCB.failed <- TRUE
+        if("try-error" %in% class(add_block.result)) {
+          put_log("Failed to add Convolution Block %1", i)
+          put_log(add_block.result)
+          
+          for(call in as.character(sys.calls())) {
+            put_log(call)
           }
-        )
-        
-        if(addCB.failed) {
+
           put_log("The Convolution Block %1 HAS NOT BEEN ADDED to the CNN MCC Model.
 Building the model with %2 Conv Blocks", i, i -1)
           
@@ -116,6 +108,7 @@ Building the model with %2 Conv Blocks", i, i -1)
           break
         }
         
+        rm(add_block.result)
         put_log("The Convolution Block %1 has been added to the CNN MCC Model.", i)
       }
 
