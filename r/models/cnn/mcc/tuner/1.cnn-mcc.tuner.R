@@ -183,43 +183,53 @@ rm(y.test.groups)
 
 ## Model Tuning ----------------------------------------------------------------
 
-### Init the Model Tuner Paths -------------------------------------------------
-
-cnn_mcc.tuner.prj1.dir <- file.path(cnn_mcc.tuner.dir,"project1")
-
-tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.prj1.dir, 
-                                     "best-model.keras")
-
-tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.prj1.dir,
-                                               "best-model.png")
-
-cnn_mcc.tuner.checkpoints.lr1e_4.dir <- file.path(cnn_mcc.tuner.prj1.dir, 
-                                                  "checkpoints")
-if(!dir.exists(cnn_mcc.tuner.prj1.dir))
-  dir.create(cnn_mcc.tuner.prj1.dir)
-
-if(!dir.exists(cnn_mcc.tuner.checkpoints.lr1e_4.dir))
-  dir.create(cnn_mcc.tuner.checkpoints.lr1e_4.dir)
-
-cnn_mcc.tuner.checkpoints.file_path <- 
-  file.path(cnn_mcc.tuner.checkpoints.lr1e_4.dir, 
-            "{epoch:02d}-{val_loss:.2f}.keras")
-
-### Process the Tuning ---------------------------------------------------------
-
 cnn_mcc.max_conv_blocks = 2
 
 cnn_mcc.tuners <- list()
 cnn_mcc.tuners[[1]] <- NULL
 
 for(i in 2:cnn_mcc.max_conv_blocks) {
+  
+  #* *** Init the Model Tuner Paths *******
+  
+  cnn_mcc.tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
+                                      paste0('proj.', 
+                                             i, 
+                                             'conv-blocks'))
+  
+  tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.proj.dir, 
+                                        paste0('best-model.', 
+                                               i, 
+                                               'cb', 
+                                               '.keras'))
+  
+  tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.dir,
+                                                 paste0('best-model.', 
+                                                        i, 
+                                                        'cb', 
+                                                        '.png'))
+  
+  cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.dir, 
+                                                    "checkpoints")
+  if(!dir.exists(cnn_mcc.tuner.proj.dir))
+    dir.create(cnn_mcc.tuner.proj.dir)
+  
+  if(!dir.exists(cnn_mcc.tuner.checkpoints.dir))
+    dir.create(cnn_mcc.tuner.checkpoints.dir)
+  
+  cnn_mcc.tuner.checkpoints.file_path <- 
+    file.path(cnn_mcc.tuner.checkpoints.dir, 
+              "{epoch:02d}-{val_loss:.2f}.keras")
+  
+  #* ***************
+  
   cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
                                            conv_blocks = i)
   cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                              objective = 'val_accuracy',
                              # max_epochs = 100,
                              hyperband_iterations = 2,
-                             directory = cnn_mcc.tuner.prj1.dir,
+                             directory = cnn_mcc.tuner.proj.dir,
                              project_name = 'tuner.dat')
   
   tcnn_mcc.callbacks <- list(
