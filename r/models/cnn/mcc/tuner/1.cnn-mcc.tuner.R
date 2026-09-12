@@ -182,7 +182,6 @@ rm(y.test.groups)
 
 
 ## Model Tuning ----------------------------------------------------------------
-cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes)
 
 ### Init the Model Tuner Paths -------------------------------------------------
 
@@ -208,33 +207,75 @@ cnn_mcc.tuner.checkpoints.file_path <-
 
 ### Process the Tuning ---------------------------------------------------------
 
-cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
-                           objective = 'val_accuracy',
-                           # max_epochs = 100,
-                           hyperband_iterations = 2,
-                           directory = cnn_mcc.tuner.prj1.dir,
-                           project_name = 'tuner.dat')
+cnn_mcc.max_conv_blocks = 2
 
-tcnn_mcc.callbacks <- list(
-  callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = cnn_mcc.tuner.checkpoints.file_path,
-                            # monitor = "val_loss",
-                            # mode = "auto",
-                            save_best_only = TRUE,
-                            verbose = 1))
-cl <- makeCluster(N_pcCores)
-registerDoParallel(cl)
+cnn_mcc.tuners <- list()
+cnn_mcc.tuners[[1]] <- NULL
 
-# Run the tuner fit process
-cnn_mcc.tuner |> fit_tuner(x = x_train,
-                           y = y_train,
-                           callbacks = tcnn_mcc.callbacks,
-                           # validation_split = 0.2,
-                           validation_data = tuple(x_test, y_test),
-                           epochs = 100L)
+for(i in 2:cnn_mcc.max_conv_blocks) {
+  cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
+                                           conv_blocks = i)
+  cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
+                             objective = 'val_accuracy',
+                             # max_epochs = 100,
+                             hyperband_iterations = 2,
+                             directory = cnn_mcc.tuner.prj1.dir,
+                             project_name = 'tuner.dat')
+  
+  tcnn_mcc.callbacks <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = cnn_mcc.tuner.checkpoints.file_path,
+                              # monitor = "val_loss",
+                              # mode = "auto",
+                              save_best_only = TRUE,
+                              verbose = 1))
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
+  cnn_mcc.fit_tuner.result <- try({
+    # Run the tuner fit process
+    cnn_mcc.tuner |> fit_tuner(x = x_train,
+                               y = y_train,
+                               callbacks = tcnn_mcc.callbacks,
+                               # validation_split = 0.2,
+                               validation_data = tuple(x_test, y_test),
+                               epochs = 100L)
+  }, silent = T)
+  
+  stopCluster(cl)
+  stopImplicitCluster()
+  
+  if("try-error" %in% class(add_block.result)) {
+    put_log("Failed to tune the model with %1 Convolution Blocks.", i)
+    put_log(cnn_mcc.fit_tuner.result)
+    
+    put_log("The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", i)
+    break
+  }
+  
+  if(!is.null(cnn_mcc.hypermodel$error)) break
+  
+  cnn_mcc.tuners[[i]] <- cnn_mcc.tuner
 
-stopCluster(cl)
-stopImplicitCluster()
+  # This prints a summary of the search space and lists the top trial results
+  cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
+  # the list will show the plot and the data.frame of tuning results
+  
+  put_log("The CNN MCC Tuning Results:
+%1", capture.output(cnn_mcc.tuner.result))
+  
+  class(cnn_mcc.tuner)
+  # [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
+  # [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
+  # [5] "python.builtin.object"                      
+  
+  tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
+  tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
+  tcnn_mcc.best_trial$summary()
+  tcnn_mcc.best_trial$best_step
+  
+}
+
 
 ### Tuning Results Summary -----------------------------------------------------
 put_log("The Model Tuning Results Summary:
@@ -479,11 +520,6 @@ put_log("The CNN MCC Tuning Results:
 ### Retrieving the Best Model --------------------------------------------------
 
 cnn_mcc.tuner
-
-class(cnn_mcc.tuner)
-# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
-# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
-# [5] "python.builtin.object"                      
 
 tcnn_mcc.best_models <- kerastuneR::get_best_models(tuner = cnn_mcc.tuner, num_models = 1L)
 tcnn_mcc.best_model <- tcnn_mcc.best_models[[1]]
