@@ -286,8 +286,9 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   
 }
 
+log_close()
 
-### Tuning Results Summary -----------------------------------------------------
+## Tuning Results Summary -----------------------------------------------------
 put_log("The Model Tuning Results Summary:
 %1", capture.output(cnn_mcc.tuner$results_summary()))
 {
