@@ -30,10 +30,12 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     `__init__` = function(self, 
                           num_classes,
+                          start_time,
                           conv_blocks = 5,
                           learning_rate = NULL) {
       
       self$num_classes = num_classes
+      self$start_time = start_time
       self$learning_rate = learning_rate
       self$conv_blocks = conv_blocks
       self$error = NULL
@@ -68,12 +70,12 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                                1e-3, 
                                1e-4))
       
-      put_log("Building next model for tuning with learning rate %1...",
+      put_log("Tuning the model of %1 Convolution Block with the following hype-parameters: 
+%2 Convolution Filters, Learning Rate: %3.",
+              self$conv_blocks,
+              conv_filters,
               ln_rate)
-      
-      put_log("Adding %1 Convolution Blocks to the CNN MCC Model...", 
-              self$conv_blocks)
-      
+
       for (i in 1:self$conv_blocks) {
         
         lfilters <- conv_filters * i

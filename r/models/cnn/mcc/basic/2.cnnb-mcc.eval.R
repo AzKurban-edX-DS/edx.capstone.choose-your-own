@@ -53,7 +53,7 @@ head(y_test.cat)
   invisible()
 }
 
-### Size of the Training Set by Class ------------------------------------------
+### Size of the Test Set by Class ------------------------------------------
 
 put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(test_set$class_groups$groupByClass, n = N.classes)))

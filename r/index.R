@@ -580,6 +580,17 @@ if(file.exists(cnnb_mcc.train_history.file)){
 %1", cnnb_mcc.train_history.file)
   
   plot(cnn_mcc.train_history)
+  
+  best_idx <- length(cnn_mcc.train_history$metrics$accuracy)
+  
+  best_metrics <- c(accuracy = cnn_mcc.train_history$metrics$accuracy[best_idx],
+                    loss = cnn_mcc.train_history$metrics$loss[best_idx],
+                    val_accuracy = cnn_mcc.train_history$metrics$val_accuracy[best_idx],
+                    val_loss = cnn_mcc.train_history$metrics$val_loss[best_idx])
+  
+  put_log("The best values of the CNNB MCC model training result are as follows:
+%1", capture.output(best_metrics))
+  
   rm(cnn_mcc.train_history)
 } else {
   warning("The CNNB MCC model history backup does not exist:
@@ -592,6 +603,10 @@ cnnb_mcc.eval.result <- readRDS(cnnb_mcc.eval.result.file)
 put_log("The CNNB MCC Model Evaluation Result object has been loaded 
 from the following file:
 %1", cnnb_mcc.eval.result.file)
+
+put_log("CNN-Based Basic Multiclass Classifier Model accuracy: %1", 
+        cnnb_mcc.eval.result$accuracy)
+# 0.919615983963013
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 

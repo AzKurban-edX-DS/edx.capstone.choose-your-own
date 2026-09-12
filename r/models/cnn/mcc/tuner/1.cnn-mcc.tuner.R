@@ -191,7 +191,7 @@ cnn_mcc.tuners[[1]] <- NULL
 for(i in 2:cnn_mcc.max_conv_blocks) {
   
   #* *** Init the Model Tuner Paths *******
-  
+ { 
   cnn_mcc.tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
                                       paste0('proj.', 
                                              i, 
@@ -220,9 +220,8 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   cnn_mcc.tuner.checkpoints.file_path <- 
     file.path(cnn_mcc.tuner.checkpoints.dir, 
               "{epoch:02d}-{val_loss:.2f}.keras")
-  
-  #* ***************
-  
+  }
+
   cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
                                            conv_blocks = i)
   cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
@@ -242,6 +241,8 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
   
+  put_log("Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks...",
+          i)
   cnn_mcc.fit_tuner.result <- try({
     # Run the tuner fit process
     cnn_mcc.tuner |> fit_tuner(x = x_train,
@@ -251,6 +252,9 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
                                validation_data = tuple(x_test, y_test),
                                epochs = 100L)
   }, silent = T)
+  
+  put_log("Completed the tuner-fit process for the CNN MCC model with %1 Convolution Blocks.",
+          i)
   
   stopCluster(cl)
   stopImplicitCluster()
