@@ -223,6 +223,7 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   }
 
   cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
+                                           start_time = start,
                                            conv_blocks = i)
   cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
                              objective = 'val_accuracy',
@@ -258,6 +259,7 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   
   stopCluster(cl)
   stopImplicitCluster()
+  put_end_date(start)
   
   if("try-error" %in% class(add_block.result)) {
     put_log("Failed to tune the model with %1 Convolution Blocks.", i)

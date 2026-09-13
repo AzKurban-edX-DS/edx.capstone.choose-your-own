@@ -590,7 +590,10 @@ if(file.exists(cnnb_mcc.train_history.file)){
   
   put_log("The best values of the CNNB MCC model training result are as follows:
 %1", capture.output(best_metrics))
-  
+#  accuracy         loss val_accuracy     val_loss 
+# 0.9070390    0.2745264    0.9250632    0.2219673 
+
+    
   rm(cnn_mcc.train_history)
 } else {
   warning("The CNNB MCC model history backup does not exist:
