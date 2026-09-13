@@ -54,7 +54,8 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       # kernel_size <- hp$Choice('kernel_size',
       #                 c(2L, 3L))
       
-      kernel_size <- hp$Choice(c(3L, 5L))
+      kernel_size <- hp$Choice('kernel_size', 
+                               values = c(3L, 5L))
       
       dense_units <- hp$Int('dense_units',
                             min_value = 128L,
