@@ -235,6 +235,7 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   if(!is.null(cnn_mcc.tune_result$error) ||
      !is.null(cnn_mcc.tune_result$hypermodel$error)) break;
 
+}
   cnn_mcc.tuner <- cnn_mcc.tune_result$tuner
   
   cnn_mcc.tuners[[i]] <- cnn_mcc.tuner
@@ -256,7 +257,6 @@ for(i in 2:cnn_mcc.max_conv_blocks) {
   tcnn_mcc.best_trial$summary()
   tcnn_mcc.best_trial$best_step
   
-}
 
 log_close()
 
