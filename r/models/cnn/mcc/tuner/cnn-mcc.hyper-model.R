@@ -44,7 +44,7 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       self$kernal_size.default = kernal_size.default
       self$cnvFilters.min = cnvFilters.min
       self$cnvFilters.max = cnvFilters.max
-      self$start_date = start_time
+      self$start_date = start_date
       self$learning_rate.default = learning_rate.default
       self$conv_blocks = conv_blocks
       self$error = NULL
@@ -100,8 +100,8 @@ dropout layer 1 rate: %4,
 dense layer units: %5,
 dropout layer 2 rate: %6",
               self$conv_blocks,
-              conv_filters.min_value,
-              ln_rate,
+              self$cnvFilters.default,
+              learning_rate,
               drop1_rate,
               dense_units,
               drop2_rate)

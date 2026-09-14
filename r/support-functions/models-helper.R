@@ -307,7 +307,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                    cnvFilters.min = cnvFilters.min,
                                    cnvFilters.max = cnvFilters.max,
                                    start_date = start_date,
-                                   conv_blocks = 5,
+                                   conv_blocks = conv_blocks,
                                    learning_rate.default = learning_rate.default)
   
   
@@ -322,7 +322,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
   
   callbacks <- list(
     callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = tuner.checkpoints.file_path,
+    callback_model_checkpoint(filepath = checkpoints.file_path,
                               # monitor = "val_loss",
                               # mode = "auto",
                               save_best_only = TRUE,
