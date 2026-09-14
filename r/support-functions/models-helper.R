@@ -4,6 +4,7 @@
 
 ## Building Machine Learning Models --------------------------------------------
 
+
 train.kNN_PCA <- function(x, 
                           y, 
                           k.values, 
@@ -265,6 +266,109 @@ build.dnnb_mcc <- function(hp) {
   
   summary(model)
   model
+}
+
+cnn_mcc.Hyperband.fit_tuner <- function(x.train,
+                                        y.train,
+                                        project.dir,
+                                        validation.data,
+                                        # validation_split = 0.2,
+                                        project.name,
+                                        best_model.file,
+                                        best_model.plot_img.file,
+                                        checkpoints.dir,
+                                        num.classes,
+                                        tune.new_entries,
+                                        hp = NULL,
+                                        objective = 'val_accuracy',
+                                        max_epochs = 100,
+                                        conv_blocks = 2,
+                                        hyperband.iterations = 2,
+                                        kernal_size.default = NULL,
+                                        cnvFilters.default = NULL,
+                                        cnvFilters.min = 32L,
+                                        cnvFilters.max = 128L,
+                                        learning_rate.default = 1e-4,
+                                        start_date = NULL) {
+  if(!dir.exists(project.dir))
+    dir.create(project.dir)
+  
+  if(!dir.exists(checkpoints.dir))
+    dir.create(checkpoints.dir)
+  
+  checkpoints.file_path <- 
+    file.path(checkpoints.dir, 
+              "{epoch:02d}-{val_loss:.2f}.keras")
+  
+  hypermodel <- CNN_MCC.HyperModel(num_classes = num.classes,
+                                   conv_blocks = conv_blocks,
+                                   kernal_size.default = kernal_size.default,
+                                   cnvFilters.default = cnvFilters.default,
+                                   cnvFilters.min = cnvFilters.min,
+                                   cnvFilters.max = cnvFilters.max,
+                                   start_date = start_date,
+                                   conv_blocks = 5,
+                                   learning_rate.default = learning_rate.default)
+  
+  
+  tuner <- Hyperband(hypermodel,
+                     objective = objective,
+                     max_epochs = max_epochs,
+                     hyperband_iterations = hyperband.iterations,
+                     hyperparameters = hp,
+                     tune_new_entries = tune.new_entries,
+                     directory = project.dir,
+                     project_name = project.name)
+  
+  callbacks <- list(
+    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
+    callback_model_checkpoint(filepath = tuner.checkpoints.file_path,
+                              # monitor = "val_loss",
+                              # mode = "auto",
+                              save_best_only = TRUE,
+                              verbose = 1))
+  
+  cl <- makeCluster(N_pcCores)
+  registerDoParallel(cl)
+  
+  put_log("Function `cnn_mcc.tuneHyperband`:
+Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks...",
+          conv_blocks)
+  fit_result <- try({
+    # Run the tuner fit process
+    tuner |> fit_tuner(x = x_train,
+                               y = y_train,
+                               callbacks = callbacks,
+                               # validation_split = 0.2,
+                               validation_data = validation.data,
+                               epochs = 100L)
+  }, silent = T)
+  
+  put_log("Function `cnn_mcc.tuneHyperband`:
+Completed the tuner-fit process for the CNN MCC model with %1 Convolution Blocks.",
+          conv_blocks)
+  
+  
+  
+  stopCluster(cl)
+  stopImplicitCluster()
+  put_end_date(start)
+  
+  tune_result <- list(tuner = tuner,
+                      hypermodel = hypermodel)
+  
+  if("try-error" %in% class(fit_result)) {
+    put_log("Function `cnn_mcc.tuneHyperband`:
+Failed to tune the model with %1 Convolution Blocks.", conv_blocks)
+    put_log(fit_result)
+    
+    put_log("Function `cnn_mcc.tuneHyperband`:
+The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", conv_blocks)
+    
+    tune_result$error <- fit_result
+  }
+  
+  return(tune_result)
 }
 
 cnn_mcc.tunable_model <- function(hp,

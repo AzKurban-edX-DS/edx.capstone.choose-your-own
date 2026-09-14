@@ -30,13 +30,22 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     `__init__` = function(self, 
                           num_classes,
-                          start_time,
+                          kernal_size.default = NULL,
+                          cnvFilters.default = NULL,
+                          cnvFilters.min = 32L,
+                          cnvFilters.max = 128L,
+                          start_date = NULL,
                           conv_blocks = 5,
-                          learning_rate = NULL) {
+                          learning_rate.default = 1e-4
+                          ) {
       
       self$num_classes = num_classes
-      self$start_time = start_time
-      self$learning_rate = learning_rate
+      self$cnvFilters.default = cnvFilters.default
+      self$kernal_size.default = kernal_size.default
+      self$cnvFilters.min = cnvFilters.min
+      self$cnvFilters.max = cnvFilters.max
+      self$start_date = start_time
+      self$learning_rate.default = learning_rate.default
       self$conv_blocks = conv_blocks
       self$error = NULL
       
@@ -44,18 +53,21 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     },
     
     build = function(self, hp) { # [2]
+      
+      if(is.null(self$start_date)) {
+        start <- put_start_date()
+      } else {
+        start <- self$start_date
+      }
+      
+      
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
       layer <- input_layer
-
-      # max_blocks <- ifelse(is.null(self$conv_blocks), 5, self$conv_blocks)
       
       put_log("Maximum number of Convolution Blocks: %1", self$conv_blocks)
       
       # kernel_size <- hp$Choice('kernel_size',
-      #                 c(2L, 3L))
-      
-      kernel_size <- hp$Choice('kernel_size', 
-                               values = c(3L, 5L))
+      #                          c(2L, 3L))
       
       dense_units <- hp$Int('dense_units',
                             min_value = 128L,
@@ -75,15 +87,11 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                              step = 0.1,
                              default = 0.5)  
       
-      ln_rate <- self$learning_rate
-      
-      if(is.null(ln_rate))
-        ln_rate <- hp$Float('learning_rate',
-                            min_value = 1e-4,
-                            max_value = 1e-2,
-                            sampling = "log")
-      
-      conv_filters.min_value <- 32L
+      learning_rate <- hp$Float('learning_rate',
+                                min_value = 1e-4,
+                                max_value = 1e-2,
+                                sampling = "log",
+                                default = self$learning_rate.default)
       
       put_log("Tuning the model of %1 Convolution Block with the following hype-parameters: 
 %2 min number of filters for the Convolution Layes,
@@ -100,10 +108,19 @@ dropout layer 2 rate: %6",
 
       for (i in 1:self$conv_blocks) {
         
-        conv_filters <- hp$Int('conv_filter',
-                               min_value = conv_filters.min_value,
-                               max_value = 256L,
+        conv_filters <- hp$Int(paste0('conv', i, '_filter'),
+                               min_value = ifelse(is.null(self$cnvFilters.default),
+                                                  self$cnvFilters.min,
+                                                  self$cnvFilters.default[i]),
+                               max_value = self$cnvFilters.max,
                                step = 32L)
+        
+        kernel_size <- hp$Int(paste0('conv', i,'_kernel.size'), 
+                              min_value = ifelse(is.null(self$kernal_size.default),
+                                                 3L,
+                                                 self$kernal_size.default[i]),
+                              max_value = 5L,
+                              step = 1L)
 
         put_log("Adding the Conv Block %1 with %2 filters & kernel size = %3 
 for the Conv_2d layer...", 
@@ -135,8 +152,6 @@ Building the model with %2 Conv Blocks", i, i -1)
           break
         }
         
-        conv_filters.min_value <- conv_filters
-        
         rm(add_block.result)
         put_log("The Convolution Block %1 with %2 filters & kernel size = %3
 has been added to the CNN MCC Model.", 
@@ -165,12 +180,12 @@ has been added to the CNN MCC Model.",
       
       model <- keras_model(input_layer, output_layer) |>
         compile(
-          optimizer = keras3::optimizer_adamax(learning_rate = ln_rate),
+          optimizer = keras3::optimizer_adamax(learning_rate),
           loss = 'sparse_categorical_crossentropy',
           metrics = 'accuracy')
       
       put_log("The next model for tuning has been compiled.")
-      put_end_date(self$start_time)
+      put_end_date(start)
       
       return(model)
     }

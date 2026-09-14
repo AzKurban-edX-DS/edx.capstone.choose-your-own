@@ -4,8 +4,7 @@
 
 ## Setup -----------------------------------------------------------------------
 open_logfile(".cnn_mcc.model-tuning")
-
-stopifnot(file.exists(train.img28x28mx.array.file_path))
+stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
 
 start <- put_start_date()
 
@@ -21,8 +20,7 @@ put_log("The Input Dataset of 28x28-size image data has been loaded from the fol
 %1", ds28x28.split.train_0.1.backup.file)
 
 ### Prepare a Training Set -----------------------------------------------------
-start <- put_start_date()
-stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
+
 
 put_log("The Training Set object structure is as follows:
 %1", capture.output(str(train_set)))
@@ -188,88 +186,55 @@ cnn_mcc.max_conv_blocks = 2
 cnn_mcc.tuners <- list()
 cnn_mcc.tuners[[1]] <- NULL
 
+hp <- HyperParameters()
+
 for(i in 2:cnn_mcc.max_conv_blocks) {
   
   #* *** Init the Model Tuner Paths *******
- { 
-  cnn_mcc.tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
-                                      paste0('proj.', 
-                                             i, 
-                                             'conv-blocks'))
-  
-  tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.proj.dir, 
-                                        paste0('best-model.', 
+  { 
+    cnn_mcc.tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
+                                        paste0('proj.', 
                                                i, 
-                                               'cb', 
-                                               '.keras'))
-  
-  tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.dir,
-                                                 paste0('best-model.', 
-                                                        i, 
-                                                        'cb', 
-                                                        '.png'))
-  
-  cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.dir, 
-                                                    "checkpoints")
-  if(!dir.exists(cnn_mcc.tuner.proj.dir))
-    dir.create(cnn_mcc.tuner.proj.dir)
-  
-  if(!dir.exists(cnn_mcc.tuner.checkpoints.dir))
-    dir.create(cnn_mcc.tuner.checkpoints.dir)
-  
-  cnn_mcc.tuner.checkpoints.file_path <- 
-    file.path(cnn_mcc.tuner.checkpoints.dir, 
-              "{epoch:02d}-{val_loss:.2f}.keras")
-  }
-
-  cnn_mcc.hypermodel <- CNN_MCC.HyperModel(num_classes = N.classes,
-                                           start_time = start,
-                                           conv_blocks = i)
-  cnn_mcc.tuner <- Hyperband(cnn_mcc.hypermodel,
-                             objective = 'val_accuracy',
-                             # max_epochs = 100,
-                             hyperband_iterations = 2,
-                             directory = cnn_mcc.tuner.proj.dir,
-                             project_name = 'tuner.dat')
-  
-  tcnn_mcc.callbacks <- list(
-    callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = cnn_mcc.tuner.checkpoints.file_path,
-                              # monitor = "val_loss",
-                              # mode = "auto",
-                              save_best_only = TRUE,
-                              verbose = 1))
-  cl <- makeCluster(N_pcCores)
-  registerDoParallel(cl)
-  
-  put_log("Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks...",
-          i)
-  cnn_mcc.fit_tuner.result <- try({
-    # Run the tuner fit process
-    cnn_mcc.tuner |> fit_tuner(x = x_train,
-                               y = y_train,
-                               callbacks = tcnn_mcc.callbacks,
-                               # validation_split = 0.2,
-                               validation_data = tuple(x_test, y_test),
-                               epochs = 100L)
-  }, silent = T)
-  
-  put_log("Completed the tuner-fit process for the CNN MCC model with %1 Convolution Blocks.",
-          i)
-  
-  stopCluster(cl)
-  stopImplicitCluster()
-  put_end_date(start)
-  
-  if("try-error" %in% class(add_block.result)) {
-    put_log("Failed to tune the model with %1 Convolution Blocks.", i)
-    put_log(cnn_mcc.fit_tuner.result)
+                                               'conv-blocks'))
     
-    put_log("The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", i)
-    break
+    tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.proj.dir, 
+                                          paste0('best-model.', 
+                                                 i, 
+                                                 'cb', 
+                                                 '.keras'))
+    
+    tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.dir,
+                                                   paste0('best-model.', 
+                                                          i, 
+                                                          'cb', 
+                                                          '.png'))
+    
+    cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.dir, 
+                                               "checkpoints")
   }
   
-  if(!is.null(cnn_mcc.hypermodel$error)) break
+  hp$Float("learning_rate", min_value=1e-4, max_value=1e-2, sampling="log")
+ 
+  
+  cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(x_train,
+                                             y_train,
+                                             validation.data = tuple(x_test, y_test),
+                                             cnn_mcc.tuner.proj.dir,
+                                             'tuner.dat',
+                                             tcnn_mcc.best_model.file,
+                                             tcnn_mcc.best_model.plot_img.file,
+                                             cnn_mcc.tuner.checkpoints.dir,
+                                             num.classes = N.classes,
+                                             tune.new_entries = FALSE,
+                                             hp = hp,
+                                             cnvFilters.default = c(32L, 64L),
+                                             start_date = start)
+  
+  
+  if(!is.null(tune_result$error) ||
+     !is.null(tune_result$hypermodel$error)) break;
+
+  cnn_mcc.tuner <- tune_result$tuner
   
   cnn_mcc.tuners[[i]] <- cnn_mcc.tuner
 
