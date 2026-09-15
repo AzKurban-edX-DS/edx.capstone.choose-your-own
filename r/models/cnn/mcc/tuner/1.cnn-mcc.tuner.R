@@ -300,6 +300,10 @@ tcnn_mcc.best_lr <- cnn_mcc.tuner.best_hp$values$learning_rate
 # 0.003610324
 
 log_close()
+# =========================================================================
+# Log End Time: 2026-09-14 17:59:39.159371
+# Log Elapsed Time: 0 11:45:48
+# =========================================================================
 
 #### Tune `conv filters` parameter --------------------------------------------
 
@@ -342,11 +346,11 @@ hp$Int("conv2_filters",
 cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(x_train,
                                                    y_train,
                                                    validation.data = tuple(x_test, y_test),
-                                                   cnn_mcc.tuner.proj.dir,
-                                                   'tuner.dat',
-                                                   tcnn_mcc.best_model.file,
-                                                   tcnn_mcc.best_model.plot_img.file,
-                                                   cnn_mcc.tuner.checkpoints.dir,
+                                                   project.dir = cnn_mcc.tuner.proj.dir,
+                                                   project.name = 'tuner.dat',
+                                                   best_model.file = tcnn_mcc.best_model.file,
+                                                   best_model.plot_img.file = tcnn_mcc.best_model.plot_img.file,
+                                                   checkpoints.dir = cnn_mcc.tuner.checkpoints.dir,
                                                    num.classes = N.classes,
                                                    tune.new_entries = FALSE,
                                                    hp = hp,

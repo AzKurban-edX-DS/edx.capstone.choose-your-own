@@ -270,8 +270,8 @@ build.dnnb_mcc <- function(hp) {
 
 cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                         y.train,
-                                        project.dir,
                                         validation.data,
+                                        project.dir,
                                         # validation_split = 0.2,
                                         project.name,
                                         best_model.file,
@@ -284,11 +284,10 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                         max_epochs = 100,
                                         conv_blocks = 2,
                                         hyperband.iterations = 2,
-                                        kernal_size.default = NULL,
-                                        cnvFilters.default = NULL,
+                                        kernal_size.min = 3L,
+                                        kernal_size.max = 5L,
                                         cnvFilters.min = 32L,
                                         cnvFilters.max = 128L,
-                                        learning_rate.default = 1e-4,
                                         start_date = NULL) {
   if(!dir.exists(project.dir))
     dir.create(project.dir)
@@ -302,13 +301,12 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
   
   hypermodel <- CNN_MCC.HyperModel(num_classes = num.classes,
                                    conv_blocks = conv_blocks,
-                                   kernal_size.default = kernal_size.default,
-                                   cnvFilters.default = cnvFilters.default,
+                                   kernal_size.min = kernal_size.min,
+                                   kernal_size.max = kernal_size.max,
                                    cnvFilters.min = cnvFilters.min,
                                    cnvFilters.max = cnvFilters.max,
                                    start_date = start_date,
-                                   conv_blocks = conv_blocks,
-                                   learning_rate.default = learning_rate.default)
+                                   conv_blocks = conv_blocks)
   
   
   tuner <- Hyperband(hypermodel,

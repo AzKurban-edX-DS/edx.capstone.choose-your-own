@@ -30,22 +30,24 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     `__init__` = function(self, 
                           num_classes,
-                          kernal_size.default = NULL,
-                          cnvFilters.default = NULL,
+                          kernal_size.min = 3L,
+                          kernal_size.max = 5L,
                           cnvFilters.min = 32L,
                           cnvFilters.max = 128L,
                           start_date = NULL,
-                          conv_blocks = 5,
-                          learning_rate.default = 1e-4
-                          ) {
+                          conv_blocks) {
       
       self$num_classes = num_classes
-      self$cnvFilters.default = cnvFilters.default
       self$kernal_size.default = kernal_size.default
+      self$kernal_size.default = kernal_size.default
+      
       self$cnvFilters.min = cnvFilters.min
       self$cnvFilters.max = cnvFilters.max
-      self$start_date = start_date
-      self$learning_rate.default = learning_rate.default
+      
+      self$start_date = ifelse(is.null(start_date), 
+                               Sys.time(), 
+                               start_date)
+      
       self$conv_blocks = conv_blocks
       self$error = NULL
       
@@ -90,19 +92,18 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       learning_rate <- hp$Float('learning_rate',
                                 min_value = 1e-4,
                                 max_value = 1e-2,
-                                sampling = "log",
-                                default = self$learning_rate.default)
+                                sampling = "log")
       
-      put_log("Tuning the model of %1 Convolution Block with the following hype-parameters: 
-%2 min number of filters for the Convolution Layes,
-Learning Rate: %3.
-dropout layer 1 rate: %4,
-dense layer units: %5,
-dropout layer 2 rate: %6",
+      put_log("Tuning the model of %1 Convolution Blocks with the following hype-parameters: 
+Min `conv filters`: %2,
+Max `conv filters`: %3, 
+Learning Rate: %4.
+dropout layer 1 rate: %5,
+dense layer units: %6,
+dropout layer 2 rate: %7",
               self$conv_blocks,
-              ifelse(is.null(self$cnvFilters.default),
-                     self$cnvFilters.min,
-                     self$cnvFilters.default)[1],
+              self$cnvFilters.min,
+              self$cnvFilters.max,
               learning_rate,
               drop1_rate,
               dense_units,
@@ -111,17 +112,13 @@ dropout layer 2 rate: %6",
       for (i in 1:self$conv_blocks) {
         
         conv_filters <- hp$Int(paste0('conv', i, '_filters'),
-                               min_value = ifelse(is.null(self$cnvFilters.default),
-                                                  self$cnvFilters.min,
-                                                  self$cnvFilters.default[i]),
+                               min_value = self$cnvFilters.min,
                                max_value = self$cnvFilters.max,
                                step = 32L)
         
         kernel_size <- hp$Int(paste0('conv', i,'_kernel.size'), 
-                              min_value = ifelse(is.null(self$kernal_size.default),
-                                                 3L,
-                                                 self$kernal_size.default[i]),
-                              max_value = 5L,
+                              min_value = kernal_size.min,
+                              max_value = kernal_size.max,
                               step = 1L)
 
         put_log("Adding the Conv Block %1 with %2 filters & kernel size = %3 
