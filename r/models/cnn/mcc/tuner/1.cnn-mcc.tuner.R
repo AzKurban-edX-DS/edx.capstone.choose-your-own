@@ -223,17 +223,16 @@ hp$Float("learning_rate", min_value=1e-4, max_value=1e-2, sampling="log")
 cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(x_train,
                                                    y_train,
                                                    validation.data = tuple(x_test, y_test),
-                                                   cnn_mcc.tuner.proj.dir,
-                                                   'tuner.dat',
-                                                   tcnn_mcc.best_model.file,
-                                                   tcnn_mcc.best_model.plot_img.file,
-                                                   cnn_mcc.tuner.checkpoints.dir,
+                                                   project.dir = cnn_mcc.tuner.proj.dir,
+                                                   project.name = 'tuner.dat',
+                                                   best_model.file = tcnn_mcc.best_model.file,
+                                                   best_model.plot_img.file = tcnn_mcc.best_model.plot_img.file,
+                                                   checkpoints.dir = cnn_mcc.tuner.checkpoints.dir,
                                                    num.classes = N.classes,
                                                    tune.new_entries = FALSE,
                                                    hp = hp,
                                                    conv_blocks = n.cnv_blocks,
-                                                   cnvFilters.default = c(32L, 64L),
-                                                   start_date = start)
+                                                   cnvFilters.min = 32L)
 
 
 if(!is.null(cnn_mcc.tune_result$error) ||
@@ -297,6 +296,7 @@ put_log("The best Hyperparameters values:
 %1", capture.output(cnn_mcc.tuner.best_hp$values))
 
 tcnn_mcc.best_lr <- cnn_mcc.tuner.best_hp$values$learning_rate
+tcnn_mcc.best_lr
 # 0.003610324
 
 log_close()
@@ -308,8 +308,6 @@ log_close()
 #### Tune `conv filters` parameter --------------------------------------------
 
 open_logfile(".cnn_mcc.model-tuning.conv-filters")
-
-conv_filters.max <- 128
 
 
 
@@ -333,10 +331,14 @@ tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.dir,
 cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.dir, 
                                            "checkpoints")
 
-conv1_filters <- 32L
+conv_filters.max <- 128
+conv_filters.min <- 32L
 
-hp$Fixed("learning_rate", value = tcnn_mcc.best_lr)
-hp$Fixed("conv1_filters", value = conv1_filters)
+conv1_filters <- conv_filters.min
+
+# hp$Fixed("learning_rate", value = tcnn_mcc.best_lr)
+# hp$Fixed("conv1_filters", value = conv1_filters)
+# hp$Int("conv1_filters", value = conv1_filters)
 
 hp$Int("conv2_filters", 
        min_value = conv1_filters,
@@ -355,8 +357,8 @@ cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(x_train,
                                                    tune.new_entries = FALSE,
                                                    hp = hp,
                                                    conv_blocks = n.cnv_blocks,
-                                                   cnvFilters.min = 32L,
-                                                   start_date = start)
+                                                   cnvFilters.min = conv1_filters,
+                                                   learning_rate.min = tcnn_mcc.best_lr)
 
 
 if(!is.null(cnn_mcc.tune_result$error) ||

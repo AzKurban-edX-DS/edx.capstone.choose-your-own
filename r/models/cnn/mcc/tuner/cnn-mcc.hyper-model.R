@@ -34,15 +34,20 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                           kernal_size.max = 5L,
                           cnvFilters.min = 32L,
                           cnvFilters.max = 128L,
+                          learning_rate.min = 1e-4,
+                          learning_rate.max = 1e-2,
                           start_date = NULL,
                           conv_blocks) {
       
       self$num_classes = num_classes
-      self$kernal_size.default = kernal_size.default
-      self$kernal_size.default = kernal_size.default
+      self$kernal_size.min = kernal_size.min
+      self$kernal_size.max = kernal_size.max
       
       self$cnvFilters.min = cnvFilters.min
       self$cnvFilters.max = cnvFilters.max
+      
+      self$learning_rate.min = learning_rate.min
+      self$learning_rate.max = learning_rate.max
       
       self$start_date = ifelse(is.null(start_date), 
                                Sys.time(), 
@@ -90,8 +95,8 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                              default = 0.5)  
       
       learning_rate <- hp$Float('learning_rate',
-                                min_value = 1e-4,
-                                max_value = 1e-2,
+                                min_value = self$learning_rate.min,
+                                max_value = self$learning_rate.max,
                                 sampling = "log")
       
       put_log("Tuning the model of %1 Convolution Blocks with the following hype-parameters: 
@@ -117,8 +122,8 @@ dropout layer 2 rate: %7",
                                step = 32L)
         
         kernel_size <- hp$Int(paste0('conv', i,'_kernel.size'), 
-                              min_value = kernal_size.min,
-                              max_value = kernal_size.max,
+                              min_value = self$kernal_size.min,
+                              max_value = self$kernal_size.max,
                               step = 1L)
 
         put_log("Adding the Conv Block %1 with %2 filters & kernel size = %3 
