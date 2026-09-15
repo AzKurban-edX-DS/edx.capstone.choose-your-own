@@ -108,7 +108,7 @@ dropout layer 2 rate: %6",
 
       for (i in 1:self$conv_blocks) {
         
-        conv_filters <- hp$Int(paste0('conv', i, '_filter'),
+        conv_filters <- hp$Int(paste0('conv', i, '_filters'),
                                min_value = ifelse(is.null(self$cnvFilters.default),
                                                   self$cnvFilters.min,
                                                   self$cnvFilters.default[i]),
