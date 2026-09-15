@@ -290,6 +290,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                         cnvFilters.max = 128L,
                                         learning_rate.min = 1e-4,
                                         learning_rate.max = 1e-2,
+                                        learning_rate.fixed = NA,
                                         start_date = NULL) {
   if(!dir.exists(project.dir))
     dir.create(project.dir)
@@ -309,6 +310,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                    cnvFilters.max = cnvFilters.max,
                                    learning_rate.min = learning_rate.min,
                                    learning_rate.max = learning_rate.max,
+                                   learning_rate.fixed = learning_rate.fixed,
                                    start_date = start_date,
                                    conv_blocks = conv_blocks)
   

@@ -36,6 +36,7 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                           cnvFilters.max = 128L,
                           learning_rate.min = 1e-4,
                           learning_rate.max = 1e-2,
+                          learning_rate.fixed = NA,
                           start_date = NULL,
                           conv_blocks) {
       
@@ -48,6 +49,7 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       
       self$learning_rate.min = learning_rate.min
       self$learning_rate.max = learning_rate.max
+      self$learning_rate.fixed = learning_rate.fixed
       
       self$start_date = ifelse(is.null(start_date), 
                                Sys.time(), 
@@ -94,10 +96,15 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                              step = 0.1,
                              default = 0.5)  
       
-      learning_rate <- hp$Float('learning_rate',
-                                min_value = self$learning_rate.min,
-                                max_value = self$learning_rate.max,
-                                sampling = "log")
+      if(is.na(self$learning_rate.fixed)) {
+        learning_rate <- hp$Float('learning_rate',
+                                  min_value = self$learning_rate.min,
+                                  max_value = self$learning_rate.max,
+                                  sampling = "log")
+      } else {
+        learning_rate <- self$learning_rate.fixed
+      }
+      
       
       put_log("Tuning the model of %1 Convolution Blocks with the following hype-parameters: 
 Min `conv filters`: %2,
@@ -164,9 +171,12 @@ has been added to the CNN MCC Model.",
                 kernel_size)
       }
 
-      put_log("Adding the final dense hidden layers block...")
-      
-      
+      put_log("Adding the final dense hidden layers block with the following parameters:
+`drop1 rate:`%1;
+`drop2 rate` %2",
+              drop1_rate,
+              drop2_rate)
+
       layer <- layer |>
         layer_dropout(drop1_rate) |>
         layer_flatten() |>

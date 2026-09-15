@@ -358,7 +358,7 @@ cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(x_train,
                                                    hp = hp,
                                                    conv_blocks = n.cnv_blocks,
                                                    cnvFilters.min = conv1_filters,
-                                                   learning_rate.min = tcnn_mcc.best_lr)
+                                                   learning_rate.fixed = tcnn_mcc.best_lr)
 
 
 if(!is.null(cnn_mcc.tune_result$error) ||
