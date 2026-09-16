@@ -341,6 +341,9 @@ put_log("The DNNB MCC Model Evaluation Result object has been loaded
 from the following file:
 %1", dnnb_mcc.eval.result.file)
 
+dnnb_mcc.eval.result$accuracy
+# 0.8970146
+
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
 #' about to launch:
@@ -476,6 +479,9 @@ tdnn_mcc.final.eval.result <- readRDS(tdnn_mcc.final.eval_result.file)
 put_log("The Tuned DNN-Based MCC Final Model Evaluation Result object 
 has been loaded from the following file:
 %1", tdnn_mcc.final.eval_result.file)
+
+tdnn_mcc.final.eval.result$accuracy
+# 0.8848261
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 

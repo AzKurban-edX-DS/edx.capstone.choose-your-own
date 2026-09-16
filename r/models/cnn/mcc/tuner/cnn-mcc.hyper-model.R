@@ -38,7 +38,7 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                           learning_rate.max = 1e-2,
                           learning_rate.fixed = NA,
                           start_date = NULL,
-                          conv_blocks) {
+                          conv_blocks.max = 3) {
       
       self$num_classes = num_classes
       self$kernal_size.min = kernal_size.min
@@ -55,7 +55,7 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
                                Sys.time(), 
                                start_date)
       
-      self$conv_blocks = conv_blocks
+      self$conv_blocks.max = conv_blocks.max
       self$error = NULL
       
       NULL
@@ -73,10 +73,15 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
       layer <- input_layer
       
-      put_log("Maximum number of Convolution Blocks: %1", self$conv_blocks)
+      put_log("Maximum number of Convolution Blocks: %1", self$conv_blocks.max)
       
       # kernel_size <- hp$Choice('kernel_size',
       #                          c(2L, 3L))
+      
+      conv_blocks <- hp$Int('conv_blocks',
+                            min_value = 2L,
+                            max_value = self$conv_blocks.max,
+                            step = 1L)
       
       dense_units <- hp$Int('dense_units',
                             min_value = 128L,
@@ -113,7 +118,7 @@ Learning Rate: %4.
 dropout layer 1 rate: %5,
 dense layer units: %6,
 dropout layer 2 rate: %7",
-              self$conv_blocks,
+              self$conv_blocks.max,
               self$cnvFilters.min,
               self$cnvFilters.max,
               learning_rate,
@@ -121,7 +126,7 @@ dropout layer 2 rate: %7",
               dense_units,
               drop2_rate)
 
-      for (i in 1:self$conv_blocks) {
+      for (i in 1:self$conv_blocks.max) {
         
         conv_filters <- hp$Int(paste0('conv', i, '_filters'),
                                min_value = self$cnvFilters.min,
@@ -157,7 +162,7 @@ for the Conv_2d layer...",
           put_log("The Convolution Block %1 HAS NOT BEEN ADDED to the CNN MCC Model.
 Building the model with %2 Conv Blocks", i, i -1)
           
-          self$conv_blocks <- (i - 1)
+          self$conv_blocks.max <- (i - 1)
           self$error <- add_block.result
           
           break
