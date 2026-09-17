@@ -194,29 +194,24 @@ open_logfile(".cnn_mcc.model-tuning.architecture")
 
 
 cnn_mcc.tuner.proj.arch.dir <- file.path(cnn_mcc.tuner.dir, 
-                                         'proj.architecture')
+                                         'proj.architecture2')
 
 cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.arch.dir, 
                                            "checkpoints")
 
 hp <- HyperParameters()
 
-
-
 hp$Choice('conv_blocks', c(2L, 3L))
 hp$Choice('conv_padding', c('same', 'valid'))
 
-for (i in 1:3) {
-  hp$Int(paste0('conv', i, '_filters'),
-         min_value = 32L,
-         max_value = 128L,
-         step = 32L)
-  
-  hp$Choice(paste0('conv', i,'_kernel.size'), c(3L, 5L))
-}
-
-
-
+# for (i in 1:3) {
+#   hp$Int(paste0('conv', i, '_filters'),
+#          min_value = 32L,
+#          max_value = 256L,
+#          step = 32L)
+#   
+#   hp$Choice(paste0('conv', i,'_kernel.size'), c(2L, 3L, 4L, 5L))
+# }
 
 dense_units <- hp$Int('dense_units',
                       min_value = 128L,
@@ -232,12 +227,12 @@ dense_units <- hp$Int('dense_units',
 dropout1 <- hp$Float('dropout1',
                        min_value = 0.2,
                        max_value = 0.5,
-                       step = 0.1)
+                       step = 0.05)
 
 dropout2 <- hp$Float('dropout2',
                        min_value = 0.2,
                        max_value = 0.5,
-                       step = 0.1)
+                       step = 0.05)
 
 hp$Fixed("learning_rate", value = 1e-4)
 
@@ -271,22 +266,10 @@ cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
 put_log("The CNN MCC Tuning Results:
 %1", capture.output(cnn_mcc.tuner.result))
 
-
-# class(cnn_mcc.tuner)
-# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
-# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
-# [5] "python.builtin.object"                      
-
-# tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
-# tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
-# tcnn_mcc.best_trial$summary()
-
 cnn_mcc.tuner$results_summary()
 {
   invisible()
 }
-
-put_log("The best step of the best trial: %1", tcnn_mcc.best_trial$best_step)
 
 cnn_mcc.tuner.best_hp <- 
   cnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
@@ -294,8 +277,38 @@ cnn_mcc.tuner.best_hp <-
 put_log("The best Hyperparameters values:
 %1", capture.output(cnn_mcc.tuner.best_hp$values))
 
-tcnn_mcc.best_c2filters <- cnn_mcc.tuner.best_hp$values$conv2_filters
-# 0.003610324
+# class(cnn_mcc.tuner)
+# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
+# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
+# [5] "python.builtin.object"                      
+
+tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
+tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
+
+put_log("The best step of the best trial: %1", tcnn_mcc.best_trial$best_step)
+# 9
+
+tcnn_mcc.best_trial$summary()
+# Trial 0027 summary
+# Hyperparameters:
+# conv_blocks: 2
+# conv_padding: valid
+# conv1_filters: 128
+# conv1_kernel.size: 5
+# conv2_filters: 64
+# conv2_kernel.size: 5
+# conv3_filters: 64
+# conv3_kernel.size: 5
+# dense_units: 384
+# dropout1: 0.2
+# dropout2: 0.2
+# learning_rate: 0.0001
+# tuner/epochs: 10
+# tuner/initial_epoch: 0
+# tuner/bracket: 0
+# tuner/round: 0
+# Score: 0.8522263765335083
+
 
 log_close()
 ### Tune `learning rate` parameter ---------------------------------------------

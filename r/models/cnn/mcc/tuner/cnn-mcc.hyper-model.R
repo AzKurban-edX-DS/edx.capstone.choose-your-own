@@ -57,8 +57,16 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       
       for (i in 1:hp$get('conv_blocks')) {
         
-        conv_filters <- hp$get(paste0('conv', i, '_filters'))
-        kernel_size <- hp$get(paste0('conv', i,'_kernel.size'))                       
+        # conv_filters <- hp$get(paste0('conv', i, '_filters'))
+        # kernel_size <- hp$get(paste0('conv', i,'_kernel.size'))  
+        
+        conv_filters <- hp$Int(paste0('conv', i, '_filters'),
+                               min_value = 32L,
+                               max_value = 256L,
+                               step = 32L)
+        
+        kernel_size <- hp$Choice(paste0('conv', i,'_kernel.size'), 
+                                 c(2L, 3L, 4L, 5L))
 
         add_block.result <- try(
           {
