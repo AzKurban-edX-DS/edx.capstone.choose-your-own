@@ -199,6 +199,16 @@ cnn_mcc.tuner.proj.arch.dir <- file.path(cnn_mcc.tuner.dir,
 cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.arch.dir, 
                                            "checkpoints")
 
+tcnn_mcc.arch.best_model.file <- file.path(cnn_mcc.tuner.proj.arch.dir, 
+                                      paste0('arch-tuned.best-model', 
+                                             '.keras'))
+
+tcnn_mcc.arch.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.arch.dir,
+                                               paste0('arch-tuned.best-model.plot', 
+                                                      '.png'))
+
+#### Process the Tuning --------------------------------------------------------
+
 hp <- HyperParameters()
 
 hp$Choice('conv_blocks', c(2L, 3L))
@@ -276,7 +286,60 @@ cnn_mcc.tuner.best_hp <-
 
 put_log("The best Hyperparameters values:
 %1", capture.output(cnn_mcc.tuner.best_hp$values))
-
+{
+  # $conv_blocks
+  # [1] 2
+  # 
+  # $conv_padding
+  # [1] "same"
+  # 
+  # $dense_units
+  # [1] 320
+  # 
+  # $dropout1
+  # [1] 0.3
+  # 
+  # $dropout2
+  # [1] 0.2
+  # 
+  # $learning_rate
+  # [1] 1e-04
+  # 
+  # $conv1_filters
+  # [1] 224
+  # 
+  # $conv1_kernel.size
+  # [1] 5
+  # 
+  # $conv2_filters
+  # [1] 224
+  # 
+  # $conv2_kernel.size
+  # [1] 5
+  # 
+  # $conv3_filters
+  # [1] 256
+  # 
+  # $conv3_kernel.size
+  # [1] 4
+  # 
+  # $`tuner/epochs`
+  # [1] 10
+  # 
+  # $`tuner/initial_epoch`
+  # [1] 4
+  # 
+  # $`tuner/bracket`
+  # [1] 1
+  # 
+  # $`tuner/round`
+  # [1] 1
+  # 
+  # $`tuner/trial_id`
+  # [1] "0052"  
+  
+  invisible()
+}
 # class(cnn_mcc.tuner)
 # [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
 # [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
@@ -289,28 +352,54 @@ put_log("The best step of the best trial: %1", tcnn_mcc.best_trial$best_step)
 # 9
 
 tcnn_mcc.best_trial$summary()
-# Trial 0027 summary
+# Trial 0054 summary
 # Hyperparameters:
 # conv_blocks: 2
-# conv_padding: valid
-# conv1_filters: 128
-# conv1_kernel.size: 5
-# conv2_filters: 64
-# conv2_kernel.size: 5
-# conv3_filters: 64
-# conv3_kernel.size: 5
-# dense_units: 384
-# dropout1: 0.2
+# conv_padding: same
+# dense_units: 320
+# dropout1: 0.30000000000000004
 # dropout2: 0.2
 # learning_rate: 0.0001
+# conv1_filters: 224
+# conv1_kernel.size: 5
+# conv2_filters: 224
+# conv2_kernel.size: 5
+# conv3_filters: 256
+# conv3_kernel.size: 4
 # tuner/epochs: 10
-# tuner/initial_epoch: 0
-# tuner/bracket: 0
-# tuner/round: 0
-# Score: 0.8522263765335083
+# tuner/initial_epoch: 4
+# tuner/bracket: 1
+# tuner/round: 1
+# tuner/trial_id: 0052
+# Score: 0.8752390742301941
 
+#### Retrieving the Best Model --------------------------------------------------
+
+#tcnn_mcc.arch.best_model <- tcnn_mcc.best_models[[1]]
+# rm(tcnn_mcc.best_models)
+
+
+tcnn_mcc.arch.best_model <- 
+  kerastuneR::get_best_models(tuner = cnn_mcc.tuner, 
+                              num_models = 1L)[[1]]
+
+tcnn_mcc.arch.best_model |> plot_keras_model(to_file = tcnn_mcc.arch.best_model.plot_img.file,
+                                   show_shapes = T)
+
+put_log("Saving the CNN MCC Best Model...")
+keras3::save_model(tcnn_mcc.best_model,
+                   file = tcnn_mcc.arch.best_model.file,
+                   overwrite = TRUE)
+
+put_log("The CNN MCC Best Model object has been saved in the following file:
+  %1", tcnn_mcc.best_model.file)
 
 log_close()
+# =========================================================================
+# Log End Time: 2026-09-17 15:52:15.277699
+# Log Elapsed Time: 0 06:03:02
+# =========================================================================
+
 ### Tune `learning rate` parameter ---------------------------------------------
 
 open_logfile(".cnn_mcc.model-tuning.learning-rate")
