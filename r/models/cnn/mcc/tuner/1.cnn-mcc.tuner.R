@@ -182,18 +182,134 @@ log_close()
 ## Model Tuning ----------------------------------------------------------------
 
 
-cnn_mcc.max_conv_blocks = 2
+# cnn_mcc.max_conv_blocks = 2
 
 cnn_mcc.tuners <- list()
 cnn_mcc.tuners[[1]] <- NULL
 
+
+### Tune the Model Architecture --------------------------------------------
+
+open_logfile(".cnn_mcc.model-tuning.architecture")
+
+
+cnn_mcc.tuner.proj.arch.dir <- file.path(cnn_mcc.tuner.dir, 
+                                         'proj.architecture')
+
+cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.arch.dir, 
+                                           "checkpoints")
+
 hp <- HyperParameters()
 
-### Start tuning with 2 convolution blocks -------------------------------------
 
-n.cnv_blocks <- 2
 
-#### Tune `learning rate` parameter --------------------------------------------
+hp$Choice('conv_blocks', c(2L, 3L))
+hp$Choice('conv_padding', c('same', 'valid'))
+
+for (i in 1:3) {
+  hp$Int(paste0('conv', i, '_filters'),
+         min_value = 32L,
+         max_value = 128L,
+         step = 32L)
+  
+  hp$Choice(paste0('conv', i,'_kernel.size'), c(3L, 5L))
+}
+
+
+
+
+dense_units <- hp$Int('dense_units',
+                      min_value = 128L,
+                      max_value = 512L,
+                      step = 64L)
+
+# dropout1 <- hp$Float('dropout1',
+#                        min_value = 0.2,
+#                        max_value = 0.5,
+#                        step = 0.05,
+#                        default = 0.25)
+# 
+dropout1 <- hp$Float('dropout1',
+                       min_value = 0.2,
+                       max_value = 0.5,
+                       step = 0.1)
+
+dropout2 <- hp$Float('dropout2',
+                       min_value = 0.2,
+                       max_value = 0.5,
+                       step = 0.1)
+
+hp$Fixed("learning_rate", value = tcnn_mcc.best_lr)
+
+
+# hp$Fixed("conv1_filters", value = conv1_filters)
+# hp$Int("conv1_filters", value = conv1_filters)
+
+
+
+hp$Int("conv2_filters", 
+       min_value = conv1_filters,
+       max_value = conv_filters.max,
+       step = 32L)
+
+cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(hp,
+                                                   x_train,
+                                                   y_train,
+                                                   validation.data = tuple(x_test, y_test),
+                                                   project.dir = cnn_mcc.tuner.proj.arch.dir,
+                                                   project.name = 'tuner.dat',
+                                                   checkpoints.dir = cnn_mcc.tuner.checkpoints.dir)
+
+
+if(!is.null(cnn_mcc.tune_result$error) ||
+   !is.null(cnn_mcc.tune_result$hypermodel$error)) {
+  put_log("Some error(s) occurred while tuning.")
+  
+  if(!is.null(cnn_mcc.tune_result$error))
+    put_log(cnn_mcc.tune_result$error)
+  
+  if(!is.null(cnn_mcc.tune_result$hypermodel$error))
+    put_log(cnn_mcc.tune_result$hypermodel$error)
+}
+
+cnn_mcc.tuner <- cnn_mcc.tune_result$tuner
+cnn_mcc.tuners$tuned_by.learning_rate <- cnn_mcc.tuner
+
+# This prints a summary of the search space and lists the top trial results
+cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
+# the list will show the plot and the data.frame of tuning results
+
+put_log("The CNN MCC Tuning Results:
+%1", capture.output(cnn_mcc.tuner.result))
+
+
+# class(cnn_mcc.tuner)
+# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
+# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
+# [5] "python.builtin.object"                      
+
+# tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
+# tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
+# tcnn_mcc.best_trial$summary()
+
+cnn_mcc.tuner$results_summary()
+{
+  invisible()
+}
+
+put_log("The best step of the best trial: %1", tcnn_mcc.best_trial$best_step)
+
+cnn_mcc.tuner.best_hp <- 
+  cnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
+
+put_log("The best Hyperparameters values:
+%1", capture.output(cnn_mcc.tuner.best_hp$values))
+
+tcnn_mcc.best_c2filters <- cnn_mcc.tuner.best_hp$values$conv2_filters
+# 0.003610324
+
+log_close()
+### Tune `learning rate` parameter ---------------------------------------------
 
 open_logfile(".cnn_mcc.model-tuning.learning-rate")
 
@@ -305,114 +421,6 @@ log_close()
 # Log Elapsed Time: 0 11:45:48
 # =========================================================================
 
-#### Tune `conv filters` parameter --------------------------------------------
-
-open_logfile(".cnn_mcc.model-tuning.conv-filters")
-
-
-
-cnn_mcc.tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
-                                    paste0('proj.', 
-                                           n.cnv_blocks, 
-                                           'conv-blocks.c1f32'))
-
-tcnn_mcc.best_model.file <- file.path(cnn_mcc.tuner.proj.dir, 
-                                      paste0('best-model.', 
-                                             n.cnv_blocks, 
-                                             'cb.c1f32', 
-                                             '.keras'))
-
-tcnn_mcc.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.dir,
-                                               paste0('best-model.', 
-                                                      n.cnv_blocks, 
-                                                      'cb.c1f32', 
-                                                      '.png'))
-
-cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.dir, 
-                                           "checkpoints")
-
-conv_filters.max <- 128
-conv_filters.min <- 32L
-
-conv1_filters <- conv_filters.min
-
-# hp$Fixed("learning_rate", value = tcnn_mcc.best_lr)
-# hp$Fixed("conv1_filters", value = conv1_filters)
-# hp$Int("conv1_filters", value = conv1_filters)
-
-hp$Int("conv2_filters", 
-       min_value = conv1_filters,
-       max_value = conv_filters.max,
-       step = 32L)
-
-cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(x_train,
-                                                   y_train,
-                                                   validation.data = tuple(x_test, y_test),
-                                                   project.dir = cnn_mcc.tuner.proj.dir,
-                                                   project.name = 'tuner.dat',
-                                                   best_model.file = tcnn_mcc.best_model.file,
-                                                   best_model.plot_img.file = tcnn_mcc.best_model.plot_img.file,
-                                                   checkpoints.dir = cnn_mcc.tuner.checkpoints.dir,
-                                                   num.classes = N.classes,
-                                                   tune.new_entries = FALSE,
-                                                   hp = hp,
-                                                   conv_blocks = n.cnv_blocks,
-                                                   cnvFilters.min = conv1_filters,
-                                                   learning_rate.fixed = tcnn_mcc.best_lr)
-
-
-if(!is.null(cnn_mcc.tune_result$error) ||
-   !is.null(cnn_mcc.tune_result$hypermodel$error)) {
-  put_log("Some error(s) occurred while tuning.")
-  
-  if(!is.null(cnn_mcc.tune_result$error))
-    put_log(cnn_mcc.tune_result$error)
-  
-  if(!is.null(cnn_mcc.tune_result$hypermodel$error))
-    put_log(cnn_mcc.tune_result$hypermodel$error)
-}
-
-cnn_mcc.tuner <- cnn_mcc.tune_result$tuner
-cnn_mcc.tuners$tuned_by.learning_rate <- cnn_mcc.tuner
-
-# This prints a summary of the search space and lists the top trial results
-cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
-# the list will show the plot and the data.frame of tuning results
-
-put_log("The CNN MCC Tuning Results:
-%1", capture.output(cnn_mcc.tuner.result))
-
-
-# class(cnn_mcc.tuner)
-# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
-# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
-# [5] "python.builtin.object"                      
-
-# tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
-# tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
-# tcnn_mcc.best_trial$summary()
-
-cnn_mcc.tuner$results_summary()
-{
-  invisible()
-}
-
-put_log("The best step of the best trial: %1", tcnn_mcc.best_trial$best_step)
-
-cnn_mcc.tuner.best_hp <- 
-  cnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
-
-put_log("The best Hyperparameters values:
-%1", capture.output(cnn_mcc.tuner.best_hp$values))
-
-tcnn_mcc.best_c2filters <- cnn_mcc.tuner.best_hp$values$conv2_filters
-# 0.003610324
-
-log_close()
-# =========================================================================
-# Log End Time: 2026-09-16 00:16:26.713305
-# Log Elapsed Time: 0 10:50:58
-# =========================================================================
 
 ## Retrieving the Best Model --------------------------------------------------
 

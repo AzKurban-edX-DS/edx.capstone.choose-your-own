@@ -30,32 +30,12 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     `__init__` = function(self, 
                           num_classes,
-                          kernal_size.min = 3L,
-                          kernal_size.max = 5L,
-                          cnvFilters.min = 32L,
-                          cnvFilters.max = 128L,
-                          learning_rate.min = 1e-4,
-                          learning_rate.max = 1e-2,
-                          learning_rate.fixed = NA,
-                          start_date = NULL,
-                          conv_blocks.max = 3) {
+                          start_date = NULL) {
       
       self$num_classes = num_classes
-      self$kernal_size.min = kernal_size.min
-      self$kernal_size.max = kernal_size.max
-      
-      self$cnvFilters.min = cnvFilters.min
-      self$cnvFilters.max = cnvFilters.max
-      
-      self$learning_rate.min = learning_rate.min
-      self$learning_rate.max = learning_rate.max
-      self$learning_rate.fixed = learning_rate.fixed
-      
       self$start_date = ifelse(is.null(start_date), 
                                Sys.time(), 
                                start_date)
-      
-      self$conv_blocks.max = conv_blocks.max
       self$error = NULL
       
       NULL
@@ -73,86 +53,22 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
       layer <- input_layer
       
-      put_log("Maximum number of Convolution Blocks: %1", self$conv_blocks.max)
+      # conv_padding <- hp$get('conv_padding') # same | valid
       
-      # kernel_size <- hp$Choice('kernel_size',
-      #                          c(2L, 3L))
-      
-      conv_blocks <- hp$Int('conv_blocks',
-                            min_value = 2L,
-                            max_value = self$conv_blocks.max,
-                            step = 1L)
-      
-      dense_units <- hp$Int('dense_units',
-                            min_value = 128L,
-                            max_value = 512L,
-                            step = 64L,
-                            default = 128L)
-      
-      drop1_rate <- hp$Float('dropout1',
-                             min_value = 0.0,
-                             max_value = 0.3,
-                             step = 0.05,
-                             default = 0.25)  
-      
-      drop2_rate <- hp$Float('dropout2',
-                             min_value = 0.0,
-                             max_value = 0.5,
-                             step = 0.1,
-                             default = 0.5)  
-      
-      if(is.na(self$learning_rate.fixed)) {
-        learning_rate <- hp$Float('learning_rate',
-                                  min_value = self$learning_rate.min,
-                                  max_value = self$learning_rate.max,
-                                  sampling = "log")
-      } else {
-        learning_rate <- self$learning_rate.fixed
-      }
-      
-      
-      put_log("Tuning the model of %1 Convolution Blocks with the following hype-parameters: 
-Min `conv filters`: %2,
-Max `conv filters`: %3, 
-Learning Rate: %4.
-dropout layer 1 rate: %5,
-dense layer units: %6,
-dropout layer 2 rate: %7",
-              self$conv_blocks.max,
-              self$cnvFilters.min,
-              self$cnvFilters.max,
-              learning_rate,
-              drop1_rate,
-              dense_units,
-              drop2_rate)
-
-      for (i in 1:self$conv_blocks.max) {
+      for (i in 1:hp$get('conv_blocks')) {
         
-        conv_filters <- hp$Int(paste0('conv', i, '_filters'),
-                               min_value = self$cnvFilters.min,
-                               max_value = self$cnvFilters.max,
-                               step = 32L)
-        
-        kernel_size <- hp$Int(paste0('conv', i,'_kernel.size'), 
-                              min_value = self$kernal_size.min,
-                              max_value = self$kernal_size.max,
-                              step = 1L)
-
-        put_log("Adding the Conv Block %1 with %2 filters & kernel size = %3 
-for the Conv_2d layer...", 
-                i, 
-                conv_filters,
-                kernel_size)
+        conv_filters <- hp$get(paste0('conv', i, '_filters'))
+        kernel_size <- hp$get(paste0('conv', i,'_kernel.size'))                       
 
         add_block.result <- try(
           {
             layer <- layer |>
               layer_conv_2d(filters = conv_filters,
                             kernel_size = kernel_size,
-                            # padding = 'same',
+                            padding = 'same',
                             # strides = list(1L, 1L),
                             activation = "relu") |>
-              layer_max_pooling_2d(pool_size = c(2L, 2L))
+              layer_max_pooling_2d()
           }, silent = TRUE)
 
         if("try-error" %in% class(add_block.result)) {
@@ -169,41 +85,46 @@ Building the model with %2 Conv Blocks", i, i -1)
         }
         
         rm(add_block.result)
-        put_log("The Convolution Block %1 with %2 filters & kernel size = %3
-has been added to the CNN MCC Model.", 
+        
+        put_log("The Convolution Block has been added with the following parameters
+Block #: %1, filters number: %2, kernel size: %3
+has been added to the CNN MCC Model.",
                 i,
                 conv_filters,
                 kernel_size)
       }
-
-      put_log("Adding the final dense hidden layers block with the following parameters:
-`drop1 rate:`%1;
-`drop2 rate` %2",
-              drop1_rate,
-              drop2_rate)
+      
+      dense_units <- hp$get('dense_units')
+      dropout1 <- hp$get('dropout1')
+      dropout2 <- hp$get('dropout2')
+      
 
       layer <- layer |>
-        layer_dropout(drop1_rate) |>
+        layer_dropout(dropout1) |>
         layer_flatten() |>
         layer_dense(dense_units,
                     activation = 'relu') |>
-        layer_dropout(drop2_rate)
+        layer_dropout(dropout2)
 
-      put_log("Creating an output layer...")
-      
+      put_log("Dense layers block added with the following parameters:
+`dense_units`: %1, `dropout1 rate:`%2, `dropout2 rate` %3",
+              dense_units,
+              dropout1,
+              dropout2)
+
       output_layer <- layer |>
         layer_dense(as.integer(self$num_classes),
                     activation = 'softmax')
 
-      put_log("Compiling the next model being tuned...")
-      
+      learning_rate <- hp$get('learning_rate')
+
       model <- keras_model(input_layer, output_layer) |>
         compile(
           optimizer = keras3::optimizer_adamax(learning_rate),
           loss = 'sparse_categorical_crossentropy',
           metrics = 'accuracy')
       
-      put_log("The next model for tuning has been compiled.")
+      put_log("A new model has been compiled with `learning_rate`: %1.", learning_rate)
       put_end_date(start)
       
       return(model)

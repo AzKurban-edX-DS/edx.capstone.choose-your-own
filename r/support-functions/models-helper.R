@@ -268,29 +268,20 @@ build.dnnb_mcc <- function(hp) {
   model
 }
 
-cnn_mcc.Hyperband.fit_tuner <- function(x.train,
+cnn_mcc.Hyperband.fit_tuner <- function(hp,
+                                        x.train,
                                         y.train,
                                         validation.data,
                                         project.dir,
                                         # validation_split = 0.2,
                                         project.name,
-                                        best_model.file,
-                                        best_model.plot_img.file,
                                         checkpoints.dir,
-                                        num.classes,
-                                        tune.new_entries,
-                                        hp = NULL,
+                                        num.classes = N.classes,
+                                        tune.new_entries = FALSE,
                                         objective = 'val_accuracy',
-                                        max_epochs = 3L,
-                                        conv_blocks.max = 3,
+                                        max_epochs = 10L,
+                                        factor =3, 
                                         hyperband.iterations = 2,
-                                        kernal_size.min = 3L,
-                                        kernal_size.max = 5L,
-                                        cnvFilters.min = 32L,
-                                        cnvFilters.max = 128L,
-                                        learning_rate.min = 1e-4,
-                                        learning_rate.max = 1e-2,
-                                        learning_rate.fixed = NA,
                                         start_date = NULL) {
   if(!dir.exists(project.dir))
     dir.create(project.dir)
@@ -303,22 +294,15 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
               "{epoch:02d}-{val_loss:.2f}.keras")
   
   hypermodel <- CNN_MCC.HyperModel(num_classes = num.classes,
-                                   conv_blocks.max = conv_blocks.max,
-                                   kernal_size.min = kernal_size.min,
-                                   kernal_size.max = kernal_size.max,
-                                   cnvFilters.min = cnvFilters.min,
-                                   cnvFilters.max = cnvFilters.max,
-                                   learning_rate.min = learning_rate.min,
-                                   learning_rate.max = learning_rate.max,
-                                   learning_rate.fixed = learning_rate.fixed,
-                                   start_date = start_date,
-                                   conv_blocks.max = conv_blocks.max)
+                                   start_date = start_date)
   
   
   tuner <- Hyperband(hypermodel,
                      objective = objective,
                      max_epochs = max_epochs,
+                     factor = factor,
                      hyperband_iterations = hyperband.iterations,
+                     seed = nrow(x_train),
                      hyperparameters = hp,
                      tune_new_entries = tune.new_entries,
                      directory = project.dir,
@@ -336,8 +320,8 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
   registerDoParallel(cl)
   
   put_log("Function `cnn_mcc.tuneHyperband`:
-Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks...",
-          conv_blocks.max)
+Running the tuner-fit process for the CNN MCC model with %1 maximum epocs...",
+          max_epochs)
   fit_result <- try({
     # Run the tuner fit process
     tuner |> fit_tuner(x = x_train,
@@ -349,8 +333,7 @@ Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks..
   }, silent = T)
   
   put_log("Function `cnn_mcc.tuneHyperband`:
-Completed the tuner-fit process for the CNN MCC model with %1 Convolution Blocks.",
-          conv_blocks.max)
+Completed the tuner-fit process for the CNN MCC model.")
   
   
   
