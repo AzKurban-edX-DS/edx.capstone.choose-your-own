@@ -281,8 +281,8 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                         tune.new_entries,
                                         hp = NULL,
                                         objective = 'val_accuracy',
-                                        max_epochs = 100,
-                                        conv_blocks = 2,
+                                        max_epochs = 3L,
+                                        conv_blocks.max = 3,
                                         hyperband.iterations = 2,
                                         kernal_size.min = 3L,
                                         kernal_size.max = 5L,
@@ -303,7 +303,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
               "{epoch:02d}-{val_loss:.2f}.keras")
   
   hypermodel <- CNN_MCC.HyperModel(num_classes = num.classes,
-                                   conv_blocks = conv_blocks,
+                                   conv_blocks.max = conv_blocks.max,
                                    kernal_size.min = kernal_size.min,
                                    kernal_size.max = kernal_size.max,
                                    cnvFilters.min = cnvFilters.min,
@@ -312,7 +312,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
                                    learning_rate.max = learning_rate.max,
                                    learning_rate.fixed = learning_rate.fixed,
                                    start_date = start_date,
-                                   conv_blocks = conv_blocks)
+                                   conv_blocks.max = conv_blocks.max)
   
   
   tuner <- Hyperband(hypermodel,
@@ -337,7 +337,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(x.train,
   
   put_log("Function `cnn_mcc.tuneHyperband`:
 Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks...",
-          conv_blocks)
+          conv_blocks.max)
   fit_result <- try({
     # Run the tuner fit process
     tuner |> fit_tuner(x = x_train,
@@ -345,12 +345,12 @@ Running the tuner-fit process for the CNN MCC model with %1 Convolution Blocks..
                                callbacks = callbacks,
                                # validation_split = 0.2,
                                validation_data = validation.data,
-                               epochs = 100L)
+                               epochs = max_epochs)
   }, silent = T)
   
   put_log("Function `cnn_mcc.tuneHyperband`:
 Completed the tuner-fit process for the CNN MCC model with %1 Convolution Blocks.",
-          conv_blocks)
+          conv_blocks.max)
   
   
   
@@ -363,11 +363,11 @@ Completed the tuner-fit process for the CNN MCC model with %1 Convolution Blocks
   
   if("try-error" %in% class(fit_result)) {
     put_log("Function `cnn_mcc.tuneHyperband`:
-Failed to tune the model with %1 Convolution Blocks.", conv_blocks)
+Failed to tune the model with %1 Convolution Blocks.", conv_blocks.max)
     put_log(fit_result)
     
     put_log("Function `cnn_mcc.tuneHyperband`:
-The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", conv_blocks)
+The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", conv_blocks.max)
     
     tune_result$error <- fit_result
   }
