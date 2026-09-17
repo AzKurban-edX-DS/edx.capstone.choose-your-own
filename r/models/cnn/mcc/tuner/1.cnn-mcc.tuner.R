@@ -239,18 +239,7 @@ dropout2 <- hp$Float('dropout2',
                        max_value = 0.5,
                        step = 0.1)
 
-hp$Fixed("learning_rate", value = tcnn_mcc.best_lr)
-
-
-# hp$Fixed("conv1_filters", value = conv1_filters)
-# hp$Int("conv1_filters", value = conv1_filters)
-
-
-
-hp$Int("conv2_filters", 
-       min_value = conv1_filters,
-       max_value = conv_filters.max,
-       step = 32L)
+hp$Fixed("learning_rate", value = 1e-4)
 
 cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(hp,
                                                    x_train,
