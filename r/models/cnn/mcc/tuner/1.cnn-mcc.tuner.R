@@ -188,13 +188,13 @@ cnn_mcc.tuners <- list()
 cnn_mcc.tuners[[1]] <- NULL
 
 
-### Tune the Model Architecture --------------------------------------------
+## Tuning the Model Architecture -----------------------------------------------
 
 open_logfile(".cnn_mcc.model-tuning.architecture")
 
 
 cnn_mcc.tuner.proj.arch.dir <- file.path(cnn_mcc.tuner.dir, 
-                                         'proj.architecture2')
+                                         'arch-tuning.prj')
 
 cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.arch.dir, 
                                            "checkpoints")
@@ -207,7 +207,7 @@ tcnn_mcc.arch.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.arch.dir,
                                                paste0('arch-tuned.best-model.plot', 
                                                       '.png'))
 
-#### Process the Tuning --------------------------------------------------------
+### Process the Tuning --------------------------------------------------------
 
 hp <- HyperParameters()
 
@@ -246,7 +246,7 @@ dropout2 <- hp$Float('dropout2',
 
 hp$Fixed("learning_rate", value = 1e-4)
 
-cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(hp,
+cnn_mcc.arch_tuner.result <- cnn_mcc.Hyperband.fit_tuner(hp,
                                                    x_train,
                                                    y_train,
                                                    validation.data = tuple(x_test, y_test),
@@ -255,37 +255,37 @@ cnn_mcc.tune_result <- cnn_mcc.Hyperband.fit_tuner(hp,
                                                    checkpoints.dir = cnn_mcc.tuner.checkpoints.dir)
 
 
-if(!is.null(cnn_mcc.tune_result$error) ||
-   !is.null(cnn_mcc.tune_result$hypermodel$error)) {
+if(!is.null(cnn_mcc.arch_tuner.result$error) ||
+   !is.null(cnn_mcc.arch_tuner.result$hypermodel$error)) {
   put_log("Some error(s) occurred while tuning.")
   
-  if(!is.null(cnn_mcc.tune_result$error))
-    put_log(cnn_mcc.tune_result$error)
+  if(!is.null(cnn_mcc.arch_tuner.result$error))
+    put_log(cnn_mcc.arch_tuner.result$error)
   
-  if(!is.null(cnn_mcc.tune_result$hypermodel$error))
-    put_log(cnn_mcc.tune_result$hypermodel$error)
+  if(!is.null(cnn_mcc.arch_tuner.result$hypermodel$error))
+    put_log(cnn_mcc.arch_tuner.result$hypermodel$error)
 }
 
-cnn_mcc.tuner <- cnn_mcc.tune_result$tuner
-cnn_mcc.tuners$tuned_by.learning_rate <- cnn_mcc.tuner
+cnn_mcc.arch_tuner <- cnn_mcc.arch_tuner.result$tuner
+cnn_mcc.tuners$tuned_by.learning_rate <- cnn_mcc.arch_tuner
 
 # This prints a summary of the search space and lists the top trial results
-cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.tuner)
+cnn_mcc.tuner.result <- kerastuneR::plot_tuner(cnn_mcc.arch_tuner)
 # the list will show the plot and the data.frame of tuning results
 
 put_log("The CNN MCC Tuning Results:
 %1", capture.output(cnn_mcc.tuner.result))
 
-cnn_mcc.tuner$results_summary()
+cnn_mcc.arch_tuner$results_summary()
 {
   invisible()
 }
 
-cnn_mcc.tuner.best_hp <- 
-  cnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
+cnn_mcc.arch_tuner.best_hp <- 
+  cnn_mcc.arch_tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
 
 put_log("The best Hyperparameters values:
-%1", capture.output(cnn_mcc.tuner.best_hp$values))
+%1", capture.output(cnn_mcc.arch_tuner.best_hp$values))
 {
   # $conv_blocks
   # [1] 2
@@ -340,18 +340,20 @@ put_log("The best Hyperparameters values:
   
   invisible()
 }
-# class(cnn_mcc.tuner)
-# [1] "keras_tuner.src.tuners.hyperband.Hyperband"  "keras_tuner.src.engine.tuner.Tuner"         
-# [3] "keras_tuner.src.engine.base_tuner.BaseTuner" "keras_tuner.src.engine.stateful.Stateful"   
-# [5] "python.builtin.object"                      
 
-tcnn_mcc.best_trials <- cnn_mcc.tuner$oracle$get_best_trials(num_trials = 1L)
-tcnn_mcc.best_trial <- tcnn_mcc.best_trials[[1]]
+# tcnn_mcc.arch.best_hp.config <- cnn_mcc.arch_tuner.best_hp$get_config()
+# put_log("The best Hyperparameters configuration:
+# %1", capture.output(tcnn_mcc.arch.best_hp.config))
+# 
 
-put_log("The best step of the best trial: %1", tcnn_mcc.best_trial$best_step)
+
+tcnn_mcc.arch.best_trials <- cnn_mcc.arch_tuner$oracle$get_best_trials(num_trials = 1L)
+tcnn_mcc.arch.best_trial <- tcnn_mcc.arch.best_trials[[1]]
+
+put_log("The best step of the best trial: %1", tcnn_mcc.arch.best_trial$best_step)
 # 9
 
-tcnn_mcc.best_trial$summary()
+tcnn_mcc.arch.best_trial$summary()
 # Trial 0054 summary
 # Hyperparameters:
 # conv_blocks: 2
@@ -373,14 +375,14 @@ tcnn_mcc.best_trial$summary()
 # tuner/trial_id: 0052
 # Score: 0.8752390742301941
 
-#### Retrieving the Best Model --------------------------------------------------
+#### Retrieving the Best Model ------------------------------------------------
 
 #tcnn_mcc.arch.best_model <- tcnn_mcc.best_models[[1]]
 # rm(tcnn_mcc.best_models)
 
 
 tcnn_mcc.arch.best_model <- 
-  kerastuneR::get_best_models(tuner = cnn_mcc.tuner, 
+  kerastuneR::get_best_models(tuner = cnn_mcc.arch_tuner, 
                               num_models = 1L)[[1]]
 
 tcnn_mcc.arch.best_model |> plot_keras_model(to_file = tcnn_mcc.arch.best_model.plot_img.file,
@@ -393,6 +395,14 @@ keras3::save_model(tcnn_mcc.best_model,
 
 put_log("The CNN MCC Best Model object has been saved in the following file:
   %1", tcnn_mcc.best_model.file)
+
+#### (Alternatively) Building the model from the Best Hyper-parameters ---------
+
+tcnn_mcc.arch.best_hp.model <- 
+  cnn_mcc.arch_tuner.result$hypermodel$build(cnn_mcc.arch_tuner.best_hp)
+
+put_log("Summary of the Tuned Model built from the best hyper-parameters:
+%1", capture.output(tcnn_mcc.arch.best_hp.model))
 
 log_close()
 # =========================================================================
