@@ -246,7 +246,7 @@ load28x28x1.datasets <- function(backup.file) {
        test = test)
 } 
 
-load.cnn_mcc.tuner.datasets() {
+load.cnn_mcc.tuner.datasets <- function() {
   stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
             
 }
