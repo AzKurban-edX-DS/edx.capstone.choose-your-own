@@ -29,11 +29,11 @@ put_log("The best Hyperparameters of the tuned architecture have been loaded fro
 
 # Build the HyperParameters object from the configuration
 kt <- import("keras_tuner")
-hp <- kt$HyperParameters$from_config(best_hp.config)
+best_hp <- kt$HyperParameters$from_config(best_hp.config)
 rm(best_hp.config)
 
 put_log("The best Hyperparameters values:
-%1", capture.output(hp$values))
+%1", capture.output(best_hp$values))
 {
   # $conv_blocks
   # [1] 2
@@ -89,7 +89,9 @@ put_log("The best Hyperparameters values:
   invisible()
 }
 
+hp <- CNN_MCC.HyperParameters()
 hp$Float("learning_rate", min_value=1e-5, max_value=1e-2, sampling="log")
+hp$set_fixed(best_hp)
 
 tuner.result <- 
   cnn_mcc.Hyperband.fit_tuner(hp,
