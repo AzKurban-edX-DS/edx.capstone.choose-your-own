@@ -650,6 +650,11 @@ log_close()
 
 ### CNN-Based MCC Model Tuning -------------------------------------------------
 #### Init Paths ----------------------------------------------------------------
+
+tcnn_mcc.arch.best_hp.config.file <- file.path(cnn_mcc.tuner.dir, 
+                                         paste0('arch-tuned.best-hp.config', 
+                                                '.rds'))
+
 tcnn_mcc.best_hp.config.file <- file.path(cnn_mcc.tuner.dir,
                                           "tcnn-mcc.best-hp.config.rds")
 
@@ -674,16 +679,11 @@ tcnn_mcc.final.eval.conf.mx.img_file <- file.path(cnn_mcc.tuner.plots.dat.dir,
 tcnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
                                                 "tcnn-mcc.final.eval.plots_dat.rds")
 
-tcnn_mcc.arch.best_hp.config.file <- file.path(cnn_mcc.tuner.proj.arch.dir, 
-                                         paste0('arch-tuned.best-hp.config', 
-                                                '.rds'))
-
 if(!dir.exists(cnn_mcc.tuner.dir))
   dir.create(cnn_mcc.tuner.dir)
 
 if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
   dir.create(cnn_mcc.tuner.plots.dat.dir)
-
 
 #### Run Scripts ---------------------------------------------------------------
 

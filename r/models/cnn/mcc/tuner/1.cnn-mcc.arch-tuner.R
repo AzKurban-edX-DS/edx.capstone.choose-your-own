@@ -182,13 +182,13 @@ log_close()
 
 ## Tuning the Model Architecture -----------------------------------------------
 
-tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
+cnn_mcc.arch_tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
                                          '1.arch-tuning.prj')
 
-tuner.checkpoints.dir <- file.path(tuner.proj.dir, 
+cnn_mcc.arch_tuner.checkpoints.dir <- file.path(cnn_mcc.arch_tuner.proj.dir, 
                                                 "checkpoints")
 
-tuner.best_model.plot.img_file <- file.path(tuner.proj.dir,
+cnn_mcc.arch_tuner.best_model.plot.img_file <- file.path(cnn_mcc.arch_tuner.proj.dir,
                                                          paste0('arch-tuned.best-model.plot', 
                                                                 '.png'))
 
@@ -230,9 +230,9 @@ tuner.result <-
                               x_train,
                               y_train,
                               validation.data = tuple(x_test, y_test),
-                              project.dir = tuner.proj.dir,
+                              project.dir = cnn_mcc.arch_tuner.proj.dir,
                               project.name = 'tuner.dat',
-                              checkpoints.dir = tuner.checkpoints.dir)
+                              checkpoints.dir = cnn_mcc.arch_tuner.checkpoints.dir)
 
 
 if(!is.null(tuner.result$error) ||
@@ -376,7 +376,7 @@ best_model <-
   kerastuneR::get_best_models(tuner = tuner, 
                               num_models = 1L)[[1]]
 
-best_model |> plot_keras_model(to_file = cnn_mcc.lr_tuner.best_model.plot.img_file,
+best_model |> plot_keras_model(to_file = cnn_mcc.arch_tuner.best_model.plot.img_file,
                                show_shapes = T)
 
 # put_log("Saving the CNN MCC Best Model...")
