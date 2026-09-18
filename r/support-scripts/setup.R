@@ -496,9 +496,9 @@ cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner.scripts.dir,
                                             "cnn-mcc.hyper-model.R")
 stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
 
-cnn_mcc.tuner.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
-                                            "1.cnn-mcc.tuner.R")
-stopifnot(file.exists(cnn_mcc.tuner.script.path))
+cnn_mcc.arch_tuner.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
+                                            "1.cnn-mcc.arch-tuner.R")
+stopifnot(file.exists(cnn_mcc.arch_tuner.script.path))
 
 tcnn_mcc.final.retrain.script.path <- 
   file.path(cnn_mcc.tuner.scripts.dir, "2.tcnn-mcc.final.retrain.R")

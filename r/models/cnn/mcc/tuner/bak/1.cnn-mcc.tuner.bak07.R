@@ -4,7 +4,9 @@
 
 ## Setup -----------------------------------------------------------------------
 open_logfile(".cnn_mcc.model-tuning.prepare-datasets")
-stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
+stopifnot(file.exists(ds28x28.split.train_0.1.backup.file),
+          exists("cnn_mcc.tuner.dir"),
+          exists("tcnn_mcc.arch.best_hps.file"))
 
 start <- put_start_date()
 
@@ -199,10 +201,10 @@ cnn_mcc.tuner.proj.arch.dir <- file.path(cnn_mcc.tuner.dir,
 cnn_mcc.tuner.checkpoints.dir <- file.path(cnn_mcc.tuner.proj.arch.dir, 
                                            "checkpoints")
 
-tcnn_mcc.arch.best_model.file <- file.path(cnn_mcc.tuner.proj.arch.dir, 
-                                      paste0('arch-tuned.best-model', 
-                                             '.keras'))
-
+# tcnn_mcc.arch.best_model.file <- file.path(cnn_mcc.tuner.proj.arch.dir, 
+#                                       paste0('arch-tuned.best-model', 
+#                                              '.keras'))
+ 
 tcnn_mcc.arch.best_model.plot_img.file <- file.path(cnn_mcc.tuner.proj.arch.dir,
                                                paste0('arch-tuned.best-model.plot', 
                                                       '.png'))
@@ -281,11 +283,11 @@ cnn_mcc.arch_tuner$results_summary()
   invisible()
 }
 
-cnn_mcc.arch_tuner.best_hp <- 
+cnn_mcc.arch_tuner.best_hps <- 
   cnn_mcc.arch_tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
 
 put_log("The best Hyperparameters values:
-%1", capture.output(cnn_mcc.arch_tuner.best_hp$values))
+%1", capture.output(cnn_mcc.arch_tuner.best_hps$values))
 {
   # $conv_blocks
   # [1] 2
@@ -341,10 +343,16 @@ put_log("The best Hyperparameters values:
   invisible()
 }
 
-# tcnn_mcc.arch.best_hp.config <- cnn_mcc.arch_tuner.best_hp$get_config()
+# tcnn_mcc.arch.best_hp.config <- cnn_mcc.arch_tuner.best_hps$get_config()
 # put_log("The best Hyperparameters configuration:
 # %1", capture.output(tcnn_mcc.arch.best_hp.config))
 # 
+
+put_log("Saving the best Hyperparameters of the tuned architecture of the CNN MCC model...")
+saveRDS(cnn_mcc.arch_tuner.best_hps,
+        file = tcnn_mcc.arch.best_hps.file)
+put_log("The best Hyperparameters of the tuned architecture have been saved to following file:
+%1", tcnn_mcc.arch.best_hps.file)
 
 
 tcnn_mcc.arch.best_trials <- cnn_mcc.arch_tuner$oracle$get_best_trials(num_trials = 1L)
@@ -388,18 +396,18 @@ tcnn_mcc.arch.best_model <-
 tcnn_mcc.arch.best_model |> plot_keras_model(to_file = tcnn_mcc.arch.best_model.plot_img.file,
                                    show_shapes = T)
 
-put_log("Saving the CNN MCC Best Model...")
-keras3::save_model(tcnn_mcc.best_model,
-                   file = tcnn_mcc.arch.best_model.file,
-                   overwrite = TRUE)
+# put_log("Saving the CNN MCC Best Model...")
+# keras3::save_model(tcnn_mcc.best_model,
+#                    file = tcnn_mcc.arch.best_model.file,
+#                    overwrite = TRUE)
 
-put_log("The CNN MCC Best Model object has been saved in the following file:
-  %1", tcnn_mcc.best_model.file)
+# put_log("The CNN MCC Best Model object has been saved in the following file:
+#   %1", tcnn_mcc.arch.best_model.file)
 
 #### (Alternatively) Building the model from the Best Hyper-parameters ---------
 
 tcnn_mcc.arch.best_hp.model <- 
-  cnn_mcc.arch_tuner.result$hypermodel$build(cnn_mcc.arch_tuner.best_hp)
+  cnn_mcc.arch_tuner.result$hypermodel$build(cnn_mcc.arch_tuner.best_hps)
 
 put_log("Summary of the Tuned Model built from the best hyper-parameters:
 %1", capture.output(tcnn_mcc.arch.best_hp.model))

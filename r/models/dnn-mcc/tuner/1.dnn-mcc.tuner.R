@@ -340,10 +340,8 @@ rm(dnn_mcc.tuner.best_trials,
 
 ### Extract & Save the Best Hyper-parameter Configuration ----------------------
 
-dnn_mcc.tuner.best_hp.ls <- dnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)
-# str(dnn_mcc.tuner.best_hp.ls)
-
-dnn_mcc.tuner.best_hp <- dnn_mcc.tuner.best_hp.ls[[1]]
+dnn_mcc.tuner.best_hp <- 
+  dnn_mcc.tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
 
 put_log("The best Hyperparameters values:
 %1", capture.output(dnn_mcc.tuner.best_hp$values))
