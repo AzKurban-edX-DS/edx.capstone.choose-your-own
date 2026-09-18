@@ -6,7 +6,7 @@ stopifnot(exists("cnn_mcc.tuner.dir"),
 start <- put_start_date()
 
 
-### Tuning the `learning rate` parameter ---------------------------------------------
+## Tuning the `learning rate` parameter ----------------------------------------
 
 
 cnn_mcc.lr_tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 
@@ -17,7 +17,7 @@ cnn_mcc.lr_tuner.checkpoints.dir <- file.path(cnn_mcc.lr_tuner.proj.dir,
                                    "checkpoints")
 
 
-cnn_mcc.lr_tuner.best_model.plot.img_file <- file.path(cnn_mcc.tuner.proj.arch.dir,
+cnn_mcc.lr_tuner.best_model.plot.img_file <- file.path(cnn_mcc.lr_tuner.proj.dir,
                                             paste0('lr-tuned.best-model.plot', 
                                                    '.png'))
 
