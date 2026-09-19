@@ -22,7 +22,7 @@ start <- put_start_date()
 ## Prepare a Data Set for the Model Training -----------------------------------
 
 put_log("Loading the Input Datasets of 28x28-size image data...")
-ds <- load28x28x1.datasets(ds28x28.split.train_0.8.backup.file)
+ds <- load28x28x1.datasets(ds28x28.split.train_0.1.backup.file)
 train_set <- ds$train
 test_set <- ds$test
 rm(ds)
