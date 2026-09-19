@@ -103,6 +103,7 @@ tuner.result <-
                               checkpoints.dir = cnn_mcc.lr_tuner.checkpoints.dir,
                               max_epochs = 15L)
 
+# Best val_accuracy So Far: 0.9064242839813232
 
 if(!is.null(tuner.result$error) ||
    !is.null(tuner.result$hypermodel$error)) {
@@ -118,17 +119,14 @@ if(!is.null(tuner.result$error) ||
 tuner <- tuner.result$tuner
 
 # This prints a summary of the search space and lists the top trial results
-tuning_result <- kerastuneR::plot_tuner(cnn_mcc.arch_tuner)
+tuning_result <- kerastuneR::plot_tuner(tuner)
 # the list will show the plot and the data.frame of tuning results
 
 put_log("The CNN MCC Tuning Results:
 %1", capture.output(tuning_result))
 rm(tuning_result)
 
-tuner$results_summary()
-{
-  invisible()
-}
+# tuner$results_summary()
 
 tuner.best_hp <- 
   tuner$get_best_hyperparameters(num_trials = 1L)[[1]]
@@ -136,6 +134,9 @@ tuner.best_hp <-
 put_log("The best Hyperparameters values:
 %1", capture.output(tuner.best_hp$values))
 {
+  # $learning_rate
+  # [1] 0.007185949
+  # 
   # $conv_blocks
   # [1] 2
   # 
@@ -150,9 +151,6 @@ put_log("The best Hyperparameters values:
   # 
   # $dropout2
   # [1] 0.2
-  # 
-  # $learning_rate
-  # [1] 1e-04
   # 
   # $conv1_filters
   # [1] 224
@@ -173,19 +171,19 @@ put_log("The best Hyperparameters values:
   # [1] 4
   # 
   # $`tuner/epochs`
-  # [1] 10
+  # [1] 15
   # 
   # $`tuner/initial_epoch`
-  # [1] 4
+  # [1] 5
   # 
   # $`tuner/bracket`
-  # [1] 1
+  # [1] 2
   # 
   # $`tuner/round`
-  # [1] 1
+  # [1] 2
   # 
   # $`tuner/trial_id`
-  # [1] "0052"  
+  # [1] "0013"  
   
   invisible()
 }
@@ -209,8 +207,27 @@ best_trial <-
   tuner$oracle$get_best_trials(num_trials = 1L)[[1]]
 
 put_log("The best step of the best trial: %1", best_trial$best_step)
-
-best_trial$summary()
+# best_trial$summary()
+# Trial 0016 summary
+# Hyperparameters:
+# learning_rate: 0.0071859492551740985
+# conv_blocks: 2
+# conv_padding: same
+# dense_units: 320
+# dropout1: 0.30000000000000004
+# dropout2: 0.2
+# conv1_filters: 224
+# conv1_kernel.size: 5
+# conv2_filters: 224
+# conv2_kernel.size: 5
+# conv3_filters: 256
+# conv3_kernel.size: 4
+# tuner/epochs: 15
+# tuner/initial_epoch: 5
+# tuner/bracket: 2
+# tuner/round: 2
+# tuner/trial_id: 0013
+# Score: 0.9064242839813232
 
 rm(best_trial)
 
@@ -235,7 +252,7 @@ best_model |> plot_keras_model(to_file = cnn_mcc.lr_tuner.best_model.plot.img_fi
 # put_log("The CNN MCC Best Model object has been saved in the following file:
 #   %1", best_model.file)
 
-rm(best_mode)
+rm(best_model)
 #### (Alternatively) Building the model from the Best Hyper-parameters ---------
 
 best_hp.model <- 
@@ -247,3 +264,7 @@ put_log("Summary of the Tuned Model built from the best hyper-parameters:
 rm(best_hp.model)
 
 log_close()
+# =========================================================================
+# Log End Time: 2026-09-19 05:57:45.048069
+# Log Elapsed Time: 0 16:49:56
+# =========================================================================
