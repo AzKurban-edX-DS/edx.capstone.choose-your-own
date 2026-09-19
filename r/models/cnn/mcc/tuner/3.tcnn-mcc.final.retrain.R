@@ -218,10 +218,9 @@ put_log("The re-trained final tuned Final MCC Model History has been trained
 and saved in the following file:
   %1", tcnn_mcc.final.train_history.file)
 put_end_date(start)
-# Time difference of 38.48235 mins
 
 # rm(x_train,
-#    y_train, y_train.cat)
+#    y_train)
 
 put_log("The re-trained `tuned Final MCC` Model has been trained with the following results
 %1", cnn_mcc.final)
@@ -229,18 +228,8 @@ put_log("The re-trained `tuned Final MCC` Model has been trained with the follow
 plot(tcnn_mcc.final.train_history)
 str(tcnn_mcc.final.train_history)
 
-# rm(tcnn_mcc.final.train_history)
-
-### Evaluating the Re-trained Model --------------------------------------------
-
-# stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
-
-# source(tcnn_mcc.final.eval.script.path, 
-#        catch.aborts = TRUE,
-#        echo = TRUE,
-#        spaced = TRUE,
-#        verbose = TRUE,
-#        keep.source = TRUE)
-
 log_close()
-# Log Elapsed Time: 0 00:13:05
+# =========================================================================
+# Log End Time: 2026-09-19 12:05:09.276854
+# Log Elapsed Time: 0 01:12:52
+# =========================================================================
