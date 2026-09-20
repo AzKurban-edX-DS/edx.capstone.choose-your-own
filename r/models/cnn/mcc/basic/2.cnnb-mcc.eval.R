@@ -126,11 +126,10 @@ put_log("Evaluating CNN Model...")
 cnnb_mcc.eval.result <- cnnb_mcc |> evaluate(x_test, y_test.cat)
 put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(cnnb_mcc.eval.result))
-# $accuracy
-# [1] 0.9219333
+# [1] 0.9125738
 # 
 # $loss
-# [1] 0.2316364
+# [1] 0.2510448
 
 put_end_date(start)
 
@@ -186,10 +185,10 @@ have been backed up to the following file:
 put_log("CNN MCC Model evaluation result:
 %1", capture.output(cnnb_mcc.eval.result))
 # $accuracy
-# [1] 0.8887953
+# [1] 0.9125738
 # 
 # $loss
-# [1] 0.3397374
+# [1] 0.2510448
 
 put_log("Saving the Multiclass Classifier model Evaluation Results...")
 saveRDS(cnnb_mcc.eval.result,
