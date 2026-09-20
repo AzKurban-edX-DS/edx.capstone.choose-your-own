@@ -124,7 +124,7 @@ stopifnot(file.exists(ds28x28.split.train_0.8.backup.file),
 
 start <- put_start_date()
 
-## Prepare a Training Set -----------------------------------------------------
+### Prepare a Training Set -----------------------------------------------------
 
 put_log("Loading the Training Set of 28x28x1-shape image data...")
 
@@ -217,7 +217,7 @@ put_log("The Training Set is balanced by the set of Classes:
 
 rm(train_set)
 
-## Init CNNB MCC Model Paths ---------------------------------------------------
+### Init CNNB MCC Model Paths ---------------------------------------------------
 
 cnnb_mcc.checkpoints.dir <- file.path(data.cnnb_mcc.dir, "checkpoints")
 

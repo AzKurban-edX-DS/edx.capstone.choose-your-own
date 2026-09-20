@@ -10,7 +10,7 @@ stopifnot(file.exists(cnnb_mcc.file,
 
 start <- put_start_date()
 
-## Preparing a Test Set for the Model Evaluation Job ---------------------------
+### Preparing a Test Set for the Model Evaluation Job ---------------------------
 
 put_log("Loading the Test Set of 28x28x1-shape image data...")
 test_set <- load28x28x1.test_set(ds28x28.split.train_0.8.backup.file)
@@ -53,7 +53,7 @@ head(y_test.cat)
   invisible()
 }
 
-### Size of the Test Set by Class ------------------------------------------
+#### Size of the Test Set by Class ------------------------------------------
 
 put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(test_set$class_groups$groupByClass, n = N.classes)))
@@ -127,10 +127,10 @@ cnnb_mcc.eval.result <- cnnb_mcc |> evaluate(x_test, y_test.cat)
 put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(cnnb_mcc.eval.result))
 # $accuracy
-# [1] 0.8887953
+# [1] 0.9219333
 # 
 # $loss
-# [1] 0.3397374
+# [1] 0.2316364
 
 put_end_date(start)
 
@@ -177,7 +177,7 @@ cnnb_mcc.accuracy <-
   mean(cnnb_mcc.eval.result$predicted.values == cnnb_mcc.eval.result$targets)
 
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnnb_mcc.accuracy)
-# 0.888795259687278
+# 0.921933309257253
 
 put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
