@@ -1472,7 +1472,7 @@ to call the `plot.confusion_matrix.ConfMxPlot()` function...")
   plot.confusion_matrix(x$CM)
 }
 
-### Utility Functions -----------------------------------------------------------
+## Utility Functions -----------------------------------------------------------
 
 #' Builds a plot title. 
 #' @details
@@ -1504,4 +1504,13 @@ build.plot_title <- function(title = NULL,
   title
 }
 
+#' Extracts the best metrics values from a model training history object.
+model.train_history.get_best_metrics <- function(train_history) {
+  best_idx <- length(train_history$metrics$accuracy)
+  
+  c(accuracy = train_history$metrics$accuracy[best_idx],
+                    loss = train_history$metrics$loss[best_idx],
+                    val_accuracy = train_history$metrics$val_accuracy[best_idx],
+                    val_loss = train_history$metrics$val_loss[best_idx])
+}
 
