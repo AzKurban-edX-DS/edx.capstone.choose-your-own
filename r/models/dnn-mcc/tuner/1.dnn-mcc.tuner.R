@@ -182,15 +182,14 @@ put_log("Tuning the DNN MCC Model on the full Train Dataset (`x_train`) of shape
 start <- put_start_date()
 
 hp <- HyperParameters()
-dnn_mcc.tuner.max_layers <- 5L
+dnn_mcc.tuner.max_layers <- 3L
 
-# Choice of one value among a predefined set of possible values.
-# Choice(name, values, ordered = NULL, default = NULL, parent_name = NULL, parent_values = NULL)
-hp$Choice('learning_rate', 
-          c(1e-1, 
-            1e-2, 
-            1e-3, 
-            1e-4))
+hp$Float("learning_rate", min_value=1e-5, max_value=1e-2, sampling="log")
+# hp$Choice('learning_rate', 
+#           c(1e-1, 
+#             1e-2, 
+#             1e-3, 
+#             1e-4))
 
 hp$Int('num_layers', 
        min_value = 2L,
