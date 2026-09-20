@@ -500,13 +500,17 @@ cnn_mcc.arch_tuner.script.path <- file.path(cnn_mcc.tuner.scripts.dir,
                                             "1.cnn-mcc.arch-tuner.R")
 stopifnot(file.exists(cnn_mcc.arch_tuner.script.path))
 
+cnn_mcc.lr_tuner.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
+                                            "2.cnn-mcc.lr-tuner.R")
+stopifnot(file.exists(cnn_mcc.lr_tuner.script.path))
+
 tcnn_mcc.final.retrain.script.path <- 
-  file.path(cnn_mcc.tuner.scripts.dir, "2.tcnn-mcc.final.retrain.R")
+  file.path(cnn_mcc.tuner.scripts.dir, "3.tcnn-mcc.final.retrain.R")
 
 stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
 
 tcnn_mcc.final.eval.script.path <- 
-  file.path(cnn_mcc.tuner.scripts.dir, "3.tcnn-mcc.final.eval.R")
+  file.path(cnn_mcc.tuner.scripts.dir, "4.tcnn-mcc.final.eval.R")
 
 stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
 
