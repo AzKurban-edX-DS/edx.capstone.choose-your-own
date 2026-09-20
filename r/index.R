@@ -692,7 +692,6 @@ if(!file.exists(tcnn_mcc.final.eval_result.file)) {
                spaced = TRUE,
                verbose = TRUE,
                keep.source = TRUE)
-        
       }
     }
     
