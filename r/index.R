@@ -587,20 +587,12 @@ if(file.exists(cnnb_mcc.train_history.file)){
   
   plot(cnn_mcc.train_history)
   
-  # best_idx <- length(cnn_mcc.train_history$metrics$accuracy)
-  # 
-  # best_metrics <- c(accuracy = cnn_mcc.train_history$metrics$accuracy[best_idx],
-  #                   loss = cnn_mcc.train_history$metrics$loss[best_idx],
-  #                   val_accuracy = cnn_mcc.train_history$metrics$val_accuracy[best_idx],
-  #                   val_loss = cnn_mcc.train_history$metrics$val_loss[best_idx])
-  
   best_metrics <- model.train_history.get_best_metrics(cnn_mcc.train_history)
   put_log("The best values of the CNNB MCC model training result are as follows:
 %1", capture.output(best_metrics))
 #  accuracy         loss val_accuracy     val_loss 
 # 0.9070390    0.2745264    0.9250632    0.2219673 
 
-    
   rm(cnn_mcc.train_history)
 } else {
   warning("The CNNB MCC model history backup does not exist:
