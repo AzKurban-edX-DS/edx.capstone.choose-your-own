@@ -342,7 +342,7 @@ from the following file:
 %1", dnnb_mcc.eval.result.file)
 
 dnnb_mcc.eval.result$accuracy
-# 0.8970146
+# 0.8973456
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -481,7 +481,7 @@ has been loaded from the following file:
 %1", tdnn_mcc.final.eval_result.file)
 
 tdnn_mcc.final.eval.result$accuracy
-# 0.8848261
+# 0.8780246
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
