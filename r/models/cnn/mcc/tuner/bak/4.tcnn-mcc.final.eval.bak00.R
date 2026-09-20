@@ -3,82 +3,12 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".tuner.cnn-mcc.final-model.evaluation")
+open_logfile(".tuner.cnn-mcc.best-model.eval.setup")
 stopifnot(file.exists(tcnn_mcc.final.file),
-          file.exists(ds28x28.split.train_0.8.backup.file))
+          file.exists(cnn_mcc.final.x3d.test_set.bakup))
 
-### Preparing a Test Set for the Model Evaluation Job ---------------------------
-
-put_log("Loading the Test Set of 28x28x1-shape image data...")
-test_set <- load28x28x1.test_set(ds28x28.split.train_0.8.backup.file)
-put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
-
-x_test <- test_set$x
-str(x_test)
-dim(x_test)
-
-y.test.groups <- test_set$class_groups
-
-stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
-
-y_test <- as.array(as.integer(y.test.groups$classID) - 1)
-str(y_test)
-dim(y_test)
-
-x_test.files <- test_set$files
-
-#### Size of the Test Set by Class ------------------------------------------
-
-put_log("The Training Set is balanced by the set of Classes:
-%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
-{
-  # A tibble: 39 × 2
-  #    classID     n
-  #    <fct>   <int>
-  #  1 #         852
-  #  2 $         852
-  #  3 &         852
-  #  4 @         852
-  #  5 0         852
-  #  6 1         852
-  #  7 2         852
-  #  8 3         852
-  #  9 4         852
-  # 10 5         852
-  # 11 6         852
-  # 12 7         852
-  # 13 8         852
-  # 14 9         852
-  # 15 A         852
-  # 16 B         852
-  # 17 C         852
-  # 18 D         852
-  # 19 E         852
-  # 20 F         852
-  # 21 G         852
-  # 22 H         852
-  # 23 I         852
-  # 24 J         852
-  # 25 K         852
-  # 26 L         852
-  # 27 M         852
-  # 28 N         852
-  # 29 P         852
-  # 30 Q         852
-  # 31 R         852
-  # 32 S         852
-  # 33 T         852
-  # 34 U         852
-  # 35 V         852
-  # 36 W         852
-  # 37 X         852
-  # 38 Y         852
-  # 39 Z         852
-  invisible()
-}
-
-rm(test_set)
+# tcnn_mcc.final.eval.result.backup <- file.path(cnn_mcc.tuner.dir,
+#                                        "tcnn_mcc.final.eval.result.rds")
 
 ### Loading the Pre-trained CNN-based Multiclass Classifier Model --------------
 
@@ -86,26 +16,144 @@ put_log("Loading pre-trained tuned Final MCC Model...")
 
 cnn_mcc.final <- keras3::load_model(tcnn_mcc.final.file)
 
-put_log("The Tuned Final MCC Model has been loaded from the backup file:
+put_log("The tuned Final MCC Model has been loaded from the backup file:
 %1", tcnn_mcc.final.file)
 
-put_log("The Tuned Final MCC Model Summary:
-%1", cnn_mcc.final)
+### Preparing Validation Data ---------------------------------------------------
+put_log("Preparing a Test Set...")
+start <- put_start_date()
+
+put_log("Loading the Test Set from backup...")
+x3d.test_set <- readRDS(cnn_mcc.final.x3d.test_set.bakup)
+
+put_log("The Test Set has been loaded from the following file:
+%1", cnn_mcc.final.x3d.test_set.bakup)
+
+
+put_log("The Test Set data is stored in the object `x3d.test_set`, 
+having the following structure:
+%1", capture.output(str(x3d.test_set)))
+
+class.groups <- ds.get_classIDs.grouped(x3d.test_set$x.test)
+
+#y_test <- class.groups$classID
+  
+y_test <- as.array(as.integer(class.groups$classID) - 1)
+str(y_test)
+length(y_test)
+#> [1] 33267
+
+
+# y_test.cat <- to_categorical(y_test)
+# colnames(y_test.cat) <- Y.Labels
+# 
+# put_log("The Class Labels vector has been converted to a categorical matrix with the following dimensions:
+# %1", capture.output(dim(y_test.cat)))
+# #> [1] 33267    39
+# 
+# # str(y_test.cat)
+# head(y_test.cat)
+#      # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+# [1,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [2,] 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [3,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [4,] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0
+# [5,] 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+# [6,] 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+put_log("Reshaping the Test Set to make it compatible with the Convolutional Neural Network (CNN)...")
+# Add channel into the dimension
+x_test <- array_reshape(x3d.test_set$x.test, 
+                        c(nrow(x3d.test_set$x.test), 
+                          n.img_rows, 
+                          n.img_cols, 
+                          1))
+
+x_test.files <- x3d.test_set$x.files
+rm(x3d.test_set)
+
+put_log("The Test Set has been reshaped as follows:
+%1", capture.output(shape(x_test)))
+# shape(33228, 28, 28, 1)
+
+#### class Identifies: Quick Analysis ---------------------------------------------
+
+y_test.chars <- class.groups$groupByClass
+#str(y_test.chars)
+
+rm(class.groups)
+
+char_n.max <- max(y_test.chars$n)
+# 853
+char_n.max == min(y_test.chars$n)
+# TRUE
+
+put_log("The number of rows for each *Character Class* to be recognized in the Test Set is as follows:
+%1", capture.output(print(y_test.chars, n = nrow(y_test.chars))))
+{
+  # A tibble: 39 × 2
+  #    classID     n
+  #    <fct>   <int>
+  #  1 #         853
+  #  2 $         853
+  #  3 &         853
+  #  4 @         853
+  #  5 0         853
+  #  6 1         853
+  #  7 2         853
+  #  8 3         853
+  #  9 4         853
+  # 10 5         853
+  # 11 6         853
+  # 12 7         853
+  # 13 8         853
+  # 14 9         853
+  # 15 A         853
+  # 16 B         853
+  # 17 C         853
+  # 18 D         853
+  # 19 E         853
+  # 20 F         853
+  # 21 G         853
+  # 22 H         853
+  # 23 I         853
+  # 24 J         853
+  # 25 K         853
+  # 26 L         853
+  # 27 M         853
+  # 28 N         853
+  # 29 P         853
+  # 30 Q         853
+  # 31 R         853
+  # 32 S         853
+  # 33 T         853
+  # 34 U         853
+  # 35 V         853
+  # 36 W         853
+  # 37 X         853
+  # 38 Y         853
+  # 39 Z         853
+  invisible()
+}
+
+rm(y_test.chars)
+log_close()
+
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
+open_logfile(".tuner.cnn-mcc.final-model.evaluation")
 
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
 put_log("Evaluating tuned Final CNN MCC Model...")
-tcnn_mcc.final.eval.result <- cnn_mcc.final |> evaluate(x_test, y_test)
+tcnn_mcc.final.eval.result <- cnn_mcc.final |> evaluate(x_test, y_test.cat)
 put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(tcnn_mcc.final.eval.result))
 # $accuracy
-# [1] 0.9269291
+# [1] 0.8887953
 # 
 # $loss
-# [1] 0.2350844
-
+# [1] 0.3397374
 
 put_end_date(start)
 
@@ -174,7 +222,7 @@ log_close()
 
 
 
-# Visualizing the Evaluation Results ------------------------------------------
+## Visualizing the Evaluation Results ------------------------------------------
 
 open_logfile(".tuner.cnn-mcc.best-model.eval.visualization")
 
