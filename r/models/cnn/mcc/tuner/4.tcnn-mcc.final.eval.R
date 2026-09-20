@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".tuner.cnn-mcc.best-model.eval.setup")
+open_logfile(".tuner.cnn-mcc.final-model.evaluation")
 stopifnot(file.exists(tcnn_mcc.final.file),
           file.exists(ds28x28.split.train_0.8.backup.file))
 
@@ -18,9 +18,9 @@ x_test <- test_set$x
 str(x_test)
 dim(x_test)
 
-y.test.groups <- test_set$class.groups
+y.test.groups <- test_set$class_groups
 
-stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_train)) == 0)
+stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
 
 y_test <- as.array(as.integer(y.test.groups$classID) - 1)
 str(y_test)
@@ -86,24 +86,26 @@ put_log("Loading pre-trained tuned Final MCC Model...")
 
 cnn_mcc.final <- keras3::load_model(tcnn_mcc.final.file)
 
-put_log("The tuned Final MCC Model has been loaded from the backup file:
+put_log("The Tuned Final MCC Model has been loaded from the backup file:
 %1", tcnn_mcc.final.file)
 
+put_log("The Tuned Final MCC Model Summary:
+%1", cnn_mcc.final)
 ## Evaluating the CNN-based Multiclass Classifier Model ----------------------
-open_logfile(".tuner.cnn-mcc.final-model.evaluation")
 
 put_log("Evaluating the pre-trained Multiclass Classifier model...")
 start <- put_start_date()
 
 put_log("Evaluating tuned Final CNN MCC Model...")
-tcnn_mcc.final.eval.result <- cnn_mcc.final |> evaluate(x_test, y_test.cat)
+tcnn_mcc.final.eval.result <- cnn_mcc.final |> evaluate(x_test, y_test)
 put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(tcnn_mcc.final.eval.result))
 # $accuracy
-# [1] 0.8887953
+# [1] 0.9269291
 # 
 # $loss
-# [1] 0.3397374
+# [1] 0.2350844
+
 
 put_end_date(start)
 
@@ -172,7 +174,7 @@ log_close()
 
 
 
-## Visualizing the Evaluation Results ------------------------------------------
+# Visualizing the Evaluation Results ------------------------------------------
 
 open_logfile(".tuner.cnn-mcc.best-model.eval.visualization")
 
