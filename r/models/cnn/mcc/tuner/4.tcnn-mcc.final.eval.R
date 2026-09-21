@@ -147,11 +147,11 @@ rm(cnn_preds.ts,
 
 put_log("Saving the Multiclass Classifier model Evaluation Results...")
 saveRDS(tcnn_mcc.final.eval.result,
-        file = tcnn_mcc.final.eval.result.backup)
+        file = tcnn_mcc.final.eval_result.file)
 
 put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
-%1", tcnn_mcc.final.eval.result.backup)
+%1", tcnn_mcc.final.eval_result.file)
 
 put_log("CNN MCC Model evaluation result:
 %1", capture.output(tcnn_mcc.final.eval.result))
@@ -164,7 +164,7 @@ put_log("CNN MCC Model evaluation result:
 
 cnn_mcc.final.accuracy <- mean(tcnn_mcc.final.eval.result$predicted.values == y_test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.final.accuracy)
-# 0.888795259687278
+# 0.9269291
 
 rm(x_test,
    y_test,

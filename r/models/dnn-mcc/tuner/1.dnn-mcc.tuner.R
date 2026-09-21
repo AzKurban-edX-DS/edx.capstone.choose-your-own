@@ -14,7 +14,7 @@
 
 ## Setup -----------------------------------------------------------------------
 
-open_logfile(".dnn-mccl.model-tuning")
+open_logfile(".dnn-mcc.model-tuning")
 
 stopifnot(file.exists(ds28x28.split.train_0.1.backup.file),
           exists("dnn_mcc.tuner.dir"),
@@ -185,6 +185,7 @@ hp <- HyperParameters()
 dnn_mcc.tuner.max_layers <- 3L
 
 hp$Float("learning_rate", min_value=1e-5, max_value=1e-2, sampling="log")
+# hp$Fixed("learning_rate", value=0.001)
 # hp$Choice('learning_rate', 
 #           c(1e-1, 
 #             1e-2, 
@@ -192,13 +193,25 @@ hp$Float("learning_rate", min_value=1e-5, max_value=1e-2, sampling="log")
 #             1e-4))
 
 hp$Int('num_layers', 
-       min_value = 2L,
+       min_value = 1L,
        max_value = dnn_mcc.tuner.max_layers)
 
-hp$Float('dropout_rate', 
-       min_value = 0.1,
-       max_value = 0.5,
-       step = 0.05)
+# hp$Float('dropout_rate', 
+#        min_value = 0.1,
+#        max_value = 0.5,
+#        step = 0.05)
+
+for (i in seq(dnn_mcc.tuner.max_layers)) {
+  hp$Int(paste0("units_", i),
+         min_value = N.classes,
+         max_value = 28*28,
+         step = 32)   
+  
+  hp$Float(paste0("dropout", i, "_rate"), 
+           min_value = 0.1,
+           max_value = 0.5,
+           step = 0.05)
+}
 
 tdnn_mcc.callback_list <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
@@ -207,13 +220,6 @@ tdnn_mcc.callback_list <- list(
                             save_best_only = TRUE,
                             verbose = 1)
 )
-
-for (i in seq(dnn_mcc.tuner.max_layers)) {
-  hp$Int(paste0("units_", i),
-         min_value = N.classes,
-         max_value = 28*28,
-         step = 32)    
-}
 
 dnn_mcc.tuner = RandomSearch(
   hypermodel =  dnn_mcc.tuner.build_model,
@@ -365,7 +371,7 @@ put_end_date(start)
 
 log_close()
 # =========================================================================
-# Log End Time: 2026-09-15 22:55:03.93862
-# Log Elapsed Time: 0 00:38:51
+# Log End Time: 2026-09-21 02:42:35.282543
+# Log Elapsed Time: 0 00:31:29
 # =========================================================================
 

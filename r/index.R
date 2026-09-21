@@ -317,7 +317,7 @@ put_log("The DNN-Based Basic MCC Model has been loaded from the backup file:
 
 dnnb_mcc |> plot_keras_model(to_file = dnnb_mcc.plot_img.file,
                              show_shapes = T)
-rm(dnnb_mcc)
+# rm(dnnb_mcc)
 
 if(file.exists(dnnb_mcc.train_history.file)){
   put_log("Loading the DNN-Based Basic MCC Model Train History...")
@@ -456,7 +456,7 @@ put_log("The TDNN MCC Final Model has been loaded from the backup file:
 
 tdnn_mcc.final |> plot_keras_model(to_file = tdnn_mcc.final.plot_img.file,
                              show_shapes = T)
-rm(tdnn_mcc.final)
+# rm(tdnn_mcc.final)
 
 if(file.exists(tdnn_mcc.final.train_history.file)){
   print_log("Loading the Tuned DNN MCC Final Model Train History...")
@@ -481,7 +481,7 @@ has been loaded from the following file:
 %1", tdnn_mcc.final.eval_result.file)
 
 tdnn_mcc.final.eval.result$accuracy
-# 0.8780246
+# 0.9035151
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -577,7 +577,7 @@ has been loaded from the following backup file:
 
 cnnb_mcc |> plot_keras_model(to_file = cnnb_mcc.plot_img.file,
                              show_shapes = T)
-rm(cnnb_mcc)
+# rm(cnnb_mcc)
 
 if(file.exists(cnnb_mcc.train_history.file)){
   put_log("Loading the model training history...")
@@ -608,7 +608,7 @@ from the following file:
 
 put_log("CNN-Based Basic Multiclass Classifier Model accuracy: %1", 
         cnnb_mcc.eval.result$accuracy)
-# 0.919615983963013
+# 0.92193329334259
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -628,7 +628,7 @@ put_log("The `plots.args` object of class `%1` has been created for use to gener
 a visual representation of the CNNB MCC model evaluation results.",
         class(plots.args))
 
-rm(cnnb_mcc.eval.result)
+# rm(cnnb_mcc.eval.result)
 
 #'Run the helper script specifically designed to visualize 
 #'the MCC models evaluation results:
@@ -681,8 +681,6 @@ if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
 #### Run Scripts ---------------------------------------------------------------
 
 if(!file.exists(tcnn_mcc.final.eval_result.file)) {
-  
-  
   if(!file.exists(tcnn_mcc.final.file)) {
     if(!file.exists(tcnn_mcc.best_hp.config.file)) {
       if(!file.exists(tcnn_mcc.arch.best_hp.config.file)) {
@@ -726,7 +724,7 @@ put_log("The Tuned CNN-Based MCC Final Model has been loaded from the backup fil
 
 tcnn_mcc.final |> plot_keras_model(to_file = tcnn_mcc.final.plot_img.file,
                                    show_shapes = T)
-rm(tcnn_mcc.final)
+# rm(tcnn_mcc.final)
 
 if(file.exists(tcnn_mcc.final.train_history.file)){
   print_log("Loading the Tuned CNN-Based MCC Final Model Train History...")
@@ -737,7 +735,7 @@ from the following file:
 %1", tcnn_mcc.final.train_history.file)
   
   plot(tcnn_mcc.final.train_history)
-  rm(tcnn_mcc.final.train_history)
+  # rm(tcnn_mcc.final.train_history)
 } else {
   warning("The Tuned DNN MCC Final Model History backup file does not exist:
 %1", tcnn_mcc.final.train_history.file)
@@ -749,6 +747,13 @@ tcnn_mcc.final.eval.result <- readRDS(tcnn_mcc.final.eval_result.file)
 put_log("The Tuned CNN-Based MCC Final Model Evaluation Result object 
 has been loaded from the following file:
 %1", tcnn_mcc.final.eval_result.file)
+
+put_log("The Tuned CNN-Based MCC Final Model accuracy: %1", 
+        tcnn_mcc.final.eval.result$accuracy)
+# 0.926929116249084
+
+# -----------------------------------------------------
+
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 

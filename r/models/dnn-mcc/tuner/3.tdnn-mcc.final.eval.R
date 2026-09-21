@@ -192,8 +192,8 @@ put_log("The overall TDNN MCC Final Model accuracy: %1",
 
 ## Finalizing ------------------------------------------------------------------
 
-rm(x_test,
-   y_test)
+# rm(x_test,
+#    y_test)
 
 log_close()
 # =========================================================================

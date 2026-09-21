@@ -398,13 +398,12 @@ cnn_mcc.tunable_model <- function(hp,
 }
 
 dnn_mcc.tuner.build_model <- function(hp) {
-  dnn_mcc.tunable_model(hp,
-                        n.outputs = N.classes)
+  dnn_mcc.tunable_model(hp)
 }
 
-dnn_mcc.tunable_model <- function(hp,
+dnn_mcc.tuner.build_model <- function(hp,
                                   input_shape = c(28, 28),
-                                  n.outputs) {
+                                  n.outputs = N.classes ) {
   
   model_inputs <- layer_input(shape = input_shape)
   layer <- model_inputs |> layer_flatten()
@@ -417,7 +416,7 @@ dnn_mcc.tunable_model <- function(hp,
       layer_dense(units = hp$get(paste0("units_", i)),
                   activation = "relu") |>
       # Good practice: add dropout to prevent deep layers from overfitting
-      layer_dropout(rate = hp$get('dropout_rate')) 
+      layer_dropout(rate = hp$get(paste0("dropout", i, "_rate"))) 
   }
   
   model_outputs <- layer |> 
