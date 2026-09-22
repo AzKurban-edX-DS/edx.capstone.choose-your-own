@@ -219,14 +219,36 @@ put_log("First 30 prediction errors:
   invisible()
 }
 
+wrong_pred.I <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                       tcnn_mcc.final.eval.result$targets,
+                                       x_test.files,
+                                       pred.char = 'I')
 # dev.off()
-print.image_grid(recg.err.info)
+print.image_grid(wrong_pred.I)
+
+
+wrong_pred.L <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                      tcnn_mcc.final.eval.result$targets,
+                                      x_test.files,
+                                      pred.char = 'L')
+# dev.off()
+print.image_grid(wrong_pred.L)
+
+
+wrong_pred.1 <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                      tcnn_mcc.final.eval.result$targets,
+                                      x_test.files,
+                                      pred.char = '1')
+# dev.off()
+print.image_grid(wrong_pred.1)
+
+
 # dev.off()
 # str(recg.err.info)
-rm(recg.err.info)
+#rm(recg.err.info)
 
 #> [*] Reference: https://databricks-prod-cloudfront.cloud.databricks.com/public/4027ec902e239c93eaaa8714f173bcfc/2961012104553482/4462572393058129/1806228006848429/latest.html
 
-rm(tcnn_mcc.final.eval.result)
+# rm(tcnn_mcc.final.eval.result)
 
 log_close()

@@ -364,13 +364,20 @@ data.plot <- function(data,
 
 recognition_err.table <- function(predicted.values, 
                                   actual.values, 
-                                  img.file_paths) {
+                                  img.file_paths,
+                                  pred.char = NULL) {
   
   err.idx <- which(predicted.values != actual.values)
   
-  data.frame(predicted = predicted.values[err.idx],
-             actual = actual.values[err.idx],
-             file = img.file_paths[err.idx])
+  err.result <- data.frame(predicted = predicted.values[err.idx],
+                           actual = actual.values[err.idx],
+                           file = img.file_paths[err.idx])
+  
+  if(is.null(pred.char)) {
+    return(err.result)
+  }
+  
+  return(err.result[err.result$predicted == pred.char,])
 }
 
 print.image_grid <- function(err.table,
