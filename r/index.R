@@ -328,6 +328,13 @@ if(file.exists(dnnb_mcc.train_history.file)){
 %1", dnnb_mcc.train_history.file)
   
   plot(dnnb_mcc.train_history) 
+  
+  best_metrics <- model.train_history.get_best_metrics(dnnb_mcc.train_history)
+  put_log("The best values of the DNN-Based Basic MCC Model training result are as follows:
+%1", capture.output(best_metrics))
+#  accuracy         loss val_accuracy     val_loss 
+# 0.9301116    0.2064773    0.9013734    0.2976910  
+
   # rm(dnnb_mcc.train_history)
 } else {
   warning("The DNN-Based Basic MCC Model History backup file does not exist:
@@ -341,7 +348,8 @@ put_log("The DNNB MCC Model Evaluation Result object has been loaded
 from the following file:
 %1", dnnb_mcc.eval.result.file)
 
-dnnb_mcc.eval.result$accuracy
+put_log("The DNNB MCC Model Evaluation Result accuracy: %1", 
+        dnnb_mcc.eval.result$accuracy)
 # 0.8973456
 
 #' Initialize the `plots.args` object containing argument values 
@@ -467,6 +475,13 @@ from the following file:
 %1", tdnn_mcc.final.train_history.file)
   
   plot(tdnn_mcc.final.train_history)
+  
+  best_metrics <- model.train_history.get_best_metrics(tdnn_mcc.final.train_history)
+  put_log("The best values of the Tuned DNN MCC Final Model training result are as follows:
+%1", capture.output(best_metrics))
+#  accuracy         loss val_accuracy     val_loss 
+# 0.9337805    0.1783210    0.9070931    0.2982191   
+  
   # rm(tdnn_mcc.final.train_history)
 } else {
   warning("The Tuned DNN MCC Final Model History backup file does not exist:
@@ -480,7 +495,8 @@ put_log("The Tuned DNN-Based MCC Final Model Evaluation Result object
 has been loaded from the following file:
 %1", tdnn_mcc.final.eval_result.file)
 
-tdnn_mcc.final.eval.result$accuracy
+put_log("The Tuned DNN-Based MCC Final Model Evaluation Result accuracy: %1", 
+        tdnn_mcc.final.eval.result$accuracy)
 # 0.9035151
 
 #' Initialize the `plots.args` object containing argument values 
@@ -606,7 +622,7 @@ put_log("The CNNB MCC Model Evaluation Result object has been loaded
 from the following file:
 %1", cnnb_mcc.eval.result.file)
 
-put_log("CNN-Based Basic Multiclass Classifier Model accuracy: %1", 
+put_log("The CNNB MCC Model Evaluation Result accuracy: %1", 
         cnnb_mcc.eval.result$accuracy)
 # 0.92193329334259
 
@@ -691,22 +707,29 @@ if(!file.exists(tcnn_mcc.final.eval_result.file)) {
                verbose = TRUE,
                keep.source = TRUE)
       }
+      
+      source(cnn_mcc.lr_tuner.script.path,
+             catch.aborts = TRUE,
+             echo = TRUE,
+             spaced = TRUE,
+             verbose = TRUE,
+             keep.source = TRUE)
     }
     
-    # source(tcnn_mcc.final.retrain.script.path,
-    #        catch.aborts = TRUE,
-    #        echo = TRUE,
-    #        spaced = TRUE,
-    #        verbose = TRUE,
-    #        keep.source = TRUE)
+    source(tcnn_mcc.final.retrain.script.path,
+           catch.aborts = TRUE,
+           echo = TRUE,
+           spaced = TRUE,
+           verbose = TRUE,
+           keep.source = TRUE)
   }
   
-  # source(tcnn_mcc.final.eval.script.path,
-  #        catch.aborts = TRUE,
-  #        echo = TRUE,
-  #        spaced = TRUE,
-  #        verbose = TRUE,
-  #        keep.source = TRUE)
+  source(tcnn_mcc.final.retrain.script.path,
+         catch.aborts = TRUE,
+         echo = TRUE,
+         spaced = TRUE,
+         verbose = TRUE,
+         keep.source = TRUE)
 }
 
 open_logfile(".tcnn-mcc.visual.eval-results")
@@ -736,8 +759,14 @@ from the following file:
   
   plot(tcnn_mcc.final.train_history)
   # rm(tcnn_mcc.final.train_history)
+  
+  best_metrics <- model.train_history.get_best_metrics(tcnn_mcc.final.train_history)
+  put_log("The best values of the Tuned CNN-Based MCC Final Model training result are as follows:
+%1", capture.output(best_metrics))
+#  accuracy         loss val_accuracy     val_loss 
+# 0.9369979    0.1720747    0.9304986    0.2107324 
 } else {
-  warning("The Tuned DNN MCC Final Model History backup file does not exist:
+  warning("The Tuned CNN-Based MCC Final Model History backup file does not exist:
 %1", tcnn_mcc.final.train_history.file)
 }
 
@@ -748,12 +777,9 @@ put_log("The Tuned CNN-Based MCC Final Model Evaluation Result object
 has been loaded from the following file:
 %1", tcnn_mcc.final.eval_result.file)
 
-put_log("The Tuned CNN-Based MCC Final Model accuracy: %1", 
+put_log("The Tuned CNN-Based MCC Final Model Evaluation Result accuracy: %1", 
         tcnn_mcc.final.eval.result$accuracy)
 # 0.926929116249084
-
-# -----------------------------------------------------
-
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 

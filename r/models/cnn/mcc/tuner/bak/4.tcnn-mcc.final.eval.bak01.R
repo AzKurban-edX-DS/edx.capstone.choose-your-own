@@ -22,9 +22,7 @@ y.test.groups <- test_set$class_groups
 
 stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
 
-eval.targets <- y.test.groups$classID
-
-y_test <- as.array(as.integer(eval.targets) - 1)
+y_test <- as.array(as.integer(y.test.groups$classID) - 1)
 str(y_test)
 dim(y_test)
 
@@ -141,12 +139,11 @@ head(cnn.prediction.values.idx)
 tcnn_mcc.final.eval.result$predicted.values <- Y.Labels[cnn.prediction.values.idx]
 head(tcnn_mcc.final.eval.result$predicted.values)
 
-tcnn_mcc.final.eval.result$targets <- eval.targets
+tcnn_mcc.final.eval.result$targets <- y_test
 
 rm(cnn_preds.ts,
    cnn_mcc.final.predictions,
-   cnn.prediction.values.idx,
-   eval.targets)
+   cnn.prediction.values.idx)
 
 put_log("Saving the Multiclass Classifier model Evaluation Results...")
 saveRDS(tcnn_mcc.final.eval.result,
@@ -176,6 +173,114 @@ rm(x_test,
 log_close()
 
 
+
+## Visualizing the Evaluation Results ------------------------------------------
+
+open_logfile(".tuner.cnn-mcc.best-model.eval.visualization")
+
+stopifnot(file.exists(model_visualization.shared.script.path))
+
+cnn_mcc.final.eval.conf.mx.img_file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                            "dl-basic.eval.confusion-matrix.png")
+
+cnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                          "dl-basic.eval.plots_dat.rds")
+
+#' Initialize the `plots.args` object containing argument values 
+#' for the visualization helper functions being called in the following script 
+#' about to launch:
+if(file.exists(cnn_mcc.final.eval.plots_dat.file)) {
+  put_log("Function `init.plots_args`:
+Loading the model-related plots input data object from the backup file...")
+  plots.args <- init.plots_args(cnn_mcc.final.eval.plots_dat.file)
+  
+  put_log("Function `init.plots_args`:
+The model-related plots input data object has been loaded from the following file:
+%1", cnn_mcc.final.eval.plots_dat.file)
+} else {
+  plots.args <- init.plots_args(targets = tcnn_mcc.final.eval.result$targets,
+                                predicted.probabilities = tcnn_mcc.final.eval.result$predicted.probs,
+                                predicted.values = tcnn_mcc.final.eval.result$predicted.values,
+                                alg_name = "CNN Basic",
+                                plots_dat.file = cnn_mcc.final.eval.plots_dat.file,
+                                cm.export.img_file = cnn_mcc.final.eval.conf.mx.img_file,
+                                cm.print.image = T)
+}
+
+#'Run the helper script specifically designed to visualize 
+#'the model evaluation results:
+source(model_visualization.shared.script.path,
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+rm(plots.args)
+
+stopifnot(exists("plots.dat"),
+          !is.null(plots.dat$ROC),
+          !is.null(plots.dat$PCA),
+          !is.null(plots.dat$CM))
+
+if(!file.exists(cnn_mcc.final.eval.plots_dat.file)) {
+  put_log("Saving the model-related plots input data object to file...")
+  
+  saveRDS(plots.dat,
+          file = cnn_mcc.final.eval.plots_dat.file)
+  
+  put_log("The model-related plots input data object has been saved to the following file:
+%1", cnn_mcc.final.eval.plots_dat.file)
+}
+
+# put_log("The Basic DL Model per-class accuracy:,
+# %1", capture.output(plots.dat$PCA$acc.by_class))
+{
+  #' class  accuracy
+  #'     # 1.0000000
+  #'     $ 1.0000000
+  #'     & 1.0000000
+  #'     @ 1.0000000
+  #'     0 0.9577465
+  #'     1 0.6502347
+  #'     2 0.8673709
+  #'     3 0.9577465
+  #'     4 0.9295775
+  #'     5 0.8767606
+  #'     6 0.9213615
+  #'     7 0.9776995
+  #'     8 0.9225352
+  #'     9 0.8356808
+  #'     A 0.8685446
+  #'     B 0.9025822
+  #'     C 0.9366197
+  #'     D 0.9295775
+  #'     E 0.9284038
+  #'     F 0.9354460
+  #'     G 0.6913146
+  #'     H 0.9225352
+  #'     I 0.7453052
+  #'     J 0.9166667
+  #'     K 0.9237089
+  #'     L 0.5258216
+  #'     M 0.9565728
+  #'     N 0.9284038
+  #'     P 0.9589202
+  #'     Q 0.7746479
+  #'     R 0.9107981
+  #'     S 0.8826291
+  #'     T 0.9342723
+  #'     U 0.9589202
+  #'     V 0.8990610
+  #'     W 0.9671362
+  #'     X 0.9377934
+  #'     Y 0.8767606
+  #'     Z 0.9260563
+  invisible(NULL)
+}
+
+rm(plots.dat)
+log_close()
 
 ## Review Some Errors --------------------------------------------------------- 
 
