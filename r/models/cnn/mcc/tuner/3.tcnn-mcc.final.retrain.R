@@ -174,7 +174,9 @@ put_log("The best Hyperparameters values:
 }
 
 # 1. Re-build a clean model structure using the winning hyperparams
-hypermodel <- CNN_MCC.HyperModel(N.classes)
+hypermodel <- CNN_MCC.HyperModel(N.classes,
+                                 macro_f1_score = T)
+
 cnn_mcc.final <- hypermodel$build(best_hp)
 # print(cnn_mcc.final)
 # cnn_mcc.final$summary()

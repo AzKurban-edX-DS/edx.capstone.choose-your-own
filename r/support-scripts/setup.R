@@ -259,6 +259,19 @@ stopifnot(dir.exists(cnn_mcc.tuner.scripts.dir))
 put_log("Root directory for the `CNN-Based MCC` model tuner's scripts:
 %1", cnn_mcc.tuner.scripts.dir)
 
+cnn_mcc.tuner.proc.scripts.dir <- file.path(cnn_mcc.tuner.scripts.dir, "proc")
+stopifnot(dir.exists(cnn_mcc.tuner.proc.scripts.dir))
+
+put_log("Root directory for the `CNN-Based MCC` model tuner-related procedure scripts:
+%1", cnn_mcc.tuner.proc.scripts.dir)
+
+cnn_mcc.tuner.classes.scripts.dir <- file.path(cnn_mcc.tuner.scripts.dir, "classes")
+stopifnot(dir.exists(cnn_mcc.tuner.classes.scripts.dir))
+
+put_log("Root directory for the `CNN-Based MCC` model tuner-related subclass definitions:
+%1", cnn_mcc.tuner.classes.scripts.dir)
+
+
 ### Data Directories -----------------------------------------------------------
 
 data.dir <- "data"
@@ -492,10 +505,6 @@ stopifnot(file.exists(cnnb_mcc.eval.script.path))
 
 ##### CNN-Based MCC Tuner-Related Scripts --------------------------------------
 
-cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
-                                            "cnn-mcc.hyper-model.R")
-stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
-
 cnn_mcc.arch_tuner.script.path <- file.path(cnn_mcc.tuner.scripts.dir, 
                                             "1.cnn-mcc.arch-tuner.R")
 stopifnot(file.exists(cnn_mcc.arch_tuner.script.path))
@@ -514,7 +523,23 @@ tcnn_mcc.final.eval.script.path <-
 
 stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
 
-#### CNN-Based Binary Classifier BC Scripts ------------------------------------
+###### CNN-Based MCC Tuner-Related Procedure Scripts ---------------------------
+
+tcnn_mcc.final_test.proc.path <- file.path(cnn_mcc.tuner.proc.scripts.dir, 
+                                            "tcnn-mcc.final-model.test.R")
+stopifnot(file.exists(tcnn_mcc.final_test.proc.path))
+
+###### CNN-Based MCC Tuner-Related Subclasses Scripts --------------------------
+
+cnn_mcc.hypermodel.script.path <- file.path(cnn_mcc.tuner.classes.scripts.dir, 
+                                            "cnn-mcc.hyper-model.R")
+stopifnot(file.exists(cnn_mcc.hypermodel.script.path))
+
+cnn_mcc.hyperparams.script.path <- file.path(cnn_mcc.tuner.classes.scripts.dir, 
+                                            "cnn-mcc.hyper-parameters.R")
+stopifnot(file.exists(cnn_mcc.hyperparams.script.path))
+
+## CNN-Based Binary Classifier BC Scripts ------------------------------------
 
 cnn_binary.r_scripts.dir <- file.path(cnn._binary.scripts.dir, "cnn-binary.R")
 stopifnot(file.exists(cnn_binary.r_scripts.dir))
@@ -564,6 +589,19 @@ put_log("Initializing `CNN_MCC.HyperModel` helper class for tuning the
 CNN-based Multiclass Classifier Model...")
 
 source(cnn_mcc.hypermodel.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+## Load `CNN_MCC.HyperParameters` helper class ---------------------------------
+stopifnot(file.exists(cnn_mcc.hyperparams.script.path))
+
+put_log("Initializing `CNN_MCC.HyperParameters` helper class for tuning the 
+CNN-based Multiclass Classifier Model...")
+
+source(cnn_mcc.hyperparams.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

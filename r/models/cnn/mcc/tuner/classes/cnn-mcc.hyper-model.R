@@ -30,14 +30,16 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     
     `__init__` = function(self, 
                           num_classes,
+                          macro_f1_score = FALSE,
                           start_date = NULL) {
       
       self$num_classes = num_classes
+      self$macro_f1_score = macro_f1_score
+      
       self$start_date = ifelse(is.null(start_date), 
                                Sys.time(), 
                                start_date)
       self$error = NULL
-      
       NULL
     },
     
@@ -49,6 +51,14 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
         start <- self$start_date
       }
       
+      metrics <- 'accuracy'
+      
+      if(self$macro_f1_score) {
+        metrics <- list(
+          'accuracy',
+          metric_f1_score(average = 'macro', name = 'macro_f1')
+        )
+      }
       
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
       layer <- input_layer
@@ -130,7 +140,7 @@ has been added to the CNN MCC Model.",
         compile(
           optimizer = keras3::optimizer_adamax(learning_rate),
           loss = 'sparse_categorical_crossentropy',
-          metrics = 'accuracy')
+          metrics = metrics)
       
       put_log("A new model has been compiled with `learning_rate`: %1.", learning_rate)
       put_end_date(start)
