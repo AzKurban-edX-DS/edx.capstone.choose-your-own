@@ -52,12 +52,15 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
       }
       
       metrics <- 'accuracy'
+      loss <- 'sparse_categorical_crossentropy'
       
       if(self$macro_f1_score) {
         metrics <- list(
           'accuracy',
-          metric_f1_score(average = 'macro', name = 'macro_f1')
+          metric_f1_score(average = 'macro', name = 'f1_macro')
         )
+        
+        loss <- 'categorical_crossentropy'
       }
       
       input_layer <- layer_input(shape = shape(28L, 28L, 1L))
@@ -139,7 +142,7 @@ has been added to the CNN MCC Model.",
       model <- keras_model(input_layer, output_layer) |>
         compile(
           optimizer = keras3::optimizer_adamax(learning_rate),
-          loss = 'sparse_categorical_crossentropy',
+          loss = loss,
           metrics = metrics)
       
       put_log("A new model has been compiled with `learning_rate`: %1.", learning_rate)

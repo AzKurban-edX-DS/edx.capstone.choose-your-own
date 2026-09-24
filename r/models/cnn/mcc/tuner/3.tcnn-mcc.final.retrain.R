@@ -1,6 +1,6 @@
-#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%
-# CNN MCC  Model Tuning: Retrain the Best Model
-#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%
+#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%
+# CNN MCC  Model Tuning: Retrain the Final Model
+#%%%%%%%%%%%%%%%%%%%%%%%#%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
 open_logfile(".cnn_mcc.retrain-final")
@@ -8,7 +8,7 @@ start <- put_start_date()
 
 stopifnot(file.exists(ds28x28.split.train_0.8.backup.file))
 
-## Prepare a Training Set -----------------------------------------------------
+### Prepare a Training Set -----------------------------------------------------
 
 put_log("Loading the Training Set of 28x28x1-shape image data...")
 
@@ -36,6 +36,9 @@ dim(y_train)
 stopifnot(min(y_train) == 0,
           max(y_train) == 38,
           dim(y_train) == nrow(x_train))
+
+y_train.cat <- to_categorical(y_train)
+colnames(y_train.cat) <- Y.Labels
 
 #### Size of the Training Set by Class -----------------------------------------
 put_log("The Training Set is balanced by the set of Classes:
@@ -86,9 +89,7 @@ put_log("The Training Set is balanced by the set of Classes:
   invisible(NULL)
 }
 
-rm(train_set)
-
-## Init File Paths ------------------------------------------------------------
+### Init File Paths ------------------------------------------------------------
 
 cnn_mcc.tuner.final.plot_img.file <- file.path(cnn_mcc.tuner.dir,
                                               "cnn-mcc.tuner.final-model.png")
@@ -175,7 +176,7 @@ put_log("The best Hyperparameters values:
 
 # 1. Re-build a clean model structure using the winning hyperparams
 hypermodel <- CNN_MCC.HyperModel(N.classes,
-                                 macro_f1_score = F)
+                                 macro_f1_score = T)
 
 cnn_mcc.final <- hypermodel$build(best_hp)
 # print(cnn_mcc.final)
@@ -196,7 +197,7 @@ start <- put_start_date()
 
 tcnn_mcc.final.train_history <- cnn_mcc.final |> 
   fit(x_train, 
-      y_train, 
+      y_train.cat, 
       epochs = 100, 
       # batch_size = 128, 
       callbacks = cnn_mcc.best.callbacks,

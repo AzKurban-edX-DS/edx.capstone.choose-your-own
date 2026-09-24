@@ -204,10 +204,10 @@ cnnb_mcc.train_history <- cnnb_mcc |>
   fit(x_train, 
       y_train.cat,
       epochs = cnnb_mcc.epochs,
-      batch_size = cnnb_mcc.batch_size,
-      validation_split = cnnb_mcc.vld_split,
-      #validation_data = tuple(x_test, y_test.cat),
-      callbacks = cnnb_mcc.callbacks
+      # batch_size = cnnb_mcc.batch_size,
+      callbacks = cnnb_mcc.callbacks,
+      validation_split = cnnb_mcc.vld_split
+      #validation_data = tuple(x_test, y_test.cat)
   )
 # acc: 0.8741
 
