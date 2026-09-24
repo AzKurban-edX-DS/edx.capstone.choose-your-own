@@ -544,5 +544,27 @@ and backed up to the following file:
 %1", final_test.img28x28mx.array.file_path)
 }
 
+### Preparing Dataset for Final Test of the Best Model -------------------------
+
+put_log("Preparing Dataset for Final Test of the Best Model...")
+
+if(!file.exists(ds.final_test.file_path)) {
+  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+  
+  put_log("Loading the Binary Image 28x28 array set from the backup file...")
+  ftest_img28x28mx.set <- readRDS(final_test.img28x28mx.array.file_path)
+  put_log("Function `split.img28x28mx_array`:
+The Binary Image 28x28 array set has been loaded from the following file:
+%1", final_test.img28x28mx.array.file_path)
+  
+  
+} else {
+  put_log("The Dataset for Final Test of the Best Model 
+has already been constructed and backed up to the following file:
+%1", final_test.img28x28mx.array.file_path)
+  
+}
+
+
 put_end_date(start)
 log_close()

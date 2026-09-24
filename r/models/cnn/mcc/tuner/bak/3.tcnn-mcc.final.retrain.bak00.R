@@ -10,26 +10,24 @@ stopifnot(file.exists(ds28x28.split.train_0.8.backup.file))
 
 ### Prepare a Training Set -----------------------------------------------------
 
-put_log("Loading the Binary Image 28x28 array set from the backup file...")
-ftrain_set <- readRDS(train.img28x28mx.array.file_path)
-put_log("The Binary Image 28x28 array set has been loaded from the following file:
-%1", train.img28x28mx.array.file_path)
+put_log("Loading the Training Set of 28x28x1-shape image data...")
 
-x <- ftrain_set$img28x28mx.array
-x.class_groups <- 
+train_set <- load28x28x1.train_set(ds28x28.split.train_0.8.backup.file)
+put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
+%1", ds28x28.split.train_0.8.backup.file)
 
-x_train <- array_reshape(x, 
-                   c(nrow(x), 
-                     28, 
-                     28, 
-                     1))
+x_train <- train_set$x
+# storage.mode(x_train) <- "integer"
+
+# x_train <- x_train[seq(1e4),,]
 str(x_train)
 shape(x_train)
 
-y.train.groups <- ds.get_classIDs.grouped(x)
-rm(x)
+y.train.groups <- train_set$class_groups
+rm(train_set)
 
 stopifnot(sum(as.character(y.train.groups$classID) != rownames(x_train)) == 0)
+
 
 y_train <- as.array(as.integer(y.train.groups$classID) - 1)
 str(y_train)
@@ -43,51 +41,51 @@ y_train.cat <- to_categorical(y_train)
 colnames(y_train.cat) <- Y.Labels
 
 #### Size of the Training Set by Class -----------------------------------------
-put_log("This imbalanced Training Set is prepared to use for the final retraining of the best model:
+put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
-  # 1 #       15600
-  # 2 $       16199
-  # 3 &       13000
-  # 4 @       38009
-  # 5 0       65504
-  # 6 1       43773
-  # 7 2       39348
-  # 8 3       39996
-  # 9 4       38112
-  # 10 5       32315
-  # 11 6       38879
-  # 12 7       41080
-  # 13 8       38795
-  # 14 9       38319
-  # 15 A       17203
-  # 16 B        8663
-  # 17 C       13557
-  # 18 D       15507
-  # 19 E       32627
-  # 20 F       11620
-  # 21 G        5443
-  # 22 H       12133
-  # 23 I       13873
-  # 24 J        4259
-  # 25 K        4334
-  # 26 L       21646
-  # 27 M       12088
-  # 28 N       21421
-  # 29 P       11089
-  # 30 Q        4706
-  # 31 R       20498
-  # 32 S       25910
-  # 33 T       30842
-  # 34 U       16385
-  # 35 V        7245
-  # 36 W        7265
-  # 37 X        5106
-  # 38 Y        6755
-  # 39 Z        4863
+  #  1 #        3407
+  #  2 $        3407
+  #  3 &        3407
+  #  4 @        3407
+  #  5 0        3407
+  #  6 1        3407
+  #  7 2        3407
+  #  8 3        3407
+  #  9 4        3407
+  # 10 5        3407
+  # 11 6        3407
+  # 12 7        3407
+  # 13 8        3407
+  # 14 9        3407
+  # 15 A        3407
+  # 16 B        3407
+  # 17 C        3407
+  # 18 D        3407
+  # 19 E        3407
+  # 20 F        3407
+  # 21 G        3407
+  # 22 H        3407
+  # 23 I        3407
+  # 24 J        3407
+  # 25 K        3407
+  # 26 L        3407
+  # 27 M        3407
+  # 28 N        3407
+  # 29 P        3407
+  # 30 Q        3407
+  # 31 R        3407
+  # 32 S        3407
+  # 33 T        3407
+  # 34 U        3407
+  # 35 V        3407
+  # 36 W        3407
+  # 37 X        3407
+  # 38 Y        3407
+  # 39 Z        3407
   invisible(NULL)
 }
 
