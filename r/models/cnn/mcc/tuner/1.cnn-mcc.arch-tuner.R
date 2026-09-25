@@ -178,8 +178,6 @@ put_log("The Test Set is balanced by the set of Classes:
 rm(y.test.groups)
 
 
-log_close()
-
 ## Tuning the Model Architecture -----------------------------------------------
 
 cnn_mcc.arch_tuner.proj.dir <- file.path(cnn_mcc.tuner.dir, 

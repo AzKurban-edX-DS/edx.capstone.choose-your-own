@@ -6,15 +6,24 @@
 open_logfile(".cnn_mcc.retrain-final")
 start <- put_start_date()
 
-stopifnot(file.exists(ds28x28.split.train_0.8.file))
+stopifnot(file.exists(ds.imbalanced.final_retraining.file))
 
-### Prepare a Training Set -----------------------------------------------------
+### Prepare Input Datasets for Retraining the Final Model ----------------------
 
-put_log("Loading the Training Set of 28x28x1-shape image data...")
+put_log("Loading the Input Datasets of 28x28-size image data...")
+ds <- load28x28x1.datasets(ds.imbalanced.final_retraining.file)
+train_set <- ds$train
+test_set <- ds$test
+rm(ds)
 
-train_set <- load28x28x1.train_set(ds28x28.split.train_0.8.file)
-put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.file)
+put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
+%1", ds.imbalanced.final_retraining.file)
+
+#### Prepare a Training Set -----------------------------------------------------
+
+
+put_log("The Training Set object structure is as follows:
+%1", capture.output(str(train_set)))
 
 x_train <- train_set$x
 # storage.mode(x_train) <- "integer"
@@ -37,57 +46,132 @@ stopifnot(min(y_train) == 0,
           max(y_train) == 38,
           dim(y_train) == nrow(x_train))
 
-y_train.cat <- to_categorical(y_train)
-colnames(y_train.cat) <- Y.Labels
+##### Size of the Training Set by Class -----------------------------------------
 
-#### Size of the Training Set by Class -----------------------------------------
 put_log("The Training Set is balanced by the set of Classes:
 %1", capture.output(print(y.train.groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
   #    <fct>   <int>
-  #  1 #        3407
-  #  2 $        3407
-  #  3 &        3407
-  #  4 @        3407
-  #  5 0        3407
-  #  6 1        3407
-  #  7 2        3407
-  #  8 3        3407
-  #  9 4        3407
-  # 10 5        3407
-  # 11 6        3407
-  # 12 7        3407
-  # 13 8        3407
-  # 14 9        3407
-  # 15 A        3407
-  # 16 B        3407
-  # 17 C        3407
-  # 18 D        3407
-  # 19 E        3407
-  # 20 F        3407
-  # 21 G        3407
-  # 22 H        3407
-  # 23 I        3407
+  # 1 #       12480
+  # 2 $       12959
+  # 3 &       10400
+  # 4 @       30407
+  # 5 0       52403
+  # 6 1       35018
+  # 7 2       31478
+  # 8 3       31996
+  # 9 4       30489
+  # 10 5       25852
+  # 11 6       31103
+  # 12 7       32864
+  # 13 8       31036
+  # 14 9       30655
+  # 15 A       13762
+  # 16 B        6930
+  # 17 C       10845
+  # 18 D       12405
+  # 19 E       26101
+  # 20 F        9296
+  # 21 G        4354
+  # 22 H        9706
+  # 23 I       11098
   # 24 J        3407
-  # 25 K        3407
-  # 26 L        3407
-  # 27 M        3407
-  # 28 N        3407
-  # 29 P        3407
-  # 30 Q        3407
-  # 31 R        3407
-  # 32 S        3407
-  # 33 T        3407
-  # 34 U        3407
-  # 35 V        3407
-  # 36 W        3407
-  # 37 X        3407
-  # 38 Y        3407
-  # 39 Z        3407
+  # 25 K        3467
+  # 26 L       17316
+  # 27 M        9670
+  # 28 N       17136
+  # 29 P        8871
+  # 30 Q        3764
+  # 31 R       16398
+  # 32 S       20728
+  # 33 T       24673
+  # 34 U       13108
+  # 35 V        5796
+  # 36 W        5812
+  # 37 X        4084
+  # 38 Y        5404
+  # 39 Z        3890
   invisible(NULL)
 }
+
+rm(y.train.groups)
+
+#### Prepare a Test Set ----------------------------------------------------------
+start <- put_start_date()
+
+put_log("The Test Set object structure is as follows:
+%1", capture.output(str(test_set)))
+
+x_test <- test_set$x
+# storage.mode(x_test) <- "integer"
+
+# x_test <- x_test[seq(1e4),,]
+str(x_test)
+dim(x_test)
+
+y.test.groups <- test_set$class_groups
+rm(test_set)
+
+stopifnot(sum(as.character(y.test.groups$classID) != rownames(x_test)) == 0)
+
+y_test <- as.array(as.integer(y.test.groups$classID) - 1)
+str(y_test)
+dim(y_test)
+
+stopifnot(min(y_test) == 0,
+          max(y_test) == 38,
+          dim(y_test) == nrow(x_test))
+
+##### Size of the Test Set by Class ------------------------------------------
+
+put_log("The Test Set is balanced by the set of Classes:
+%1", capture.output(print(y.test.groups$groupByClass, n = N.classes)))
+{
+  # 1 #        3120
+  # 2 $        3240
+  # 3 &        2600
+  # 4 @        7602
+  # 5 0       13101
+  # 6 1        8755
+  # 7 2        7870
+  # 8 3        8000
+  # 9 4        7623
+  # 10 5        6463
+  # 11 6        7776
+  # 12 7        8216
+  # 13 8        7759
+  # 14 9        7664
+  # 15 A        3441
+  # 16 B        1733
+  # 17 C        2712
+  # 18 D        3102
+  # 19 E        6526
+  # 20 F        2324
+  # 21 G        1089
+  # 22 H        2427
+  # 23 I        2775
+  # 24 J         852
+  # 25 K         867
+  # 26 L        4330
+  # 27 M        2418
+  # 28 N        4285
+  # 29 P        2218
+  # 30 Q         942
+  # 31 R        4100
+  # 32 S        5182
+  # 33 T        6169
+  # 34 U        3277
+  # 35 V        1449
+  # 36 W        1453
+  # 37 X        1022
+  # 38 Y        1351
+  # 39 Z         973
+  invisible(NULL)
+}
+
+rm(y.test.groups)
 
 ### Init File Paths ------------------------------------------------------------
 
@@ -201,7 +285,8 @@ tcnn_mcc.final.train_history <- cnn_mcc.final |>
       epochs = 100, 
       # batch_size = 128, 
       callbacks = cnn_mcc.best.callbacks,
-      validation_split = 0.2
+      # validation_split = 0.2
+      validation_data = tuple(x_test, y_test)
   )
 
 put_log("Saving re-trained final tuned Final MCC Model...")

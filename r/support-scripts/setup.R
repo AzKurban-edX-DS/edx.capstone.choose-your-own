@@ -433,7 +433,7 @@ ds28x28.split.train_0.8.file <- file.path(train.data.dir,
 ds28x28.split.train_0.1.file <- file.path(train.data.dir, 
                                                  "ds28x28.split.train_0.1.backup.rds")
 
-ds.imbalanced.final_retraining.backup.file <- file.path(train.data.dir, 
+ds.imbalanced.final_retraining.file <- file.path(train.data.dir, 
                                                  "ds.imbalanced.final-retraining.backup.rds")
 
 my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")

@@ -274,7 +274,7 @@ if(!file.exists(ds28x28.split.train_0.8.file)) {
   stopifnot(file.exists(train.img28x28mx.array.file_path))
   
   put_log("Loading and splitting the Train 28x28 Image Data Array 
-into a Default Train and Test Sets...")
+into default Train and Test Sets...")
   
   ds28x28.split.train_0.8 <- 
     split.img28x28mx_array(train.img28x28mx.array.file_path,
@@ -346,36 +346,37 @@ the final retraining ot the Best Model...")
 
 
 put_log("The path for the backup file to save the list of the Split Datasets: 
-%1", ds28x28.split.train_0.8.file)
+%1", ds.imbalanced.final_retraining.file)
 
 start <- put_start_date()
 
-if(!file.exists(ds28x28.split.train_0.8.file)) {
+if(!file.exists(ds.imbalanced.final_retraining.file)) {
   stopifnot(file.exists(train.img28x28mx.array.file_path))
   
-  put_log("Loading and splitting the Train 28x28 Image Data Array 
-into a Default Train and Test Sets...")
+  put_log("Loading and splitting (without balancing) the array of training images (28x28) 
+into standard training and test sets...")
   
-  ds28x28.split.train_0.8 <- 
+  ds.split_imbalanced <- 
     split.img28x28mx_array(train.img28x28mx.array.file_path,
-                           test_ratio = 0.2)
+                           test_ratio = 0.2,
+                           balanced = FALSE)
   
-  put_log("The Default Split Dataset object structure:
-%1", capture.output(str(ds28x28.split.train_0.8)))
+  put_log("The Split Imbalanced Dataset object structure:
+%1", capture.output(str(ds.split_imbalanced)))
   
   put_log("Saving the Split Dataset List object in the backup file...")
   
-  saveRDS(ds28x28.split.train_0.8, 
-          file = ds28x28.split.train_0.8.file)
+  saveRDS(ds.split_imbalanced, 
+          file = ds.imbalanced.final_retraining.file)
   
-  rm(ds28x28.split.train_0.8)
+  rm(ds.split_imbalanced)
   
   put_log("The Split Dataset List object has been backed up in the following file:
-`%1`", ds28x28.split.train_0.8.file)
+`%1`", ds.imbalanced.final_retraining.file)
 } else {
   put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
 has already been constructed and backed up to the following file:
-%1", ds28x28.split.train_0.8.file)
+%1", ds.imbalanced.final_retraining.file)
 }
 
 put_end_date(start)
@@ -383,7 +384,6 @@ put_end_date(start)
 
 
 put_end_date(start)
-log_close()
 
 ### Preparing the Flattened EMNIST-Like Dataset --------------------------------
 
@@ -429,11 +429,15 @@ and backed up to the following file:
 %1", my_emnist.file_path)
 }
 
+put_end_date(start)
+log_close()
+
 ## Prepare Final Test Data -----------------------------------------------------
-### Pre-processing the Final Test Data -----------------------------------------
 
 open_logfile(".prepare-final_test-data")
 start <- put_start_date()
+
+### Pre-processing the Final Test Data -----------------------------------------
 
 final_test.img28x28bin.list.file_path <- file.path(final_test.data.dir, 
                                                    "final_test.img28x28bin.list.rds")
