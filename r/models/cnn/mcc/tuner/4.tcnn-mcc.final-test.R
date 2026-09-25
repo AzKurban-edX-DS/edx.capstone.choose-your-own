@@ -1,5 +1,5 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Fine-Tuned CNN MCC Final Model: Final Test
+# Fine-Tuned CNN MCC Final Model: Evaluation
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
@@ -146,8 +146,7 @@ head(cnn.prediction.values.idx)
 tcnn_mcc.final.eval.result$predicted.values <- Y.Labels[cnn.prediction.values.idx]
 head(tcnn_mcc.final.eval.result$predicted.values)
 
-targets.idx <- y_test + 1
-tcnn_mcc.final.eval.result$targets <- Y.Labels[targets.idx]
+tcnn_mcc.final.eval.result$targets <- eval.targets
 
 rm(cnn_preds.ts,
    cnn_mcc.final.predictions,
@@ -170,7 +169,7 @@ put_log("CNN MCC Model evaluation result:
 # $loss
 # [1] 0.3397374
 
-cnn_mcc.final.accuracy <- mean(cnn.prediction.values.idx == targets.idx)
+cnn_mcc.final.accuracy <- mean(tcnn_mcc.final.eval.result$predicted.values == y_test)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.final.accuracy)
 # 0.9269291
 

@@ -521,10 +521,10 @@ tcnn_mcc.final.retrain.script.path <-
 
 stopifnot(file.exists(tcnn_mcc.final.retrain.script.path))
 
-tcnn_mcc.final.eval.script.path <- 
-  file.path(cnn_mcc.tuner.scripts.dir, "4.tcnn-mcc.final.eval.R")
+tcnn_mcc.final_test.script.path <- 
+  file.path(cnn_mcc.tuner.scripts.dir, "4.tcnn-mcc.final-test.R")
 
-stopifnot(file.exists(tcnn_mcc.final.eval.script.path))
+stopifnot(file.exists(tcnn_mcc.final_test.script.path))
 
 ###### CNN-Based MCC Tuner-Related Procedure Scripts ---------------------------
 
