@@ -266,11 +266,11 @@ the NN-based Multiclass Classifier (MCC) Models...")
 
 
 put_log("The path for the backup file to save the list of the Split Datasets: 
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 
 start <- put_start_date()
 
-if(!file.exists(ds28x28.split.train_0.8.backup.file)) {
+if(!file.exists(ds28x28.split.train_0.8.file)) {
   stopifnot(file.exists(train.img28x28mx.array.file_path))
   
   put_log("Loading and splitting the Train 28x28 Image Data Array 
@@ -286,20 +286,19 @@ into a Default Train and Test Sets...")
   put_log("Saving the Split Dataset List object in the backup file...")
   
   saveRDS(ds28x28.split.train_0.8, 
-          file = ds28x28.split.train_0.8.backup.file)
+          file = ds28x28.split.train_0.8.file)
   
   rm(ds28x28.split.train_0.8)
   
   put_log("The Split Dataset List object has been backed up in the following file:
-`%1`", ds28x28.split.train_0.8.backup.file)
+`%1`", ds28x28.split.train_0.8.file)
 } else {
   put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
 has already been constructed and backed up to the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 }
 
 put_end_date(start)
-log_close()
 
 ### Preparing Split Datasets of 10%-size Training Set for NN-Based Models ----
 
@@ -308,11 +307,11 @@ the NN-based Multiclass Classifier (MCC) Models...")
 
 
 put_log("The path for the backup file to save the list of the Split Datasets: 
-%1", ds28x28.split.train_0.1.backup.file)
+%1", ds28x28.split.train_0.1.file)
 
 start <- put_start_date()
 
-if(!file.exists(ds28x28.split.train_0.1.backup.file)) {
+if(!file.exists(ds28x28.split.train_0.1.file)) {
   stopifnot(file.exists(train.img28x28mx.array.file_path))
   
   put_log("Loading and splitting the Train 28x28 Image Data Array 
@@ -328,17 +327,60 @@ into a Default Train and Test Sets...")
   put_log("Saving the Split Dataset List object in the backup file...")
   
   saveRDS(ds28x28.split.train_0.1, 
-          file = ds28x28.split.train_0.1.backup.file)
+          file = ds28x28.split.train_0.1.file)
   
   rm(ds28x28.split.train_0.1)
   
   put_log("The Split Dataset List object has been backed up in the following file:
-`%1`", ds28x28.split.train_0.1.backup.file)
+`%1`", ds28x28.split.train_0.1.file)
 } else {
   put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
 has already been constructed and backed up to the following file:
-%1", ds28x28.split.train_0.1.backup.file)
+%1", ds28x28.split.train_0.1.file)
 }
+
+### Preparing a Split Imbalanced Datasets for Final Retraining of the Best Model ----
+
+put_log("Preparing a (Default) split imbalanced datasets (of 80%-size Training Set) for 
+the final retraining ot the Best Model...")
+
+
+put_log("The path for the backup file to save the list of the Split Datasets: 
+%1", ds28x28.split.train_0.8.file)
+
+start <- put_start_date()
+
+if(!file.exists(ds28x28.split.train_0.8.file)) {
+  stopifnot(file.exists(train.img28x28mx.array.file_path))
+  
+  put_log("Loading and splitting the Train 28x28 Image Data Array 
+into a Default Train and Test Sets...")
+  
+  ds28x28.split.train_0.8 <- 
+    split.img28x28mx_array(train.img28x28mx.array.file_path,
+                           test_ratio = 0.2)
+  
+  put_log("The Default Split Dataset object structure:
+%1", capture.output(str(ds28x28.split.train_0.8)))
+  
+  put_log("Saving the Split Dataset List object in the backup file...")
+  
+  saveRDS(ds28x28.split.train_0.8, 
+          file = ds28x28.split.train_0.8.file)
+  
+  rm(ds28x28.split.train_0.8)
+  
+  put_log("The Split Dataset List object has been backed up in the following file:
+`%1`", ds28x28.split.train_0.8.file)
+} else {
+  put_log("The Split Datasets for training the NN-based Multiclass Classifier Models 
+has already been constructed and backed up to the following file:
+%1", ds28x28.split.train_0.8.file)
+}
+
+put_end_date(start)
+
+
 
 put_end_date(start)
 log_close()
@@ -387,7 +429,8 @@ and backed up to the following file:
 %1", my_emnist.file_path)
 }
 
-## Prepare Final Test Data ----------------------------------------------------
+## Prepare Final Test Data -----------------------------------------------------
+### Pre-processing the Final Test Data -----------------------------------------
 
 open_logfile(".prepare-final_test-data")
 start <- put_start_date()
@@ -492,6 +535,8 @@ and backed up to the following file:
 %1", final_test.img28x28mx.list.file_path)
 }
 
+### Preparing a Dataset for the Final Test of the Best Model --------------------
+
 if(!file.exists(final_test.img28x28mx.array.file_path)){
   if (!exists("ft.img28x28mx.list")) {
     stopifnot(file.exists(final_test.img28x28mx.list.file_path))
@@ -544,26 +589,26 @@ and backed up to the following file:
 %1", final_test.img28x28mx.array.file_path)
 }
 
-### Preparing Dataset for Final Test of the Best Model -------------------------
+### Preparing  Dataset for Final Test of the Best Model -------------------------
 
-put_log("Preparing Dataset for Final Test of the Best Model...")
-
-if(!file.exists(ds.final_test.file_path)) {
-  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
-  
-  put_log("Loading the Binary Image 28x28 array set from the backup file...")
-  ftest_img28x28mx.set <- readRDS(final_test.img28x28mx.array.file_path)
-  put_log("Function `split.img28x28mx_array`:
-The Binary Image 28x28 array set has been loaded from the following file:
-%1", final_test.img28x28mx.array.file_path)
-  
-  
-} else {
-  put_log("The Dataset for Final Test of the Best Model 
-has already been constructed and backed up to the following file:
-%1", final_test.img28x28mx.array.file_path)
-  
-}
+# put_log("Preparing Dataset for Final Test of the Best Model...")
+# 
+# if(!file.exists(ds.final_test.file_path)) {
+#   stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+#   
+#   put_log("Loading the Binary Image 28x28 array set from the backup file...")
+#   ftest_img28x28mx.set <- readRDS(final_test.img28x28mx.array.file_path)
+#   put_log("Function `split.img28x28mx_array`:
+# The Binary Image 28x28 array set has been loaded from the following file:
+# %1", final_test.img28x28mx.array.file_path)
+#   
+#   
+# } else {
+#   put_log("The Dataset for Final Test of the Best Model 
+# has already been constructed and backed up to the following file:
+# %1", final_test.img28x28mx.array.file_path)
+#   
+# }
 
 
 put_end_date(start)

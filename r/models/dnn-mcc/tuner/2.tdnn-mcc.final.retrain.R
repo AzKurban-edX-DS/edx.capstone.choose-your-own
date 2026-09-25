@@ -7,7 +7,7 @@
 open_logfile(".re-training.tuned-final.dnn_mcc-model")
 
 stopifnot(dir.exists(dnn_mcc.tuner.dir),
-          file.exists(ds28x28.split.train_0.8.backup.file,
+          file.exists(ds28x28.split.train_0.8.file,
                       tdnn_mcc.best_hp.config.file))
 
 start <- put_start_date()
@@ -15,10 +15,10 @@ start <- put_start_date()
 ## Prepare a Training Set for Re-training the Final Model -----------------------
 
 put_log("Loading the Training Set of 28x28-size image data...")
-train_set <- load.train_set(ds28x28.split.train_0.8.backup.file)
+train_set <- load.train_set(ds28x28.split.train_0.8.file)
 
 put_log("The Training Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 
 
 put_log("The Training Set object structure is as follows:

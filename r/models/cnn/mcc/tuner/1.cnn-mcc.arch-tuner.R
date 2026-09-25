@@ -12,13 +12,13 @@ start <- put_start_date()
 ## Prepare Input Datasets for the DNN MCC Model Tuning -------------------------
 
 put_log("Loading the Input Datasets of 28x28-size image data...")
-ds <- load28x28x1.datasets(ds28x28.split.train_0.1.backup.file)
+ds <- load28x28x1.datasets(ds28x28.split.train_0.1.file)
 train_set <- ds$train
 test_set <- ds$test
 rm(ds)
 
 put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.1.backup.file)
+%1", ds28x28.split.train_0.1.file)
 
 ### Prepare a Training Set -----------------------------------------------------
 

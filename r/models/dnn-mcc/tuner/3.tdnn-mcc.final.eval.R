@@ -8,16 +8,16 @@ open_logfile(".tdnn-mcc.final.evaluation")
 
 stopifnot(dir.exists(dnn_mcc.tuner.dir),
           file.exists(tdnn_mcc.final.file,
-                      ds28x28.split.train_0.8.backup.file))
+                      ds28x28.split.train_0.8.file))
 
 ## Prepare a Test Set for the TDNN MCC Final Model Evaluation ------------------
 start <- put_start_date()
 
 put_log("Loading the Test Set of 28x28-size image data...")
-test_set <- load.test_set(ds28x28.split.train_0.8.backup.file)
+test_set <- load.test_set(ds28x28.split.train_0.8.file)
 
 put_log("The Test Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 
 
 put_log("The Test Set object structure is as follows:

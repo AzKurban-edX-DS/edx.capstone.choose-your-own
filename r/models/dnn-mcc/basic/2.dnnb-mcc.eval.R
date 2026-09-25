@@ -12,10 +12,10 @@ start <- put_start_date()
 ## Preparing a Test Set for the Model Evaluation Job --------------------------
 
 put_log("Loading the Test Set of 28x28-size image data...")
-test_set <- load.test_set(ds28x28.split.train_0.8.backup.file)
+test_set <- load.test_set(ds28x28.split.train_0.8.file)
 
 put_log("The Test Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 
 
 put_log("The Test Set object structure is as follows:

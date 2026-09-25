@@ -247,7 +247,7 @@ load28x28x1.datasets <- function(backup.file) {
 } 
 
 load.cnn_mcc.tuner.datasets <- function() {
-  stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
+  stopifnot(file.exists(ds28x28.split.train_0.1.file))
             
 }
 
@@ -452,7 +452,9 @@ plot_image <- function(image_file) {
 split.img28x28mx_array <- function(file,
                                    seed = NA,
                                    seed.default = TRUE,
-                                   test_ratio = 0.2) {
+                                   test_ratio = 0.2,
+                                   shuffle_rows = TRUE,
+                                   balanced = TRUE) {
   stopifnot(file.exists(file))
   
   put_log("Function `split.img28x28mx_array`:
@@ -473,7 +475,9 @@ Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
 
   split.list <- sample_train_test_sets.x3d(img28x28mx.set$img28x28mx.array,
                                            img28x28mx.set$img28x28mx.fpath,
-                                           test.ratio = test_ratio)
+                                           test.ratio = test_ratio,
+                                           shuffle_rows = shuffle_rows,
+                                           balanced = balanced)
 
   put_log("Function `split.img28x28mx_array`:
 The Result Split Dataset object structure:
@@ -876,7 +880,7 @@ Generating a testing sample of size %1% from the original dataset...",
   test.set <- list(x.test = x[sample.idx$test.index,],
                    x.files = test.files)
   
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `sample_train_test_sets.mx`: 
 A testing sample of size %1% has been made with the following structure:
 %2", test.size, capture.output(str(test.set)))
   

@@ -13,7 +13,7 @@
 ## Setup -----------------------------------------------------------------------
 
 open_logfile(".cnnb-mcc.model-building")
-stopifnot(file.exists(ds28x28.split.train_0.8.backup.file),
+stopifnot(file.exists(ds28x28.split.train_0.8.file),
           exists("cnnb_mcc.file"),
           exists("cnnb_mcc.train_history.file"))
 
@@ -23,9 +23,9 @@ start <- put_start_date()
 
 put_log("Loading the Training Set of 28x28x1-shape image data...")
 
-train_set <- load28x28x1.train_set(ds28x28.split.train_0.8.backup.file)
+train_set <- load28x28x1.train_set(ds28x28.split.train_0.8.file)
 put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 
 x_train <- train_set$x
 

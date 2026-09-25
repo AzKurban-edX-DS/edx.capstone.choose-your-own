@@ -16,7 +16,7 @@
 
 open_logfile(".dnn-mcc.model-tuning")
 
-stopifnot(file.exists(ds28x28.split.train_0.1.backup.file),
+stopifnot(file.exists(ds28x28.split.train_0.1.file),
           exists("dnn_mcc.tuner.dir"),
           exists("tdnn_mcc.best_hp.config.file"))
 
@@ -29,17 +29,17 @@ start <- put_start_date()
 ## Prepare Input Datasets for the DNN MCC Model Tuning -------------------------
 
 put_log("Loading the Input Datasets of 28x28-size image data...")
-ds <- load_datasets(ds28x28.split.train_0.1.backup.file)
+ds <- load_datasets(ds28x28.split.train_0.1.file)
 train_set <- ds$train
 test_set <- ds$test
 rm(ds)
 
 put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.1.backup.file)
+%1", ds28x28.split.train_0.1.file)
 
 ### Prepare a Training Set -----------------------------------------------------
 start <- put_start_date()
-stopifnot(file.exists(ds28x28.split.train_0.1.backup.file))
+stopifnot(file.exists(ds28x28.split.train_0.1.file))
 
 put_log("The Training Set object structure is as follows:
 %1", capture.output(str(train_set)))

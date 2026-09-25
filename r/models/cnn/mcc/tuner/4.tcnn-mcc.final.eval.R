@@ -6,14 +6,14 @@
 open_logfile(".tuner.cnn-mcc.final-model.evaluation")
 stopifnot(file.exists(tcnn_mcc.final_test.proc.path,
                       tcnn_mcc.final.file,
-                      ds28x28.split.train_0.8.backup.file))
+                      ds28x28.split.train_0.8.file))
 
 ### Preparing a Test Set for the Model Evaluation Job ---------------------------
 
 put_log("Loading the Test Set of 28x28x1-shape image data...")
-test_set <- load28x28x1.test_set(ds28x28.split.train_0.8.backup.file)
+test_set <- load28x28x1.test_set(ds28x28.split.train_0.8.file)
 put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.backup.file)
+%1", ds28x28.split.train_0.8.file)
 
 x_test <- test_set$x
 str(x_test)
