@@ -46,6 +46,9 @@ stopifnot(min(y_train) == 0,
           max(y_train) == 38,
           dim(y_train) == nrow(x_train))
 
+y_train.cat <- to_categorical(y_train)
+colnames(y_train.cat) <- Y.Labels
+
 ##### Size of the Training Set by Class -----------------------------------------
 
 put_log("The Training Set is balanced by the set of Classes:
@@ -123,6 +126,9 @@ dim(y_test)
 stopifnot(min(y_test) == 0,
           max(y_test) == 38,
           dim(y_test) == nrow(x_test))
+
+y_test.cat <- to_categorical(y_test)
+colnames(y_test.cat) <- Y.Labels
 
 ##### Size of the Test Set by Class ------------------------------------------
 
@@ -286,7 +292,7 @@ tcnn_mcc.final.train_history <- cnn_mcc.final |>
       # batch_size = 128, 
       callbacks = cnn_mcc.best.callbacks,
       # validation_split = 0.2
-      validation_data = tuple(x_test, y_test)
+      validation_data = tuple(x_test, y_test.cat)
   )
 
 put_log("Saving re-trained final tuned Final MCC Model...")
