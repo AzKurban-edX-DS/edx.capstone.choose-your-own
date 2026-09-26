@@ -173,7 +173,6 @@ put_log("CNN MCC Model evaluation result:
 cnn_mcc.final.accuracy <- mean(cnn.prediction.values.idx == targets.idx)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.final.accuracy)
 # 0.94872136387853
-
 metric <- metric_f1_score(average = 'macro', name = 'macro_f1', threshold = 0.5)
 
 metric$update_state(y_test.cat, tcnn_mcc.final.eval.result$predicted.probs)
@@ -191,6 +190,10 @@ rm(x_test,
    y_test.cat)
 
 log_close()
+# =========================================================================
+# Log End Time: 2026-09-26 09:17:44.095403
+# Log Elapsed Time: 0 00:00:40
+# =========================================================================
 
 
 
