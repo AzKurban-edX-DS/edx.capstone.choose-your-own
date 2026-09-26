@@ -941,26 +941,46 @@ A testing sample of size %1% has been made with the following structure:
        test_set = test.set)
 }
 
-shuffle.rows <- function(x,
-                         x.files = NULL,
-                         seed = NA) {
-  if (!is.na(seed)) {
-    set.seed(seed)
-  }
-  random.idx <- sample(nrow(x))
+shuffle.rows.x3d <- function(x,
+                             x.files = NULL,
+                             seed = NA,
+                             seed.default = TRUE) {
   
-  random.files <- ifelse(!is.null(x.files),
-                         x.files[random.idx])
-  list(x = x[random.idx,],
-       x.files = random.files)
+  random.idx <- shuffle.idx(x, seed, seed.default)
+  result <- list(x = x[random.idx,,])
+  
+  if(!is.null(x.files)) 
+    result$x.files <- x.files[random.idx]
+  
+  return(result)
 }
 
-shuffle.rows.x3d <- function(x, seed = NA) {
+shuffle.rows <- function(x,
+                         x.files = NULL,
+                         seed = NA,
+                         seed.default = TRUE) {
+  
+  random.idx <- shuffle.idx(x, seed, seed.default)
+  result <- list(x = x[random.idx,])
+
+  if(!is.null(x.files)) 
+    result$x.files <- x.files[random.idx]
+  
+  return(result)
+}
+
+shuffle.idx <- function(x,
+                        seed = NA,
+                        seed.default = TRUE) {
+  x.rows <- nrow(x)
+  
   if (!is.na(seed)) {
     set.seed(seed)
+  } else if(seed.default) {
+    set.seed(x.rows)
   }
-  random.idx <- sample(nrow(x))
-  x[random.idx,,]
+  
+  sample(x.rows)
 }
 
 splitDataset <- function(x, n.parts){

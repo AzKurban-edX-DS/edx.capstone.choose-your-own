@@ -13,9 +13,12 @@ ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
 put_log("The Test Binary Image 28x28 array set has been loaded from the following file:
 %1", final_test.img28x28mx.array.file_path)
 
-x <- ftest_set$img28x28mx.array
-x_test.files <- ftest_set$img28x28mx.fpath
-rm(ftest_set)
+ds.test <-shuffle.rows.x3d(ftest_set$img28x28mx.array,
+                           ftest_set$img28x28mx.fpath)
+
+x <- ds.test$x
+x_test.files <- ds.test$x.files
+rm(ftest_set, ds.test)
 
 x_test <- array_reshape(x, c(nrow(x), 28, 28, 1))
 str(x_test)
