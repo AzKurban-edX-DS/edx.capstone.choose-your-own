@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-open_logfile(".tuner.cnn-mcc.final-model.test")
+open_logfile(".tuner.cnn-mcc.final-model.evaluation")
 stopifnot(file.exists(tcnn_mcc.final.file,
                       final_test.img28x28mx.array.file_path))
 
