@@ -149,8 +149,7 @@ targets.idx <- y_test + 1
 tcnn_mcc.final.eval.result$targets <- Y.Labels[targets.idx]
 
 rm(cnn_preds.ts,
-   cnn_mcc.final.predictions,
-   cnn.prediction.values.idx)
+   cnn_mcc.final.predictions)
 
 put_log("Saving the Multiclass Classifier model Evaluation Results...")
 saveRDS(tcnn_mcc.final.eval.result,
@@ -170,7 +169,7 @@ put_log("CNN MCC Model evaluation result:
 
 cnn_mcc.final.accuracy <- mean(cnn.prediction.values.idx == targets.idx)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.final.accuracy)
-# 0.9269291
+# 0.94872136387853
 
 metric <- metric_f1_score(average = 'macro', name = 'macro_f1', threshold = 0.5)
 
@@ -178,9 +177,10 @@ metric$update_state(y_test.cat, tcnn_mcc.final.eval.result$predicted.probs)
 result <- metric$result()
 result
 
-f1_score <- result$numpy()
-put_log("CNN-Based Multiclass Classifier Model F1 Score: %1", f1_score)
-
+tcnn_mcc.final.eval.result$f1_score <- result$numpy()
+put_log("CNN-Based Multiclass Classifier Model F1 Score: %1", 
+        tcnn_mcc.final.eval.result$f1_score)
+# 0.920138716697693
 
 
 rm(x_test,
