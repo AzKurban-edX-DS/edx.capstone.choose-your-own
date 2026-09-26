@@ -259,18 +259,11 @@ stopifnot(dir.exists(cnn_mcc.tuner.scripts.dir))
 put_log("Root directory for the `CNN-Based MCC` model tuner's scripts:
 %1", cnn_mcc.tuner.scripts.dir)
 
-cnn_mcc.tuner.proc.scripts.dir <- file.path(cnn_mcc.tuner.scripts.dir, "proc")
-stopifnot(dir.exists(cnn_mcc.tuner.proc.scripts.dir))
-
-put_log("Root directory for the `CNN-Based MCC` model tuner-related procedure scripts:
-%1", cnn_mcc.tuner.proc.scripts.dir)
-
 cnn_mcc.tuner.classes.scripts.dir <- file.path(cnn_mcc.tuner.scripts.dir, "classes")
 stopifnot(dir.exists(cnn_mcc.tuner.classes.scripts.dir))
 
 put_log("Root directory for the `CNN-Based MCC` model tuner-related subclass definitions:
 %1", cnn_mcc.tuner.classes.scripts.dir)
-
 
 ### Data Directories -----------------------------------------------------------
 
@@ -525,12 +518,6 @@ tcnn_mcc.final_test.script.path <-
   file.path(cnn_mcc.tuner.scripts.dir, "4.tcnn-mcc.final-test.R")
 
 stopifnot(file.exists(tcnn_mcc.final_test.script.path))
-
-###### CNN-Based MCC Tuner-Related Procedure Scripts ---------------------------
-
-tcnn_mcc.final_test.proc.path <- file.path(cnn_mcc.tuner.proc.scripts.dir, 
-                                            "tcnn-mcc.final-model.test.R")
-stopifnot(file.exists(tcnn_mcc.final_test.proc.path))
 
 ###### CNN-Based MCC Tuner-Related Subclasses Scripts --------------------------
 
