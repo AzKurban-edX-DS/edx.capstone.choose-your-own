@@ -1,7 +1,11 @@
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Fine-Tuning the CNN MCC Model: `Learning Rate` Hyperparameter
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 ## Setup -----------------------------------------------------------------------
 open_logfile(".cnn_mcc.model-tuning.learning-rate")
 stopifnot(exists("cnn_mcc.tuner.dir"),
-          exists("tcnn_mcc.arch.best_hp.config.file"))
+          file.exists(tcnn_mcc.arch.best_hp.config.file))
 
 start <- put_start_date()
 
