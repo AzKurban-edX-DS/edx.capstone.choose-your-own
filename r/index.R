@@ -658,6 +658,11 @@ source(model_visualization.shared.script.path,
 log_close()
 
 ### CNN-Based MCC Model Tuning -------------------------------------------------
+stopifnot(file.exists(cnn_mcc.arch_tuner.script.path,
+                      cnn_mcc.lr_tuner.script.path,
+                      tcnn_mcc.final.retrain.script.path,
+                      tcnn_mcc.final_test.script.path))
+
 #### Init Paths ----------------------------------------------------------------
 
 tcnn_mcc.arch.best_hp.config.file <- file.path(cnn_mcc.tuner.dir, 
@@ -763,8 +768,8 @@ from the following file:
   best_metrics <- model.train_history.get_best_metrics(tcnn_mcc.final.train_history)
   put_log("The best values of the Tuned CNN-Based MCC Final Model training result are as follows:
 %1", capture.output(best_metrics))
-#  accuracy         loss val_accuracy     val_loss 
-# 0.9369979    0.1720747    0.9304986    0.2107324 
+#  accuracy     f1_macro         loss val_accuracy val_f1_macro     val_loss 
+# 0.9406126    0.9207393    0.1823343    0.9454636    0.9272678    0.1663086 
 } else {
   warning("The Tuned CNN-Based MCC Final Model History backup file does not exist:
 %1", tcnn_mcc.final.train_history.file)
@@ -777,8 +782,10 @@ put_log("The Tuned CNN-Based MCC Final Model Evaluation Result object
 has been loaded from the following file:
 %1", tcnn_mcc.final.eval_result.file)
 
-put_log("The Tuned CNN-Based MCC Final Model Evaluation Result accuracy: %1", 
-        tcnn_mcc.final.eval.result$accuracy)
+put_log("The Tuned CNN-Based MCC Final Model Evaluation Result metrics: 
+%1", capture.output(c('accuracy' = tcnn_mcc.final.eval.result$accuracy,
+                         'f1_macro' = tcnn_mcc.final.eval.result$f1_macro,
+                         'loss' = tcnn_mcc.final.eval.result$loss)))
 # 0.926929116249084
 
 #' Initialize the `plots.args` object containing argument values 
@@ -787,7 +794,7 @@ put_log("The Tuned CNN-Based MCC Final Model Evaluation Result accuracy: %1",
 plots.args <- init.plots_args(targets = tcnn_mcc.final.eval.result$targets,
                               predicted.probabilities = tcnn_mcc.final.eval.result$predicted.probs,
                               predicted.values = tcnn_mcc.final.eval.result$predicted.values,
-                              model_type = "Tuned MCC",
+                              model_type = "Fine-Tuned MCC",
                               alg_name = "CNN",
                               plots_dat.file = tcnn_mcc.final.eval.plots_dat.file,
                               pca.export_img.file_name = "tcnn.final.eval.pca.png",
