@@ -813,6 +813,106 @@ source(model_visualization.shared.script.path,
 
 log_close()
 
+## CNN-based Binary Classifier Models -----------------------------------------
+stopifnot(file.exists(cnn_binary.r_scripts.dir))
+
+data.cnn.binary.dir <- file.path(data.dl.cnn.dir, "binary")
+
+if(!dir.exists(data.cnn.binary.dir))
+  dir.create(data.cnn.binary.dir)
+
+
+data.cnn.binary.models.dir <- file.path(data.cnn.binary.dir, "models")
+
+if(!dir.exists(data.cnn.binary.models.dir))
+  dir.create(data.cnn.binary.models.dir)
+
+data.cnn.binary.models.checkpoints.dir <- file.path(data.cnn.binary.models.dir,
+                                                    "checkpoints")
+if(!dir.exists(data.cnn.binary.models.checkpoints.dir))
+  dir.create(data.cnn.binary.models.checkpoints.dir)
+
+data.cnn.binary.models.evaluation.dir <- file.path(data.cnn.binary.models.dir,
+                                                   "evaluation")
+if(!dir.exists(data.cnn.binary.models.evaluation.dir))
+  dir.create(data.cnn.binary.models.evaluation.dir)
+
+# source(cnn_binary.r_scripts.dir,
+#        catch.aborts = TRUE,
+#        echo = TRUE,
+#        spaced = TRUE,
+#        verbose = TRUE,
+#        keep.source = TRUE)
+
+## Final Test for the Best Models ----------------------------------------------
+### Preparing the Final Test Data ----------------------------------------------
+
+open_logfile(".ds.prepare.final-test.balanced_sets")
+
+put_log("Preparing a Final Test Set for validating the CNN-based Models...")
+start <- put_start_date()
+stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+
+put_log("Loading the Final Test 28x28 Image Data Array Set from the backup file...")
+ft.img_mx.set <- readRDS(final_test.img28x28mx.array.file_path)
+
+put_log("The Final Test 28x28 Image Data Array Set has been loading from the following file:
+%1", final_test.img28x28mx.array.file_path)
+
+put_log("The Final Test 28x28 Image Data Set structure:
+%1", capture.output(str(ft.img_mx.set)))
+
+##### Creating Final Test Dataset -----------------------------------------------
+put_log("Making a balanced sample from the Validation 28x28 Image Data Array...")
+
+set.seed(N.classes)
+ft.sample_set <- sample_train_test_sets.x3d(ft.img_mx.set$img28x28mx.array,
+                                           ft.img_mx.set$img28x28mx.fpath,
+                                           test.ratio = 1)
+
+put_log("The Final Test Set sample has been made from the Validation 28x28 Image Data Array,
+which is returned in an object with the following structure:
+%1", capture.output(str(ft.sample_set)))
+put_end_date(start)
+
+ft.x3d.test_set <- ft.sample_set$test_set
+put_log("The Test Set has been saved in the object `ft.x3d.test_set`, 
+which contains a testing sample stored in the `x.test` variable having the following shape:
+%1", capture.output(shape(ft.x3d.test_set$x.test)))
+# shape(4641, 28, 28)
+
+# rm(ft.sample_set)
+
+log_close()
+
+### Final Testing of CNN BCC-Based Ensemble ------------------------------------
+stopifnot(file.exists(cnn_binary.ensemble.script.path))
+
+
+source(cnn_binary.ensemble.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+### Final Testing of the CNN-Based Multiclass Classifier Model -----------------
+stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
+
+x3d.test_set <- ft.x3d.test_set
+rm(ft.x3d.test_set)
+
+cnn_mcc.model.final_test.file_path <- file.path(data.cnn_mcc.dir, 
+                                                "cnn.multiclass.model.final-test.RData")
+stopifnot(file.exists(cnn_mcc.model.final_test.file_path))
+saaaaaaaaaaaaaaaaaaaaaaaaaasssssssss
+source(cnn_mcc.model.final_test.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 # Appendix: The Device (laptop) Info Where the Project was Build & Tested ---------------
 
 # Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
