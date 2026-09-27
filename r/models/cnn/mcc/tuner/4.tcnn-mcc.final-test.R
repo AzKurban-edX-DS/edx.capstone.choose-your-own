@@ -184,7 +184,7 @@ result
 # tf.Tensor(0.9201387, shape=(), dtype=float32)
 
 cnn_mcc.final.f1_macro <- result$numpy()
-put_log("CNN-Based Multiclass Classifier Model F1 Score: %1", 
+put_log("CNN-Based Multiclass Classifier Model, Macro F1 Score: %1", 
         cnn_mcc.final.f1_macro)
 # 0.920138716697693
 
