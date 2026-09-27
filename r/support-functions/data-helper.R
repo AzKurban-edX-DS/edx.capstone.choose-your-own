@@ -3,18 +3,18 @@
 #%%%%%%%%%%%%%%%%%%%%%%%
 
 ## Data loading ----------------------------------------------------------------
-kaggle_cli.download <- function(dataset.path, data.local_path, unzip = FALSE) {
+kaggle_cli.download <- function(dataset.dir, data.local_path, unzip = FALSE) {
   if (system("kaggle --version", ignore.stdout = TRUE, ignore.stderr = TRUE) != 0) {
     stop("Kaggle CLI is not installed or not in the PATH.")
   }
   
   if (system(trimws(paste("kaggle datasets download", kaggle_dataset, "--path", 
                           data.local_path, ifelse(unzip, "--unzip", "")))) != 0) {
-    stop(get_log1("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.path))
+    stop(str.build("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.dir))
   }
   
   if(!dir.exists(data.local_path)) {
-    stop(get_log1("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.path))
+    stop(str.build("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.dir))
   }
 }
 
@@ -78,7 +78,7 @@ The `%1` object exists.", object.name)
 }
 
 image.load_bin.shape28x28 <- function(file_path) {
-  img0 <- image_read(file_path)
+  img0 <- magick::image_read(file_path)
   # plot(img0)
   
   img0.mx <- magick_img2matrix(img0)
@@ -161,6 +161,126 @@ img.load.bin28x28mx.list <- function(root_path,
        img.list = img_list)
 }
 
+load_datasets <- function(backup.file) {
+  put_log("Function `load_datasets`:
+Loading dataset from the backup file...")
+  ds <- readRDS(backup.file)
+  put_log("Function `load_datasets`:
+The dataset has been loaded from the following backup file:
+%1", backup.file)
+  
+  train <- list()
+  
+  train$x <- ds$train_set$x.train
+  train$class_groups <- ds.get_classIDs.grouped(train$x)
+
+  test <- list()
+  
+  test$x <- ds$test_set$x.test
+  test$files <- ds$test_set$x.files
+  
+  test$class_groups <- ds.get_classIDs.grouped(test$x)
+
+  list(train = train,
+       test = test)
+}
+
+load.train_set <- function(backup.file) {
+  ds <- load_datasets(backup.file)
+  return(ds$train)
+}
+
+load.test_set <- function(backup.file) {
+  ds <- load_datasets(backup.file)
+  return(ds$test)
+}
+
+load28x28x1.train_set <- function(backup.file) {
+  ds.train <- load.train_set(backup.file)
+  
+  x <- array_reshape(ds.train$x, 
+                     c(nrow(ds.train$x), 
+                       28, 
+                       28, 
+                       1))
+  list(x = x,
+       class_groups = ds.train$class_groups)
+} 
+
+load28x28x1.test_set <- function(backup.file) {
+  ds.test <- load.test_set(backup.file)
+  
+  x <- array_reshape(ds.test$x, 
+                     c(nrow(ds.test$x), 
+                       28, 
+                       28, 
+                       1))
+  list(x = x,
+       files = ds.test$files,
+       class_groups = ds.test$class_groups)
+} 
+
+load28x28x1.datasets <- function(backup.file) {
+  ds <- load_datasets(backup.file)
+  
+  train <- list()
+  train$x <- array_reshape(ds$train$x, 
+                           c(nrow(ds$train$x), 
+                             28L, 
+                             28L, 
+                             1L))
+  
+  train$class_groups <- ds$train$class_groups
+  
+  test <- list()
+  test$x <- array_reshape(ds$test$x, 
+                          c(nrow(ds$test$x), 
+                            28L, 
+                            28L, 
+                            1L))
+  
+  test$class_groups <- ds$test$class_groups
+  test$files <- ds$test$files
+
+  list(train = train,
+       test = test)
+} 
+
+load.cnn_mcc.tuner.datasets <- function() {
+  stopifnot(file.exists(ds28x28.split.train_0.1.file))
+            
+}
+
+load28x28x1.final_test_set <- function() {
+  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+  
+  put_log("Function `load28x28x1.final_test_set`:
+Loading the Final Test 28x28 Image Data Array Set from the backup file...")
+  ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
+  
+  put_log("Function `load28x28x1.final_test_set`:
+The Final Test 28x28 Image Data Array Set has been loading from the following file:
+%1", final_test.img28x28mx.array.file_path)
+  
+  put_log("Function `load28x28x1.final_test_set`:
+The Final Test 28x28 Image Data Set structure:
+%1", capture.output(str(ftest_set)))
+
+  ftest.x <- ftest_set$img28x28mx.array
+  
+  ftest.files <- ftest_set$img28x28mx.fpath
+  
+  class_groups <- ds.get_classIDs.grouped(ftest.x)
+  
+  x <- array_reshape(ftest.x, 
+                     c(nrow(ftest.x), 
+                       28, 
+                       28, 
+                       1))
+  list(x = x,
+       files = ds.test$files,
+       class_groups = class_groups)
+}
 ## Image Processing ------------------------------------------------------------
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 
@@ -174,7 +294,7 @@ img.file_path.get_list <- function(root_path,
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
-    put_log1("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file_path.get_list`:
 Getting file path list from the following char's root folders:
 %1", file.root_path)
 
@@ -197,7 +317,7 @@ Getting file path list from the following char's root folders:
       fpath.list <- fpath.list[file.idx]
     }
     
-    put_log2("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file_path.get_list`:
 %1 files in folder: %2", length(fpath.list), folder_name)
 
     list(root_path = file.root_path,
@@ -273,13 +393,20 @@ data.plot <- function(data,
 
 recognition_err.table <- function(predicted.values, 
                                   actual.values, 
-                                  img.file_paths) {
+                                  img.file_paths,
+                                  pred.char = NULL) {
   
   err.idx <- which(predicted.values != actual.values)
   
-  data.frame(predicted = predicted.values[err.idx],
-             actual = actual.values[err.idx],
-             file = img.file_paths[err.idx])
+  err.result <- data.frame(predicted = predicted.values[err.idx],
+                           actual = actual.values[err.idx],
+                           file = img.file_paths[err.idx])
+  
+  if(is.null(pred.char)) {
+    return(err.result)
+  }
+  
+  return(err.result[err.result$predicted == pred.char,])
 }
 
 print.image_grid <- function(err.table,
@@ -309,13 +436,55 @@ print.image_grid <- function(err.table,
     image_montage(tile = tile, geometry = geometry)
   
   image_info(img_grid)
-  print(img_grid)
   
-  list(err.table = err.table[err_index.range,],
-       image.grid = img_grid)
+  print(img_grid)
+  # dev.off()
+  img_grid
+}
+
+plot_image <- function(image_file) {
+
+  img <- magick::image_read(image_file)
+  plot(img)
 }
 
 ## Data processing -------------------------------------------------------------
+split.img28x28mx_array <- function(file,
+                                   seed = NA,
+                                   seed.default = TRUE,
+                                   test_ratio = 0.2,
+                                   shuffle_rows = TRUE,
+                                   balanced = TRUE) {
+  stopifnot(file.exists(file))
+  
+  put_log("Function `split.img28x28mx_array`:
+Loading the Binary Image 28x28 array set from the backup file...")
+  img28x28mx.set <- readRDS(file)
+  put_log("Function `split.img28x28mx_array`:
+The Binary Image 28x28 array set has been loaded from the following file:
+%1", file)
+  
+  put_log("Function `split.img28x28mx_array`:
+Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+  
+  if(!is.na(seed)) {
+    set.seed(seed)
+  } else if(seed.default) {
+    set.seed(nrow(img28x28mx.set$img28x28mx.array))
+  }
+
+  split.list <- sample_train_test_sets.x3d(img28x28mx.set$img28x28mx.array,
+                                           img28x28mx.set$img28x28mx.fpath,
+                                           test.ratio = test_ratio,
+                                           shuffle_rows = shuffle_rows,
+                                           balanced = balanced)
+
+  put_log("Function `split.img28x28mx_array`:
+The Result Split Dataset object structure:
+%1", capture.output(str(split.list)))
+  
+  return(split.list)
+}
 
 img.list2flatten_matrix <- function(img_list,
                                  shuffle.rows = FALSE,
@@ -482,7 +651,7 @@ Sampling %1% of the dataset indices for a Test Set...", test.ratio*100)
   idx_group.list <- split(y.idx, y)
   # str(idx_group.list)
   
-  idx_group.class_excluded.idx <- idx_group.list[y.labels != class.label]
+  idx_group.class_excluded.idx <- idx_group.list[Y.Labels != class.label]
   
   y.class.idx <- y.idx[y == class.label]
   N.class <- length(y.class.idx) 
@@ -534,7 +703,7 @@ The size of the part of the Test Set belonging to the Class `%1` is %2.",
   class.train.idx <- setdiff(class.idx, class.test.idx)
 
   put_log("Function: `binClass.get_sample.idx.balanced`: 
-The size of the part of the Train Set belonging to the Class `%1` is %2.", 
+The size of the part of the Training Set belonging to the Class `%1` is %2.", 
           class.label,
           length(class.train.idx))
 
@@ -555,7 +724,7 @@ The size of the part of the Test Set belonging to all other classes (all except 
     setdiff(other_classes.test.idx)
 
   put_log("Function: `binClass.get_sample.idx.balanced`: 
-The size of the part of the Train Set belonging to all other classes (all except `%1`) is %2.", 
+The size of the part of the Training Set belonging to all other classes (all except `%1`) is %2.", 
           class.label,
           length(other_classes.train.idx))
   
@@ -575,7 +744,7 @@ The total size of the Test Set is %1.",
     sample()
   
   put_log("Function: `binClass.get_sample.idx.balanced`: 
-The total size of the Train Set is %1.", 
+The total size of the Training Set is %1.", 
           length(train.idx))
   
   list(train.index = train.idx,
@@ -629,7 +798,7 @@ The Train and Test Sets has been created with the following dimensions:
   
   
   put_log("Function: `binClass.sample_train_test_sets.x3d`: 
-The Train Set has been reshaped as follows:
+The Training Set has been reshaped as follows:
 %1", capture.output(shape(x.train)))
   
 
@@ -711,7 +880,7 @@ Generating a testing sample of size %1% from the original dataset...",
   test.set <- list(x.test = x[sample.idx$test.index,],
                    x.files = test.files)
   
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `sample_train_test_sets.mx`: 
 A testing sample of size %1% has been made with the following structure:
 %2", test.size, capture.output(str(test.set)))
   
@@ -772,26 +941,46 @@ A testing sample of size %1% has been made with the following structure:
        test_set = test.set)
 }
 
-shuffle.rows <- function(x,
-                         x.files = NULL,
-                         seed = NA) {
-  if (!is.na(seed)) {
-    set.seed(seed)
-  }
-  random.idx <- sample(nrow(x))
+shuffle.rows.x3d <- function(x,
+                             x.files = NULL,
+                             seed = NA,
+                             seed.default = TRUE) {
   
-  random.files <- ifelse(!is.null(x.files),
-                         x.files[random.idx])
-  list(x = x[random.idx,],
-       x.files = random.files)
+  random.idx <- shuffle.idx(x, seed, seed.default)
+  result <- list(x = x[random.idx,,])
+  
+  if(!is.null(x.files)) 
+    result$x.files <- x.files[random.idx]
+  
+  return(result)
 }
 
-shuffle.rows.x3d <- function(x, seed = NA) {
+shuffle.rows <- function(x,
+                         x.files = NULL,
+                         seed = NA,
+                         seed.default = TRUE) {
+  
+  random.idx <- shuffle.idx(x, seed, seed.default)
+  result <- list(x = x[random.idx,])
+
+  if(!is.null(x.files)) 
+    result$x.files <- x.files[random.idx]
+  
+  return(result)
+}
+
+shuffle.idx <- function(x,
+                        seed = NA,
+                        seed.default = TRUE) {
+  x.rows <- nrow(x)
+  
   if (!is.na(seed)) {
     set.seed(seed)
+  } else if(seed.default) {
+    set.seed(x.rows)
   }
-  random.idx <- sample(nrow(x))
-  x[random.idx,,]
+  
+  sample(x.rows)
 }
 
 splitDataset <- function(x, n.parts){

@@ -13,17 +13,17 @@ image(lbl.img.flat_ls[1:400,])
 #### Init CNN Directories -------------------------------------------
 # Reference: https://tensorflow.rstudio.com/guides/keras/basics.html#callbacks
 
-data.cnn.binary.models.dir <- file.path(cnn.train.data.path, "lbl-models")
+data.cnn.binary.models.dir <- file.path(cnn.train.data.dir, "lbl-models")
 
 if(!dir.exists(data.cnn.binary.models.dir))
   dir.create(data.cnn.binary.models.dir)
 
-cnn.eval.cache.path <- file.path(cnn.train.data.path, "evaluation")
+cnn.eval.cache.path <- file.path(cnn.train.data.dir, "evaluation")
 
 if(!dir.exists(cnn.eval.cache.path))
   dir.create(cnn.eval.cache.path)
 
-cnn.callbacks.path <- file.path(cnn.train.data.path, "callbacks")
+cnn.callbacks.path <- file.path(cnn.train.data.dir, "callbacks")
 
 if(!dir.exists(cnn.callbacks.path))
   dir.create(cnn.callbacks.path)
@@ -44,11 +44,10 @@ cnn.callbacks.checkpoints.path <- file.path(cnn.callbacks.path, "checkpoints")
 if(!dir.exists(cnn.callbacks.checkpoints.path))
   dir.create(cnn.callbacks.checkpoints.path)
 
-cnn_models.ensemble.cache_file.path <- file.path(cnn.train.data.path,"cnn.lbl-models.ensemble.RData")
-cnn_models.ensemble.cache_file.path
+cnn_binary.ensemble.backup.path <- file.path(cnn.train.data.dir,"cnn.lbl-models.ensemble.RData")
+cnn_binary.ensemble.backup.path
 
 #### Define a few parameters to be used in the CNN model --------------------------
-# n.output <- 39
 batch_size <- 128
 num_classes <- 39
 epochs <- 100
@@ -62,24 +61,24 @@ open_logfile(".build-cnn-model")
 
 ##### Define a CNN model structure ***
 
-hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.path,"cnn.lbl-model.list.rds") 
+hwChar.CNN.binCls.models.backup.path <- file.path(cnn.train.data.dir,"cnn.lbl-model.list.rds") 
 hwChar.CNN.binCls.models.backup.path
 
 cnn.lbl_model_file.base_name <- "cnn.lbl-model"
 
 put_log("Building a set of CNN Binary Classifier Models for the following labels:
-%1", capture.output(as.character(y.labels))) 
+%1", capture.output(as.character(Y.Labels))) 
 
 cl <- makeCluster(N_pcCores)
 registerDoParallel(cl)
 
-cnn.hw_char.models <- lapply(y.labels, function(label) {
+cnn.hw_char.models <- lapply(Y.Labels, function(label) {
   #> Now we define a CNN model with two 2D convolutional layers with max pooling, 
   #> and the 2nd layer with additonal dropout to prevent overfitting. 
   #> Then flatten the output and use two dense layers to connect to the categoires 
   #> of the image. [*]
   
-  #label <- y.labels[which(y.labels == "Z")]
+  #label <- Y.Labels[which(Y.Labels == "Z")]
   label
   
   put_log("Building model for label `%1` (%2)...", as.character(label), label)
@@ -145,7 +144,7 @@ Summary of the model:",
     #> Please be patient while waiting for the results. 
     #> The training time can be significantly reduced if running on GPU. [*]
     
-    set.seed(as.integer(y.labels[y.labels == label]))
+    set.seed(as.integer(Y.Labels[Y.Labels == label]))
     
     lbl.ds.sample.set <- 
       cnn.binclass.sample_sets(x_cnn,
@@ -235,7 +234,7 @@ Summary of the model:",
        y_test = lbl.ds.sample.set$y.test,
        label = label)
 })
-names(cnn.hw_char.models) = as.character(y.labels)
+names(cnn.hw_char.models) = as.character(Y.Labels)
 
 put_log("Saving the set of trained (CNN) Binary Classifier Models info to file...") 
 
@@ -255,7 +254,7 @@ log_close()
 open_logfile(".evaluate-cnn-model")
 #### Evaluating CNN Model ----------------------------------------------
 
-cnn_models.eval.cache_file.path <- file.path(cnn.train.data.path,
+cnn_models.eval.cache_file.path <- file.path(cnn.train.data.dir,
                                              "cnn.lbl-models.evaluation.RData")
 cnn_models.eval.cache_file.path
 
@@ -285,7 +284,7 @@ have been loaded from the cache file:
   cl <- makeCluster(N_pcCores)
   registerDoParallel(cl)
 
-  evaluation.results <- lapply(y.labels, function(label) {
+  evaluation.results <- lapply(Y.Labels, function(label) {
     put_log("Processing model evaluation for label `%1`...",label)
     start <- put_start_date()
 
@@ -415,11 +414,11 @@ the handwritten character '%1' is as follows:
          accuracy = accuracy,
          conf.mx)
   })
-  names(evaluation.results) <- as.character(y.labels)
+  names(evaluation.results) <- as.character(Y.Labels)
   
   put_log("The CNN-based Binary Classifier Model evaluation job has been completed 
 for each of the following handwritten characters:
-%1", capture.output(as.character(y.labels)))
+%1", capture.output(as.character(Y.Labels)))
   
   stopCluster(cl)
   stopImplicitCluster()
@@ -429,8 +428,8 @@ lbl_models.accuracies <- sapply(evaluation.results, function(result){
   result$accuracy
 })
 
-# names(lbl_models.accuracies) <- as.character(y.labels)
-cnn.bin_models.accuracy <- data.frame(label = y.labels, accuracy = lbl_models.accuracies) 
+# names(lbl_models.accuracies) <- as.character(Y.Labels)
+cnn.bin_models.accuracy <- data.frame(label = Y.Labels, accuracy = lbl_models.accuracies) 
 cnn.bin_models.accuracy
 
   put_log("Saving the CNN-based Binary Classifier Model evaluation results...")
@@ -507,12 +506,12 @@ log_close()
 open_logfile(".cnn-model.ensemble-classifier")
 ##### Build Ensemble Classifier ------------------------------------------------
 
-if (file.exists(cnn_models.ensemble.cache_file.path)) {
+if (file.exists(cnn_binary.ensemble.backup.path)) {
   put_log("CNN: loading the Ensemble Classifier Results from cache file: 
-%1", cnn_models.ensemble.cache_file.path)
-  load(cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
+  load(cnn_binary.ensemble.backup.path)
   put_log("CNN: the Ensemble Classifier Results have been loaded from the cache file:
-%1", cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
 } else {
   
   if(!exists("evaluation.results")) {
@@ -526,7 +525,7 @@ have been loaded from the cache file:
     
   }
   
-  preds.mx <- sapply(y.labels, function(label) {
+  preds.mx <- sapply(Y.Labels, function(label) {
     #p <- 
     evaluation.results[[label]]$preds[,1]
     #str(p)
@@ -536,7 +535,7 @@ have been loaded from the cache file:
   class(preds.mx)
   dim(preds.mx)
 
-  colnames(preds.mx) <- as.character(y.labels)
+  colnames(preds.mx) <- as.character(Y.Labels)
   str(preds.mx)
   head(preds.mx)
 #               #            $            &            @            0            1
@@ -572,7 +571,7 @@ have been loaded from the cache file:
     as.integer() |> 
     matrix(nrow = nrow(preds.mx))
   
-  colnames(bin_preds.mx) <- as.character(y.labels)
+  colnames(bin_preds.mx) <- as.character(Y.Labels)
   
   class(bin_preds.mx)
   dim(bin_preds.mx)
@@ -667,7 +666,7 @@ have been loaded from the cache file:
   lbl_L.acc
   # 0.9711284
   
-  names(evaluation.results) <- as.character(y.labels)
+  names(evaluation.results) <- as.character(Y.Labels)
   
   avg.accuracy = mean(lbl_models.accuracies)
   avg.accuracy
@@ -681,7 +680,7 @@ have been loaded from the cache file:
   # head(rMaxs, 50)
   
   preds.optimistic <- apply(preds.mx, 1, function(r) {
-    c(label = as.character(y.labels)[which.max(r)], 
+    c(label = as.character(Y.Labels)[which.max(r)], 
       P = max(r))
   }) |> t()
   
@@ -711,16 +710,16 @@ have been loaded from the cache file:
   acc.optimistic
   #> 0.7836793
   
-  y.labels.ext <- y.labels
-  levels(y.labels.ext) <- c(levels(y.labels), "NA")
-  y.labels.ext[40] <- "NA"
-  y.labels.ext
+  Y.Labels.ext <- Y.Labels
+  levels(Y.Labels.ext) <- c(levels(Y.Labels), "NA")
+  Y.Labels.ext[40] <- "NA"
+  Y.Labels.ext
   
   
   preds.norm <- apply(preds.mx, 1, function(r) {
    
     r.max = max(r)
-    label <- as.character(y.labels)[which(r == r.max)]
+    label <- as.character(Y.Labels)[which(r == r.max)]
       
     c(label = ifelse(r.max > 0.5, label, "NA"), 
       P = r.max)
@@ -750,7 +749,7 @@ have been loaded from the cache file:
   preds.pessimistic <- apply(preds.mx, 1, function(r) {
     
     r.max = max(r)
-    label <- as.character(y.labels)[which(r == r.max)]
+    label <- as.character(Y.Labels)[which(r == r.max)]
     
     c(label = ifelse(r.max > 0.75, label, "NA"), 
       P = r.max)
@@ -781,9 +780,9 @@ have been loaded from the cache file:
   put_log("CNN: Caching the Ensemble Classifier Results...")
   save(cnn.ensemble,
        y_test,
-       file = cnn_models.ensemble.cache_file.path)
+       file = cnn_binary.ensemble.backup.path)
   put_log("CNN: the Ensemble Classifier Results have been saved to the cache file:
-%1", cnn_models.ensemble.cache_file.path)
+%1", cnn_binary.ensemble.backup.path)
   
   
 }
