@@ -110,21 +110,19 @@ tcnn_mcc.final.eval.result <- cnn_mcc.final |> evaluate(x_test, y_test.cat)
 put_log("CNN MCC Model evaluation has been completed with the following result:
 %1", capture.output(tcnn_mcc.final.eval.result))
 # $accuracy
-# [1] 0.9269291
+# [1] 0.9487213
+# 
+# $f1_macro
+# [1] 0.9190166
 # 
 # $loss
-# [1] 0.2350844
+# [1] 0.1859616
 
-
-put_end_date(start)
-
-# model prediction
-put_log("CNN Model: constructing predictions...")
+put_log("CNN MCC Model: constructing predictions...")
 
 tcnn_mcc.final.eval.result$predicted.probs <- cnn_mcc.final |> predict(x_test) 
-put_log("CNN Model: predictions have been constructed.")
+put_log("CNN MCC Model: predictions have been constructed.")
 put_end_date(start)
-# Time difference of 1.502232 mins
 
 dim(tcnn_mcc.final.eval.result$predicted.probs)
 
@@ -154,6 +152,19 @@ tcnn_mcc.final.eval.result$targets <- Y.Labels[targets.idx]
 rm(cnn_preds.ts,
    cnn_mcc.final.predictions)
 
+put_log("CNN MCC Model Final evaluation result structure:
+%1", capture.output(str(tcnn_mcc.final.eval.result)))
+# List of 6
+# $ accuracy        : num 0.949
+# $ f1_macro        : num 0.919
+# $ loss            : num 0.186
+# $ predicted.probs : num [1:22524, 1:39] 8.20e-13 1.77e-09 1.56e-19 1.05e-09 0.00 ...
+# ..- attr(*, "dimnames")=List of 2
+# .. ..$ : NULL
+# .. ..$ : chr [1:39] "#" "$" "&" "@" ...
+# $ predicted.values: Factor w/ 39 levels "#","$","&","@",..: 22 34 19 33 4 18 10 22 18 10 ...
+# $ targets         : Factor w/ 39 levels "#","$","&","@",..: 22 34 19 33 4 18 10 22 18 10 ...
+
 put_log("Saving the Multiclass Classifier model Evaluation Results...")
 saveRDS(tcnn_mcc.final.eval.result,
         file = tcnn_mcc.final.eval_result.file)
@@ -161,14 +172,6 @@ saveRDS(tcnn_mcc.final.eval.result,
 put_log("The Evaluation Results data of the CNN-Based Multiclass Classifier Model 
 have been backed up to the following file:
 %1", tcnn_mcc.final.eval_result.file)
-
-put_log("CNN MCC Model evaluation result:
-%1", capture.output(tcnn_mcc.final.eval.result))
-# $accuracy
-# [1] 0.8887953
-# 
-# $loss
-# [1] 0.3397374
 
 cnn_mcc.final.accuracy <- mean(cnn.prediction.values.idx == targets.idx)
 put_log("CNN-Based Multiclass Classifier Model accuracy: %1", cnn_mcc.final.accuracy)
@@ -178,10 +181,11 @@ metric <- metric_f1_score(average = 'macro', name = 'macro_f1', threshold = 0.5)
 metric$update_state(y_test.cat, tcnn_mcc.final.eval.result$predicted.probs)
 result <- metric$result()
 result
+# tf.Tensor(0.9201387, shape=(), dtype=float32)
 
-tcnn_mcc.final.eval.result$f1_score <- result$numpy()
+cnn_mcc.final.f1_macro <- result$numpy()
 put_log("CNN-Based Multiclass Classifier Model F1 Score: %1", 
-        tcnn_mcc.final.eval.result$f1_score)
+        cnn_mcc.final.f1_macro)
 # 0.920138716697693
 
 
