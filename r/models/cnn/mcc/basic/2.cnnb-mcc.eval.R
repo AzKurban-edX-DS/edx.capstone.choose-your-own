@@ -239,7 +239,7 @@ put_log("First 30 prediction errors:
 }
 
 # dev.off()
-print.image_grid(recg.err.info)
+print.missclass_image.grid(recg.err.info)
 # str(recg.err.info)
 
 ## Finalizing ------------------------------------------------------------------

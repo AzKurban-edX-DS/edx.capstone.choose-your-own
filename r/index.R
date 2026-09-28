@@ -107,6 +107,8 @@ if(!file.exists(knn_pca.eval.results.backup)) {
          keep.source = TRUE)
 }
 
+#### The Best Model Evaluation Results Visualization ---------------------------
+
 open_logfile(".visual.eval-results.k(best)nn+pca")
 
 put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
@@ -197,6 +199,8 @@ if(!file.exists(fit_rf.final.backup.path)) {
          verbose = TRUE,
          keep.source = TRUE)
 }
+
+#### The Best Model Evaluation Results Visualization ---------------------------
 
 open_logfile(".visual.eval-results.rf-final")
 
@@ -302,6 +306,8 @@ if(!file.exists(dnnb_mcc.eval.result.file)) {
          verbose = TRUE,
          keep.source = TRUE)
 }
+
+#### Model Evaluation Results Visualization ------------------------------------
 
 open_logfile(".dnnb-mcc.visual.eval-results")
 stopifnot(file.exists(dnnb_mcc.file,
@@ -450,6 +456,8 @@ if(!file.exists(tdnn_mcc.final.eval_result.file)) {
          keep.source = TRUE)
 }
 
+#### Final Model Evaluation Results Visualization ------------------------------
+
 open_logfile(".tdnn-mcc.visual.eval-results")
 stopifnot(file.exists(tdnn_mcc.final.file,
                       tdnn_mcc.final.eval_result.file,
@@ -578,6 +586,8 @@ if(!file.exists(cnnb_mcc.eval.result.file)) {
          verbose = TRUE,
          keep.source = TRUE)
 }
+
+#### Model Evaluation Results Visualization ------------------------------------
 
 open_logfile(".cnnb-mcc.visual.eval-results")
 
@@ -737,6 +747,8 @@ if(!file.exists(tcnn_mcc.final.eval_result.file)) {
          keep.source = TRUE)
 }
 
+#### Final Test Results Visualization ------------------------------------------
+
 open_logfile(".tcnn-mcc.visual.eval-results")
 
 stopifnot(file.exists(tcnn_mcc.final.file,
@@ -786,7 +798,8 @@ put_log("The Tuned CNN-Based MCC Final Model Evaluation Result metrics:
 %1", capture.output(c('accuracy' = tcnn_mcc.final.eval.result$accuracy,
                          'f1_macro' = tcnn_mcc.final.eval.result$f1_macro,
                          'loss' = tcnn_mcc.final.eval.result$loss)))
-# 0.926929116249084
+#  accuracy  f1_macro      loss 
+# 0.9487213 0.9190166 0.1859616 
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -811,7 +824,84 @@ source(model_visualization.shared.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-log_close()
+##### Reviewing the Most Confusion Error Results --------------------------------
+###### Target Value `1`--------------------------------------------------------
+
+# Mistakenly predicted as `I` (47 cases of misclassification)
+missclass.1_as_I <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                      tcnn_mcc.final.eval.result$targets,
+                                      x_test.files,
+                                      pred.char = 'I',
+                                      target.char = '1')
+str(missclass.1_as_I)
+# dev.off()
+print.missclass_image.grid(missclass.1_as_I,
+                 tile = '6x100')
+                 # geometry = "x160+5+5",
+                 # image.annotate = F)
+
+# Mistakenly predicted as `L` (52 cases of misclassification)
+missclass.1_as_L <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                           tcnn_mcc.final.eval.result$targets,
+                                           x_test.files,
+                                           pred.char = 'L',
+                                           target.char = '1')
+str(missclass.1_as_L)
+# dev.off()
+print.missclass_image.grid(missclass.1_as_L,
+                           tile = '6x100')
+
+###### Target Value `I`-------------------------------------------------------------
+
+# Mistakenly predicted as `1` (147 cases of misclassification)
+missclass.I_as_1 <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                          tcnn_mcc.final.eval.result$targets,
+                                          x_test.files,
+                                          pred.char = '1',
+                                          target.char = 'I')
+str(missclass.I_as_1)
+# dev.off()
+print.missclass_image.grid(missclass.I_as_1,
+                           tile = '6x100')
+# geometry = "x160+5+5",
+# image.annotate = F)
+
+# Mistakenly predicted as `L` (33 cases of misclassification)
+missclass.I_as_L <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                          tcnn_mcc.final.eval.result$targets,
+                                          x_test.files,
+                                          pred.char = 'L',
+                                          target.char = 'I')
+str(missclass.I_as_L)
+# dev.off()
+print.missclass_image.grid(missclass.I_as_L,
+                           tile = '6x100')
+
+###### Target Value `Q`-------------------------------------------------------------
+
+# Mistakenly predicted as `9` (100 cases of misclassification)
+missclass.Q_as_9 <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                          tcnn_mcc.final.eval.result$targets,
+                                          x_test.files,
+                                          pred.char = '9',
+                                          target.char = 'Q')
+str(missclass.Q_as_9)
+# dev.off()
+print.missclass_image.grid(missclass.Q_as_9,
+                           tile = '6x100')
+
+###### Target Value `G`-------------------------------------------------------------
+
+# Mistakenly predicted as `9` (53 cases of misclassification)
+missclass.G_as_9 <- recognition_err.table(tcnn_mcc.final.eval.result$predicted.values,
+                                          tcnn_mcc.final.eval.result$targets,
+                                          x_test.files,
+                                          pred.char = '9',
+                                          target.char = 'G')
+str(missclass.G_as_9)
+# dev.off()
+print.missclass_image.grid(missclass.G_as_9,
+                           tile = '6x100')
 
 # Appendix: The Device (laptop) Info Where the Project was Build & Tested ---------------
 

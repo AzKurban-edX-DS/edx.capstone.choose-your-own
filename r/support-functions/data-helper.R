@@ -394,43 +394,62 @@ data.plot <- function(data,
 recognition_err.table <- function(predicted.values, 
                                   actual.values, 
                                   img.file_paths,
-                                  pred.char = NULL) {
+                                  pred.char = NULL,
+                                  target.char = NULL) {
   
   err.idx <- which(predicted.values != actual.values)
+  # true.idx <- which(predicted.values == actual.values)
+  
   
   err.result <- data.frame(predicted = predicted.values[err.idx],
                            actual = actual.values[err.idx],
                            file = img.file_paths[err.idx])
   
-  if(is.null(pred.char)) {
+  # true.result <- data.frame(predicted = predicted.values[true.idx],
+  #                          actual = actual.values[true.idx],
+  #                          file = img.file_paths[true.idx])
+
+  if(is.null(pred.char))
     return(err.result)
-  }
   
-  return(err.result[err.result$predicted == pred.char,])
+  # true.pred.char <- true.result[true.result$predicted == pred.char,]
+  err.pred.char <- err.result[err.result$predicted == pred.char,]
+  
+  if(is.null(target.char))
+    return(err.pred.char)
+  
+  err.pred.char[err.pred.char$actual == target.char,]
 }
 
-print.image_grid <- function(err.table,
-                             err_index.range = 1:30,
+print.missclass_image.grid <- function(missclass.dat,
+                             index.range = NULL,
                              image.scale ="100",
                              font.size = 10,
                              font.color = "red4",
                              box.color = colors()[492], #"#F5F5DC",
-                             tile = "5x6",
-                             geometry = "x160+5+5"
+                             tile = NULL,
+                             geometry = NULL,
+                             image.annotate = F
                              ) {
+  if(is.null(index.range))
+    index.range <- 1:nrow(missclass.dat)
   
-  img_grid <- lapply(err_index.range, function(i) {
-    image_read(err.table$file[i]) |>
-      image_scale(image.scale) |>
-      image_annotate(str_flatten(c(as.character(err.table$predicted[i]),
+  img_grid <- lapply(index.range, function(i) {
+    img <- image_read(missclass.dat$file[i]) |> image_scale(image.scale)
+      
+    if(image.annotate){
+      img <- img |> image_annotate(str_flatten(c(as.character(missclass.dat$predicted[i]),
                                    " vs ",
-                                   as.character(err.table$actual[i]),
+                                   as.character(missclass.dat$actual[i]),
                                    " (actual)")),
                      size = font.size, color = font.color,
                      boxcolor = box.color,
                      # location = "+1+2",
                      #gravity = "southwest"
       )
+    }
+    
+    img
   }) |> 
     image_join() |>
     image_montage(tile = tile, geometry = geometry)
