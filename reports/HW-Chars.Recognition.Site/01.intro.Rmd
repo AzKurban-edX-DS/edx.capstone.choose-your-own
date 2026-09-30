@@ -10,7 +10,20 @@ As noted in the article [Handwritten Character Recognition: A Comprehensive Surv
 
 In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
+We will start with [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) models, using [k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) and [Random Forest (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) methods.
+
+Next, we will try [Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/) models, including [Dense Neural Network (DNN)](https://smltar.com/dldnn) and, finally, [Convolutional Neural Network (CNN)](https://smltar.com/dlcnn#what-are-cnns) models, as recent research shows that DL performs better at image recognition — the task addressed by this project.
+
+A more detailed explanation of DL compared with SL can be found in the chapter [Machine Learning Methods from Shallow Learning to Deep Learning](https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007%2F978-3-031-69499-8_1) of the book [Shallow Learning vs. Deep Learning: A Practical Guide for Machine Learning Solutions](https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007%2F978-3-031-69499-8) by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz[@Akinci2024].
+
+Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
 
 
+
+
+----------------------------------------------------
 using a [Kaggle Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
+
+
+
 
