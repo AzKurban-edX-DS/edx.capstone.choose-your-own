@@ -8,7 +8,7 @@ HarvardX PH125.9x Data Science Capstone
 Course](https://pll.harvard.edu/course/data-science-capstone) to build a
 *Choose Your Own Project* according to the course requirements.
 
-> \[!NOTE\] This project is implemented as [RStudio
+> [!NOTE] This project is implemented as [RStudio
 > Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects).
 
 The goal of the project is to build a *Handwritten Character Recognition
@@ -22,7 +22,7 @@ the *context* of the dataset is as follows:
 
 1.  Used *EMNIST* data for Alphabets and Digits.
 2.  Transformed the Data using some image processing techniques and
-    convert it to 32,32 pixel black and white images.
+    converted it to 32,32 pixel black-and-white images.
 3.  Created the Data set for special character ( @, \#, \$, & )
 4.  Merged the Categories to avoid the misclassification
 5.  Total 39 Categories in Train and Validation set
@@ -47,7 +47,7 @@ The following are essential directories and files of the project:
   Support script for preparing datasets for training and testing the
   *Handwritten Character Classifier* models developed in the project;
 - [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R):
-  Support script for loading flattened dataset used by the following
+  Support script for loading the flattened dataset used by the following
   models:
   - ***kNN+PCA MCC***: *Multiclass Classifier (MCC)* based on the
     [k-Nearest Neighborhood
@@ -83,7 +83,7 @@ The following are essential directories and files of the project:
   exist, after the first project run) Directory for all the data files
   used in the project.
 
-> \[!NOTE\] The contents of the *data* folder are not tracked on
+> [!NOTE] The contents of the *data* folder are not tracked on
 > *GitHub*.
 
 ## Working Environment
