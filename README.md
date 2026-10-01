@@ -8,8 +8,8 @@ HarvardX PH125.9x Data Science Capstone
 Course](https://pll.harvard.edu/course/data-science-capstone) to build a
 *Choose Your Own Project* according to the course requirements.
 
-> [!NOTE] This project is implemented as [RStudio
-> Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects).
+> [!IMPORTANT]
+> This project is implemented as [RStudio Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects).
 
 The goal of the project is to build a *Handwritten Character Recognition
 System* using the [HandWritten_Character
@@ -83,8 +83,8 @@ The following are essential directories and files of the project:
   exist, after the first project run) Directory for all the data files
   used in the project.
 
-> [!NOTE] The contents of the *data* folder are not tracked on
-> *GitHub*.
+> [!NOTE]
+> The contents of the *data* folder are not tracked on *GitHub*.
 
 ## Working Environment
 
