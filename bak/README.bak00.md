@@ -100,14 +100,22 @@ Files](#essential-directories-and-files), the *RStudio Project* file is
 1.  ***R and RStudio:*** Ensure you have R (version 4.0 or higher
     recommended) and RStudio installed.
 
-> [!NOTE]
-> The author completed this project using R version 4.6.1 and RStudio 2026.09.0 (Build 174).
+> \[!NOTE\] The author completed this project using R version 4.6.1 and
+> RStudio 2026.09.0 (Build 174).
 
 2.  **Environment Setup:** Run the
     [\_\_setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd)
     script outside of RStudio in a command shell suitable for your
     operating system.
 
-> [!NOTE]
-> - The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
-> - If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+> \[!NOTE\]
+>
+> - The author uses
+>   [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6)
+>   on Windows 11 OS.
+>
+> - If you are reinstalling the previously configured environment, run
+>   the
+>   [\_\_uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R)
+>   script first to remove the packages previously installed by the
+>   script mentioned above.
