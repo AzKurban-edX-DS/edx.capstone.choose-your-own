@@ -22,7 +22,7 @@ the *context* of the dataset is as follows:
 
 1.  Used *EMNIST* data for Alphabets and Digits.
 2.  Transformed the Data using some image processing techniques and
-    converted it to 32,32 pixel black-and-white images.
+    convert it to 32,32 pixel black and white images.
 3.  Created the Data set for special character ( @, \#, \$, & )
 4.  Merged the Categories to avoid the misclassification
 5.  Total 39 Categories in Train and Validation set
@@ -47,7 +47,7 @@ The following are essential directories and files of the project:
   Support script for preparing datasets for training and testing the
   *Handwritten Character Classifier* models developed in the project;
 - [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R):
-  Support script for loading the flattened dataset used by the following
+  Support script for loading flattened dataset used by the following
   models:
   - ***kNN+PCA MCC***: *Multiclass Classifier (MCC)* based on the
     [k-Nearest Neighborhood
@@ -94,3 +94,20 @@ it is recommended to work with the project in *RStudio IDE*. As
 mentioned above in section [Essential Directories and
 Files](#essential-directories-and-files), the *RStudio Project* file is
 [edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj).
+
+### Prerequisites & Setup
+
+1.  ***R and RStudio:*** Ensure you have R (version 4.0 or higher
+    recommended) and RStudio installed.
+
+> [!NOTE]
+> The author completed this project using R version 4.6.1 and RStudio 2026.09.0 (Build 174).
+
+2.  **Environment Setup:** Run the
+    [\_\_setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd)
+    script outside of RStudio in a command shell suitable for your
+    operating system.
+
+> [!NOTE]
+> - The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
+> - If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
