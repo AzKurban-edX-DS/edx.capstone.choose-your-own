@@ -83,7 +83,7 @@ The following are essential directories and files of the project:
   exist, after the first project run) Directory for all the data files
   used in the project.
 
-> [!NOTE]
+> [!IMPORTANT]
 > The contents of the *data* folder are not tracked on *GitHub*.
 
 ## Working Environment
@@ -109,5 +109,9 @@ Files](#essential-directories-and-files), the *RStudio Project* file is
     operating system.
 
 > [!NOTE]
-> - The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
-> - If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+> The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
+
+> [!IMPORTANT]
+> If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+
+## Running the Project
