@@ -4,7 +4,7 @@ site: bookdown::bookdown_site
 author: "Azamat Kurbanaev"
 date: "`r Sys.Date()`"
 # Specify the bibliography file
-bibliography: references.bib
+bibliography: ref.bib
 csl: bit-numerical-mathematics.csl 
 envir:
   .GlobalEnv

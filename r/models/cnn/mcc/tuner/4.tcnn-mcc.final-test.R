@@ -118,6 +118,8 @@ put_log("CNN MCC Model evaluation has been completed with the following result:
 # $loss
 # [1] 0.1859616
 
+tcnn_mcc.final.eval.result$img_files <- x_test.files
+
 put_log("CNN MCC Model: constructing predictions...")
 
 tcnn_mcc.final.eval.result$predicted.probs <- cnn_mcc.final |> predict(x_test) 

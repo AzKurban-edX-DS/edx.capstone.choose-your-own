@@ -17,8 +17,10 @@ knitr::opts_chunk$set(
 
 This is the _**Capstone Choose Your Own**_ Project as part of the [edX HarvardX PH125.9x Data Science Capstone Course](https://pll.harvard.edu/course/data-science-capstone) to build a _Choose Your Own Project_ according to the course requirements.
 
-> [!NOTE]
+```{=markdown}
+> [!IMPORTANT]
 > This project is implemented as [RStudio Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects).
+```
 
 The goal of the project is to build a _Handwritten Character Recognition System_ using the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from the  [Kaggle](https://www.kaggle.com) platform.
 
@@ -53,11 +55,34 @@ The following are essential directories and files of the project:
 - `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final *.PDF report* - the ultimate product of the project;
 - ***data*** (local) folder: (automatically created if it does not exist, after the first project run) Directory for all the data files used in the project. 
 
+```{=markdown}
 > [!NOTE]
 > The contents of the *data* folder are not tracked on *GitHub*.
-  
+```
+
 ## Working Environment
 
 Since this project is an [RStudio Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects), it is recommended to work with the project in *RStudio IDE*.
 As mentioned above in section [Essential Directories and Files], the *RStudio Project* file is  [edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj).
+
+### Prerequisites & Setup
+
+1. ***R and RStudio:*** Ensure you have R (version 4.0 or higher recommended) and RStudio installed.
+
+```{=markdown}
+> [!NOTE]
+> The author completed this project using R version 4.6.1 and RStudio 2026.09.0 (Build 174).
+```
+
+2. **Environment Setup:** Run the [__setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd) script outside of RStudio in a command shell suitable for your operating system.
+
+```{=markdown}
+> [!NOTE]
+> - The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
+> - If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+```
+
+
+
+
 
