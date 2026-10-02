@@ -59,7 +59,7 @@ The following are essential directories and files of the project:
   - ***RF MCC:*** *MCC* based on the [Random forests
     (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests)
     algorithm;
-  - ***BDL MCC:*** *Basic [Deep
+  - ***DNN MCC:*** *Basic [Deep
     Learning](https://www.geeksforgeeks.org/deep-learning/introduction-deep-learning/)
     (BDL) MCC*;
 - [models](r/models) folder: Directory containing scripts for all the
@@ -69,12 +69,6 @@ The following are essential directories and files of the project:
   (CNN)](https://learnopencv.com/understanding-convolutional-neural-networks-cnn/)
   models:
   - ***CNN MCC:*** *CNN-based MCC*;
-  - ***CNN BCC:*** *CNN-based Binary Classifier (BCC)* models (a
-    separate model for each *handwritten character* to recognize);
-  - ***CNN BCCE:***
-    [Ensemble](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#ensembles)
-    of all the *CNN BCC* models (*BCCE*) aggregated to apply to the
-    entire character set.
 - [HW-Chars.Recognition.Site](reports/HW-Chars.Recognition.Site) folder:
   Directory for the *.RMD Report* files;
 - `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final
@@ -97,11 +91,11 @@ Files](#essential-directories-and-files), the *RStudio Project* file is
 
 ### Prerequisites & Setup
 
-1.  ***R and RStudio:*** Ensure you have R (version 4.0 or higher
-    recommended) and RStudio installed.
+1.  ***R and RStudio:*** Ensure you have `R` (version **4.0** or higher
+    recommended) and **RStudio** installed.
 
 > [!NOTE]
-> The author completed this project using R version 4.6.1 and RStudio 2026.09.0 (Build 174).
+> The author completed this project using `R` version **4.6.1** and **RStudio 2026.09.0** *(Build 174)*.
 
 2.  **Environment Setup:** Run the
     [\_\_setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd)

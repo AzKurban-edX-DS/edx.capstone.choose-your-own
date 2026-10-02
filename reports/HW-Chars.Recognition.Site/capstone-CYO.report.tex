@@ -1,0 +1,166 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage[backend=biber,natbib=true,style=numeric,backref=true,sorting=none]{biblatex}
+\addbibresource{ref.bib}
+\usepackage{awesomebox}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\hypersetup{backref, pdfpagemode=Normal, colorlinks=true, implicit=false}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  pdftitle={Capstone Movielens Report},
+  pdfauthor={Azamat Kurbanaev},
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={Maroon},
+  citecolor={blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Capstone Movielens Report}
+\author{Azamat Kurbanaev}
+\date{2026-10-02}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{4}
+\tableofcontents
+}
+\newenvironment{infobox}[1]
+  {
+  \begin{itemize}
+  \renewcommand{\labelitemi}{
+    \raisebox{-.7\height}[0pt][0pt]{
+      {\setkeys{Gin}{width=3em,keepaspectratio}
+        \includegraphics{images/#1}}
+    }
+  }
+  \setlength{\fboxsep}{1em}
+  \begin{blackbox}
+  \item
+  }
+  {
+  \end{blackbox}
+  \end{itemize}
+  }
+
+\newpage
+
+\section{Overview and Executive Summary}\label{intro}
+
+This project is the second assignment of the `Data Science: Capstone' course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
+
+As noted in the article \href{https://ieeexplore.ieee.org/document/10420981}{Handwritten Character Recognition: A Comprehensive Survey}, Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems {[}AAASM\_SICI10420981{]}.
+
+In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
+
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods.
+
+Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by this project.
+
+A more detailed explanation of DL compared with SL can be found in the chapter \href{https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007\%2F978-3-031-69499-8_1}{Machine Learning Methods from Shallow Learning to Deep Learning} of the book \href{https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007\%2F978-3-031-69499-8}{Shallow Learning vs.~Deep Learning: A Practical Guide for Machine Learning Solutions} by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz\autocite{Akinci2024}.
+
+Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
+
+\subsection{Datasets Overview}\label{datasets-overview}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Dataset}.
+
+\section{Methods and Analysis}\label{methods-and-analysis}
+
+\section{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model}\label{k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model}
+
+\section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model}
+
+\section{Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model}\label{dense-neural-network-based-basic-multiclass-classifier-dnnb-mcc-model}
+
+\section{Tuned DNN-Based (TDNN) MCC Model}\label{tuned-dnn-based-tdnn-mcc-model}
+
+\section{Convolutional Neural Network-Based Basic (CNNB) MCC Model}\label{convolutional-neural-network-based-basic-cnnb-mcc-model}
+
+\section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
+
+\section{Results}\label{results}
+
+\section{Conclusion}\label{conclusion}
+
+\printbibliography[title=Appendix A: Support Functions]
+
+\end{document}
