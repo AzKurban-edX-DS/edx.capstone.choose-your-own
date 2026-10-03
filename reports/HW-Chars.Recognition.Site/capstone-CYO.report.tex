@@ -3,9 +3,8 @@
 \PassOptionsToPackage{hyphens}{url}
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 \documentclass[
-]{article}
+]{report}
 \usepackage{xcolor}
-\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{5}
 \usepackage{iftex}
@@ -81,7 +80,7 @@
 \@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
 \makeatother
 \hypersetup{
-  pdftitle={Capstone Movielens Report},
+  pdftitle={Choose Your Own Project: Handwritten Character Recognition},
   pdfauthor={Azamat Kurbanaev},
   colorlinks=true,
   linkcolor={red},
@@ -90,15 +89,22 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-\title{Capstone Movielens Report}
+\title{Choose Your Own Project: Handwritten Character Recognition}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-02}
+\date{2026-10-03}
 
 \begin{document}
 \maketitle
 
 {
-\setcounter{tocdepth}{4}
+\setcounter{tocdepth}{3}
 \tableofcontents
 }
 \newenvironment{infobox}[1]
@@ -121,29 +127,61 @@
 
 \newpage
 
-\section{Overview and Executive Summary}\label{intro}
+\chapter*{Preface}\label{preface}
+\addcontentsline{toc}{chapter}{Preface}
 
 This project is the second assignment of the `Data Science: Capstone' course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
 
-As noted in the article \href{https://ieeexplore.ieee.org/document/10420981}{Handwritten Character Recognition: A Comprehensive Survey}, Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems {[}AAASM\_SICI10420981{]}.
+\chapter*{Acknowledgements}\label{acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I would like to extend my deepest gratitude to Professor \textbf{Rafael A. Irizarry} for designing and delivering the comprehensive courses within the \textbf{\emph{Professional Certificate Program in Data Science}}. Prof.~\textbf{Irizarry}'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
+
+I am equally grateful for his textbook, \emph{Introduction to Data Science}, (\href{https://rafalab.dfci.harvard.edu/dsbook-part-1/}{part 1}\autocite{IDS1} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/}{part 2}\autocite{IDS2}). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof.~\textbf{Irizarry}'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+
+\chapter{Overview and Executive Summary}\label{intro}
+
+As noted in the article \href{https://ieeexplore.ieee.org/document/10420981}{Handwritten Character Recognition: A Comprehensive Survey}, Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems \autocite{AAASM_SICI10420981}.
+
+\section{Project Description}\label{project-description}
 
 In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods.
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model]{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
 
-Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by this project.
+Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
 
-A more detailed explanation of DL compared with SL can be found in the chapter \href{https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007\%2F978-3-031-69499-8_1}{Machine Learning Methods from Shallow Learning to Deep Learning} of the book \href{https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007\%2F978-3-031-69499-8}{Shallow Learning vs.~Deep Learning: A Practical Guide for Machine Learning Solutions} by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz\autocite{Akinci2024}.
+A more detailed explanation of \emph{Deep Learning} versus \emph{Shallow Learning} can be found in the chapter \href{https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007\%2F978-3-031-69499-8_1}{Machine Learning Methods from Shallow Learning to Deep Learning} of the book \href{https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007\%2F978-3-031-69499-8}{Shallow Learning vs.~Deep Learning: A Practical Guide for Machine Learning Solutions} by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz\autocite{Akinci2024}.
+
+The \textbf{\emph{DNN-Based}} models are as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section \hyperref[dense-neural-network-based-basic-multiclass-classifier-dnnb-mcc-model]{Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model};
+\item
+  \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
+\end{itemize}
+
+The last models we will build and explore, the \textbf{\emph{CNN-Based}} models, are as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section \hyperref[convolutional-neural-network-based-basic-cnnb-mcc-model]{Convolutional Neural Network-Based Basic (CNNB) MCC Model};
+\item
+  \textbf{\emph{Tuned CNN-Based MCC Model:}} described in Section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
+\end{itemize}
 
 Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
 
-\subsection{Datasets Overview}\label{datasets-overview}
+\section{Datasets Overview}\label{datasets-overview}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
 using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Dataset}.
 
-\section{Methods and Analysis}\label{methods-and-analysis}
+\chapter{Methods and Analysis}\label{methods-and-analysis}
 
 \section{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model}\label{k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model}
 
@@ -157,9 +195,9 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 
 \section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
 
-\section{Results}\label{results}
+\chapter{Results}\label{results}
 
-\section{Conclusion}\label{conclusion}
+\chapter{Conclusion}\label{conclusion}
 
 \printbibliography[title=Appendix A: Support Functions]
 
