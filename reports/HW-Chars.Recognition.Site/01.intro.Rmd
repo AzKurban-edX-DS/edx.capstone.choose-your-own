@@ -1,24 +1,89 @@
-# Overview and Executive Summary {#intro}
+# Preface {-}
 
 This project is the second assignment of the ‘Data Science: Capstone’ course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
 
-As noted in the article [Handwritten Character Recognition: A Comprehensive Survey](https://ieeexplore.ieee.org/document/10420981), Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems [AAASM_SICI10420981].
+
+# Acknowledgements {-}
+
+I would like to extend my deepest gratitude to Professor **Rafael A. Irizarry** for designing and delivering the comprehensive courses within the ***Professional Certificate Program in Data Science***. Prof. **Irizarry**'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
+
+I am equally grateful for his textbook, *Introduction to Data Science*, ([part 1](https://rafalab.dfci.harvard.edu/dsbook-part-1/)[@IDS1] and [part 2](https://rafalab.dfci.harvard.edu/dsbook-part-2/)[@IDS2]). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof. **Irizarry**'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+
+# Overview and Executive Summary {#intro}
+
+As noted in the article [Handwritten Character Recognition: A Comprehensive Survey](https://ieeexplore.ieee.org/document/10420981), Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems [@AAASM_SICI10420981].
+
+## Project Description
+::: {.noteblock data-latex=""}
+All the source files for *this Project* are available in the *Project*’s [GitHub repository](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own)[@edx.Capstone_CYO].
+:::
 
 In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) models, using [k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) and [Random Forest (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) methods.
+We will start with [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) models, using [k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) and [Random Forest (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) methods. These models development and evaluation are described in detail below in Sections [k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model] and [Random Forest (RF) MCC Model] of *this Report*, respectively.
 
-Next, we will try [Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/) models, including [Dense Neural Network (DNN)](https://smltar.com/dldnn) and, finally, [Convolutional Neural Network (CNN)](https://smltar.com/dlcnn#what-are-cnns) models, as recent research shows that DL performs better at image recognition — the task addressed by this project.
+Next, we will try [Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/) models, including [Dense Neural Network (DNN)](https://smltar.com/dldnn) and, finally, [Convolutional Neural Network (CNN)](https://smltar.com/dlcnn#what-are-cnns) models, as recent research shows that DL performs better at image recognition — the task addressed by *this Project*.
 
-A more detailed explanation of DL compared with SL can be found in the chapter [Machine Learning Methods from Shallow Learning to Deep Learning](https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007%2F978-3-031-69499-8_1) of the book [Shallow Learning vs. Deep Learning: A Practical Guide for Machine Learning Solutions](https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007%2F978-3-031-69499-8) by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz[@Akinci2024].
+A more detailed explanation of *Deep Learning* versus *Shallow Learning* can be found in the chapter [Machine Learning Methods from Shallow Learning to Deep Learning](https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007%2F978-3-031-69499-8_1) of the book [Shallow Learning vs. Deep Learning: A Practical Guide for Machine Learning Solutions](https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007%2F978-3-031-69499-8) by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz[@Akinci2024].
+
+The ***DNN-Based*** models are as follows:
+
+* ***DNN-Based Basic MCC Model:*** described in Section [Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model];
+* ***Tuned DNN-Based MCC Model:*** described in Section [Tuned DNN-Based (TDNN) MCC Model].
+
+The last models we will build and explore, the ***CNN-Based*** models, are as follows:
+
+* ***CNN-Based Basic MCC Model:*** described in Section [Convolutional Neural Network-Based Basic (CNNB) MCC Model];
+* ***Tuned CNN-Based MCC Model:*** described in Section [Tuned CNN-Based (TCNN) MCC Model].
 
 Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
 
+\newpage
+
+## Environment Setup
+::: {.noteblock data-latex=""}
+The environment setup instructions are provided in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md#prerequisites--setup) section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own).
+:::
+
+The environment setup configures an `R`-based machine learning environment with *Python* integration, required to build the *Deep Learning* models.
+
+The installation follows a *4-step* process by sequentially running the following scripts:
+
+* [1.install-reticulate&miniconda.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/1.install-reticulate&miniconda.R):
+  1. *Installs [reticulate](https://rstudio.github.io/reticulate/articles/package.html):* Configures the primary `R` package, the [R Interface to Python](https://rstudio.github.io/reticulate/); 
+  2. *Installs [Miniconda](https://continuumio-docs.readthedocs-hosted.com/miniconda/)* to manage Python virtual environments cleanly without conflicting with system Python installations. 
 
 
+::: { #env_setup.step2 .sidebar}
+* [2.install-tensorflow.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/2.install-tensorflow.R): 
+  1. **Installs the [R TensorFlow interface](https://github.com/rstudio/tensorflow):** Loads the TensorFlow R bindings;
+  2. **Configures Backend Engine:** Uses reticulate to set up a dedicated *Python virtual/conda environment* and [installs the core C++/Python TensorFlow package](https://tensorflow.rstudio.com/install/) inside it.
 
+:::
+
+* [3.install-keras3.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/3.install-keras3.R):
+  1.  **Installs the Keras3 package:** Installs the [R Interface for Keras3](https://rstudio.r-universe.dev/keras3).
+  2. **Binds High-Level Neural Network APIs:** Integrates `Keras` on top of the backend installed in [step 2](#env_setup.step2) to enable building and training *Deep Learning* models in `R`.  
+
+* [4,install-kerastuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/4.install-kerastuner.R): Installs ***Hyperparameter Tuning Tools***, including [R interface to Keras Tuner](https://eagerai.github.io/kerastuneR/). Configures the [KerasTuner](https://keras.io/keras_tuner/) in `R` to automate [Hyperparameter Optimization](https://www.geeksforgeeks.org/deep-learning/keras-tuner-for-hyperparameter-optimization/) (*search space*, *trial execution*, and *model evaluation*).
+
+### Batch Execution & Cleanup Scripts
+
+As stated in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md#prerequisites--setup) section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own), on *Windows OS*, all 4 steps of the setup process described above can be completed automatically by launching the [__setup-env.cmd](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__setup-env.cmd) *Windows command script* in *PowerShell* or *Command Prompt*.
+
+The script [__uninstall-all.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R) cleans up the environment by wiping installed packages, *Conda environments*, and *Python bindings*.
 
 ## Datasets Overview
+
+The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from the  [Kaggle](https://www.kaggle.com) platform.
+
+As described on the [landing web-page](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), the *context* of the dataset is as follows:
+
+1. Used *EMNIST* data for Alphabets and Digits.
+2. Transformed the Data using some image processing techniques and convert it to 32,32 pixel black and white images.
+3. Created the Data set for special character ( @, #, $, & )
+3. Merged the Categories to avoid the misclassification
+4. Total 39 Categories in Train and Validation set
 
 
 ----------------------------------------------------

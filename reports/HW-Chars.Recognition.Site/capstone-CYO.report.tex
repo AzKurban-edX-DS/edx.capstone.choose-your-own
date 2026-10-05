@@ -1,0 +1,276 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+]{report}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage[backend=biber,natbib=true,style=numeric,backref=true,sorting=none]{biblatex}
+\addbibresource{ref.bib}
+\usepackage{awesomebox}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\hypersetup{backref, pdfpagemode=Normal, colorlinks=true, implicit=false}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  pdftitle={Choose Your Own Project: Handwritten Character Recognition},
+  pdfauthor={Azamat Kurbanaev},
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={Maroon},
+  citecolor={blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Choose Your Own Project: Handwritten Character Recognition}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
+\author{Azamat Kurbanaev}
+\date{2026-10-05}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\newenvironment{infobox}[1]
+  {
+  \begin{itemize}
+  \renewcommand{\labelitemi}{
+    \raisebox{-.7\height}[0pt][0pt]{
+      {\setkeys{Gin}{width=3em,keepaspectratio}
+        \includegraphics{images/#1}}
+    }
+  }
+  \setlength{\fboxsep}{1em}
+  \begin{blackbox}
+  \item
+  }
+  {
+  \end{blackbox}
+  \end{itemize}
+  }
+
+\newpage
+
+\chapter*{Preface}\label{preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+This project is the second assignment of the `Data Science: Capstone' course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
+
+\chapter*{Acknowledgements}\label{acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I would like to extend my deepest gratitude to Professor \textbf{Rafael A. Irizarry} for designing and delivering the comprehensive courses within the \textbf{\emph{Professional Certificate Program in Data Science}}. Prof.~\textbf{Irizarry}'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
+
+I am equally grateful for his textbook, \emph{Introduction to Data Science}, (\href{https://rafalab.dfci.harvard.edu/dsbook-part-1/}{part 1}\autocite{IDS1} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/}{part 2}\autocite{IDS2}). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof.~\textbf{Irizarry}'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+
+\chapter{Overview and Executive Summary}\label{intro}
+
+As noted in the article \href{https://ieeexplore.ieee.org/document/10420981}{Handwritten Character Recognition: A Comprehensive Survey}, Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems \autocite{AAASM_SICI10420981}.
+
+\section{Project Description}\label{project-description}
+
+\begin{noteblock}
+All the source files for \emph{this Project} are available in the \emph{Project}'s \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub repository}\autocite{edx.Capstone_CYO}.
+
+\end{noteblock}
+
+In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
+
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model]{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
+
+Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
+
+A more detailed explanation of \emph{Deep Learning} versus \emph{Shallow Learning} can be found in the chapter \href{https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007\%2F978-3-031-69499-8_1}{Machine Learning Methods from Shallow Learning to Deep Learning} of the book \href{https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007\%2F978-3-031-69499-8}{Shallow Learning vs.~Deep Learning: A Practical Guide for Machine Learning Solutions} by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz\autocite{Akinci2024}.
+
+The \textbf{\emph{DNN-Based}} models are as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section \hyperref[dense-neural-network-based-basic-multiclass-classifier-dnnb-mcc-model]{Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model};
+\item
+  \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
+\end{itemize}
+
+The last models we will build and explore, the \textbf{\emph{CNN-Based}} models, are as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section \hyperref[convolutional-neural-network-based-basic-cnnb-mcc-model]{Convolutional Neural Network-Based Basic (CNNB) MCC Model};
+\item
+  \textbf{\emph{Tuned CNN-Based MCC Model:}} described in Section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
+\end{itemize}
+
+Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
+
+\newpage
+
+\section{Environment Setup}\label{environment-setup}
+
+\begin{noteblock}
+The environment setup instructions are provided in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md\#prerequisites--setup}{Prerequisites \& Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}.
+
+\end{noteblock}
+
+The environment setup configures an \texttt{R}-based machine learning environment with \emph{Python} integration, required to build the \emph{Deep Learning} models.
+
+The installation follows a \emph{4-step} process by sequentially running the following scripts:
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/1.install-reticulate&miniconda.R}{1.install-reticulate\&miniconda.R}:
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \emph{Installs \href{https://rstudio.github.io/reticulate/articles/package.html}{reticulate}:} Configures the primary \texttt{R} package, the \href{https://rstudio.github.io/reticulate/}{R Interface to Python};
+  \item
+    \emph{Installs \href{https://continuumio-docs.readthedocs-hosted.com/miniconda/}{Miniconda}} to manage Python virtual environments cleanly without conflicting with system Python installations.
+  \end{enumerate}
+\end{itemize}
+
+\protect\phantomsection\label{env_setup.step2}
+\begin{itemize}
+\tightlist
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/2.install-tensorflow.R}{2.install-tensorflow.R}:
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \textbf{Installs the \href{https://github.com/rstudio/tensorflow}{R TensorFlow interface}:} Loads the TensorFlow R bindings;
+  \item
+    \textbf{Configures Backend Engine:} Uses reticulate to set up a dedicated \emph{Python virtual/conda environment} and \href{https://tensorflow.rstudio.com/install/}{installs the core C++/Python TensorFlow package} inside it.
+  \end{enumerate}
+\end{itemize}
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/3.install-keras3.R}{3.install-keras3.R}:
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \textbf{Installs the Keras3 package:} Installs the \href{https://rstudio.r-universe.dev/keras3}{R Interface for Keras3}.
+  \item
+    \textbf{Binds High-Level Neural Network APIs:} Integrates \texttt{Keras} on top of the backend installed in \hyperref[env_setup.step2]{step 2} to enable building and training \emph{Deep Learning} models in \texttt{R}.
+  \end{enumerate}
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/4.install-kerastuner.R}{4,install-kerastuner.R}: Installs \textbf{\emph{Hyperparameter Tuning Tools}}, including \href{https://eagerai.github.io/kerastuneR/}{R interface to Keras Tuner}. Configures the \href{https://keras.io/keras_tuner/}{KerasTuner} in \texttt{R} to automate \href{https://www.geeksforgeeks.org/deep-learning/keras-tuner-for-hyperparameter-optimization/}{Hyperparameter Optimization} (\emph{search space}, \emph{trial execution}, and \emph{model evaluation}).
+\end{itemize}
+
+\subsection{Batch Execution \& Cleanup Scripts}\label{batch-execution-cleanup-scripts}
+
+As stated in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md\#prerequisites--setup}{Prerequisites \& Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}, on \emph{Windows OS}, all 4 steps of the setup process described above can be completed automatically by launching the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__setup-env.cmd}{\_\_setup-env.cmd} \emph{Windows command script} in \emph{PowerShell} or \emph{Command Prompt}.
+
+The script \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R}{\_\_uninstall-all.R} cleans up the environment by wiping installed packages, \emph{Conda environments}, and \emph{Python bindings}.
+
+\section{Datasets Overview}\label{datasets-overview}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Dataset}.
+
+\chapter{Methods and Analysis}\label{methods-and-analysis}
+
+\section{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model}\label{k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model}
+
+\section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model}
+
+\section{Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model}\label{dense-neural-network-based-basic-multiclass-classifier-dnnb-mcc-model}
+
+\section{Tuned DNN-Based (TDNN) MCC Model}\label{tuned-dnn-based-tdnn-mcc-model}
+
+\section{Convolutional Neural Network-Based Basic (CNNB) MCC Model}\label{convolutional-neural-network-based-basic-cnnb-mcc-model}
+
+\section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
+
+\chapter{Results}\label{results}
+
+\chapter{Conclusion}\label{conclusion}
+
+\printbibliography[title=Appendix A: Support Functions]
+
+\end{document}

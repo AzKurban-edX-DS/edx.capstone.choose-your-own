@@ -77,6 +77,9 @@ if(!require(ggimage))
 if(!require(rsvg))
   install.packages("rsvg")
 
+if(!require("bookdown")) 
+  install.packages("bookdown")
+
 # if(!require())
 #   install.packages("")
 

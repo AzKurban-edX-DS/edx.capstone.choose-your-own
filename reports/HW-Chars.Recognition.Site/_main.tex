@@ -1,0 +1,228 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+\documentclass[
+]{report}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{longtable,booktabs,array}
+\newcounter{none} % for unnumbered tables
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage[backend=biber,natbib=true,style=numeric,backref=true,sorting=none]{biblatex}
+\addbibresource{ref.bib}
+\usepackage{awesomebox}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\hypersetup{backref, pdfpagemode=Normal, colorlinks=true, implicit=false}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+% fallback for those not using the hyperref driver hyperxmp:
+\makeatletter
+\@ifundefined{xmpquote}{\newcommand{\xmpquote}[1]{#1}}{}
+\makeatother
+\hypersetup{
+  pdftitle={Choose Your Own Project: Handwritten Character Recognition},
+  pdfauthor={Azamat Kurbanaev},
+  colorlinks=true,
+  linkcolor={red},
+  filecolor={Maroon},
+  citecolor={blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Choose Your Own Project: Handwritten Character Recognition}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
+\author{Azamat Kurbanaev}
+\date{2026-10-05}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+\chapter*{Preface}\label{preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+This project is the second assignment of the `Data Science: Capstone' course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
+
+\chapter*{Acknowledgements}\label{acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I would like to extend my deepest gratitude to Professor \textbf{Rafael A. Irizarry} for designing and delivering the comprehensive courses within the \textbf{\emph{Professional Certificate Program in Data Science}}. Prof.~\textbf{Irizarry}'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
+
+I am equally grateful for his textbook, \emph{Introduction to Data Science}, (\href{https://rafalab.dfci.harvard.edu/dsbook-part-1/}{part 1}\autocite{IDS1} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/}{part 2}\autocite{IDS2}). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof.~\textbf{Irizarry}'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+
+\chapter{Overview and Executive Summary}\label{intro}
+
+As noted in the article \href{https://ieeexplore.ieee.org/document/10420981}{Handwritten Character Recognition: A Comprehensive Survey}, Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems \autocite{AAASM_SICI10420981}.
+
+\section{Project Description}\label{project-description}
+
+\begin{noteblock}
+All the source files for \emph{this Project} are available in the \emph{Project}'s \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub repository}\autocite{edx.Capstone_CYO}.
+
+\end{noteblock}
+
+In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
+
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections {[}k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model{]} and {[}Random Forest (RF) MCC Model{]} of \emph{this Report}, respectively.
+
+Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
+
+A more detailed explanation of \emph{Deep Learning} versus \emph{Shallow Learning} can be found in the chapter \href{https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007\%2F978-3-031-69499-8_1}{Machine Learning Methods from Shallow Learning to Deep Learning} of the book \href{https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007\%2F978-3-031-69499-8}{Shallow Learning vs.~Deep Learning: A Practical Guide for Machine Learning Solutions} by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz\autocite{Akinci2024}.
+
+The \textbf{\emph{DNN-Based}} models are as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section {[}Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model{]};
+\item
+  \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section {[}Tuned DNN-Based (TDNN) MCC Model{]}.
+\end{itemize}
+
+The last models we will build and explore, the \textbf{\emph{CNN-Based}} models, are as follows:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section {[}Convolutional Neural Network-Based Basic (CNNB) MCC Model{]};
+\item
+  \textbf{\emph{Tuned CNN-Based MCC Model:}} described in Section {[}Tuned CNN-Based (TCNN) MCC Model{]}.
+\end{itemize}
+
+Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
+
+\newpage
+
+\section{Environment Setup.}\label{environment-setup.}
+
+\begin{noteblock}
+The environment setup instructions are provided in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/dev/README.md\#prerequisites--setup}{Prerequisites \& Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/dev/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}.
+
+\end{noteblock}
+
+The environment setup configures an \texttt{R}-based machine learning environment with \emph{Python} integration, required to build the \emph{Deep Learning} models.
+
+The installation follows a \emph{4-step} process by sequentially running the following scripts:
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/1.install-reticulate&miniconda.R}{1.install-reticulate\&miniconda.R}:
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \emph{Installs \href{https://rstudio.github.io/reticulate/articles/package.html}{reticulate}:} Configures the primary \texttt{R} package, the \href{https://rstudio.github.io/reticulate/}{R Interface to Python};
+  \item
+    \emph{Installs \href{https://continuumio-docs.readthedocs-hosted.com/miniconda/}{Miniconda}} to manage Python virtual environments cleanly without conflicting with system Python installations.
+  \end{enumerate}
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/2.install-tensorflow.R}{2.install-tensorflow.R}:
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \emph{Installs \href{https://github.com/rstudio/tensorflow}{R TensorFlow interface}:} Loads the TensorFlow R bindings;
+  \item
+    \emph{Configures Backend Engine:} Uses reticulate to set up a dedicated Python virtual/conda environment and installs the core C++/Python TensorFlow package inside it.
+  \end{enumerate}
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/3.install-keras3.R}{3.install-keras3.R};
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/4.install-kerastuner.R}{4,install-kerastuner.R}.
+\end{itemize}
+
+\section{Datasets Overview}\label{datasets-overview}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 0\tabcolsep) * \real{0.0556}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Dataset}.
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+title: ``citations''
+output: html\_document \\
+\end{longtable}
+}
+
+M. O. Alshrief, W. El-Tarhouni and K. A. Bozed, ``Ensemble machine learning model for classification of handwritten digit recognition,'' 2022 IEEE 2nd International Maghreb Meeting of the Conference on Sciences and Techniques of Automatic Control and Computer Engineering (MI-STA), Sabratha, Libya, 2022, pp.~580-585, doi: 10.1109/MI-STA54861.2022.9837750.Abstract: Recognizing handwritten numbers is a commonly used application in machine learning. It is used in various applications, including postal mail sorting zip code recognition, writer identification and verification, diacritical processing, and recognition of handwritten digits on a bank check. Each of the 10 digits (0-9) is designated as a category in the context of machine learning-based classification tasks. However, due to the variety of handwriting styles from one person to another, it difficult for a person to distinguish. In addition, each learning algorithm may have its own set of benefits and drawbacks, implying that one algorithm may be able to learn some but not all of the special aspects of handwritten numbers. In order to enhance the effectiveness of the categorization process, a technique for reading handwritten numbers has been presented. Using a convolutional neural network architecture, the image properties of handwritten numerals are retrieved (CNN). Additionally, to train the classifiers, Support Vector Machine (SVM), Random Forest (RF), and Logistic Regression Model were utilized (LRM). The group classifier was able to achieve a recognition accuracy of 98 percent in the experiments using the MNISET dataset. keywords: \{Support vector machines;Handwriting recognition;Machine learning algorithms;Conferences;Feature extraction;Classification algorithms;Convolutional neural networks;Handwritten digits recognition;Machine learning;Ensemble learning;Convolutional Neural Network.\},URL:~\url{https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9837750&isnumber=9837478}
+
+\printbibliography
+
+\end{document}

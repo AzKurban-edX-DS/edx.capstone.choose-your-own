@@ -59,7 +59,7 @@ The following are essential directories and files of the project:
   - ***RF MCC:*** *MCC* based on the [Random forests
     (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests)
     algorithm;
-  - ***BDL MCC:*** *Basic [Deep
+  - ***DNN MCC:*** *Basic [Deep
     Learning](https://www.geeksforgeeks.org/deep-learning/introduction-deep-learning/)
     (BDL) MCC*;
 - [models](r/models) folder: Directory containing scripts for all the
@@ -69,12 +69,6 @@ The following are essential directories and files of the project:
   (CNN)](https://learnopencv.com/understanding-convolutional-neural-networks-cnn/)
   models:
   - ***CNN MCC:*** *CNN-based MCC*;
-  - ***CNN BCC:*** *CNN-based Binary Classifier (BCC)* models (a
-    separate model for each *handwritten character* to recognize);
-  - ***CNN BCCE:***
-    [Ensemble](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#ensembles)
-    of all the *CNN BCC* models (*BCCE*) aggregated to apply to the
-    entire character set.
 - [HW-Chars.Recognition.Site](reports/HW-Chars.Recognition.Site) folder:
   Directory for the *.RMD Report* files;
 - `capstone.choose-your-own.report.pdf`: (Not implemented yet) The final
@@ -83,7 +77,7 @@ The following are essential directories and files of the project:
   exist, after the first project run) Directory for all the data files
   used in the project.
 
-> [!NOTE]
+> [!IMPORTANT]
 > The contents of the *data* folder are not tracked on *GitHub*.
 
 ## Working Environment
@@ -97,17 +91,35 @@ Files](#essential-directories-and-files), the *RStudio Project* file is
 
 ### Prerequisites & Setup
 
-1.  ***R and RStudio:*** Ensure you have R (version 4.0 or higher
-    recommended) and RStudio installed.
+#### 1. R and RStudio
+
+Ensure you have `R` (version **4.0** or higher recommended) and
+**RStudio** installed.
 
 > [!NOTE]
-> The author completed this project using R version 4.6.1 and RStudio 2026.09.0 (Build 174).
+> The author completed this project using `R` version **4.6.1** and **RStudio 2026.09.0** *(Build 174)*.
 
-2.  **Environment Setup:** Run the
-    [\_\_setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd)
-    script outside of RStudio in a command shell suitable for your
-    operating system.
+#### 2. Environment Setup
+
+- **On Windows OS:** Run the
+  [\_\_setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd)
+  script in PowerShell or Command Prompt;
+
+> [!TIP]
+>Ensure the `R bin folder` is added to your Windows System Environment Variables (`PATH`) so that `Rscript.exe` can be executed from any folder
 
 > [!NOTE]
-> - The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
-> - If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+> The author used [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
+
+- **On other Operating Systems:** Manually run the `R` scripts below in
+  the specified order:
+
+  - [1.install-reticulate&miniconda.R](r/support-scripts/setup-env/1.install-reticulate&miniconda.R);
+  - [2.install-tensorflow.R](r/support-scripts/setup-env/2.install-tensorflow.R);
+  - [3.install-keras3.R](r/support-scripts/setup-env/3.install-keras3.R);
+  - [4,install-kerastuner.R](r/support-scripts/setup-env/4.install-kerastuner.R).
+
+> [!IMPORTANT]
+> If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+
+## Running the Project
