@@ -1,0 +1,197 @@
+---
+title: "Choose Your Own Project: Handwritten Character Recognition"
+subtitle: "edX HarvardX: PH125.9x - Data Science: Capstone"
+site: bookdown::bookdown_site
+author: "Azamat Kurbanaev"
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+csl: bit-numerical-mathematics.csl 
+envir:
+  .GlobalEnv
+output: 
+  bookdown::pdf_document2: 
+    df_print: paged
+    toc: true
+    toc_depth: 4
+    fig_caption: true
+    keep_tex: true
+    css: custom.css
+    citation_package: biblatex
+    delete_merged_file: true
+documentclass: report
+biblatexoptions:
+  - backend=biber
+  - natbib=true 
+  - style=numeric
+  - backref=true
+  - sorting=none
+colorlinks: true
+linkcolor: red
+citecolor: blue
+header-includes:
+    - \usepackage{awesomebox}
+    - \usepackage{hyperref}
+    - \usepackage{amsmath}
+    - \hypersetup{backref,
+          pdfpagemode=Normal,
+          colorlinks=true,
+          implicit=false}
+vignette: >
+  %\VignetteIndexEntry{RMarkdown Citations - Numeric Style}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::knitr}
+---
+
+
+
+<!--chapter:end:index.Rmd-->
+
+# Preface {-}
+
+This project is the second assignment of the ‘Data Science: Capstone’ course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
+
+
+# Acknowledgements {-}
+
+I would like to extend my deepest gratitude to Professor **Rafael A. Irizarry** for designing and delivering the comprehensive courses within the ***Professional Certificate Program in Data Science***. Prof. **Irizarry**'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
+
+I am equally grateful for his textbook, *Introduction to Data Science*, ([part 1](https://rafalab.dfci.harvard.edu/dsbook-part-1/)[@IDS1] and [part 2](https://rafalab.dfci.harvard.edu/dsbook-part-2/)[@IDS2]). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof. **Irizarry**'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+
+# Overview and Executive Summary {#intro}
+
+As noted in the article [Handwritten Character Recognition: A Comprehensive Survey](https://ieeexplore.ieee.org/document/10420981), Handwritten Character Recognition (HCR) plays a vital role in numerous domains, including document digitization, automatic text recognition, signature verification, and postal automation. Over the years, HCR has advanced significantly, driven by the growing demand for accurate, efficient recognition systems [@AAASM_SICI10420981].
+
+## Project Description
+::: {.noteblock data-latex=""}
+All the source files for *this Project* are available in the *Project*’s [GitHub repository](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own)[@edx.Capstone_CYO].
+:::
+
+In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
+
+We will start with [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) models, using [k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) and [Random Forest (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) methods. These models development and evaluation are described in detail below in Sections [k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model] and [Random Forest (RF) MCC Model] of *this Report*, respectively.
+
+Next, we will try [Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/) models, including [Dense Neural Network (DNN)](https://smltar.com/dldnn) and, finally, [Convolutional Neural Network (CNN)](https://smltar.com/dlcnn#what-are-cnns) models, as recent research shows that DL performs better at image recognition — the task addressed by *this Project*.
+
+A more detailed explanation of *Deep Learning* versus *Shallow Learning* can be found in the chapter [Machine Learning Methods from Shallow Learning to Deep Learning](https://link.springer.com/chapter/10.1007/978-3-031-69499-8_1?status=info&saved-doi=10.1007%2F978-3-031-69499-8_1) of the book [Shallow Learning vs. Deep Learning: A Practical Guide for Machine Learning Solutions](https://link.springer.com/book/10.1007/978-3-031-69499-8?status=info&saved-doi=10.1007%2F978-3-031-69499-8) by editors Ömer Faruk Ertuğrul, Josep M. Guerrero, and Musa Yilmaz[@Akinci2024].
+
+The ***DNN-Based*** models are as follows:
+
+* ***DNN-Based Basic MCC Model:*** described in Section [Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model];
+* ***Tuned DNN-Based MCC Model:*** described in Section [Tuned DNN-Based (TDNN) MCC Model].
+
+The last models we will build and explore, the ***CNN-Based*** models, are as follows:
+
+* ***CNN-Based Basic MCC Model:*** described in Section [Convolutional Neural Network-Based Basic (CNNB) MCC Model];
+* ***Tuned CNN-Based MCC Model:*** described in Section [Tuned CNN-Based (TCNN) MCC Model].
+
+Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
+
+\newpage
+
+## Environment Setup.
+::: {.noteblock data-latex=""}
+The environment setup instructions are provided in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/dev/README.md#prerequisites--setup) section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/dev/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own).
+:::
+
+The environment setup configures an `R`-based machine learning environment with *Python* integration, required to build the *Deep Learning* models.
+
+The installation follows a *4-step* process by sequentially running the following scripts:
+
+* [1.install-reticulate&miniconda.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/1.install-reticulate&miniconda.R):
+  1. *Installs [reticulate](https://rstudio.github.io/reticulate/articles/package.html):* Configures the primary `R` package, the [R Interface to Python](https://rstudio.github.io/reticulate/); 
+  2. *Installs [Miniconda](https://continuumio-docs.readthedocs-hosted.com/miniconda/)* to manage Python virtual environments cleanly without conflicting with system Python installations. 
+
+
+* [2.install-tensorflow.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/2.install-tensorflow.R): 
+  1. *Installs [R TensorFlow interface](https://github.com/rstudio/tensorflow):* Loads the TensorFlow R bindings;
+  2. *Configures Backend Engine:* Uses reticulate to set up a dedicated Python virtual/conda environment and installs the core C++/Python TensorFlow package inside it.
+
+
+
+* [3.install-keras3.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/3.install-keras3.R);
+* [4,install-kerastuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts/setup-env/4.install-kerastuner.R).
+
+
+
+
+
+## Datasets Overview
+
+
+----------------------------------------------------
+using a [Kaggle Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
+
+
+
+
+
+<!--chapter:end:01.intro.Rmd-->
+
+# Methods and Analysis
+
+<!--chapter:end:02.0-1.methods.Rmd-->
+
+## k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model
+
+
+
+<!--chapter:end:02.2.kNN+PCA.MCC.Rmd-->
+
+## Random Forest (RF) MCC Model
+
+
+
+<!--chapter:end:02.3.RF.MCC.Rmd-->
+
+## Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model
+
+
+
+<!--chapter:end:02.4.DNNB-MCC.Rmd-->
+
+## Tuned DNN-Based (TDNN) MCC Model
+
+
+
+<!--chapter:end:02.5.TDNN-MCC.Rmd-->
+
+## Convolutional Neural Network-Based Basic (CNNB) MCC Model
+
+
+
+<!--chapter:end:02.6.CNNB-MCC.model.Rmd-->
+
+## Tuned CNN-Based (TCNN) MCC Model
+
+
+
+<!--chapter:end:02.7.TCNN-MCC.model.Rmd-->
+
+# Results
+
+
+
+<!--chapter:end:03.results.Rmd-->
+
+# Conclusion
+
+
+
+<!--chapter:end:04.conclusion.Rmd-->
+
+# Appendix A: Support Functions {#appndx_a}
+
+
+
+<!--chapter:end:05.appendix.Rmd-->
+
+---
+title: "citations"
+output: html_document
+---
+
+M. O. Alshrief, W. El-Tarhouni and K. A. Bozed, "Ensemble machine learning model for classification of handwritten digit recognition," 2022 IEEE 2nd International Maghreb Meeting of the Conference on Sciences and Techniques of Automatic Control and Computer Engineering (MI-STA), Sabratha, Libya, 2022, pp. 580-585, doi: 10.1109/MI-STA54861.2022.9837750.Abstract: Recognizing handwritten numbers is a commonly used application in machine learning. It is used in various applications, including postal mail sorting zip code recognition, writer identification and verification, diacritical processing, and recognition of handwritten digits on a bank check. Each of the 10 digits (0-9) is designated as a category in the context of machine learning-based classification tasks. However, due to the variety of handwriting styles from one person to another, it difficult for a person to distinguish. In addition, each learning algorithm may have its own set of benefits and drawbacks, implying that one algorithm may be able to learn some but not all of the special aspects of handwritten numbers. In order to enhance the effectiveness of the categorization process, a technique for reading handwritten numbers has been presented. Using a convolutional neural network architecture, the image properties of handwritten numerals are retrieved (CNN). Additionally, to train the classifiers, Support Vector Machine (SVM), Random Forest (RF), and Logistic Regression Model were utilized (LRM). The group classifier was able to achieve a recognition accuracy of 98 percent in the experiments using the MNISET dataset. keywords: {Support vector machines;Handwriting recognition;Machine learning algorithms;Conferences;Feature extraction;Classification algorithms;Convolutional neural networks;Handwritten digits recognition;Machine learning;Ensemble learning;Convolutional Neural Network.},URL: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9837750&isnumber=9837478
+
+
+<!--chapter:end:citations.Rmd-->
+

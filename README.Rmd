@@ -32,6 +32,8 @@ As described on the [landing web-page](https://www.kaggle.com/datasets/vaibhao/h
 3. Merged the Categories to avoid the misclassification
 4. Total 39 Categories in Train and Validation set
 
+To use the data in *this Project* we need to do some preprocessing.
+
 ## Essential Directories and Files
 
 The following are essential directories and files of the project:
@@ -65,19 +67,36 @@ As mentioned above in section [Essential Directories and Files], the *RStudio Pr
 
 ### Prerequisites & Setup
 
-1. ***R and RStudio:*** Ensure you have `R` (version **4.0** or higher recommended) and **RStudio** installed.
+#### 1. R and RStudio 
+
+Ensure you have `R` (version **4.0** or higher recommended) and **RStudio** installed.
 
 ```{=markdown}
 > [!NOTE]
 > The author completed this project using `R` version **4.6.1** and **RStudio 2026.09.0** *(Build 174)*.
 ```
 
-2. **Environment Setup:** Run the [__setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd) script outside of RStudio in a command shell suitable for your operating system.
+#### 2. Environment Setup 
+
+- **On Windows OS:** Run the [__setup-env.cmd](r/support-scripts/setup-env/__setup-env.cmd) script in PowerShell or Command Prompt;
+
+```{=markdown}
+> [!TIP]
+>Ensure the `R bin folder` is added to your Windows System Environment Variables (`PATH`) so that `Rscript.exe` can be executed from any folder
+```
 
 ```{=markdown}
 > [!NOTE]
-> The author uses [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
+> The author used [PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/overview?view=powershell-7.6) on Windows 11 OS.
 ```
+
+- **On other Operating Systems:** Manually run the `R` scripts below in the specified order:
+
+  - [1.install-reticulate&miniconda.R](r/support-scripts/setup-env/1.install-reticulate&miniconda.R);
+  - [2.install-tensorflow.R](r/support-scripts/setup-env/2.install-tensorflow.R);
+  - [3.install-keras3.R](r/support-scripts/setup-env/3.install-keras3.R);
+  - [4,install-kerastuner.R](r/support-scripts/setup-env/4.install-kerastuner.R).
+
 
 ```{=markdown}
 > [!IMPORTANT]
