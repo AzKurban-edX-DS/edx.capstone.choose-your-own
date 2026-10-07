@@ -437,6 +437,9 @@ my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.
 my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
 
 ## Init Project Script Paths ---------------------------------------------------
+ds.kaggle.download.script.path <- file.path(support_scripts.dir, "ds.kaggle.download.R")
+stopifnot(file.exists(ds.kaggle.download.script.path))
+
 prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 

@@ -23,7 +23,19 @@ source(setup_script.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
+### Download the Kaggle Dataset ------------------------------------------------
+
+stopifnot(file.exists(ds.kaggle.download.script.path))
+
+source(ds.kaggle.download.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 ### Prepare Input Datasets -----------------------------------------------------
+
 stopifnot(file.exists(prepare_ds.script.path))
 
 source(prepare_ds.script.path, 
@@ -475,10 +487,10 @@ tdnn_mcc.final |> plot_keras_model(to_file = tdnn_mcc.final.plot_img.file,
 # rm(tdnn_mcc.final)
 
 if(file.exists(tdnn_mcc.final.train_history.file)){
-  print_log("Loading the Tuned DNN MCC Final Model Train History...")
+  put_log("Loading the Tuned DNN MCC Final Model Train History...")
   tdnn_mcc.final.train_history <- readRDS(tdnn_mcc.final.train_history.file)
   
-  print_log("The Tuned DNN MCC Final Model Train History has been loaded 
+  put_log("The Tuned DNN MCC Final Model Train History has been loaded 
 from the following file:
 %1", tdnn_mcc.final.train_history.file)
   
@@ -767,10 +779,10 @@ tcnn_mcc.final |> plot_keras_model(to_file = tcnn_mcc.final.plot_img.file,
 # rm(tcnn_mcc.final)
 
 if(file.exists(tcnn_mcc.final.train_history.file)){
-  print_log("Loading the Tuned CNN-Based MCC Final Model Train History...")
+  put_log("Loading the Tuned CNN-Based MCC Final Model Train History...")
   tcnn_mcc.final.train_history <- readRDS(tcnn_mcc.final.train_history.file)
   
-  print_log("The Tuned CNN-Based MCC Final Model Train History has been loaded 
+  put_log("The Tuned CNN-Based MCC Final Model Train History has been loaded 
 from the following file:
 %1", tcnn_mcc.final.train_history.file)
   

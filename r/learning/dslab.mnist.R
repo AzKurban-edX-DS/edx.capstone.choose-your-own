@@ -439,8 +439,8 @@ str(test_result)
 
 show_digit <- function(idx) {
   
-  print_log1("predicted: %1", y_hat_knn[idx])
-  print_log1("actual: %1", y_test[idx])
+  print_log("predicted: %1", y_hat_knn[idx])
+  print_log("actual: %1", y_test[idx])
 
   grid <- matrix(x_test[idx,], 28, 28)
   image(grid[, 28:1])
