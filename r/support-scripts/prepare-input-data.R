@@ -1,56 +1,15 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Input Data Preparing Script 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-## Load Train Data ------------------------------------------------------------
-open_logfile(".load-train-data")
-start <- put_start_date()
-
-put_log("Preparing a List of Image Presentation Objects...")
-
-train.trimmed_img.file <- file.path(train.data.dir, 
-                                              "train.trimmed-img.list.rds")
-
-put_log("The path for the backup file to save the Trimmed Image Object list:
-%1", train.trimmed_img.file)
-
-if (!file.exists(train.trimmed_img.file)) {
-  put_log("Creating an Image list from the raw data files 
-stored in the following root directory: %1,
-Please wait...", img.train_root.dir)
-  #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  train.trimmed_img.list <- load_image.list(img.train_root.dir,
-                               load.img_trimmed)
-  
-  put_log("The Trimmed Image list has been created with the following structure:
-%1", capture.output(str(train.trimmed_img.list)))
-  put_end_date(start)
-
-  put_log("Saving Trimmed Image list to the backup file...")
-  saveRDS(train.trimmed_img.list,
-       file = train.trimmed_img.file)
-  put_log("Trimmed Image list has been saved to the following file:
-%1", train.trimmed_img.file)
-
-} else {
-    put_log("The Trimmed Image list has already been constructed 
-and backed up to the following file:
-%1", train.trimmed_img.file)
-}
-
-log_close()
-# =========================================================================
-# Log End Time: 2026-10-07 05:55:29.738928
-# Log Elapsed Time: 0 00:53:48
-# =========================================================================
 
 ## Prepare Train Data ------------------------------------------------------------
 
 open_logfile(".prepare-train-data")
 start <- put_start_date()
 
-### Preparing a List of Binary 28x28-size Image Presentation Objects -----------
+### Preparing a List of Binary 28x28-size Image Data Objects -----------
 
-put_log("Preparing a List of Binary 28x28-size Image Presentation Objects...")
+put_log("Preparing a List of Binary 28x28-size Image Data Objects...")
 
 train.img28x28bin.list.file_path <- file.path(train.data.dir, 
                                               "train.img28x28bin.list.rds")
@@ -59,11 +18,14 @@ put_log("The path for the backup file to save the Binary 28x28-size Image Object
 %1", train.img28x28bin.list.file_path)
 
 if (!file.exists(train.img28x28bin.list.file_path)) {
+  stopifnot(file.exists(train.img_dat.list.file))
+  
   put_log("Creating a Binary Image 28x28 list from the raw data files 
 stored in the following root directory: %1,
 Please wait...", img.train_root.dir)
-  #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  img28x28bin.list <- img.load.bin28x28mx.list(img.train_root.dir)
+  
+  start <- put_start_date()
+  img28x28bin.list <- img.load.bin28x28mx.list(train.img_dat.list.file)
   
   put_log("The Binary Image 28x28 list has been created with the following structure:
 %1", capture.output(str(img28x28bin.list)))
@@ -74,13 +36,15 @@ Please wait...", img.train_root.dir)
        file = train.img28x28bin.list.file_path)
   put_log("Binary Image 28x28 list has been saved to the following file:
 %1", train.img28x28bin.list.file_path)
-
+  put_end_date(start)
+  
 } else {
     put_log("The Binary Image 28x28 list has already been constructed 
 and backed up to the following file:
 %1", train.img28x28bin.list.file_path)
 }
 
+log_close()
 ### Preparing the Multiclass Classifier Class Label List -----------------------
 
 put_log("Preparing the Project Multiclass Classifier Class Label List...")
