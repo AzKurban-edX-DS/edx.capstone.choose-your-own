@@ -4,10 +4,10 @@
 
 ## Prepare Train Data ------------------------------------------------------------
 
-open_logfile(".prepare-train-data")
+open_logfile(".prepare28x28bin.train-dat")
 start <- put_start_date()
 
-### Preparing a List of Binary 28x28-size Image Data Objects -----------
+### Transforming into a List of Binary 28x28-size Image Data Objects -----------
 
 put_log("Preparing a List of Binary 28x28-size Image Data Objects...")
 
@@ -45,7 +45,17 @@ and backed up to the following file:
 }
 
 log_close()
+# =========================================================================
+# Log End Time: 2026-10-08 07:37:53.041816
+# Log Elapsed Time: 0 00:24:25
+# =========================================================================
+
+## Prepare Train Set -----------------------------------------------------------
+open_logfile(".prepare-train-set")
+stopifnot(file.exists(train.img28x28bin.list.file_path))
+
 ### Preparing the Multiclass Classifier Class Label List -----------------------
+start <- put_start_date()
 
 put_log("Preparing the Project Multiclass Classifier Class Label List...")
 
@@ -57,8 +67,6 @@ put_log("The path for the backup file to save the list of the Multiclass Classif
 
 if(!file.exists(classifier.label_list.file_path)){
   if(!exists("img28x28bin.list")) {
-    stopifnot(file.exists(train.img28x28bin.list.file_path))
-    
     put_log("Loading the Binary Image 28x28 list from the backup file...")
     img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
     put_log("The Binary Image 28x28 list has been loaded from the following file:
@@ -343,10 +351,6 @@ has already been constructed and backed up to the following file:
 
 put_end_date(start)
 
-
-
-put_end_date(start)
-
 ### Preparing the Flattened EMNIST-Like Dataset --------------------------------
 
 put_log("Preparing the Flattened EMNIST-Like Dataset for the DL-Based Basic and Non-NN-Based Models...")
@@ -393,6 +397,10 @@ and backed up to the following file:
 
 put_end_date(start)
 log_close()
+# =========================================================================
+# Log End Time: 2026-10-08 08:26:35.928494
+# Log Elapsed Time: 0 00:10:32
+# =========================================================================
 
 ## Prepare Final Test Data -----------------------------------------------------
 
@@ -427,7 +435,7 @@ if (!file.exists(final_test.img28x28bin.list.file_path)) {
 stored in the following root directory: %1,
 Please wait...", img.validation_root.dir)
   #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  ft.img28x28bin.list <- img.load.bin28x28mx.list(img.validation_root.dir)
+  ft.img28x28bin.list <- ds.load2bin28x28mx.list(img.validation_root.dir)
   put_end_date(start)
   
   put_log("The Final Test Binary Image 28x28 list has been created with the following structure:
@@ -579,3 +587,8 @@ and backed up to the following file:
 
 put_end_date(start)
 log_close()
+# =========================================================================
+# Log End Time: 2026-10-08 08:59:24.4216
+# Log Elapsed Time: 0 00:01:51
+# =========================================================================
+

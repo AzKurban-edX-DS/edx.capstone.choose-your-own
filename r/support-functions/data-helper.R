@@ -194,6 +194,89 @@ image.dat2bin_mx <- function(image.dat,
   img.bin
 }
 
+ds.load2bin28x28mx.list <- function(root_path, 
+                                     folder.list = NULL, 
+                                     char_files.max = NA,
+                                     char_files.seed = NA,
+                                     random_sample = FALSE) {
+  start <- put_start_date()
+  put_log("Getting file path lists...")
+  img.file_list <- img.file_path.get_list(root_path, 
+                                          folder.list,
+                                          char_files.max,
+                                          char_files.seed,
+                                          random_sample)
+  put_log("File path lists have been created. The output list structure:
+%1", capture.output(str(img.file_list)))
+  put_end_date(start)
+  
+  label_list <- as.factor(names(img.file_list))
+  
+  start <- put_start_date()
+  put_log("Loading image files...")
+  
+  img_list <- lapply(img.file_list, function(char.dir){
+    put_log("Loading files from root directory:
+%1...",char.dir$root_path)
+    
+    img_ls <- map(char.dir$file_path.list, 
+                  image.load_bin.shape28x28) # |> compact(),
+    
+    valid.idx <- sapply(img_ls, function(img){
+      sum(img) > 0
+    })
+    
+    # sum(ivalid.idx)
+    # bad_img <- img_ls[!ivalid.idx]
+    # length(bad_img)
+    # 
+    # char.image(bad_img[[1]])
+    
+    ls <- list(img.list = img_ls[valid.idx], 
+               fpath.list = char.dir$file_path.list[valid.idx])
+    
+    stopifnot(length(ls$img.list) == length(ls$fpath.list))
+    
+    put_log("Completed Loading files from directory:
+%1.",char.dir$root_path)
+    put_end_date(start)
+    ls
+  })
+  
+  put_log("Image files have been loaded. The output list structure:
+%1", capture.output(str(img_list)))
+  
+  list(label.list = label_list,
+       img.list = img_list)
+}
+
+image.load_bin.shape28x28 <- function(file_path) {
+  img0 <- magick::image_read(file_path)
+  # plot(img0)
+  
+  img0.mx <- magick_img2matrix(img0)
+  
+  if (max(img0.mx) > 0) {
+    img0.trimmed <- image_trim(img0)
+    # plot(img0.trimmed)
+    
+    im0.dim <- dim(image_data(img0.trimmed)) 
+    im0.dim
+    
+    img28x28 <- image_resize(img0.trimmed, '28x28!')
+    # dim(image_data(img28x28))
+    # plot(img28x28)
+    
+    img.sharpened <- image_convolve(img28x28, 'DoG:0,0,2', scaling = '100, 100%')
+    # plot(img.sharpened)
+    
+    img.mx <- magick_img2matrix(img.sharpened)
+    
+    img.bin <- img.mx > 0.5
+    # image.mx(img.bin)
+    img.bin
+  }
+}
 
 load.img_trimmed <- function(file_path) {
   img <- magick::image_read(file_path)
