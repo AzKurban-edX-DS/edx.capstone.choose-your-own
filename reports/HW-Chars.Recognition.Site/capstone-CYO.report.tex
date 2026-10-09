@@ -98,7 +98,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-05}
+\date{2026-10-09}
 
 \begin{document}
 \maketitle
@@ -247,7 +247,50 @@ As stated in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-yo
 
 The script \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R}{\_\_uninstall-all.R} cleans up the environment by wiping installed packages, \emph{Conda environments}, and \emph{Python bindings}.
 
+\section{Running the Project}\label{running-the-project}
+
+Once the system environment is fully configured, if you have enough time to execute all the scripts and automatically generate \emph{this report} upon their completion in a single session, the easiest approach is to run the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__run-all.R}{\_\_run-all.R} script.
+
+This script serves as the starting point for launching the project execution pipeline and subsequently generating a PDF report. It coordinates the process by sequentially executing two main R scripts, verifies the existence of the script files, and outputs detailed execution logs to both the console and log files.
+
+The first script it launches, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R}{index.R}, is the entry point to the project's execution pipeline and the main script that runs all the other execution scripts sequentially.
+
+The second (and last) script it runs, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__rmd.render.R}{\_\_rmd.render.R}, renders \emph{this Report}.
+
+\begin{warningblock}
+Some scripts, being launched for the first time, can run for very long hours. For example, the longest run on the author's laptop was the first run of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R}{2.cnn-mcc.lr-tuner.R} script and took about 17 hours.
+
+Subsequent runs of these long-running scripts will be much faster thanks to a caching mechanism that checks for the existence of the pre-computed results before running time-consuming training or evaluation code and loads the results from the cache files (if any).
+
+Besides, any of these scripts can be launched separately, or the execution can be interrupted at any time and resumed later from the point of interruption.
+
+\end{warningblock}
+
+\begin{importantblock}
+If the interrupted execution resumes in another \texttt{R} session, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5}{Setup} section (with all its subsections ending at the beginning of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L53}{kNN+PCA MCC Model} section) of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5}{index.R} script must be run first at the very beginning of the session.
+
+\end{importantblock}
+
 \section{Datasets Overview}\label{datasets-overview}
+
+The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{HandWritten\_Character Dataset} downloaded from the \href{https://www.kaggle.com}{Kaggle} platform.
+
+As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{landing web-page}, the \emph{context} of the dataset is as follows:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Used \emph{EMNIST} data for Alphabets and Digits.
+\item
+  Transformed the Data using some image processing techniques and convert it to 32,32 pixel black and white images.
+\item
+  Created the Data set for special character ( @, \#, \$, \& )
+\item
+  Merged the Categories to avoid the misclassification
+\item
+  Total 39 Categories in Train and Validation set
+\end{enumerate}
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 

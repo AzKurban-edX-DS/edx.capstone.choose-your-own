@@ -73,6 +73,34 @@ As stated in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.
 
 The script [__uninstall-all.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R) cleans up the environment by wiping installed packages, *Conda environments*, and *Python bindings*.
 
+## Running the Project
+
+Once the system environment is fully configured, if you have enough time to execute all the scripts and automatically generate *this report* upon their completion in a single session, the easiest approach is to run the [__run-all.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__run-all.R) script.
+
+This script serves as the starting point for launching the project execution pipeline and subsequently generating a PDF report. It coordinates the process by sequentially executing two main R scripts, verifies the existence of the script files, and outputs detailed execution logs to both the console and log files.
+
+The first script it launches, [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R),  is the entry point to the project's execution pipeline and the main script that runs all the other execution scripts sequentially. 
+
+The second (and last) script it runs, [__rmd.render.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__rmd.render.R), renders *this Report*. 
+
+::: {.warningblock data-latex=""}
+Some scripts, being launched for the first time, can run for very long hours. For example, the longest run on the author's laptop was the first run of the [2.cnn-mcc.lr-tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R) script and took about 17 hours.
+
+Subsequent runs of these long-running scripts will be much faster thanks to a caching mechanism that checks for the existence of the pre-computed results before running time-consuming training or evaluation code and loads the results from the cache files (if any).
+
+Besides, any of these scripts can be launched separately, or the execution can be interrupted at any time and resumed later from the point of interruption.
+:::
+
+::: {.importantblock data-latex=""}
+If the interrupted execution resumes in another `R` session, the [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5) section (with all its subsections ending at the beginning of the [kNN+PCA MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L53) section) of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5) script must be run first at the very beginning of the session. 
+:::
+
+
+
+
+
+
+
 ## Datasets Overview
 
 The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from the  [Kaggle](https://www.kaggle.com) platform.

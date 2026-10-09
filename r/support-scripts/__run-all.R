@@ -1,12 +1,10 @@
 support_scripts.dir <- "r/support-scripts"
 
-index.script_path <- "r/index.R"
-rmd_render.script_path <- file.path(support_scripts.dir, "__rmd.render.R")
-
-stopifnot(file.exists(index.script_path,
-                      rmd_render.script_path))
 
 ## Run Project Scripts ---------------------------------------------------------
+index.script_path <- "r/index.R"
+
+stopifnot(file.exists(index.script_path))
 
 source(index.script_path, 
        catch.aborts = TRUE,
@@ -16,6 +14,8 @@ source(index.script_path,
        keep.source = TRUE)
 
 ## Render PDF Reports ----------------------------------------------------------
+rmd_render.script_path <- file.path(support_scripts.dir, "__rmd.render.R")
+stopifnot(file.exists(rmd_render.script_path))
 
 source(rmd_render.script_path,
        catch.aborts = TRUE,
