@@ -184,6 +184,9 @@ put_log("Root directory for the `R` scripts:
 put_log("Root directory for the support scripts:
 %1", support_scripts.dir)
 
+support_functions.dir <- file.path(r_scripts.dir, "support-functions")
+stopifnot(dir.exists(support_functions.dir))
+
 put_log("Root directory for the custom functions definition scripts:
 %1", support_functions.dir)
 

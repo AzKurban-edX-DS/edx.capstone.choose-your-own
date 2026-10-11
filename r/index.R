@@ -10,9 +10,6 @@ stopifnot(dir.exists(r_scripts.dir))
 support_scripts.dir <-  file.path(r_scripts.dir, "support-scripts")
 stopifnot(dir.exists(support_scripts.dir))
 
-support_functions.dir <- file.path(r_scripts.dir, "support-functions")
-stopifnot(dir.exists(support_functions.dir))
-
 setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
