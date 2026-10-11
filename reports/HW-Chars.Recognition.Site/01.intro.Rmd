@@ -102,7 +102,7 @@ The other long-running scripts are as follows:
 
 - For tuning and retraining the best *Random Forest (RF) MCC* model: 
 	- [2.rf-retraining.best-par.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/rf-mcc/2.rf-retraining.best-par.R) (more than **1.5 hours**).
-	- [1.rf-tuning.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/rf-mcc/1.rf-tuning.R) (more than **an hour**).
+	- [1.rf-tuning.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/rf-mcc/1.rf-tuning.R) (more than ***an hour***).
 
 - For tuning the *DNN-Based MCC* model: 
 	- [1.dnn-mcc.tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/dnn-mcc/tuner/1.dnn-mcc.tuner.R) (more than *half an hour*).
@@ -111,10 +111,10 @@ The other long-running scripts are as follows:
 
 - For downloading, analyzing, and preprocessing datasets:
 
-	- [ds.kaggle.download.R](#) (**about an hour**).
-	- [ds.find-out.img.min.size.R](#) (about half an hour).
+	- [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) (about ***an hour***).
+	- [ds.find-out.img.min.size.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.find-out.img.min.size.R) (about *half an hour*).
 	- [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) (more than *half an hour*).
-	- [ds.train2trimmed_img.dat.R](#) (**about an hour**).
+	- [ds.train2trimmed_img.dat.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R) (about ***an hour***).
 
 
 ::: {.noteblock data-latex=""}
@@ -132,7 +132,7 @@ If the interrupted execution resumes in another *`R` session*, the [Setup](https
 The [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R) script serves as the main orchestrator and *entry point* for *this Project*, focused on [Multi-Class Classification (MCC)](https://en.wikipedia.org/wiki/Multiclass_classification) models applied to the [Kaggle Handwritten Character Image Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) (which uses [EMNIST data](https://www.tensorflow.org/datasets/catalog/emnist) for Alphabets and Digits).
 Below is a detailed description of the script's structure, workflow, and core components.
 
-\newpage
+
 #### Setup & Initialization
 The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
 
