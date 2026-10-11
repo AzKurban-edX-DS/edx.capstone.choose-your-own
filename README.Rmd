@@ -100,7 +100,7 @@ Ensure you have `R` (version **4.0** or higher recommended) and **RStudio** inst
 
 ```{=markdown}
 > [!IMPORTANT]
-> If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+> If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to clean up the environment.
 ```
 
 ## Running the Project

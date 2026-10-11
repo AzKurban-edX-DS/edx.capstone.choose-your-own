@@ -73,6 +73,127 @@ As stated in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.
 
 The script [__uninstall-all.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R) cleans up the environment by wiping installed packages, *Conda environments*, and *Python bindings*.
 
+## Running the Project
+
+Once the system environment is fully configured, if you have enough time to execute all the scripts and automatically generate *this report* upon their completion in a single session, the easiest approach is to run the [__run-all.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__run-all.R) script.
+
+This script serves as a starting point for running the project execution pipeline that culminates in a *PDF report*. It coordinates the process by sequentially executing two main R scripts, ensuring the script files exist, and outputs detailed execution logs to both the console and log files.
+
+The first script it launches, [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R),  is the entry point to the project's execution pipeline and the main script that runs all the other execution scripts sequentially. 
+
+The second (and last) script it runs, [__rmd.render.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__rmd.render.R), renders *this Report*. 
+
+::: {.warningblock data-latex=""}
+Some scripts may take a long time when executed on their first run. In particular, the longest run on the author's laptop was the first run of the [2.cnn-mcc.lr-tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R) script (for fine-tuning the *CNN-based MCC* model) and took about **17 hours**.
+:::
+
+The other long-running scripts are as follows:
+
+- For tuning and retraining the best (and *final*) *CNN-based MCC* model: 
+
+	- [1.cnn-mcc.arch-tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/1.cnn-mcc.arch-tuner.R) (took more than **6 hours** on the author's laptop);
+	- [3.tcnn-mcc.final.retrain.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/3.tcnn-mcc.final.retrain.R) (took around **6.5 hours**);
+
+- For  tuning, retraining, and evaluating the best *kNN+PCA MCC* model:
+
+	- [3.knn+pca.best-eval.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/3.knn%2Bpca.best-eval.R) (took more than **2 hours**);
+	- [2.knn+pca.re-train.best-k.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/2.knn%2Bpca.re-train.best-k.R) (took about **2 hours**);
+	- [1.knn+pca.build&tune.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R) (about *half an hour*).
+
+- For tuning and retraining the best *Random Forest (RF) MCC* model: 
+	- [2.rf-retraining.best-par.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/rf-mcc/2.rf-retraining.best-par.R) (more than **1.5 hours**).
+	- [1.rf-tuning.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/rf-mcc/1.rf-tuning.R) (more than **an hour**).
+
+- For tuning the *DNN-Based MCC* model: 
+	- [1.dnn-mcc.tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/dnn-mcc/tuner/1.dnn-mcc.tuner.R) (more than *half an hour*).
+
+\newpage
+
+- For downloading, analyzing, and preprocessing datasets:
+
+	- [ds.kaggle.download.R](#) (**about an hour**).
+	- [ds.find-out.img.min.size.R](#) (about half an hour).
+	- [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) (more than *half an hour*).
+	- [ds.train2trimmed_img.dat.R](#) (**about an hour**).
+
+
+::: {.noteblock data-latex=""}
+Subsequent runs of these long-running scripts will be much faster thanks to a caching mechanism that checks for the existence of the pre-computed results before running time-consuming training or evaluation code and loads the results from the cache files (if any).
+
+Besides, any of these scripts can be launched separately, or the execution can be interrupted at any time and resumed later from the point of interruption.
+:::
+
+::: {.importantblock data-latex=""}
+If the interrupted execution resumes in another *`R` session*, the [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) section (with all its subsections) of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) script **\underline{must be run first at the very beginning of the session}**. 
+:::
+
+### The Main `R` Script
+
+The [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R) script serves as the main orchestrator and *entry point* for *this Project*, focused on [Multi-Class Classification (MCC)](https://en.wikipedia.org/wiki/Multiclass_classification) models applied to the [Kaggle Handwritten Character Image Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) (which uses [EMNIST data](https://www.tensorflow.org/datasets/catalog/emnist) for Alphabets and Digits).
+Below is a detailed description of the script's structure, workflow, and core components.
+
+\newpage
+#### Setup & Initialization
+The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
+
+The code in this section initializes global variables for the [R scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r) directory and the [support scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts) subdirectory path values, then executes the [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) script, which installs the full set of the required packages (those not yet installed), loads required libraries, and completes remaining initialization.
+
+Finally, it executes the [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) script from the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L26-L52) subsection to process the project's datasets.
+
+::: {.importantblock data-latex=""}
+Code in this section \underline{must run at the very beginning} of every _`R` session_ **\underline{before any other script executes}**.
+:::
+
+##### [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) Script
+
+
+##### [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) Script
+
+
+#### Machine Learning Model Pipelines
+
+
+
+##### k-Nearest Neighbors with Principal Component Analysis (kNN + PCA) Model
+
+
+
+##### Random Forest (RF) MCC Model
+
+
+
+##### Deep Learning Models
+
+
+
+###### Models Based on Dense Neural Network (DNN) 
+
+
+\
+####### Basic DNN-Based Model
+
+
+####### Tuned DNN-Based Model
+
+
+######  Models Based on Dense Neural Network (DNN)
+
+
+
+####### Basic CNN-Based Model
+
+
+####### Tuned CNN-Based Model
+
+
+
+#### Logging & Utility Features 
+
+
+
+
+
+
 ## Datasets Overview
 
 The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from the  [Kaggle](https://www.kaggle.com) platform.

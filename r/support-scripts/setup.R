@@ -184,6 +184,9 @@ put_log("Root directory for the `R` scripts:
 put_log("Root directory for the support scripts:
 %1", support_scripts.dir)
 
+support_functions.dir <- file.path(r_scripts.dir, "support-functions")
+stopifnot(dir.exists(support_functions.dir))
+
 put_log("Root directory for the custom functions definition scripts:
 %1", support_functions.dir)
 
@@ -421,6 +424,9 @@ if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
   dir.create(cnn_mcc.tuner.plots.dat.dir)
 
 ## Init Input Data Paths -------------------------------------------------------
+train.img_dat.list.file <- file.path(train.data.dir, 
+                                     "train.img_dat.list.rds")
+
 my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
 
 ds28x28.split.train_0.8.file <- file.path(train.data.dir, 
@@ -437,6 +443,13 @@ my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.
 my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
 
 ## Init Project Script Paths ---------------------------------------------------
+ds.kaggle.download.script.path <- file.path(support_scripts.dir, "ds.kaggle.download.R")
+stopifnot(file.exists(ds.kaggle.download.script.path))
+
+ds.train2trimmed_img.dat.script.path <- file.path(support_scripts.dir, 
+                                                  "ds.train2trimmed_img.dat.R")
+stopifnot(file.exists(ds.train2trimmed_img.dat.script.path))
+
 prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
 stopifnot(file.exists(prepare_ds.script.path))
 

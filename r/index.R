@@ -10,9 +10,6 @@ stopifnot(dir.exists(r_scripts.dir))
 support_scripts.dir <-  file.path(r_scripts.dir, "support-scripts")
 stopifnot(dir.exists(support_scripts.dir))
 
-support_functions.dir <- file.path(r_scripts.dir, "support-functions")
-stopifnot(dir.exists(support_functions.dir))
-
 setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
@@ -23,8 +20,32 @@ source(setup_script.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
+### Download the Kaggle Dataset ------------------------------------------------
+
+stopifnot(file.exists(ds.kaggle.download.script.path))
+
+source(ds.kaggle.download.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 ### Prepare Input Datasets -----------------------------------------------------
-stopifnot(file.exists(prepare_ds.script.path))
+stopifnot(file.exists(ds.train2trimmed_img.dat.script.path,
+                      prepare_ds.script.path))
+
+#### Train Set: Create Trimmed Image Data List ---------------------------------
+
+source(ds.train2trimmed_img.dat.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+
+#### Prepare Input Datasets ----------------------------------------------------
 
 source(prepare_ds.script.path, 
        catch.aborts = TRUE,
@@ -475,10 +496,10 @@ tdnn_mcc.final |> plot_keras_model(to_file = tdnn_mcc.final.plot_img.file,
 # rm(tdnn_mcc.final)
 
 if(file.exists(tdnn_mcc.final.train_history.file)){
-  print_log("Loading the Tuned DNN MCC Final Model Train History...")
+  put_log("Loading the Tuned DNN MCC Final Model Train History...")
   tdnn_mcc.final.train_history <- readRDS(tdnn_mcc.final.train_history.file)
   
-  print_log("The Tuned DNN MCC Final Model Train History has been loaded 
+  put_log("The Tuned DNN MCC Final Model Train History has been loaded 
 from the following file:
 %1", tdnn_mcc.final.train_history.file)
   
@@ -767,10 +788,10 @@ tcnn_mcc.final |> plot_keras_model(to_file = tcnn_mcc.final.plot_img.file,
 # rm(tcnn_mcc.final)
 
 if(file.exists(tcnn_mcc.final.train_history.file)){
-  print_log("Loading the Tuned CNN-Based MCC Final Model Train History...")
+  put_log("Loading the Tuned CNN-Based MCC Final Model Train History...")
   tcnn_mcc.final.train_history <- readRDS(tcnn_mcc.final.train_history.file)
   
-  print_log("The Tuned CNN-Based MCC Final Model Train History has been loaded 
+  put_log("The Tuned CNN-Based MCC Final Model Train History has been loaded 
 from the following file:
 %1", tcnn_mcc.final.train_history.file)
   
