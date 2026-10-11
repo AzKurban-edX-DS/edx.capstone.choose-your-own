@@ -545,15 +545,6 @@ cnn_mcc.hyperparams.script.path <- file.path(cnn_mcc.tuner.classes.scripts.dir,
                                             "cnn-mcc.hyper-parameters.R")
 stopifnot(file.exists(cnn_mcc.hyperparams.script.path))
 
-## CNN-Based Binary Classifier BC Scripts ------------------------------------
-
-cnn_binary.r_scripts.dir <- file.path(cnn._binary.scripts.dir, "cnn-binary.R")
-stopifnot(file.exists(cnn_binary.r_scripts.dir))
-
-cnn_binary.ensemble.script.path <- file.path(cnn._binary.scripts.dir, 
-                                              "cnn-binary.ensemble.R")
-stopifnot(file.exists(cnn_binary.ensemble.script.path))
-
 ## Load Common Helper Functions ------------------------------------------------
 common_helper.funcs.file_path <- file.path(support_functions.dir, 
                                            "common-helper.R")
