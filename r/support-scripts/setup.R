@@ -80,8 +80,8 @@ if(!require(rsvg))
 if(!require("bookdown")) 
   install.packages("bookdown")
 
-# if(!require())
-#   install.packages("")
+library(pacman)
+p_load(conflicted)
 
 ## Load Libraries & resolve conflicts ------------------------------------------
 
@@ -118,7 +118,6 @@ library(ggplot2)
 library(logr)
 library(utils)
 
-library(pacman)
 
 # detach("package:keras", unload = TRUE)
 
@@ -136,8 +135,6 @@ library(doParallel)
 
 # Importing sqldf
 #library(sqldf)
-
-p_load(conflicted)
 
 conflict_prefer("train", "caret")
 conflict_prefer("shape", "keras3", quiet = TRUE)
@@ -166,6 +163,7 @@ n.img_rows <- 28
 n.img_cols <- 28
 
 ## Load Logging Helper Functions -----------------------------------------------
+source('r-global.path.R')
 log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
 
 source(log_func_script.file_path, 
@@ -183,9 +181,6 @@ put_log("Root directory for the `R` scripts:
 
 put_log("Root directory for the support scripts:
 %1", support_scripts.dir)
-
-support_functions.dir <- file.path(r_scripts.dir, "support-functions")
-stopifnot(dir.exists(support_functions.dir))
 
 put_log("Root directory for the custom functions definition scripts:
 %1", support_functions.dir)

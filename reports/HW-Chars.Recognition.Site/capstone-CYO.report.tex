@@ -98,7 +98,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-11}
+\date{2026-10-12}
 
 \begin{document}
 \maketitle
@@ -357,6 +357,72 @@ Code in this section \underline{must run at the very beginning} of every \emph{\
 \end{importantblock}
 
 \paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} Script}{setup.R Script}}\label{setup.r-script}
+
+\hfill\break
+
+This script serves as the master initialization and environment-configuration script for the entire project.
+Its primary purpose is to set up and configure all software dependencies, Python environments, directory paths, and helper functions before running any project execution scripts.
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L5-L6}{first two lines of the code} perform the following operations in order:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Adjust the global download timeout to handle packages and large dataset downloads;
+\item
+  Increase the expression nesting limit.
+\end{enumerate}
+
+Below is a detailed breakdown of the code by sections.
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L8-L85}{Install Packages} Section}{Install Packages Section}}\label{install-packages-section}
+
+\hfill\break
+
+The code in this section automatically checks for required \texttt{R} packages across multiple domains and installs them if some or all are not installed.
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L86-L167}{Load Libraries \& resolve conflicts} Section}{Load Libraries \& resolve conflicts Section}}\label{load-libraries-resolve-conflicts-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L168-L177}{Load Logging Helper Functions} Section}{Load Logging Helper Functions Section}}\label{load-logging-helper-functions-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L178-L425}{Init Project Directories} Section}{Init Project Directories Section}}\label{init-project-directories-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L426-L444}{Init Input Data Paths} Section}{Init Input Data Paths Section}}\label{init-input-data-paths-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L445-L547}{Init Project Script Paths} Section}{Init Project Script Paths Section}}\label{init-project-script-paths-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L548-L557}{Load Common Helper Functions} Section}{Load Common Helper Functions Section}}\label{load-common-helper-functions-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L558-L569}{Load Data Helper Functions} Section}{Load Data Helper Functions Section}}\label{load-data-helper-functions-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L570-L581}{Load Model Helper Functions} Section}{Load Model Helper Functions Section}}\label{load-model-helper-functions-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L582-L594}{Load \texttt{CNN\_MCC.HyperModel} helper class} Section}{Load CNN\_MCC.HyperModel helper class Section}}\label{load-cnn_mcc.hypermodel-helper-class-section}
+
+\hfill\break
+
+\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L595-L607}{Load \texttt{CNN\_MCC.HyperParameters} helper class} Section}{Load CNN\_MCC.HyperParameters helper class Section}}\label{load-cnn_mcc.hyperparameters-helper-class-section}
+
+\hfill\break
+
+\subsubsection{Downloading \& Preprocessing Input Datasets}\label{downloading-preprocessing-input-datasets}
 
 \paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R}{prepare-input-data.R} Script}{prepare-input-data.R Script}}\label{prepare-input-data.r-script}
 

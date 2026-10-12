@@ -145,7 +145,74 @@ Code in this section \underline{must run at the very beginning} of every _`R` se
 :::
 
 ##### [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) Script
+\
 
+This script serves as the master initialization and environment-configuration script for the entire project.
+Its primary purpose is to set up and configure all software dependencies, Python environments, directory paths, and helper functions before running any project execution scripts.
+
+The [first two lines of the code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L5-L6) perform the following operations in order:
+
+1. Adjust the global download timeout to handle packages and large dataset downloads;
+2. Increase the expression nesting limit. 
+
+Below is a detailed breakdown of the code by sections.
+
+###### [Install Packages](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L8-L85) Section  
+\
+
+The code in this section automatically checks for required `R` packages across multiple domains and installs them if some or all are not installed.
+
+###### [Load Libraries & resolve conflicts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L86-L167) Section  
+\
+
+
+
+###### [Load Logging Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L168-L177) Section  
+\
+
+
+###### [Init Project Directories](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L178-L425) Section  
+\
+
+
+
+###### [Init Input Data Paths](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L426-L444) Section  
+\
+
+
+
+###### [Init Project Script Paths](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L445-L547) Section  
+\
+
+
+
+###### [Load Common Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L548-L557) Section  
+\
+
+
+
+###### [Load Data Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L558-L569) Section  
+\
+
+
+
+###### [Load Model Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L570-L581) Section  
+\
+
+
+
+###### [Load `CNN_MCC.HyperModel` helper class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L582-L594) Section  
+\
+
+
+
+###### [Load `CNN_MCC.HyperParameters` helper class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L595-L607) Section  
+\
+
+
+
+
+#### Downloading & Preprocessing Input Datasets
 
 ##### [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) Script
 
