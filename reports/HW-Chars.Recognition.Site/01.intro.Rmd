@@ -136,9 +136,21 @@ Below is a detailed description of the script's structure, workflow, and core co
 #### Setup & Initialization
 The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
 
-The code in this section initializes global variables for the [R scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r) directory and the [support scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts) subdirectory path values, then executes the [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) script, which installs the full set of the required packages (those not yet installed), loads required libraries, and completes remaining initialization.
+The code in this section first executes the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script to initialize global variables for the following `R` scripts' directory paths:
 
-Finally, it executes the [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) script from the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L26-L52) subsection to process the project's datasets.
+- [root `R` scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r);
+- [support scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts);
+- [support (helper) functions scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions).
+
+Next, it [executes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10) the [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+
+Next, in the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L17-L27) subsection, it downloads the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), [executing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L21) the [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) script.
+
+Finally, the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L28-L67) subsection prepares the project's input datasets by running the following scripts in order:
+
+- (subsection []()) [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R)
+
+Finally, it executes the  script from the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L26-L52) subsection to process the project's datasets.
 
 ::: {.importantblock data-latex=""}
 Code in this section \underline{must run at the very beginning} of every _`R` session_ **\underline{before any other script executes}**.

@@ -98,7 +98,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-12}
+\date{2026-10-13}
 
 \begin{document}
 \maketitle
@@ -347,7 +347,21 @@ Below is a detailed description of the script's structure, workflow, and core co
 
 The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, along with downloading, preparing, and preprocessing the project's datasets.
 
-The code in this section initializes global variables for the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r}{R scripts} directory and the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support scripts} subdirectory path values, then executes the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} script, which installs the full set of the required packages (those not yet installed), loads required libraries, and completes remaining initialization.
+The code in this section first executes the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script to initialize global variables for the following \texttt{R} scripts' directory paths:
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r}{root \texttt{R} scripts' directory};
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support scripts' directory};
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions}{support (helper) functions scripts' directory}.
+\end{itemize}
+
+Next, it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+
+Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it downloads the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L21}{executing} the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} script.
 
 Finally, it executes the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R}{prepare-input-data.R} script from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L26-L52}{Prepare Input Datasets} subsection to process the project's datasets.
 

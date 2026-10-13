@@ -25,9 +25,9 @@ source(ds.kaggle.download.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Prepare Input Datasets -----------------------------------------------------
+### Prepare Input Data ---------------------------------------------------------
 stopifnot(file.exists(ds.train2trimmed_img.dat.script.path,
-                      prepare_ds.script.path))
+                      prepare_ds.train_set.script_path))
 
 #### Train Set: Create Trimmed Image Data List ---------------------------------
 
@@ -41,24 +41,7 @@ source(ds.train2trimmed_img.dat.script.path,
 
 #### Prepare Input Datasets ----------------------------------------------------
 
-source(prepare_ds.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
-#### Prepare Flatten Datasets --------------------------------------------------
-ds.prepare_flattened.script.path <- file.path(support_scripts.dir, 
-                                         "prepare-flattened-datasets.R")
-
-ds.load_flattened.script.path <- file.path(support_scripts.dir, 
-                                         "load-flattened-dataset.R")
-
-stopifnot(file.exists(ds.prepare_flattened.script.path,
-                      ds.load_flattened.script.path))
-
-source(ds.prepare_flattened.script.path, 
+source(prepare_ds.train_set.script_path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
