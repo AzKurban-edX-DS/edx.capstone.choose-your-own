@@ -445,8 +445,11 @@ ds.train2trimmed_img.dat.script.path <- file.path(support_scripts.dir,
                                                   "ds.train2trimmed_img.dat.R")
 stopifnot(file.exists(ds.train2trimmed_img.dat.script.path))
 
-prepare_ds.script.path <- file.path(support_scripts.dir, "prepare-input-data.R")
-stopifnot(file.exists(prepare_ds.script.path))
+prepare_ds.train_set.script_path <- file.path(support_scripts.dir, "prepare-training-set.R")
+stopifnot(file.exists(prepare_ds.train_set.script_path))
+
+prepare_final_test_set.script_path <- file.path(support_scripts.dir, "prepare-final-test-set.R")
+stopifnot(file.exists(prepare_final_test_set.script_path))
 
 model_visualization.shared.script.path <- file.path(model_scripts.dir, 
                                                     "model-visualization.shared.R")
