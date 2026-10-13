@@ -27,7 +27,8 @@ source(ds.kaggle.download.script.path,
 
 ### Prepare Input Data ---------------------------------------------------------
 stopifnot(file.exists(ds.train2trimmed_img.dat.script.path,
-                      prepare_ds.train_set.script_path))
+                      prepare_ds.train_set.script_path,
+                      prepare_final_test_set.script_path))
 
 #### Train Set: Create Trimmed Image Data List ---------------------------------
 
@@ -39,9 +40,18 @@ source(ds.train2trimmed_img.dat.script.path,
        keep.source = TRUE)
 
 
-#### Prepare Input Datasets ----------------------------------------------------
+#### Prepare Training Datasets -------------------------------------------------
 
 source(prepare_ds.train_set.script_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+#### Prepare Final Test Set ----------------------------------------------------
+
+source(prepare_final_test_set.script_path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

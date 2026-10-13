@@ -5,7 +5,7 @@
 open_logfile(".prepare28x28bin.train-dat")
 start <- put_start_date()
 
-## Transforming into a List of Binary 28x28-size Image Data Objects -----------
+## Transforming into a List of Binary 28x28-size Image Data Objects ------------
 
 put_log("Preparing a List of Binary 28x28-size Image Data Objects...")
 
