@@ -236,12 +236,6 @@ put_log("Root directory for the `CNN-Based` model's scripts:
 %1", models.cnn_scripts.dir)
 #---
 
-cnn._binary.scripts.dir <- file.path(models.cnn_scripts.dir, "binary")
-stopifnot(dir.exists(cnn._binary.scripts.dir))
-
-put_log("Root directory for the `CNN-Based MCC` model's scripts:
-%1", cnn._binary.scripts.dir)
-
 cnn_mcc.scripts.dir <- file.path(models.cnn_scripts.dir, "mcc")
 stopifnot(dir.exists(cnn_mcc.scripts.dir))
 
