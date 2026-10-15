@@ -37,6 +37,46 @@
 }{% if KOMA class
   \KOMAoptions{parskip=half}}
 \makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \newcounter{none} % for unnumbered tables
 \usepackage{calc} % for calculating minipage widths
@@ -98,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-14}
+\date{2026-10-15}
 
 \begin{document}
 \maketitle
@@ -347,6 +387,11 @@ Below is a detailed description of the script's structure, workflow, and core co
 
 The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L60}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, along with downloading, preparing, and preprocessing the project's datasets.
 
+\begin{importantblock}
+Code in this section \underline{must run at the very beginning} of every \emph{\texttt{R} session} \textbf{\underline{before any other script executes}}.
+
+\end{importantblock}
+
 The code in this section first calls the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L6}{line 6}) to initialize global variables for the following \texttt{R} scripts' directory paths:
 
 \begin{itemize}
@@ -356,27 +401,24 @@ The code in this section first calls the \href{https://github.com/AzKurban-edX-D
 \item
   \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support scripts' directory};
 \item
-  user-defined \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions}{support (helper) functions' scripts directory}.
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions}{user-defined support (helper) functions' scripts directory}.
 \end{itemize}
 
-Next, it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+Next (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{line 10}), it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
-Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it downloads the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L21}{executing} the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} script.
+Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it downloads the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}, executing the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} script.
 
-Finally, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L28-L67}{Prepare Input Datasets} subsection prepares the project's input datasets by running the following scripts in order:
+The last subsection, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L28-L60}{Prepare Input Data}, prepares the project's datasets. It is, in turn, divided into the following subsections:
 
 \begin{itemize}
 \tightlist
 \item
-  (subsection \href{}{}) \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R}{prepare-input-data.R}
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L26-L}{Train Set: Create Trimmed Image Data List}:
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L-L}{}:
 \end{itemize}
 
-Finally, it executes the script from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L26-L52}{Prepare Input Datasets} subsection to process the project's datasets.
-
-\begin{importantblock}
-Code in this section \underline{must run at the very beginning} of every \emph{\texttt{R} session} \textbf{\underline{before any other script executes}}.
-
-\end{importantblock}
+\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/.R}{}
 
 \paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} Script}{setup.R Script}}\label{setup.r-script}
 
@@ -514,6 +556,266 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 
 \chapter{Conclusion}\label{conclusion}
 
-\printbibliography[title=Appendix A: Support Functions]
+\chapter{Appendix A: Support Functions}\label{appndx_a}
+
+\section{Data Helper Functions}\label{appndx_a.data_helper.functions}
+
+\hfill\break
+
+\subsection{Data Loading}\label{data-loading}
+
+\begin{noteblock}
+The complete source code of the functions described in this section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L416}{Data loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L416}{data-helper.R} script on \emph{GitHub}.
+
+\end{noteblock}
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{load\_image.list} Function}{load\_image.list Function}}\label{func.load_image.list}
+
+\hfill\break
+
+Loads image data from the dataset files downloaded from \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} and stored under root directory specified by the {[}root\_path{]} argument.
+
+\protect\phantomsection\label{func.load_image.list.usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L15}{Usage}}{Usage}}\label{usage}
+
+\hfill\break
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
+                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed,}
+                                        \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{,}
+                                        \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
+                                        \AttributeTok{char\_files.seed =} \ConstantTok{NA}\NormalTok{,}
+                                        \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{noteblock}
+In the \emph{code snippet} above, a pointer to the auxiliary function \hyperref[func.load.img_trimmed]{load.img\_trimmed} described below in \emph{this Section} is used as the value of the argument \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.load_image.list.args}
+\paragraph{Arguments}\label{arguments}
+
+\hfill\break
+
+\protect\phantomsection\label{func.load_image.list.args.root_path}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{root\_path:} Path to the root directory where image files were downloaded.;
+\end{itemize}
+
+\protect\phantomsection\label{func.load_image.list.args.fn.load_image.dat}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{fn.load\_image.dat:} Pointer to a helper function that loads a particular image file;
+\end{itemize}
+
+\protect\phantomsection\label{func.load_image.list.args.folder.list}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{folder.list:} (Optional, \emph{Character}, \(NULL\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.load_image.list.args.char_files.max}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{char\_files.max:} (Optional, \emph{Integer}, \(NA\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.load_image.list.args.char_files.seed}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{char\_files.seed:} (Optional, \emph{Integer}, \(NA\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.load_image.list.args.random_sample}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{random\_sample:} (Optional, \emph{Boolean}, \(FALSE\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.load_image.list.details}
+\paragraph{Details}\label{details}
+
+\hfill\break
+
+\protect\phantomsection\label{func.load_image.list.value}
+\paragraph{Value}\label{value}
+
+\hfill\break
+
+\protect\phantomsection\label{func.load_image.list.code}
+\paragraph{Source Code}\label{source-code}
+
+\hfill\break
+
+The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{} function is shown below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{load\_image.list }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(root\_path,}
+\NormalTok{                            fn.load\_image.dat,}
+                            \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{, }
+                            \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
+                            \AttributeTok{char\_files.seed =} \ConstantTok{NA}\NormalTok{,}
+                            \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{) \{}
+\NormalTok{  start }\OtherTok{\textless{}{-}} \FunctionTok{put\_start\_date}\NormalTok{()}
+  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{Getting file path lists..."}\NormalTok{)}
+\NormalTok{  img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file\_path.get\_list}\NormalTok{(root\_path, }
+\NormalTok{                                          folder.list,}
+\NormalTok{                                          char\_files.max,}
+\NormalTok{                                          char\_files.seed,}
+\NormalTok{                                          random\_sample)}
+  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{File path lists have been created. The output list structure:}
+\StringTok{\%1"}\NormalTok{, }\FunctionTok{capture.output}\NormalTok{(}\FunctionTok{str}\NormalTok{(img.file\_list)))}
+  \FunctionTok{put\_end\_date}\NormalTok{(start)}
+  
+\NormalTok{  label\_list }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(}\FunctionTok{names}\NormalTok{(img.file\_list))}
+  
+  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{Loading image files..."}\NormalTok{)}
+  
+\NormalTok{  img\_list }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(img.file\_list, }\ControlFlowTok{function}\NormalTok{(char.dir)\{}
+    \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{Loading files from root directory:}
+\StringTok{\%1..."}\NormalTok{,char.dir}\SpecialCharTok{$}\NormalTok{root\_path)}
+
+\NormalTok{    img\_dat.ls }\OtherTok{\textless{}{-}} \FunctionTok{map}\NormalTok{(char.dir}\SpecialCharTok{$}\NormalTok{file\_path.list, }
+\NormalTok{                  fn.load\_image.dat)}
+    
+\NormalTok{    valid.idx }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(img\_dat.ls, }\ControlFlowTok{function}\NormalTok{(img.dat)\{}
+\NormalTok{      mx.bin }\OtherTok{\textless{}{-}}\NormalTok{ img.dat[}\DecValTok{1}\NormalTok{,,]}
+      \FunctionTok{mode}\NormalTok{(mx.bin) }\OtherTok{\textless{}{-}} \StringTok{"numeric"}
+      
+      \FunctionTok{sum}\NormalTok{(mx.bin) }\SpecialCharTok{\textgreater{}} \DecValTok{0}
+\NormalTok{    \})}
+    
+\NormalTok{    ls }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}\AttributeTok{img.list =}\NormalTok{ img\_dat.ls[valid.idx], }
+               \AttributeTok{fpath.list =}\NormalTok{ char.dir}\SpecialCharTok{$}\NormalTok{file\_path.list[valid.idx])}
+    
+    \FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{length}\NormalTok{(ls}\SpecialCharTok{$}\NormalTok{img.list) }\SpecialCharTok{==} \FunctionTok{length}\NormalTok{(ls}\SpecialCharTok{$}\NormalTok{fpath.list))}
+
+    \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{Completed Loading files from directory:}
+\StringTok{\%1."}\NormalTok{,char.dir}\SpecialCharTok{$}\NormalTok{root\_path)}
+    \FunctionTok{put\_end\_date}\NormalTok{(start)}
+\NormalTok{    ls}
+\NormalTok{  \})}
+  
+  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{Image files have been loaded. The output list structure:}
+\StringTok{\%1"}\NormalTok{, }\FunctionTok{capture.output}\NormalTok{(}\FunctionTok{str}\NormalTok{(img\_list)))}
+  
+  \FunctionTok{list}\NormalTok{(}\AttributeTok{label.list =}\NormalTok{ label\_list,}
+       \AttributeTok{img.list =}\NormalTok{ img\_list)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{noteblock}
+The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L4}{} function is also available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Data processing functions} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.functions.R} script on \emph{GitHub}.
+
+\end{noteblock}
+
+\newpage
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{load.img\_trimmed} Function}{load.img\_trimmed Function}}\label{func.load.img_trimmed}
+
+\hfill\break
+
+\protect\phantomsection\label{func.load.img_trimmed.usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L15}{Usage}}{Usage}}\label{usage-1}
+
+\hfill\break
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
+                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed,}
+                                        \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{,}
+                                        \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
+                                        \AttributeTok{char\_files.seed =} \ConstantTok{NA}\NormalTok{,}
+                                        \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{noteblock}
+In the \emph{code snippet} above, a pointer to \emph{this function} is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function described above in \emph{this Section}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.load.img_trimmed.args}
+\paragraph{Arguments}\label{arguments-1}
+
+\hfill\break
+
+\protect\phantomsection\label{func.load.img_trimmed.args.file_path}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{file\_path:} Path to the image file to load.
+\end{itemize}
+
+\protect\phantomsection\label{func.load.img_trimmed.details}
+\paragraph{Details}\label{details-1}
+
+\hfill\break
+
+\begin{noteblock}
+This is an auxiliary function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function, as shown above in the \hyperref[func.load.img_trimmed.usage]{Usage} section of \emph{this Description}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.load.img_trimmed.value}
+\paragraph{Value}\label{value-1}
+
+\hfill\break
+
+\protect\phantomsection\label{func.load.img_trimmed.code}
+\paragraph{Source Code}\label{source-code-1}
+
+\hfill\break
+
+The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{} function is shown below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{load.img\_trimmed }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(file\_path) \{}
+\NormalTok{  img }\OtherTok{\textless{}{-}}\NormalTok{ magick}\SpecialCharTok{::}\FunctionTok{image\_read}\NormalTok{(file\_path)}
+  \CommentTok{\# plot(img)}
+  
+\NormalTok{  img.trimmed }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{))}
+  \FunctionTok{max}\NormalTok{(img.trimmed)}
+  
+\NormalTok{  img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
+  
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{max}\NormalTok{(img.mx) }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
+\NormalTok{    img.trimmed }\OtherTok{\textless{}{-}} \FunctionTok{image\_trim}\NormalTok{(img)}
+\NormalTok{  \}}
+  
+\NormalTok{  magick}\SpecialCharTok{::}\FunctionTok{image\_data}\NormalTok{(img)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{noteblock}
+The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L4}{} function is also available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Data processing functions} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.functions.R} script on \emph{GitHub}.
+
+\end{noteblock}
+
+\newpage
+
+\printbibliography
 
 \end{document}

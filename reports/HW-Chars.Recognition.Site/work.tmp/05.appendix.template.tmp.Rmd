@@ -1,0 +1,90 @@
+# Appendix A: Support Functions {#appndx_a}
+## Data Helper Functions {#appndx_a.data_helper.functions}
+\
+
+### Data Loading
+
+::: {.noteblock data-latex=""}
+The complete source code of the functions described in this section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) script on _GitHub_.
+:::
+
+#### [foo](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.}
+\
+
+
+::: { #func.foo.usage .sidebar }
+##### [Usage]()
+\
+
+```{r script-name@lXXX, eval=FALSE}
+
+```
+
+::: {.noteblock data-latex=""}
+
+:::
+:::
+
+::: { #func.foo.args .sidebar }
+##### Arguments
+\
+
+::: { #func.foo.args. .sidebar }
+- **:** ; 
+
+:::
+::: { #func.foo.args. .sidebar }
+- **:**  (Optional, *Numeric*, $0$ by default) ; 
+
+:::
+::: { #func.foo.args. .sidebar }
+- **:**  (Optional, *Numeric*, $NA$ by default) ; 
+
+:::
+::: { #func.foo.args. .sidebar }
+- **:**  (Optional, *Integer*, $NA$ by default) ; 
+
+:::
+::: { #func.load_image.list.args. .sidebar }
+- **:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+
+:::
+::: { #func.load_image.list.args. .sidebar }
+- **:**  (Optional, *Character*, $NULL$ by default) ; 
+
+:::
+:::
+
+::: { #func.foo.details .sidebar }
+##### Details
+\
+
+
+::: {.noteblock data-latex=""}
+This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.foo.usage) section of *this Description*.
+:::
+:::
+
+::: { #func.foo.value .sidebar }
+##### Value
+\
+
+:::
+
+::: { #func.foo.code .sidebar }
+##### Source Code
+\
+
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
+```{r eval=FALSE}
+```
+
+::: {.noteblock data-latex=""}
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+:::
+:::
+
+\newpage
+
+
+

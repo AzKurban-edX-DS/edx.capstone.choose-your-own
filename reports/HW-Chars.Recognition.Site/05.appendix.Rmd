@@ -1,3 +1,233 @@
 # Appendix A: Support Functions {#appndx_a}
+## Data Helper Functions {#appndx_a.data_helper.functions}
+\
+
+### Data Loading
+
+::: {.noteblock data-latex=""}
+The complete source code of the functions described in this section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) script on _GitHub_.
+:::
+
+#### [load_image.list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load_image.list}
+\
+
+Loads image data from the dataset files downloaded from [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) and stored under root directory specified by the [root_path] argument.
+
+::: { #func.load_image.list.usage .sidebar }
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
+\
+
+```{r func@load_image.list.u, eval=FALSE}
+  train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
+                                        fn.load_image.dat = load.img_trimmed,
+                                        folder.list = NULL,
+                                        char_files.max = NA,
+                                        char_files.seed = NA,
+                                        random_sample = FALSE)
+
+```
+
+::: {.noteblock data-latex=""}
+In the *code snippet* above, a pointer to the auxiliary function [load.img_trimmed](#func.load.img_trimmed) described below in *this Section* is used as the value of the argument [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat).
+:::
+:::
+
+::: { #func.load_image.list.args .sidebar }
+##### Arguments
+\
+
+::: { #func.load_image.list.args.root_path .sidebar }
+- **root_path:** Path to the root directory where image files were downloaded.; 
+
+:::
+::: { #func.load_image.list.args.fn.load_image.dat .sidebar }
+- **fn.load_image.dat:** Pointer to a helper function that loads a particular image file; 
+
+:::
+::: { #func.load_image.list.args.folder.list .sidebar }
+- **folder.list:**  (Optional, *Character*, $NULL$ by default) ; 
+
+:::
+::: { #func.load_image.list.args.char_files.max .sidebar }
+- **char_files.max:**  (Optional, *Integer*, $NA$ by default) ; 
+
+:::
+::: { #func.load_image.list.args.char_files.seed .sidebar }
+- **char_files.seed:**  (Optional, *Integer*, $NA$ by default) ; 
+
+:::
+::: { #func.load_image.list.args.random_sample .sidebar }
+- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+
+:::
+:::
+
+::: { #func.load_image.list.details .sidebar }
+##### Details
+\
+
+:::
+
+::: { #func.load_image.list.value .sidebar }
+##### Value
+\
+
+:::
+
+::: { #func.load_image.list.code .sidebar }
+##### Source Code
+\
+
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
+```{r func@load_image.list.s, eval=FALSE}
+load_image.list <- function(root_path,
+                            fn.load_image.dat,
+                            folder.list = NULL, 
+                            char_files.max = NA,
+                            char_files.seed = NA,
+                            random_sample = FALSE) {
+  start <- put_start_date()
+  put_log("Function `load_image.list`:
+Getting file path lists...")
+  img.file_list <- img.file_path.get_list(root_path, 
+                                          folder.list,
+                                          char_files.max,
+                                          char_files.seed,
+                                          random_sample)
+  put_log("Function `load_image.list`:
+File path lists have been created. The output list structure:
+%1", capture.output(str(img.file_list)))
+  put_end_date(start)
+  
+  label_list <- as.factor(names(img.file_list))
+  
+  put_log("Function `load_image.list`:
+Loading image files...")
+  
+  img_list <- lapply(img.file_list, function(char.dir){
+    put_log("Function `load_image.list`:
+Loading files from root directory:
+%1...",char.dir$root_path)
+
+    img_dat.ls <- map(char.dir$file_path.list, 
+                  fn.load_image.dat)
+    
+    valid.idx <- sapply(img_dat.ls, function(img.dat){
+      mx.bin <- img.dat[1,,]
+      mode(mx.bin) <- "numeric"
+      
+      sum(mx.bin) > 0
+    })
+    
+    ls <- list(img.list = img_dat.ls[valid.idx], 
+               fpath.list = char.dir$file_path.list[valid.idx])
+    
+    stopifnot(length(ls$img.list) == length(ls$fpath.list))
+
+    put_log("Function `load_image.list`:
+Completed Loading files from directory:
+%1.",char.dir$root_path)
+    put_end_date(start)
+    ls
+  })
+  
+  put_log("Function `load_image.list`:
+Image files have been loaded. The output list structure:
+%1", capture.output(str(img_list)))
+  
+  list(label.list = label_list,
+       img.list = img_list)
+}
+
+```
+
+::: {.noteblock data-latex=""}
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+:::
+:::
+
+\newpage
+
+#### [load.img_trimmed](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load.img_trimmed}
+\
+
+
+::: { #func.load.img_trimmed.usage .sidebar }
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
+\
+
+```{r func@load.img_trimmed.u, eval=FALSE}
+  train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
+                                        fn.load_image.dat = load.img_trimmed,
+                                        folder.list = NULL,
+                                        char_files.max = NA,
+                                        char_files.seed = NA,
+                                        random_sample = FALSE)
+```
+
+::: {.noteblock data-latex=""}
+In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function described above in *this Section*.
+:::
+:::
+
+::: { #func.load.img_trimmed.args .sidebar }
+##### Arguments
+\
+
+::: { #func.load.img_trimmed.args.file_path .sidebar }
+- **file_path:** Path to the image file to load. 
+
+:::
+:::
+
+::: { #func.load.img_trimmed.details .sidebar }
+##### Details
+\
+
+
+::: {.noteblock data-latex=""}
+This is an auxiliary function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function, as shown above in the [Usage](#func.load.img_trimmed.usage) section of *this Description*.
+:::
+:::
+
+::: { #func.load.img_trimmed.value .sidebar }
+##### Value
+\
+
+:::
+
+::: { #func.load.img_trimmed.code .sidebar }
+##### Source Code
+\
+
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
+```{r func@load.img_trimmed.s, eval=FALSE}
+load.img_trimmed <- function(file_path) {
+  img <- magick::image_read(file_path)
+  # plot(img)
+  
+  img.trimmed <- as.matrix(c(0))
+  max(img.trimmed)
+  
+  img.mx <- magick_img2matrix(img)
+  
+  if (max(img.mx) > 0) {
+    img.trimmed <- image_trim(img)
+  }
+  
+  magick::image_data(img)
+}
+```
+
+::: {.noteblock data-latex=""}
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+:::
+:::
+
+\newpage
+
+
+
+
 
 
