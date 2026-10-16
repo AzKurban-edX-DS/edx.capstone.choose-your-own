@@ -151,6 +151,7 @@ The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose
 #### [load.img_trimmed](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load.img_trimmed}
 \
 
+This is a specialized utility function designed to read an image file, dynamically detect whether it contains nonzero pixel data, optionally trim whitespace or empty borders around the visual features using the [magick package](https://docs.ropensci.org/magick/index.html), and extract its raw data matrix structure.
 
 ::: { #func.load.img_trimmed.usage .sidebar }
 ##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
@@ -184,10 +185,16 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 ##### Details
 \
 
+Below is the *step-by-step execution flow* of the function:
+
+1. ([Line 288](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L288)) ***Image Loading:*** The function begins by reading the image file from disk into memory as an object using [magick::image_read](https://docs.ropensci.org/magick/reference/editing.html).
+2. ([Lines 291-294](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L291-L294)) ***Matrix Conversion & Validation:*** Converts the loaded image into a numeric matrix representation using the user-defined helper function [magick_img2matrix] described below in *this Section.
+
+3. ([Lines 296-298](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L296-L298) ***Image Validation & Conditional Cropping:*** Evaluates the maximum value of this matrix to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies [magick::image_trim](https://docs.ropensci.org/magick/reference/editing.html) to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
+4. [(Line 300](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L300)) ***Data Extraction:*** Finally, it extracts and returns the underlying raw pixel buffer data using the [magick::image_data](https://docs.ropensci.org/magick/reference/editing.html#details) helper function.
 
 ::: {.noteblock data-latex=""}
-This is an auxiliary function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function, as shown above in the [Usage](#func.load.img_trimmed.usage) section of *this Description*.
-:::
+..:::
 :::
 
 ::: { #func.load.img_trimmed.value .sidebar }
@@ -200,7 +207,7 @@ This is an auxiliary function, the pointer to which is passed in the [fn.load_im
 ##### Source Code
 \
 
-The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L287) of the function is shown below:
 ```{r func@load.img_trimmed.s, eval=FALSE}
 load.img_trimmed <- function(file_path) {
   img <- magick::image_read(file_path)
@@ -219,15 +226,87 @@ load.img_trimmed <- function(file_path) {
 }
 ```
 
-::: {.noteblock data-latex=""}
-The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
 :::
+
+\newpage
+
+#### [magick_img2matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) Function {#func.}
+\
+
+This is a lightweight utility that converts a [Magick Image object](https://docs.ropensci.org/magick/reference/editing.html#details) into a *normalized numeric matrix of pixel intensities*.
+
+
+::: { #func.magick_img2matrix.usage .sidebar }
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L294)
+\
+
+```{r data-helper@l294, eval=FALSE}
+img.mx <- magick_img2matrix(img)
+```
+
+::: {.noteblock data-latex=""}
+In the *code snippet* above, *this function* is called internally from the [load.img_trimmed](#func.load.img_trimmed) function described above in *this Section*.
+:::
+:::
+
+::: { #func.magick_img2matrix.args .sidebar }
+##### Arguments
+\
+
+::: { #func.magick_img2matrix.args.img .sidebar }
+- **img:** A [Magick Image object](https://docs.ropensci.org/magick/reference/editing.html#details) (typically processed, resized, or filtered prior to conversion). 
+
+:::
+:::
+
+::: { #func.magick_img2matrix.details .sidebar }
+##### Details
+\
+
+Below is the *step-by-step execution flow* of the function:
+
+1. ([Line 486](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L486)) ***Raw Binary Data Extraction:*** The function calls the [image_data] function to extract the underlying raw hexadecimal or integer byte-array buffer from the [Magick Image object](https://docs.ropensci.org/magick/reference/editing.html#details).
+2. [(Line 487](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L487)) ***Color Channel Isolation:***
+Slices the multidimensional array to isolate the primary color channel matrix. For grayscale or black-and-white pipeline images (as in our case), this captures the single intensity plane.
+3. ([Line 488](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L488)) ***Data Type Conversion:*** Explicitly casts the extracted data array elements from raw/character bytes into a numeric data type, making mathematical operations possible.
+4. ([Line 489](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L489)) ***Min-Max Normalization:*** Divides the entire matrix by 255 (the maximum 8-bit color intensity value) to normalize pixel values into a clean floating-point scale ranging from 0.0 (black/background) to 1.0 
+
+::: {.noteblock data-latex=""}
+This is a utility function used internally by the other user-defined functions, as shown in the usage example above in the [Usage](#func.magick_img2matrix.usage) section of *this Description*.
+:::
+:::
+
+::: { #func.magick_img2matrix.value .sidebar }
+##### Value
+\
+
+:::
+
+::: { #func.magick_img2matrix.code .sidebar }
+##### Source Code
+\
+
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) of the function is shown below:
+```{r src@magick_img2matrix, eval=FALSE}
+magick_img2matrix <- function(img){
+  img.dat <- image_data(img)
+  mx.bin <- img.dat[1,,]
+  mode(mx.bin) <- "numeric"
+  mx.bin /255
+}
+
+```
+
 :::
 
 \newpage
 
 
 
+
+# -------------------
+
+# ----------------------
 
 
 

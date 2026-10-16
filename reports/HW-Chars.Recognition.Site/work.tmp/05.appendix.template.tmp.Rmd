@@ -8,20 +8,22 @@
 The complete source code of the functions described in this section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) script on _GitHub_.
 :::
 
-#### [foo](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.}
+#### [foo](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.foo}
 \
 
 
 ::: { #func.foo.usage .sidebar }
-##### [Usage]()
+##### [Usage](#L)
 \
 
-```{r script-name@lXXX, eval=FALSE}
+```{r data-helper@lXXX, eval=FALSE}
 
 ```
 
 ::: {.noteblock data-latex=""}
+In the *code snippet* above, *this function* is called internally from the [outer_foo](#func.outer_foo) function described above in *this Section*.
 
+In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function described above in *this Section*.
 :::
 :::
 
@@ -29,28 +31,28 @@ The complete source code of the functions described in this section is available
 ##### Arguments
 \
 
-::: { #func.foo.args. .sidebar }
-- **:** ; 
+::: { #func.foo.args.arg1 .sidebar }
+- **arg1:** ; 
 
 :::
-::: { #func.foo.args. .sidebar }
-- **:**  (Optional, *Numeric*, $0$ by default) ; 
+::: { #func.foo.args.arg2 .sidebar }
+- **arg2:**  (Optional, *Numeric*, $0$ by default) ; 
 
 :::
-::: { #func.foo.args. .sidebar }
-- **:**  (Optional, *Numeric*, $NA$ by default) ; 
+::: { #func.foo.args.arg3 .sidebar }
+- **arg3:**  (Optional, *Numeric*, $NA$ by default) ; 
 
 :::
-::: { #func.foo.args. .sidebar }
-- **:**  (Optional, *Integer*, $NA$ by default) ; 
+::: { #func.foo.args.arg4 .sidebar }
+- **arg4:**  (Optional, *Integer*, $NA$ by default) ; 
 
 :::
-::: { #func.load_image.list.args. .sidebar }
-- **:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+::: { #func.foo.args.arg5 .sidebar }
+- **arg5:**  (Optional, *Boolean*, $FALSE$ by default) ; 
 
 :::
-::: { #func.load_image.list.args. .sidebar }
-- **:**  (Optional, *Character*, $NULL$ by default) ; 
+::: { #func.foo.args.arg6 .sidebar }
+- **arg6:**  (Optional, *Character*, $NULL$ by default) ; 
 
 :::
 :::
@@ -76,7 +78,8 @@ This is an auxiliary function that is used internally in the [](#) function as s
 \
 
 The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
-```{r eval=FALSE}
+```{r src@foo eval=FALSE}
+
 ```
 
 ::: {.noteblock data-latex=""}
@@ -87,4 +90,4 @@ The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose
 \newpage
 
 
-
+# ---------------------------------
