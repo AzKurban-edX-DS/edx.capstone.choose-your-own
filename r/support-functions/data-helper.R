@@ -84,22 +84,26 @@ load_image.list <- function(root_path,
                             char_files.seed = NA,
                             random_sample = FALSE) {
   start <- put_start_date()
-  put_log("Getting file path lists...")
+  put_log("Function `load_image.list`:
+Getting file path lists...")
   img.file_list <- img.file_path.get_list(root_path, 
                                           folder.list,
                                           char_files.max,
                                           char_files.seed,
                                           random_sample)
-  put_log("File path lists have been created. The output list structure:
+  put_log("Function `load_image.list`:
+File path lists have been created. The output list structure:
 %1", capture.output(str(img.file_list)))
   put_end_date(start)
   
   label_list <- as.factor(names(img.file_list))
   
-  put_log("Loading image files...")
+  put_log("Function `load_image.list`:
+Loading image files...")
   
   img_list <- lapply(img.file_list, function(char.dir){
-    put_log("Loading files from root directory:
+    put_log("Function `load_image.list`:
+Loading files from root directory:
 %1...",char.dir$root_path)
 
     img_dat.ls <- map(char.dir$file_path.list, 
@@ -117,13 +121,15 @@ load_image.list <- function(root_path,
     
     stopifnot(length(ls$img.list) == length(ls$fpath.list))
 
-    put_log("Completed Loading files from directory:
+    put_log("Function `load_image.list`:
+Completed Loading files from directory:
 %1.",char.dir$root_path)
     put_end_date(start)
     ls
   })
   
-  put_log("Image files have been loaded. The output list structure:
+  put_log("Function `load_image.list`:
+Image files have been loaded. The output list structure:
 %1", capture.output(str(img_list)))
   
   list(label.list = label_list,
