@@ -3,6 +3,98 @@ title: "tmp1"
 output: html_document
 ---
 
+Below is the *step-by-step execution flow* of the function:
+
+1. ([Line ](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)) ***
+
+# -------------------------------------------snh
+
+#### [img.file_path.get_list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.img.file_path.get_list}
+\
+
+
+::: { #func.img.file_path.get_list.usage .sidebar }
+##### [Usage]()
+\
+
+```{r script-name@lXXX, eval=FALSE}
+
+```
+
+::: {.noteblock data-latex=""}
+
+:::
+:::
+
+::: { #func.img.file_path.get_list.args .sidebar }
+##### Arguments
+\
+
+::: { #func.img.file_path.get_list.args. .sidebar }
+- **:** ; 
+
+:::
+::: { #func.img.file_path.get_list.args. .sidebar }
+- **:**  (Optional, *Numeric*, $0$ by default) ; 
+
+:::
+::: { #func.img.file_path.get_list.args. .sidebar }
+- **:**  (Optional, *Numeric*, $NA$ by default) ; 
+
+:::
+::: { #func.img.file_path.get_list.args. .sidebar }
+- **:**  (Optional, *Integer*, $NA$ by default) ; 
+
+:::
+::: { #func.load_image.list.args. .sidebar }
+- **:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+
+:::
+::: { #func.load_image.list.args. .sidebar }
+- **:**  (Optional, *Character*, $NULL$ by default) ; 
+
+:::
+:::
+
+::: { #func.img.file_path.get_list.details .sidebar }
+##### Details
+\
+
+
+::: {.noteblock data-latex=""}
+This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.img.file_path.get_list.usage) section of *this Description*.
+:::
+:::
+
+::: { #func.img.file_path.get_list.value .sidebar }
+##### Value
+\
+
+:::
+
+::: { #func.img.file_path.get_list.code .sidebar }
+##### Source Code
+\
+
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
+```{r eval=FALSE}
+
+```
+
+::: {.noteblock data-latex=""}
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+:::
+:::
+
+\newpage
+
+
+
+
+
+
+
+
 # -----------------------
 
 [kNN+PCA MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L53) section

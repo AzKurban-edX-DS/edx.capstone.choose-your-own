@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-15}
+\date{2026-10-17}
 
 \begin{document}
 \maketitle
@@ -569,11 +569,11 @@ The complete source code of the functions described in this section is available
 
 \end{noteblock}
 
-\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{load\_image.list} Function}{load\_image.list Function}}\label{func.load_image.list}
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L80}{load\_image.list} Function}{load\_image.list Function}}\label{func.load_image.list}
 
 \hfill\break
 
-Loads image data from the dataset files downloaded from \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} and stored under root directory specified by the {[}root\_path{]} argument.
+This is a core utility designed to recursively traverse a root directory passed in the \hyperref[func.load_image.list.args.root_path]{root\_path} argument, discover character-specific (or class-specific, in the terms of the project's multiclass classifier models) subfolders, load data from raw image files (downloaded from the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} platform) using a custom parsing function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument, filter out empty or invalid images, and organize everything into an \texttt{R} list object with the corresponding labels and file paths.
 
 \protect\phantomsection\label{func.load_image.list.usage}
 \paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L15}{Usage}}{Usage}}\label{usage}
@@ -583,7 +583,7 @@ Loads image data from the dataset files downloaded from \href{https://www.kaggle
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
-                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed,}
+                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat,}
                                         \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{,}
                                         \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
                                         \AttributeTok{char\_files.seed =} \ConstantTok{NA}\NormalTok{,}
@@ -592,7 +592,7 @@ Loads image data from the dataset files downloaded from \href{https://www.kaggle
 \end{Shaded}
 
 \begin{noteblock}
-In the \emph{code snippet} above, a pointer to the auxiliary function \hyperref[func.load.img_trimmed]{load.img\_trimmed} described below in \emph{this Section} is used as the value of the argument \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat}.
+In the \emph{code snippet} above, a pointer to the auxiliary function \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} described below in \emph{this Section} is used as the value of the argument \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat}.
 
 \end{noteblock}
 
@@ -605,48 +605,57 @@ In the \emph{code snippet} above, a pointer to the auxiliary function \hyperref[
 \begin{itemize}
 \tightlist
 \item
-  \textbf{root\_path:} Path to the root directory where image files were downloaded.;
+  \textbf{root\_path:} The root directory path containing subfolders of images organized by character recognition classes;
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.fn.load_image.dat}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{fn.load\_image.dat:} Pointer to a helper function that loads a particular image file;
+  \textbf{fn.load\_image.dat:} Pointer to a user-defined loading and processing helper function applied to each image file path (e.g., a function to read image matrices or binary arrays);
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.folder.list}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{folder.list:} (Optional, \emph{Character}, \(NULL\) by default) ;
+  \textbf{folder.list:} (Optional, \emph{Character}, \(NULL\) by default) Vector of specific subfolder names to process. If \(NULL\), it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.load_image.list.args.root_path]{root\_path} argument;
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.char_files.max}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{char\_files.max:} (Optional, \emph{Integer}, \(NA\) by default) ;
+  \textbf{char\_files.max:} (Optional, \emph{Integer}, \(NA\) by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing);
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.char_files.seed}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{char\_files.seed:} (Optional, \emph{Integer}, \(NA\) by default) ;
+  \textbf{char\_files.seed:} (Optional, \emph{Integer}, \(NA\) by default) Random seed used for reproducible sampling when \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.random_sample}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{random\_sample:} (Optional, \emph{Boolean}, \(FALSE\) by default) ;
+  \textbf{random\_sample:} (Optional, \emph{Boolean}, \(FALSE\) by default) Boolean (\(TRUE/FALSE\)) indicating whether files within a folder should be sampled randomly (\(TRUE\)) or taken sequentially from the top (\(FALSE\)).
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.details}
 \paragraph{Details}\label{details}
 
 \hfill\break
+
+Below is the \emph{step-by-step execution flow} of the function:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L89}{Line 89}) \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the char\_files.max argument), random sampling (depending on the random\_sample value), and seed generation (if char\_files.seed is not \(NA\)).
+\end{enumerate}
 
 \protect\phantomsection\label{func.load_image.list.value}
 \paragraph{Value}\label{value}
@@ -730,11 +739,13 @@ The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.cho
 
 \newpage
 
-\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{load.img\_trimmed} Function}{load.img\_trimmed Function}}\label{func.load.img_trimmed}
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{load.img\_trimmed.dat} Function}{load.img\_trimmed.dat Function}}\label{func.load.img_trimmed.dat}
 
 \hfill\break
 
-\protect\phantomsection\label{func.load.img_trimmed.usage}
+This is a specialized utility function designed to read an image file, dynamically detect whether it contains nonzero pixel data, optionally trim whitespace or empty borders around the visual features using the \href{https://docs.ropensci.org/magick/index.html}{magick package}, and extract its raw data matrix structure.
+
+\protect\phantomsection\label{func.load.img_trimmed.dat.usage}
 \paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L15}{Usage}}{Usage}}\label{usage-1}
 
 \hfill\break
@@ -742,7 +753,7 @@ The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.cho
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
-                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed,}
+                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat,}
                                         \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{,}
                                         \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
                                         \AttributeTok{char\_files.seed =} \ConstantTok{NA}\NormalTok{,}
@@ -755,67 +766,161 @@ In the \emph{code snippet} above, a pointer to \emph{this function} is passed in
 
 \end{noteblock}
 
-\protect\phantomsection\label{func.load.img_trimmed.args}
+\protect\phantomsection\label{func.load.img_trimmed.dat.args}
 \paragraph{Arguments}\label{arguments-1}
 
 \hfill\break
 
-\protect\phantomsection\label{func.load.img_trimmed.args.file_path}
+\protect\phantomsection\label{func.load.img_trimmed.dat.args.file_path}
 \begin{itemize}
 \tightlist
 \item
   \textbf{file\_path:} Path to the image file to load.
 \end{itemize}
 
-\protect\phantomsection\label{func.load.img_trimmed.details}
+\protect\phantomsection\label{func.load.img_trimmed.dat.details}
 \paragraph{Details}\label{details-1}
 
 \hfill\break
 
+Below is the \emph{step-by-step execution flow} of the function:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L288}{Line 288}) \textbf{\emph{Image Loading:}} The function begins by reading the image file from disk into memory as an object using \href{https://docs.ropensci.org/magick/reference/editing.html}{magick::image\_read}.
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L289}{Line 289}) \textbf{\emph{Matrix Conversion \& Validation:}} Converts the loaded image into a numeric matrix representation using the user-defined helper function \hyperref[func.magick_img2matrix]{magick\_img2matrix} described below in described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section.
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L296-L298}{Lines 292-294} \textbf{\emph{Image Validation \& Conditional Cropping:}} Evaluates the maximum value of this matrix to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies \href{https://docs.ropensci.org/magick/reference/editing.html}{magick::image\_trim} to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L300}{(Line 296}) \textbf{\emph{Data Extraction:}} Finally, it extracts and returns the underlying raw pixel buffer data using the \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{magick::image\_data} helper function.
+\end{enumerate}
+
 \begin{noteblock}
-This is an auxiliary function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function, as shown above in the \hyperref[func.load.img_trimmed.usage]{Usage} section of \emph{this Description}.
+This is an auxiliary function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function, as shown above in the \hyperref[func.load.img_trimmed.dat.usage]{Usage} section of \emph{this Description}.
 
 \end{noteblock}
 
-\protect\phantomsection\label{func.load.img_trimmed.value}
+\protect\phantomsection\label{func.load.img_trimmed.dat.value}
 \paragraph{Value}\label{value-1}
 
 \hfill\break
 
-\protect\phantomsection\label{func.load.img_trimmed.code}
+\protect\phantomsection\label{func.load.img_trimmed.dat.code}
 \paragraph{Source Code}\label{source-code-1}
 
 \hfill\break
 
-The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{} function is shown below:
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L287}{source code} of the function is shown below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{load.img\_trimmed }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(file\_path) \{}
+\NormalTok{load.img\_trimmed.dat }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(file\_path) \{}
 \NormalTok{  img }\OtherTok{\textless{}{-}}\NormalTok{ magick}\SpecialCharTok{::}\FunctionTok{image\_read}\NormalTok{(file\_path)}
-  \CommentTok{\# plot(img)}
-  
-\NormalTok{  img.trimmed }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{))}
-  \FunctionTok{max}\NormalTok{(img.trimmed)}
-  
 \NormalTok{  img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
-  
+\NormalTok{  img.trimmed }\OtherTok{\textless{}{-}}\NormalTok{ img}
+
   \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{max}\NormalTok{(img.mx) }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
 \NormalTok{    img.trimmed }\OtherTok{\textless{}{-}} \FunctionTok{image\_trim}\NormalTok{(img)}
 \NormalTok{  \}}
   
-\NormalTok{  magick}\SpecialCharTok{::}\FunctionTok{image\_data}\NormalTok{(img)}
+\NormalTok{  magick}\SpecialCharTok{::}\FunctionTok{image\_data}\NormalTok{(img.trimmed)}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
+\newpage
+
+\subsection{\texorpdfstring{Image Processing \{\#\href{mailto:appndx_a@img}{\nolinkurl{appndx\_a@img}}\_proc\}}{Image Processing \{\#appndx\_a@img\_proc\}}}\label{image-processing-appndx_aimg_proc}
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L485}{magick\_img2matrix} Function}{magick\_img2matrix Function}}\label{func.}
+
+\hfill\break
+
+This is a lightweight utility that converts a \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object} into a \emph{normalized numeric matrix of pixel intensities}.
+
+\protect\phantomsection\label{func.magick_img2matrix.usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L294}{Usage}}{Usage}}\label{usage-2}
+
+\hfill\break
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
+\end{Highlighting}
+\end{Shaded}
+
 \begin{noteblock}
-The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L4}{} function is also available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Data processing functions} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.functions.R} script on \emph{GitHub}.
+In the \emph{code snippet} above, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in \emph{this Section}.
 
 \end{noteblock}
 
+\protect\phantomsection\label{func.magick_img2matrix.args}
+\paragraph{Arguments}\label{arguments-2}
+
+\hfill\break
+
+\protect\phantomsection\label{func.magick_img2matrix.args.img}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{img:} A \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object} (typically processed, resized, or filtered prior to conversion).
+\end{itemize}
+
+\protect\phantomsection\label{func.magick_img2matrix.details}
+\paragraph{Details}\label{details-2}
+
+\hfill\break
+
+Below is the \emph{step-by-step execution flow} of the function:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L486}{Line 482}) \textbf{\emph{Raw Binary Data Extraction:}} The function calls the {[}image\_data{]} function to extract the underlying raw hexadecimal or integer byte-array buffer from the \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object}.
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L487}{(Line 483}) \textbf{\emph{Color Channel Isolation:}}
+  Slices the multidimensional array to isolate the primary color channel matrix. For grayscale or black-and-white pipeline images (as in our case), this captures the single intensity plane.
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L488}{Line 484}) \textbf{\emph{Data Type Conversion:}} Explicitly casts the extracted data array elements from raw/character bytes into a numeric data type, making mathematical operations possible.
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L489}{Line 485}) \textbf{\emph{Min-Max Normalization:}} Divides the entire matrix by 255 (the maximum 8-bit color intensity value) to normalize pixel values into a clean floating-point scale ranging from 0.0 (black/background) to 1.0
+\end{enumerate}
+
+\begin{noteblock}
+This is a utility function used internally by the other user-defined functions, as shown in the usage example above in the \hyperref[func.magick_img2matrix.usage]{Usage} section of \emph{this Description}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.magick_img2matrix.value}
+\paragraph{Value}\label{value-2}
+
+\hfill\break
+
+\protect\phantomsection\label{func.magick_img2matrix.code}
+\paragraph{Source Code}\label{source-code-2}
+
+\hfill\break
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L485}{source code} of the function is shown below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{magick\_img2matrix }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(img)\{}
+\NormalTok{  img.dat }\OtherTok{\textless{}{-}} \FunctionTok{image\_data}\NormalTok{(img)}
+\NormalTok{  mx.bin }\OtherTok{\textless{}{-}}\NormalTok{ img.dat[}\DecValTok{1}\NormalTok{,,]}
+  \FunctionTok{mode}\NormalTok{(mx.bin) }\OtherTok{\textless{}{-}} \StringTok{"numeric"}
+\NormalTok{  mx.bin }\SpecialCharTok{/}\DecValTok{255}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
 \newpage
 
-\printbibliography
+\chapter{-------------------}\label{section}
+
+\printbibliography[title=----------------------]
 
 \end{document}
