@@ -5,21 +5,21 @@
 ### Data Loading
 
 ::: {.noteblock data-latex=""}
-The complete source code of the functions described in this section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L416) script on _GitHub_.
+The complete source code of the functions described in this section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) script on _GitHub_.
 :::
 
-#### [load_image.list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load_image.list}
+#### [load_image.list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80) Function {#func.load_image.list}
 \
 
-Loads image data from the dataset files downloaded from [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) and stored under root directory specified by the [root_path] argument.
+This is a core utility designed to recursively traverse a root directory passed in the [root_path](#func.load_image.list.args.root_path) argument, discover character-specific (or class-specific, in the terms of the project's multiclass classifier models) subfolders, load data from raw image files (downloaded from the [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) platform) using a custom parsing function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument, filter out empty or invalid images, and organize everything into an `R` list object with the corresponding labels and file paths.
 
 ::: { #func.load_image.list.usage .sidebar }
 ##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
 \
 
-```{r func@load_image.list.u, eval=FALSE}
+```{r usage@load_image.list, eval=FALSE}
   train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
-                                        fn.load_image.dat = load.img_trimmed,
+                                        fn.load_image.dat = load.img_trimmed.dat,
                                         folder.list = NULL,
                                         char_files.max = NA,
                                         char_files.seed = NA,
@@ -28,7 +28,7 @@ Loads image data from the dataset files downloaded from [Kaggle](https://www.kag
 ```
 
 ::: {.noteblock data-latex=""}
-In the *code snippet* above, a pointer to the auxiliary function [load.img_trimmed](#func.load.img_trimmed) described below in *this Section* is used as the value of the argument [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat).
+In the *code snippet* above, a pointer to the auxiliary function [load.img_trimmed.dat](#func.load.img_trimmed.dat) described below in *this Section* is used as the value of the argument [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat).
 :::
 :::
 
@@ -37,27 +37,27 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 \
 
 ::: { #func.load_image.list.args.root_path .sidebar }
-- **root_path:** Path to the root directory where image files were downloaded.; 
+- **root_path:** The root directory path containing subfolders of images organized by character recognition classes; 
 
 :::
 ::: { #func.load_image.list.args.fn.load_image.dat .sidebar }
-- **fn.load_image.dat:** Pointer to a helper function that loads a particular image file; 
+- **fn.load_image.dat:** Pointer to a user-defined loading and processing helper function applied to each image file path (e.g., a function to read image matrices or binary arrays); 
 
 :::
 ::: { #func.load_image.list.args.folder.list .sidebar }
-- **folder.list:**  (Optional, *Character*, $NULL$ by default) ; 
+- **folder.list:**  (Optional, *Character*, $NULL$ by default) Vector of specific subfolder names to process. If $NULL$, it defaults to all directories found inside the *root path* passed in the [root_path](#func.load_image.list.args.root_path) argument; 
 
 :::
 ::: { #func.load_image.list.args.char_files.max .sidebar }
-- **char_files.max:**  (Optional, *Integer*, $NA$ by default) ; 
+- **char_files.max:**  (Optional, *Integer*, $NA$ by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing); 
 
 :::
 ::: { #func.load_image.list.args.char_files.seed .sidebar }
-- **char_files.seed:**  (Optional, *Integer*, $NA$ by default) ; 
+- **char_files.seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.load_image.list.args.char_files.max) is specified (ignored otherwise); 
 
 :::
 ::: { #func.load_image.list.args.random_sample .sidebar }
-- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) Boolean ($TRUE/FALSE$) indicating whether files within a folder should be sampled randomly ($TRUE$) or taken sequentially from the top ($FALSE$). 
 
 :::
 :::
@@ -65,6 +65,11 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 ::: { #func.load_image.list.details .sidebar }
 ##### Details
 \
+
+Below is the *step-by-step execution flow* of the function:
+
+1. ([Line 89](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L89)) **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the char_files.max argument), random sampling (depending on the random_sample value), and seed generation (if char_files.seed is not $NA$).
+
 
 :::
 
@@ -78,7 +83,7 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 ##### Source Code
 \
 
-The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) function is shown below:
+The simplified version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80)  function is shown below:
 ```{r func@load_image.list.s, eval=FALSE}
 load_image.list <- function(root_path,
                             fn.load_image.dat,
@@ -86,29 +91,16 @@ load_image.list <- function(root_path,
                             char_files.max = NA,
                             char_files.seed = NA,
                             random_sample = FALSE) {
-  start <- put_start_date()
-  put_log("Function `load_image.list`:
-Getting file path lists...")
+
   img.file_list <- img.file_path.get_list(root_path, 
                                           folder.list,
                                           char_files.max,
                                           char_files.seed,
                                           random_sample)
-  put_log("Function `load_image.list`:
-File path lists have been created. The output list structure:
-%1", capture.output(str(img.file_list)))
-  put_end_date(start)
   
   label_list <- as.factor(names(img.file_list))
-  
-  put_log("Function `load_image.list`:
-Loading image files...")
-  
   img_list <- lapply(img.file_list, function(char.dir){
-    put_log("Function `load_image.list`:
-Loading files from root directory:
-%1...",char.dir$root_path)
-
+    
     img_dat.ls <- map(char.dir$file_path.list, 
                   fn.load_image.dat)
     
@@ -124,17 +116,9 @@ Loading files from root directory:
     
     stopifnot(length(ls$img.list) == length(ls$fpath.list))
 
-    put_log("Function `load_image.list`:
-Completed Loading files from directory:
-%1.",char.dir$root_path)
-    put_end_date(start)
     ls
   })
-  
-  put_log("Function `load_image.list`:
-Image files have been loaded. The output list structure:
-%1", capture.output(str(img_list)))
-  
+
   list(label.list = label_list,
        img.list = img_list)
 }
@@ -148,18 +132,18 @@ The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose
 
 \newpage
 
-#### [load.img_trimmed](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load.img_trimmed}
+#### [load.img_trimmed.dat](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load.img_trimmed.dat}
 \
 
 This is a specialized utility function designed to read an image file, dynamically detect whether it contains nonzero pixel data, optionally trim whitespace or empty borders around the visual features using the [magick package](https://docs.ropensci.org/magick/index.html), and extract its raw data matrix structure.
 
-::: { #func.load.img_trimmed.usage .sidebar }
+::: { #func.load.img_trimmed.dat.usage .sidebar }
 ##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
 \
 
-```{r func@load.img_trimmed.u, eval=FALSE}
+```{r func@load.img_trimmed.dat.u, eval=FALSE}
   train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
-                                        fn.load_image.dat = load.img_trimmed,
+                                        fn.load_image.dat = load.img_trimmed.dat,
                                         folder.list = NULL,
                                         char_files.max = NA,
                                         char_files.seed = NA,
@@ -171,64 +155,152 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 :::
 :::
 
-::: { #func.load.img_trimmed.args .sidebar }
+::: { #func.load.img_trimmed.dat.args .sidebar }
 ##### Arguments
 \
 
-::: { #func.load.img_trimmed.args.file_path .sidebar }
+::: { #func.load.img_trimmed.dat.args.file_path .sidebar }
 - **file_path:** Path to the image file to load. 
 
 :::
 :::
 
-::: { #func.load.img_trimmed.details .sidebar }
+::: { #func.load.img_trimmed.dat.details .sidebar }
 ##### Details
 \
 
 Below is the *step-by-step execution flow* of the function:
 
 1. ([Line 288](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L288)) ***Image Loading:*** The function begins by reading the image file from disk into memory as an object using [magick::image_read](https://docs.ropensci.org/magick/reference/editing.html).
-2. ([Lines 291-294](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L291-L294)) ***Matrix Conversion & Validation:*** Converts the loaded image into a numeric matrix representation using the user-defined helper function [magick_img2matrix] described below in *this Section.
+2. ([Line 289](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L289)) ***Matrix Conversion & Validation:*** Converts the loaded image into a numeric matrix representation using the user-defined helper function [magick_img2matrix](#func.magick_img2matrix) described below in described below in the [Image Processing](#appndx_a@img_proc) section.
 
-3. ([Lines 296-298](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L296-L298) ***Image Validation & Conditional Cropping:*** Evaluates the maximum value of this matrix to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies [magick::image_trim](https://docs.ropensci.org/magick/reference/editing.html) to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
-4. [(Line 300](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L300)) ***Data Extraction:*** Finally, it extracts and returns the underlying raw pixel buffer data using the [magick::image_data](https://docs.ropensci.org/magick/reference/editing.html#details) helper function.
+3. ([Lines 292-294](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L296-L298) ***Image Validation & Conditional Cropping:*** Evaluates the maximum value of this matrix to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies [magick::image_trim](https://docs.ropensci.org/magick/reference/editing.html) to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
+4. [(Line 296](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L300)) ***Data Extraction:*** Finally, it extracts and returns the underlying raw pixel buffer data using the [magick::image_data](https://docs.ropensci.org/magick/reference/editing.html#details) helper function.
 
 ::: {.noteblock data-latex=""}
-..:::
+This is an auxiliary function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function, as shown above in the [Usage](#func.load.img_trimmed.dat.usage) section of *this Description*.
+:::
 :::
 
-::: { #func.load.img_trimmed.value .sidebar }
+::: { #func.load.img_trimmed.dat.value .sidebar }
 ##### Value
 \
 
 :::
 
-::: { #func.load.img_trimmed.code .sidebar }
+::: { #func.load.img_trimmed.dat.code .sidebar }
 ##### Source Code
 \
 
 The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L287) of the function is shown below:
-```{r func@load.img_trimmed.s, eval=FALSE}
-load.img_trimmed <- function(file_path) {
+```{r func@load.img_trimmed.dat.s, eval=FALSE}
+load.img_trimmed.dat <- function(file_path) {
   img <- magick::image_read(file_path)
-  # plot(img)
-  
-  img.trimmed <- as.matrix(c(0))
-  max(img.trimmed)
-  
   img.mx <- magick_img2matrix(img)
-  
+  img.trimmed <- img
+
   if (max(img.mx) > 0) {
     img.trimmed <- image_trim(img)
   }
   
-  magick::image_data(img)
+  magick::image_data(img.trimmed)
 }
 ```
 
 :::
 
 \newpage
+
+### Image Processing {#appndx_a@img_proc}
+
+::: {.noteblock data-latex=""}
+The complete source code of the functions described in this section is available in the the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) script on _GitHub_.
+:::
+
+#### [img.file_path.get_list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) Function {#func.img.file_path.get_list}
+\
+
+
+::: { #func.img.file_path.get_list.usage .sidebar }
+##### [Usage](#L)
+\
+
+```{r data-helper@lXXX, eval=FALSE}
+
+```
+
+::: {.noteblock data-latex=""}
+In the *code snippet* above, *this function* is called internally from the [outer_img.file_path.get_list](#func.outer_img.file_path.get_list) function described above in *this Section*.
+
+In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function described above in *this Section*.
+:::
+:::
+
+::: { #func.img.file_path.get_list.args .sidebar }
+##### Arguments
+\
+
+::: { #func.img.file_path.get_list.args.arg1 .sidebar }
+- **arg1:** ; 
+
+:::
+::: { #func.img.file_path.get_list.args.arg2 .sidebar }
+- **arg2:**  (Optional, *Numeric*, $0$ by default) ; 
+
+:::
+::: { #func.img.file_path.get_list.args.arg3 .sidebar }
+- **arg3:**  (Optional, *Numeric*, $NA$ by default) ; 
+
+:::
+::: { #func.img.file_path.get_list.args.arg4 .sidebar }
+- **arg4:**  (Optional, *Integer*, $NA$ by default) ; 
+
+:::
+::: { #func.img.file_path.get_list.args.arg5 .sidebar }
+- **arg5:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+
+:::
+::: { #func.img.file_path.get_list.args.arg6 .sidebar }
+- **arg6:**  (Optional, *Character*, $NULL$ by default) ; 
+
+:::
+:::
+
+::: { #func.img.file_path.get_list.details .sidebar }
+##### Details
+\
+
+
+::: {.noteblock data-latex=""}
+This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.img.file_path.get_list.usage) section of *this Description*.
+:::
+:::
+
+::: { #func.img.file_path.get_list.value .sidebar }
+##### Value
+\
+
+:::
+
+::: { #func.img.file_path.get_list.code .sidebar }
+##### Source Code
+\
+
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) of the function is shown below:
+```{r src@img.file_path.get_list eval=FALSE}
+
+```
+
+::: {.noteblock data-latex=""}
+The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+:::
+:::
+
+\newpage
+
+
+
+
 
 #### [magick_img2matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) Function {#func.}
 \
@@ -245,7 +317,7 @@ img.mx <- magick_img2matrix(img)
 ```
 
 ::: {.noteblock data-latex=""}
-In the *code snippet* above, *this function* is called internally from the [load.img_trimmed](#func.load.img_trimmed) function described above in *this Section*.
+In the *code snippet* above, *this function* is called internally from the [load.img_trimmed.dat](#func.load.img_trimmed.dat) function described above in *this Section*.
 :::
 :::
 
@@ -265,11 +337,11 @@ In the *code snippet* above, *this function* is called internally from the [load
 
 Below is the *step-by-step execution flow* of the function:
 
-1. ([Line 486](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L486)) ***Raw Binary Data Extraction:*** The function calls the [image_data] function to extract the underlying raw hexadecimal or integer byte-array buffer from the [Magick Image object](https://docs.ropensci.org/magick/reference/editing.html#details).
-2. [(Line 487](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L487)) ***Color Channel Isolation:***
+1. ([Line 482](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L486)) ***Raw Binary Data Extraction:*** The function calls the [image_data] function to extract the underlying raw hexadecimal or integer byte-array buffer from the [Magick Image object](https://docs.ropensci.org/magick/reference/editing.html#details).
+2. [(Line 483](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L487)) ***Color Channel Isolation:***
 Slices the multidimensional array to isolate the primary color channel matrix. For grayscale or black-and-white pipeline images (as in our case), this captures the single intensity plane.
-3. ([Line 488](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L488)) ***Data Type Conversion:*** Explicitly casts the extracted data array elements from raw/character bytes into a numeric data type, making mathematical operations possible.
-4. ([Line 489](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L489)) ***Min-Max Normalization:*** Divides the entire matrix by 255 (the maximum 8-bit color intensity value) to normalize pixel values into a clean floating-point scale ranging from 0.0 (black/background) to 1.0 
+3. ([Line 484](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L488)) ***Data Type Conversion:*** Explicitly casts the extracted data array elements from raw/character bytes into a numeric data type, making mathematical operations possible.
+4. ([Line 485](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L489)) ***Min-Max Normalization:*** Divides the entire matrix by 255 (the maximum 8-bit color intensity value) to normalize pixel values into a clean floating-point scale ranging from 0.0 (black/background) to 1.0 
 
 ::: {.noteblock data-latex=""}
 This is a utility function used internally by the other user-defined functions, as shown in the usage example above in the [Usage](#func.magick_img2matrix.usage) section of *this Description*.
@@ -294,7 +366,6 @@ magick_img2matrix <- function(img){
   mode(mx.bin) <- "numeric"
   mx.bin /255
 }
-
 ```
 
 :::

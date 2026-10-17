@@ -13,7 +13,7 @@ if (!file.exists(train.img_dat.list.file)) {
 stored in the following root directory: %1,
 Please wait...", img.train_root.dir)
   train.img_dat.list <- load_image.list(img.train_root.dir,
-                                            load.img_trimmed)
+                                            load.img_trimmed.dat)
   
   put_log("The Trimmed Image list has been created with the following structure:
 %1", capture.output(str(train.img_dat.list)))

@@ -77,6 +77,7 @@ The `%1` object exists.", object.name)
   }
 }
 
+#' Obsolete: refactored in new version of the `data-helper.R` script
 image.load_bin.shape28x28 <- function(file_path) {
   img0 <- magick::image_read(file_path)
   # plot(img0)

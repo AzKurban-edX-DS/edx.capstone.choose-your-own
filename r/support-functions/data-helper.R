@@ -284,20 +284,16 @@ image.load_bin.shape28x28 <- function(file_path) {
   }
 }
 
-load.img_trimmed <- function(file_path) {
+load.img_trimmed.dat <- function(file_path) {
   img <- magick::image_read(file_path)
-  # plot(img)
-  
-  img.trimmed <- as.matrix(c(0))
-  max(img.trimmed)
-  
   img.mx <- magick_img2matrix(img)
-  
+  img.trimmed <- img
+
   if (max(img.mx) > 0) {
     img.trimmed <- image_trim(img)
   }
   
-  magick::image_data(img)
+  magick::image_data(img.trimmed)
 }
 
 load_datasets <- function(backup.file) {
@@ -420,6 +416,7 @@ The Final Test 28x28 Image Data Set structure:
        files = ds.test$files,
        class_groups = class_groups)
 }
+
 ## Image Processing ------------------------------------------------------------
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 
