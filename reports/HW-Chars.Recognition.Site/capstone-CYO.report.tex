@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-17}
+\date{2026-10-18}
 
 \begin{document}
 \maketitle
@@ -565,7 +565,7 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 \subsection{Data Loading}\label{data-loading}
 
 \begin{noteblock}
-The complete source code of the functions described in this section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L416}{Data loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L416}{data-helper.R} script on \emph{GitHub}.
+The complete source code of the functions described in this section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{Data loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{data-helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
 
@@ -652,9 +652,23 @@ Below is the \emph{step-by-step execution flow} of the function:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
-  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L89}{Line 89}) \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the char\_files.max argument), random sampling (depending on the random\_sample value), and seed generation (if char\_files.seed is not \(NA\)).
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L89}{Line 89}) \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.char_files.seed]{char\_files.seed} argument value is not \(NA\)).
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L99}{Line 99}) \textbf{Label Generation:} Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L104-L117}{Lines 104-117}) \textbf{Iterative processing of class directories:} Iterates through each directory, performing the following operations:
+
+  \begin{enumerate}
+  \def\labelenumii{\alph{enumii})}
+  \tightlist
+  \item
+    (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L109-L110}{Lines 109-110}) \textbf{Batch Loading:} Calls the custom loader function (the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument) using the \href{https://www.rdocumentation.org/packages/purrr/versions/1.2.0/topics/map}{map} \texttt{R} function across all file paths in the folder.
+  \item
+    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L112-L116}{(Lines 112-116}, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L119-L120}{119-120}) \textbf{Data Validation \& Filtering:} Evaluates a validity check on the loaded image data. Specifically, it checks that the binary matrix elements sum to greater than zero, effectively filtering out blank, corrupt, or unreadable images.
+  \end{enumerate}
+\item
+  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L122}{Line 122}) \textbf{Consistency Checks:} Enforces a safety assertion to ensure that the filtered image list length strictly matches the corresponding filtered file path list length.
 \end{enumerate}
 
 \protect\phantomsection\label{func.load_image.list.value}
@@ -662,12 +676,16 @@ Below is the \emph{step-by-step execution flow} of the function:
 
 \hfill\break
 
+Structured list containing two primary components:
+1. \emph{Label list:} A factor of \emph{class labels};
+2. \emph{Image list:} A nested list mapping each \emph{class folder} to its valid loaded \emph{image data} and corresponding \emph{file paths}.
+
 \protect\phantomsection\label{func.load_image.list.code}
 \paragraph{Source Code}\label{source-code}
 
 \hfill\break
 
-The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{} function is shown below:
+The simplified version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L80}{source code} function is shown below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -677,29 +695,16 @@ The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.cho
                             \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
                             \AttributeTok{char\_files.seed =} \ConstantTok{NA}\NormalTok{,}
                             \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{) \{}
-\NormalTok{  start }\OtherTok{\textless{}{-}} \FunctionTok{put\_start\_date}\NormalTok{()}
-  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
-\StringTok{Getting file path lists..."}\NormalTok{)}
+
 \NormalTok{  img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file\_path.get\_list}\NormalTok{(root\_path, }
 \NormalTok{                                          folder.list,}
 \NormalTok{                                          char\_files.max,}
 \NormalTok{                                          char\_files.seed,}
 \NormalTok{                                          random\_sample)}
-  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
-\StringTok{File path lists have been created. The output list structure:}
-\StringTok{\%1"}\NormalTok{, }\FunctionTok{capture.output}\NormalTok{(}\FunctionTok{str}\NormalTok{(img.file\_list)))}
-  \FunctionTok{put\_end\_date}\NormalTok{(start)}
   
 \NormalTok{  label\_list }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(}\FunctionTok{names}\NormalTok{(img.file\_list))}
-  
-  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
-\StringTok{Loading image files..."}\NormalTok{)}
-  
 \NormalTok{  img\_list }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(img.file\_list, }\ControlFlowTok{function}\NormalTok{(char.dir)\{}
-    \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
-\StringTok{Loading files from root directory:}
-\StringTok{\%1..."}\NormalTok{,char.dir}\SpecialCharTok{$}\NormalTok{root\_path)}
-
+    
 \NormalTok{    img\_dat.ls }\OtherTok{\textless{}{-}} \FunctionTok{map}\NormalTok{(char.dir}\SpecialCharTok{$}\NormalTok{file\_path.list, }
 \NormalTok{                  fn.load\_image.dat)}
     
@@ -715,17 +720,9 @@ The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.cho
     
     \FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{length}\NormalTok{(ls}\SpecialCharTok{$}\NormalTok{img.list) }\SpecialCharTok{==} \FunctionTok{length}\NormalTok{(ls}\SpecialCharTok{$}\NormalTok{fpath.list))}
 
-    \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
-\StringTok{Completed Loading files from directory:}
-\StringTok{\%1."}\NormalTok{,char.dir}\SpecialCharTok{$}\NormalTok{root\_path)}
-    \FunctionTok{put\_end\_date}\NormalTok{(start)}
 \NormalTok{    ls}
 \NormalTok{  \})}
-  
-  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
-\StringTok{Image files have been loaded. The output list structure:}
-\StringTok{\%1"}\NormalTok{, }\FunctionTok{capture.output}\NormalTok{(}\FunctionTok{str}\NormalTok{(img\_list)))}
-  
+
   \FunctionTok{list}\NormalTok{(}\AttributeTok{label.list =}\NormalTok{ label\_list,}
        \AttributeTok{img.list =}\NormalTok{ img\_list)}
 \NormalTok{\}}
@@ -834,6 +831,103 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 
 \subsection{\texorpdfstring{Image Processing \{\#\href{mailto:appndx_a@img}{\nolinkurl{appndx\_a@img}}\_proc\}}{Image Processing \{\#appndx\_a@img\_proc\}}}\label{image-processing-appndx_aimg_proc}
 
+\begin{noteblock}
+The complete source code of the functions described in this section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{Image Processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{data-helper.R} script on \emph{GitHub}.
+
+\end{noteblock}
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L421}{img.file\_path.get\_list} Function}{img.file\_path.get\_list Function}}\label{func.img.file_path.get_list}
+
+\hfill\break
+
+\protect\phantomsection\label{func.img.file_path.get_list.usage}
+\paragraph{\texorpdfstring{\hyperref[L]{Usage}}{Usage}}\label{usage-2}
+
+\hfill\break
+
+\begin{noteblock}
+In the \emph{code snippet} above, \emph{this function} is called internally from the \hyperref[func.outer_img.file_path.get_list]{outer\_img.file\_path.get\_list} function described above in \emph{this Section}.
+
+In the \emph{code snippet} above, a pointer to \emph{this function} is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function described above in \emph{this Section}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.img.file_path.get_list.args}
+\paragraph{Arguments}\label{arguments-2}
+
+\hfill\break
+
+\protect\phantomsection\label{func.img.file_path.get_list.args.arg1}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg1:} ;
+\end{itemize}
+
+\protect\phantomsection\label{func.img.file_path.get_list.args.arg2}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg2:} (Optional, \emph{Numeric}, \(0\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.img.file_path.get_list.args.arg3}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg3:} (Optional, \emph{Numeric}, \(NA\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.img.file_path.get_list.args.arg4}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg4:} (Optional, \emph{Integer}, \(NA\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.img.file_path.get_list.args.arg5}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg5:} (Optional, \emph{Boolean}, \(FALSE\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.img.file_path.get_list.args.arg6}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg6:} (Optional, \emph{Character}, \(NULL\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.img.file_path.get_list.details}
+\paragraph{Details}\label{details-2}
+
+\hfill\break
+
+\begin{noteblock}
+This is an auxiliary function that is used internally in the \hyperref[]{} function as shown above in the \hyperref[func.img.file_path.get_list.usage]{Usage} section of \emph{this Description}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.img.file_path.get_list.value}
+\paragraph{Value}\label{value-2}
+
+\hfill\break
+
+\protect\phantomsection\label{func.img.file_path.get_list.code}
+\paragraph{Source Code}\label{source-code-2}
+
+\hfill\break
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L421}{source code} of the function is shown below:
+
+\begin{noteblock}
+The source code of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L4}{} function is also available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Data processing functions} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.functions.R} script on \emph{GitHub}.
+
+\end{noteblock}
+
+\newpage
+
 \subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L485}{magick\_img2matrix} Function}{magick\_img2matrix Function}}\label{func.}
 
 \hfill\break
@@ -841,7 +935,7 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 This is a lightweight utility that converts a \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object} into a \emph{normalized numeric matrix of pixel intensities}.
 
 \protect\phantomsection\label{func.magick_img2matrix.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L294}{Usage}}{Usage}}\label{usage-2}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L294}{Usage}}{Usage}}\label{usage-3}
 
 \hfill\break
 
@@ -857,7 +951,7 @@ In the \emph{code snippet} above, \emph{this function} is called internally from
 \end{noteblock}
 
 \protect\phantomsection\label{func.magick_img2matrix.args}
-\paragraph{Arguments}\label{arguments-2}
+\paragraph{Arguments}\label{arguments-3}
 
 \hfill\break
 
@@ -869,7 +963,7 @@ In the \emph{code snippet} above, \emph{this function} is called internally from
 \end{itemize}
 
 \protect\phantomsection\label{func.magick_img2matrix.details}
-\paragraph{Details}\label{details-2}
+\paragraph{Details}\label{details-3}
 
 \hfill\break
 
@@ -895,12 +989,12 @@ This is a utility function used internally by the other user-defined functions, 
 \end{noteblock}
 
 \protect\phantomsection\label{func.magick_img2matrix.value}
-\paragraph{Value}\label{value-2}
+\paragraph{Value}\label{value-3}
 
 \hfill\break
 
 \protect\phantomsection\label{func.magick_img2matrix.code}
-\paragraph{Source Code}\label{source-code-2}
+\paragraph{Source Code}\label{source-code-3}
 
 \hfill\break
 

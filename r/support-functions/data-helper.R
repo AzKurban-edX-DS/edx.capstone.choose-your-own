@@ -2,7 +2,7 @@
 # Data Helper Functions 
 #%%%%%%%%%%%%%%%%%%%%%%%
 
-## Data loading ----------------------------------------------------------------
+## Data Loading ----------------------------------------------------------------
 kaggle_cli.download <- function(dataset.dir, data.local_path, unzip = FALSE) {
   if (system("kaggle --version", ignore.stdout = TRUE, ignore.stderr = TRUE) != 0) {
     stop("Kaggle CLI is not installed or not in the PATH.")
@@ -424,9 +424,12 @@ img.file_path.get_list <- function(root_path,
                                    seed = NA,
                                    random_sample = FALSE) {
   if(is.null(folder.list))
+    # Scans the root path to find all available subfolders.
     folder.list <- dir(root_path)
 
+  
   path_list <- lapply(folder.list, function(folder_name){
+    # Constructs the full path and retrieves all file paths for the given folder name.
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
@@ -439,14 +442,22 @@ Getting file path list from the following char's root folders:
     
     fpath.len <- length(fpath.list)
 
+    # If the number of files is limited and 
+    # the total number of files in the folder exceeds the limit
     if(!is.na(char_files.max) && fpath.len > char_files.max){
+      
+      # If a seed is provided.
       if (!is.na(seed)) {
+        # Applies a reproducibility seed offset by the folder's index
         set.seed(seed + folder.idx)
       }
       
+      
       if(random_sample) {
+        # Samples the files randomly
         file.idx <- sample(fpath.len, size = char_files.max)
       } else {
+        # Select the top file according to the specified limit.
         file.idx <- seq_len(char_files.max)
       }
       
