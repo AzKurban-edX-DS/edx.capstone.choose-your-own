@@ -18,6 +18,135 @@ kaggle_cli.download <- function(dataset.dir, data.local_path, unzip = FALSE) {
   }
 }
 
+load_image.list <- function(root_path,
+                            fn.load_image.dat,
+                            folder.list = NULL, 
+                            char_files.max = NA,
+                            char_files.seed = NA,
+                            random_sample = FALSE) {
+  start <- put_start_date()
+  put_log("Function `load_image.list`:
+Getting file path lists...")
+  
+  #'Gather a structured list of file paths from each target subfolder, 
+  #'applying optional maximum limits, random sampling, and seed generation. 
+  img.file_list <- img.file_path.get_list(root_path, 
+                                          folder.list,
+                                          char_files.max,
+                                          char_files.seed,
+                                          random_sample)
+  put_log("Function `load_image.list`:
+File path lists have been created. The output list structure:
+%1", capture.output(str(img.file_list)))
+  put_end_date(start)
+  
+  #' Extracts directory names from the file path list 
+  #' and converts them into a factor to serve as classification labels.
+  label_list <- as.factor(names(img.file_list))
+  
+  put_log("Function `load_image.list`:
+Loading image files...")
+  
+  # Load structured image data list
+  img_list <- lapply(img.file_list, function(char.dir){
+    put_log("Function `load_image.list`:
+Loading files from root directory:
+%1...",char.dir$root_path)
+
+    #' Batch Loading using the custom loader function `fn.load_image.dat`.
+    img_dat.ls <- map(char.dir$file_path.list, 
+                  fn.load_image.dat)
+    
+    #' Evaluates a validity check on the loaded image data, 
+    #' effectively filtering out blank, corrupt, or unreadable images.
+    valid.idx <- sapply(img_dat.ls, function(img.dat){
+      mx.bin <- img.dat[1,,]
+      mode(mx.bin) <- "numeric"
+      
+      sum(mx.bin) > 0
+    })
+    
+    ls <- list(img.list = img_dat.ls[valid.idx], 
+               fpath.list = char.dir$file_path.list[valid.idx])
+    
+    #' Ensures that the filtered image list length strictly matches 
+    #' the corresponding filtered file path list length.
+    stopifnot(length(ls$img.list) == length(ls$fpath.list))
+
+    put_log("Function `load_image.list`:
+Completed Loading files from directory:
+%1.",char.dir$root_path)
+    put_end_date(start)
+    ls
+  })
+  
+  put_log("Function `load_image.list`:
+Image files have been loaded. The output list structure:
+%1", capture.output(str(img_list)))
+  
+  list(label.list = label_list,
+       img.list = img_list)
+}
+
+img.file_path.get_list <- function(root_path, 
+                                   folder.list = NULL, 
+                                   char_files.max = NA,
+                                   seed = NA,
+                                   random_sample = FALSE) {
+  if(is.null(folder.list))
+    # Scans the root path to find all available subfolders.
+    folder.list <- dir(root_path)
+  
+  # Generates a file path list
+  path_list <- lapply(folder.list, function(folder_name){
+    # Constructs the full path and retrieves all file paths for the given folder name.
+    file.root_path <- file.path(root_path, folder_name)
+    folder.idx <- which(folder.list == folder_name)
+    
+    put_log("Function: `img.file_path.get_list`:
+Getting file path list from the following char's root folders:
+%1", file.root_path)
+    
+    fpath.list <- list.files(file.root_path, 
+                             full.names = TRUE)
+    
+    fpath.len <- length(fpath.list)
+    
+    # If the number of files is limited and 
+    # the total number of files in the folder exceeds the limit
+    if(!is.na(char_files.max) && fpath.len > char_files.max){
+      
+      # If a seed is provided.
+      if (!is.na(seed)) {
+        # Applies a reproducibility seed offset by the folder's index
+        set.seed(seed + folder.idx)
+      }
+      
+      
+      if(random_sample) {
+        # Samples the files randomly
+        file.idx <- sample(fpath.len, size = char_files.max)
+      } else {
+        # Selects the top file according to the specified limit.
+        file.idx <- seq_len(char_files.max)
+      }
+      
+      fpath.list <- fpath.list[file.idx]
+    }
+    
+    put_log("Function: `img.file_path.get_list`:
+%1 files in folder: %2", length(fpath.list), folder_name)
+    
+    list(root_path = file.root_path,
+         file_path.list = fpath.list)
+  })
+  
+  # Shortens the name of each list item to the first character of the folder name..
+  names(path_list) <- folder.list |> substr(1,1)
+  path_list
+}
+
+
 load.img28x28bin.list <- function(file) {
   if(!file.exists(file)) {
     stop("Function `load.img28x28bin.list`:
@@ -76,66 +205,6 @@ Checking for object existence: `%1`", object.name)
 The `%1` object exists.", object.name)
   }
 }
-
-load_image.list <- function(root_path,
-                            fn.load_image.dat,
-                            folder.list = NULL, 
-                            char_files.max = NA,
-                            char_files.seed = NA,
-                            random_sample = FALSE) {
-  start <- put_start_date()
-  put_log("Function `load_image.list`:
-Getting file path lists...")
-  img.file_list <- img.file_path.get_list(root_path, 
-                                          folder.list,
-                                          char_files.max,
-                                          char_files.seed,
-                                          random_sample)
-  put_log("Function `load_image.list`:
-File path lists have been created. The output list structure:
-%1", capture.output(str(img.file_list)))
-  put_end_date(start)
-  
-  label_list <- as.factor(names(img.file_list))
-  
-  put_log("Function `load_image.list`:
-Loading image files...")
-  
-  img_list <- lapply(img.file_list, function(char.dir){
-    put_log("Function `load_image.list`:
-Loading files from root directory:
-%1...",char.dir$root_path)
-
-    img_dat.ls <- map(char.dir$file_path.list, 
-                  fn.load_image.dat)
-    
-    valid.idx <- sapply(img_dat.ls, function(img.dat){
-      mx.bin <- img.dat[1,,]
-      mode(mx.bin) <- "numeric"
-      
-      sum(mx.bin) > 0
-    })
-    
-    ls <- list(img.list = img_dat.ls[valid.idx], 
-               fpath.list = char.dir$file_path.list[valid.idx])
-    
-    stopifnot(length(ls$img.list) == length(ls$fpath.list))
-
-    put_log("Function `load_image.list`:
-Completed Loading files from directory:
-%1.",char.dir$root_path)
-    put_end_date(start)
-    ls
-  })
-  
-  put_log("Function `load_image.list`:
-Image files have been loaded. The output list structure:
-%1", capture.output(str(img_list)))
-  
-  list(label.list = label_list,
-       img.list = img_list)
-}
-
 
 img.load.bin28x28mx.list <- function(img_dat.list.file,
                                      random_sample = FALSE) {
@@ -285,14 +354,21 @@ image.load_bin.shape28x28 <- function(file_path) {
 }
 
 load.img_trimmed.dat <- function(file_path) {
+  # Reads the image file from disk
   img <- magick::image_read(file_path)
+  
+  # Converts the loaded image into a numeric matrix representation
   img.mx <- magick_img2matrix(img)
+  
   img.trimmed <- img
 
+  #' Evaluates the matrix's maximum value to check 
+  #' whether the image is entirely blank or empty.
   if (max(img.mx) > 0) {
     img.trimmed <- image_trim(img)
   }
   
+  # Extracts and returns the underlying raw pixel buffer data.
   magick::image_data(img.trimmed)
 }
 
@@ -418,63 +494,6 @@ The Final Test 28x28 Image Data Set structure:
 }
 
 ## Image Processing ------------------------------------------------------------
-img.file_path.get_list <- function(root_path, 
-                                   folder.list = NULL, 
-                                   char_files.max = NA,
-                                   seed = NA,
-                                   random_sample = FALSE) {
-  if(is.null(folder.list))
-    # Scans the root path to find all available subfolders.
-    folder.list <- dir(root_path)
-
-  
-  path_list <- lapply(folder.list, function(folder_name){
-    # Constructs the full path and retrieves all file paths for the given folder name.
-    file.root_path <- file.path(root_path, folder_name)
-    folder.idx <- which(folder.list == folder_name)
-    
-    put_log("Function: `img.file_path.get_list`:
-Getting file path list from the following char's root folders:
-%1", file.root_path)
-
-    fpath.list <- list.files(file.root_path, 
-                             full.names = TRUE)
-    
-    fpath.len <- length(fpath.list)
-
-    # If the number of files is limited and 
-    # the total number of files in the folder exceeds the limit
-    if(!is.na(char_files.max) && fpath.len > char_files.max){
-      
-      # If a seed is provided.
-      if (!is.na(seed)) {
-        # Applies a reproducibility seed offset by the folder's index
-        set.seed(seed + folder.idx)
-      }
-      
-      
-      if(random_sample) {
-        # Samples the files randomly
-        file.idx <- sample(fpath.len, size = char_files.max)
-      } else {
-        # Select the top file according to the specified limit.
-        file.idx <- seq_len(char_files.max)
-      }
-      
-      fpath.list <- fpath.list[file.idx]
-    }
-    
-    put_log("Function: `img.file_path.get_list`:
-%1 files in folder: %2", length(fpath.list), folder_name)
-
-    list(root_path = file.root_path,
-         file_path.list = fpath.list)
-  })
-  
-  names(path_list) <- folder.list |> substr(1,1)
-  path_list
-}
-
 as.vector.cimg <- function(cimg) {
   as.vector(cimg[,,1,1])
 }

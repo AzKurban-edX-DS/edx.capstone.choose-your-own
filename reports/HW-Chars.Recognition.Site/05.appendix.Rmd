@@ -68,15 +68,15 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 
 Below is the *step-by-step execution flow* of the function:
 
-1. ([Line 89](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L89)) **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the [char_files.max](#func.load_image.list.args.char_files.max) argument), random sampling (depending on the value passed in the [random_sample](#func.load_image.list.args.random_sample) argument), and seed generation (if the [char_files.seed](#func.load_image.list.args.char_files.seed) argument value is not $NA$).
+1. **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the [char_files.max](#func.load_image.list.args.char_files.max) argument), random sampling (depending on the value passed in the [random_sample](#func.load_image.list.args.random_sample) argument), and seed generation (if the [char_files.seed](#func.load_image.list.args.char_files.seed) argument value is not $NA$).
 
-2. ([Line 99](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L99)) **Label Generation:** Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
+2. **Label Generation:** Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
 
-3. ([Lines 104-117](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L104-L117)) **Iterative processing of class directories:** Iterates through each directory, performing the following operations:
-    a) ([Lines 109-110](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L109-L110)) **Batch Loading:** Calls the custom loader function (the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument) using the [map](https://www.rdocumentation.org/packages/purrr/versions/1.2.0/topics/map) `R` function across all file paths in the folder.
-    b) [(Lines 112-116](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L112-L116), [119-120](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L119-L120)) **Data Validation & Filtering:** Evaluates a validity check on the loaded image data. Specifically, it checks that the binary matrix elements sum to greater than zero, effectively filtering out blank, corrupt, or unreadable images.
+3. **Iterative processing of class directories:** Iterates through each directory, performing the following operations:
+    a) **Batch Loading:** Calls the custom loader function (the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument) using the [map](https://www.rdocumentation.org/packages/purrr/versions/1.2.0/topics/map) `R` function across all file paths in the folder.
+    b) **Data Validation & Filtering:** Evaluates a validity check on the loaded image data. Specifically, it checks that the binary matrix elements sum to greater than zero, effectively filtering out blank, corrupt, or unreadable images.
 
-4. ([Line 122](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L122)) **Consistency Checks:** Enforces a safety assertion to ensure that the filtered image list length strictly matches the corresponding filtered file path list length.
+4. **Consistency Checks:** Enforces a safety assertion to ensure that the filtered image list length strictly matches the corresponding filtered file path list length.
 
 :::
 
@@ -143,10 +143,155 @@ The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose
 
 \newpage
 
+#### [img.file_path.get_list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) Function {#func.img.file_path.get_list}
+\
+
+This function traverses *image directories*, collects *file paths* grouped by *folder* (representing *class labels*), and optionally limits, seeds, or randomly samples files for *dataset preparation*.
+
+::: { #func.img.file_path.get_list.usage .sidebar }
+##### [Usage](#L)
+\
+
+```{r data-helper@lXXX, eval=FALSE}
+
+```
+
+::: {.noteblock data-latex=""}
+In the *code snippet* above, *this function* is called internally from the [outer_img.file_path.get_list](#func.outer_img.file_path.get_list) function described above in *this Section*.
+
+In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.img.file_path.get_list.args.fn.load_image.dat) argument to the [img.file_path.get_list](#func.img.file_path.get_list) function described above in *this Section*.
+:::
+:::
+
+::: { #func.img.file_path.get_list.args .sidebar }
+##### Arguments
+\
+
+::: { #func.img.file_path.get_list.args.root_path .sidebar }
+- **root_path:** The root directory path containing subfolders of images organized by character recognition classes; 
+
+:::
+::: { #func.img.file_path.get_list.args.folder.list .sidebar }
+- **folder.list:**  (Optional, *Character*, $NULL$ by default) Vector of specific subfolder names to process. If $NULL$, it defaults to all directories found inside the *root path* passed in the [root_path](#func.img.file_path.get_list.args.root_path) argument; 
+
+:::
+::: { #func.img.file_path.get_list.args.char_files.max .sidebar }
+- **char_files.max:**  (Optional, *Integer*, $NA$ by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing); 
+
+:::
+::: { #func.img.file_path.get_list.args.char_files.seed .sidebar }
+- **char_files.seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.img.file_path.get_list.args.char_files.max) is specified (ignored otherwise); 
+
+:::
+::: { #func.img.file_path.get_list.args.random_sample .sidebar }
+- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) Boolean ($TRUE/FALSE$) indicating whether files within a folder should be sampled randomly ($TRUE$) or taken sequentially from the top ($FALSE$). 
+
+:::
+:::
+
+::: { #func.img.file_path.get_list.details .sidebar }
+##### Details
+\
+
+Below is the *step-by-step execution flow* of the function:
+
+1. **Subfolder Discovery:** If the [folder.list](#) argument value is $NULL$ (the *folder list* is not provided), the function retrieves all subdirectory names inside the *root directory* (using the path passed in the [root_path](#) argument) and uses them as the *folder list* for further processing. Otherwise, the [folder.list](#) value is used.
+
+2. **File Path Collection:** Next, it iterates through the *folder list* determined in the previous step, constructs the *full path* for each folder, and retrieves all file paths in that folder.
+
+3. Capping and Sampling: If the value for the [char_files.max] argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value. 
+  1. In the latter case, further processing depends on the value of the [random_sample] argument. If it is TRUE, a sample of the size provided in the [char_files.max] argument is taken using a reproducibility seed offset by the folder's index if a seed is provided (the value of the [seed] argument is not $NA$). Otherwise, a top list of the size provided in the [char_files.max] argument is selected.
+  2. Otherwise, the full list of file paths obtained in the previous step is used for the final result.
+
+
+
+::: {.noteblock data-latex=""}
+This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.img.file_path.get_list.usage) section of *this Description*.
+:::
+:::
+
+::: { #func.img.file_path.get_list.value .sidebar }
+##### Value
+\
+
+A named nested list where each element represents a subfolder, containing its root path and the file path list.
+:::
+
+::: { #func.img.file_path.get_list.code .sidebar }
+##### Source Code
+\
+
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) of the function is shown below:
+```{r src@img.file_path.get_list, eval=FALSE}
+img.file_path.get_list <- function(root_path, 
+                                   folder.list = NULL, 
+                                   char_files.max = NA,
+                                   seed = NA,
+                                   random_sample = FALSE) {
+  if(is.null(folder.list))
+    # Scans the root path to find all available subfolders.
+    folder.list <- dir(root_path)
+
+  # Generates a file path list
+  path_list <- lapply(folder.list, function(folder_name){
+    # Constructs the full path and retrieves all file paths for the given folder name.
+    file.root_path <- file.path(root_path, folder_name)
+    folder.idx <- which(folder.list == folder_name)
+    
+    put_log("Function: `img.file_path.get_list`:
+Getting file path list from the following char's root folders:
+%1", file.root_path)
+
+    fpath.list <- list.files(file.root_path, 
+                             full.names = TRUE)
+    
+    fpath.len <- length(fpath.list)
+
+    # If the number of files is limited and 
+    # the total number of files in the folder exceeds the limit
+    if(!is.na(char_files.max) && fpath.len > char_files.max){
+      
+      # If a seed is provided.
+      if (!is.na(seed)) {
+        # Applies a reproducibility seed offset by the folder's index
+        set.seed(seed + folder.idx)
+      }
+      
+      
+      if(random_sample) {
+        # Samples the files randomly
+        file.idx <- sample(fpath.len, size = char_files.max)
+      } else {
+        # Selects the top file according to the specified limit.
+        file.idx <- seq_len(char_files.max)
+      }
+      
+      fpath.list <- fpath.list[file.idx]
+    }
+    
+    put_log("Function: `img.file_path.get_list`:
+%1 files in folder: %2", length(fpath.list), folder_name)
+
+    list(root_path = file.root_path,
+         file_path.list = fpath.list)
+  })
+  
+  # Shortens the name of each list item to the first character of the folder name..
+  names(path_list) <- folder.list |> substr(1,1)
+  path_list
+}
+```
+
+\newpage
+
+
+
+
+
 #### [load.img_trimmed.dat](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load.img_trimmed.dat}
 \
 
-This is a specialized utility function designed to read an image file, dynamically detect whether it contains nonzero pixel data, optionally trim whitespace or empty borders around the visual features using the [magick package](https://docs.ropensci.org/magick/index.html), and extract its raw data matrix structure.
+This specialized utility function reads an image file, dynamically detects whether it contains nonzero pixel data, optionally trims whitespace or empty borders around the visual features using the [magick package](https://docs.ropensci.org/magick/index.html), and extracts its raw data matrix structure.
 
 ::: { #func.load.img_trimmed.dat.usage .sidebar }
 ##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
@@ -182,11 +327,13 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 
 Below is the *step-by-step execution flow* of the function:
 
-1. ([Line 288](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L288)) ***Image Loading:*** The function begins by reading the image file from disk into memory as an object using [magick::image_read](https://docs.ropensci.org/magick/reference/editing.html).
-2. ([Line 289](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L289)) ***Matrix Conversion & Validation:*** Converts the loaded image into a numeric matrix representation using the user-defined helper function [magick_img2matrix](#func.magick_img2matrix) described below in described below in the [Image Processing](#appndx_a@img_proc) section.
+1. ***Image Loading:*** The function begins by reading the image file from disk into memory as an object using [magick::image_read](https://docs.ropensci.org/magick/reference/editing.html).
 
-3. ([Lines 292-294](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L296-L298) ***Image Validation & Conditional Cropping:*** Evaluates the maximum value of this matrix to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies [magick::image_trim](https://docs.ropensci.org/magick/reference/editing.html) to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
-4. [(Line 296](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L300)) ***Data Extraction:*** Finally, it extracts and returns the underlying raw pixel buffer data using the [magick::image_data](https://docs.ropensci.org/magick/reference/editing.html#details) helper function.
+2. ***Matrix Conversion & Validation:*** Converts the loaded image into a numeric matrix representation using the user-defined helper function [magick_img2matrix](#func.magick_img2matrix) described below in described below in the [Image Processing](#appndx_a@img_proc) section.
+
+3. ***Image Validation & Conditional Cropping:*** Evaluates the matrix's maximum value to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies [magick::image_trim](https://docs.ropensci.org/magick/reference/editing.html) to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
+
+4. ***Data Extraction:*** Finally, it extracts and returns the underlying raw pixel buffer data using the [magick::image_data](https://docs.ropensci.org/magick/reference/editing.html#details) helper function.
 
 ::: {.noteblock data-latex=""}
 This is an auxiliary function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function, as shown above in the [Usage](#func.load.img_trimmed.dat.usage) section of *this Description*.
@@ -227,92 +374,6 @@ load.img_trimmed.dat <- function(file_path) {
 ::: {.noteblock data-latex=""}
 The complete source code of the functions described in this section is available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) script on _GitHub_.
 :::
-
-#### [img.file_path.get_list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) Function {#func.img.file_path.get_list}
-\
-
-This function traverses *image directories*, collects *file paths* grouped by *folder* (representing *class labels*), and optionally limits, seeds, or randomly samples files for *dataset preparation*.
-
-::: { #func.img.file_path.get_list.usage .sidebar }
-##### [Usage](#L)
-\
-
-```{r data-helper@lXXX, eval=FALSE}
-
-```
-
-::: {.noteblock data-latex=""}
-In the *code snippet* above, *this function* is called internally from the [outer_img.file_path.get_list](#func.outer_img.file_path.get_list) function described above in *this Section*.
-
-In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function described above in *this Section*.
-:::
-:::
-
-::: { #func.img.file_path.get_list.args .sidebar }
-##### Arguments
-\
-
-::: { #func.img.file_path.get_list.args.arg1 .sidebar }
-- **arg1:** ; 
-
-:::
-::: { #func.img.file_path.get_list.args.arg2 .sidebar }
-- **arg2:**  (Optional, *Numeric*, $0$ by default) ; 
-
-:::
-::: { #func.img.file_path.get_list.args.arg3 .sidebar }
-- **arg3:**  (Optional, *Numeric*, $NA$ by default) ; 
-
-:::
-::: { #func.img.file_path.get_list.args.arg4 .sidebar }
-- **arg4:**  (Optional, *Integer*, $NA$ by default) ; 
-
-:::
-::: { #func.img.file_path.get_list.args.arg5 .sidebar }
-- **arg5:**  (Optional, *Boolean*, $FALSE$ by default) ; 
-
-:::
-::: { #func.img.file_path.get_list.args.arg6 .sidebar }
-- **arg6:**  (Optional, *Character*, $NULL$ by default) ; 
-
-:::
-:::
-
-::: { #func.img.file_path.get_list.details .sidebar }
-##### Details
-\
-
-
-::: {.noteblock data-latex=""}
-This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.img.file_path.get_list.usage) section of *this Description*.
-:::
-:::
-
-::: { #func.img.file_path.get_list.value .sidebar }
-##### Value
-\
-
-:::
-
-::: { #func.img.file_path.get_list.code .sidebar }
-##### Source Code
-\
-
-The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) of the function is shown below:
-```{r src@img.file_path.get_list, eval=FALSE}
-
-```
-
-::: {.noteblock data-latex=""}
-The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
-:::
-:::
-
-\newpage
-
-
-
-
 
 #### [magick_img2matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) Function {#func.}
 \
