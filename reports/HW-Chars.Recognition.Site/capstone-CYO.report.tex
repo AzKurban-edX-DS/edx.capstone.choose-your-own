@@ -576,25 +576,317 @@ The complete source code of the functions described in this section is available
 This is a core utility designed to recursively traverse a root directory passed in the \hyperref[func.load_image.list.args.root_path]{root\_path} argument, discover character-specific (or class-specific, in the terms of the project's multiclass classifier models) subfolders, load data from raw image files (downloaded from the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} platform) using a custom parsing function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument, filter out empty or invalid images, and organize everything into an \texttt{R} list object with the corresponding labels and file paths.
 
 \protect\phantomsection\label{func.load_image.list.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L15}{Usage}}{Usage}}\label{usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L12}{Usage}}{Usage}}\label{usage}
 
 \hfill\break
 
+\begin{noteblock}
+In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} described below in \emph{this Section} is used as the value of the argument \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat}.
+
+\end{noteblock}
+
 \begin{Shaded}
 \begin{Highlighting}[]
+  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Creating an Image list from the raw data files }
+\StringTok{stored in the following root directory: \%1,}
+\StringTok{Please wait..."}\NormalTok{, img.train\_root.dir)}
+
 \NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
-                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat,}
-                                        \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{,}
-                                        \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
-                                        \AttributeTok{seed =} \ConstantTok{NA}\NormalTok{,}
-                                        \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{)}
+                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat}
+                                        \CommentTok{\# folder.list = NULL,}
+                                        \CommentTok{\# char\_files.max = NA,}
+                                        \CommentTok{\# seed = NA,}
+                                        \CommentTok{\# random\_sample = FALSE}
+\NormalTok{                                        )}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{noteblock}
-In the \emph{code snippet} above, a pointer to the auxiliary function \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} described below in \emph{this Section} is used as the value of the argument \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat}.
+\begin{verbatim}
+## *** Training Image Data List Structure ***
+\end{verbatim}
 
-\end{noteblock}
+\begin{verbatim}
+## Class Labels:
+##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+\end{verbatim}
+
+\begin{verbatim}
+## Class Name: #
+## Image Files Number: 15600
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png
+## Image File Shape:
+## shape(1, 28, 28)
+## 
+## Class Name: $
+## Image Files Number: 16199
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/$/__0_1011576.png
+## Image File Shape:
+## shape(1, 28, 28)
+## 
+## Class Name: &
+## Image Files Number: 13000
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/&/__0_1027442.png
+## Image File Shape:
+## shape(1, 28, 28)
+## 
+## Class Name: @
+## Image Files Number: 38009
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/@/___0_2818202.png
+## Image File Shape:
+## shape(1, 28, 28)
+## 
+## Class Name: 0
+## Image Files Number: 65504
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/0/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 1
+## Image Files Number: 43773
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/1/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 2
+## Image Files Number: 39351
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/2/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 3
+## Image Files Number: 39996
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/3/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 4
+## Image Files Number: 38112
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/4/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 5
+## Image Files Number: 32317
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/5/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 6
+## Image Files Number: 38879
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/6/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 7
+## Image Files Number: 41080
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/7/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 8
+## Image Files Number: 38795
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/8/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: 9
+## Image Files Number: 38319
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/9/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: A
+## Image Files Number: 17205
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/A/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: B
+## Image Files Number: 8666
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/B/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: C
+## Image Files Number: 13560
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/C/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: D
+## Image Files Number: 15509
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/D/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: E
+## Image Files Number: 32627
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/E/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: F
+## Image Files Number: 11635
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/F/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: G
+## Image Files Number: 5443
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/G/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: H
+## Image Files Number: 12133
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/H/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: I
+## Image Files Number: 13873
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/I/_1_1000.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: J
+## Image Files Number: 4261
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/J/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: K
+## Image Files Number: 4334
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/K/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: L
+## Image Files Number: 21648
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/L/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: M
+## Image Files Number: 12089
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/M/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: N
+## Image Files Number: 21421
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/N/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: P
+## Image Files Number: 11095
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/P/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: Q
+## Image Files Number: 4707
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/Q/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: R
+## Image Files Number: 20498
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/R/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: S
+## Image Files Number: 25910
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/S/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: T
+## Image Files Number: 30853
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/T/_1_0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: U
+## Image Files Number: 16385
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/U/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: V
+## Image Files Number: 7246
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/V/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: W
+## Image Files Number: 7266
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/W/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: X
+## Image Files Number: 5106
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/X/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: Y
+## Image Files Number: 6762
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/Y/0.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+## 
+## Class Name: Z
+## Image Files Number: 4866
+## Image File Path example: 
+## data/raw/Vaibs.HW-Chars/Train/Z/1.jpg
+## Image File Shape:
+## shape(1, 32, 32)
+\end{verbatim}
+
+\newpage
 
 \protect\phantomsection\label{func.load_image.list.args}
 \paragraph{Arguments}\label{arguments}
@@ -619,28 +911,28 @@ In the \emph{code snippet} above, a pointer to the auxiliary function \hyperref[
 \begin{itemize}
 \tightlist
 \item
-  \textbf{folder.list:} (Optional, \emph{Character}, \(NULL\) by default) Vector of specific subfolder names to process. If \(NULL\), it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.load_image.list.args.root_path]{root\_path} argument;
+  \textbf{folder.list:} (Optional, \emph{Character}, \texttt{NULL} by default) Vector of specific subfolder names to process. If \texttt{NULL}, it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.load_image.list.args.root_path]{root\_path} argument;
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.char_files.max}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{char\_files.max:} (Optional, \emph{Integer}, \(NA\) by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing);
+  \textbf{char\_files.max:} (Optional, \emph{Integer}, \texttt{NA} by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing);
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.seed}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{seed:} (Optional, \emph{Integer}, \(NA\) by default) Random seed used for reproducible sampling when \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
+  \textbf{seed:} (Optional, \emph{Integer}, \texttt{NA} by default) Random seed used for reproducible sampling when \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.args.random_sample}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{random\_sample:} (Optional, \emph{Boolean}, \(FALSE\) by default) Boolean (\(TRUE/FALSE\)) indicating whether files within a folder should be sampled randomly (\(TRUE\)) or taken sequentially from the top (\(FALSE\)).
+  \textbf{random\_sample:} (Optional, \emph{Boolean}, \texttt{FALSE} by default) Boolean (\texttt{TRUE/FALSE}) indicating whether files within a folder should be sampled randomly (\texttt{TRUE}) or taken sequentially from the top (\texttt{FALSE}).
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.details}
@@ -653,7 +945,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.seed]{seed} argument value is not \(NA\)).
+  \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.seed]{seed} argument value is not \texttt{NA}).
 \item
   \textbf{Label Generation:} Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
 \item
@@ -677,8 +969,17 @@ Below is the \emph{step-by-step execution flow} of the function:
 \hfill\break
 
 Structured list containing two primary components:
-1. \emph{Label list:} A factor of \emph{class labels};
-2. \emph{Image list:} A nested list mapping each \emph{class folder} to its valid loaded \emph{image data} and corresponding \emph{file paths}.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \emph{Label list:} A factor of \emph{class labels};
+\item
+  \emph{Image list:} A nested list mapping each \emph{class folder} to its valid loaded \emph{image data} and corresponding \emph{file paths}.
+\end{enumerate}
+
+\newpage
 
 \protect\phantomsection\label{func.load_image.list.code}
 \paragraph{Source Code}\label{source-code}
@@ -762,10 +1063,18 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 
 \end{noteblock}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
+\StringTok{Getting file path lists from the following Root Path:}
+\StringTok{\%1"}\NormalTok{, root\_path)}
+\end{Highlighting}
+\end{Shaded}
+
 \begin{verbatim}
 ## Function `load_image.list`:
 ## Getting file path lists from the following Root Path:
-## data/raw/Vaibs.HW-Chars/Train
+## ../..//data/raw/Vaibs.HW-Chars/Train
 \end{verbatim}
 
 \begin{Shaded}
@@ -1000,28 +1309,28 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \begin{itemize}
 \tightlist
 \item
-  \textbf{folder.list:} (Optional, \emph{Character}, \(NULL\) by default) Vector of specific subfolder names to process. If \(NULL\), it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.img.file_path.get_list.args.root_path]{root\_path} argument;
+  \textbf{folder.list:} (Optional, \emph{Character}, \texttt{NULL} by default) Vector of specific subfolder names to process. If \texttt{NULL}, it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.img.file_path.get_list.args.root_path]{root\_path} argument;
 \end{itemize}
 
 \protect\phantomsection\label{func.img.file_path.get_list.args.char_files.max}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{char\_files.max:} (Optional, \emph{Integer}, \(NA\) by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing);
+  \textbf{char\_files.max:} (Optional, \emph{Integer}, \texttt{NA} by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing);
 \end{itemize}
 
 \protect\phantomsection\label{func.img.file_path.get_list.args.seed}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{seed:} (Optional, \emph{Integer}, \(NA\) by default) Random seed used for reproducible sampling when \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
+  \textbf{seed:} (Optional, \emph{Integer}, \texttt{NA} by default) Random seed used for reproducible sampling when \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
 \end{itemize}
 
 \protect\phantomsection\label{func.img.file_path.get_list.args.random_sample}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{random\_sample:} (Optional, \emph{Boolean}, \(FALSE\) by default) Logical (\(TRUE / FALSE\)) value indicating whether files within a folder should be sampled randomly (\(TRUE\)) or taken sequentially from the top (\(FALSE\)).
+  \textbf{random\_sample:} (Optional, \emph{Boolean}, \texttt{FALSE} by default) Logical (\(TRUE / FALSE\)) value indicating whether files within a folder should be sampled randomly (\texttt{TRUE}) or taken sequentially from the top (\texttt{FALSE}).
 \end{itemize}
 
 \protect\phantomsection\label{func.img.file_path.get_list.details}
@@ -1037,11 +1346,11 @@ Below is the \emph{step-by-step execution flow} of the function:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{Subfolder Discovery:} If the \hyperref[func.img.file_path.get_list.args.folder.list]{folder.list} argument value is \(NULL\) (the \emph{folder list} is not provided), the function retrieves all subdirectory names inside the \emph{root directory} (using the path passed in the \hyperref[func.img.file_path.get_list.args.root_path]{root\_path} argument) and uses them as the \emph{folder list} for further processing. Otherwise, the \hyperref[func.img.file_path.get_list.args.folder.list]{folder.list} value is used.
+  \textbf{Subfolder Discovery:} If the \hyperref[func.img.file_path.get_list.args.folder.list]{folder.list} argument value is \texttt{NULL} (the \emph{folder list} is not provided), the function retrieves all subdirectory names inside the \emph{root directory} (using the path passed in the \hyperref[func.img.file_path.get_list.args.root_path]{root\_path} argument) and uses them as the \emph{folder list} for further processing. Otherwise, the \hyperref[func.img.file_path.get_list.args.folder.list]{folder.list} value is used.
 \item
   \textbf{File Path Collection:} Next, it iterates through the \emph{folder list} determined in the previous step, constructs the \emph{full path} for each folder, and retrieves all file paths in that folder.
 \item
-  \emph{Capping and Sampling:} If the value for the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value.
+  \textbf{Capping and Sampling:} If the value for the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value.
 \end{enumerate}
 
 \begin{noteblock}
@@ -1049,7 +1358,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 \begin{itemize}
 \tightlist
 \item
-  If the condition above is met, the \emph{file selection method} depends on the value of the \hyperref[func.img.file_path.get_list.args.random_sample]{random\_sample} argument. If it is \(TRUE\), a \emph{sample} of the size provided in the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is taken using a \emph{reproducibility seed offset} by the folder's index if a \emph{seed} is provided (the value of the \hyperref[func.img.file_path.get_list.args.seed]{seed} argument is not \(NA\)). Otherwise, a top list of the size provided in the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is selected.
+  If the condition above is met, the \emph{file selection method} depends on the value of the \hyperref[func.img.file_path.get_list.args.random_sample]{random\_sample} argument. If it is \texttt{TRUE}, a \emph{sample} of the size provided in the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is taken using a \emph{reproducibility seed offset} by the folder's index if a \emph{seed} is provided (the value of the \hyperref[func.img.file_path.get_list.args.seed]{seed} argument is not \texttt{NA}). Otherwise, a top list of the size provided in the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is selected.
 \item
   Otherwise, the full list of file paths obtained in the previous step is used for the final result.
 \end{itemize}
@@ -1143,18 +1452,19 @@ The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capston
 This specialized utility function reads an image file, dynamically detects whether it contains nonzero pixel data, optionally trims whitespace or empty borders around the visual features using the \href{https://docs.ropensci.org/magick/index.html}{magick package}, and extracts its raw data matrix structure.
 
 \protect\phantomsection\label{func.load.img_trimmed.dat.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L15}{Usage}}{Usage}}\label{usage-2}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L12}{Usage}}{Usage}}\label{usage-2}
 
 \hfill\break
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
-                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat,}
-                                        \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{,}
-                                        \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
-                                        \AttributeTok{seed =} \ConstantTok{NA}\NormalTok{,}
-                                        \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{)}
+                                        \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat}
+                                        \CommentTok{\# folder.list = NULL,}
+                                        \CommentTok{\# char\_files.max = NA,}
+                                        \CommentTok{\# seed = NA,}
+                                        \CommentTok{\# random\_sample = FALSE}
+\NormalTok{                                        )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1204,6 +1514,10 @@ This is an auxiliary function, the pointer to which is passed in the \hyperref[f
 
 \hfill\break
 
+Raw pixel buffer data from the trimmed image returned by the internal function call of \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{magick::image\_data}.
+
+\newpage
+
 \protect\phantomsection\label{func.load.img_trimmed.dat.code}
 \paragraph{Source Code}\label{source-code-2}
 
@@ -1214,49 +1528,105 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{load.img\_trimmed.dat }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(file\_path) \{}
+  \CommentTok{\# Reads the image file from disk}
 \NormalTok{  img }\OtherTok{\textless{}{-}}\NormalTok{ magick}\SpecialCharTok{::}\FunctionTok{image\_read}\NormalTok{(file\_path)}
+  
+  \CommentTok{\# Converts the loaded image into a numeric matrix representation}
 \NormalTok{  img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
+  
 \NormalTok{  img.trimmed }\OtherTok{\textless{}{-}}\NormalTok{ img}
 
+  \CommentTok{\#\textquotesingle{} Evaluates the matrix\textquotesingle{}s maximum value to check }
+  \CommentTok{\#\textquotesingle{} whether the image is entirely blank or empty.}
   \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{max}\NormalTok{(img.mx) }\SpecialCharTok{\textgreater{}} \DecValTok{0}\NormalTok{) \{}
 \NormalTok{    img.trimmed }\OtherTok{\textless{}{-}} \FunctionTok{image\_trim}\NormalTok{(img)}
 \NormalTok{  \}}
   
+  \CommentTok{\# Extracts and returns the underlying raw pixel buffer data.}
 \NormalTok{  magick}\SpecialCharTok{::}\FunctionTok{image\_data}\NormalTok{(img.trimmed)}
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{noteblock}
+During the execution, it calls internally the user-defined helper function \hyperref[func.magick_img2matrix]{magick\_img2matrix} described below in section \hyperref[appndx_a.img_proc]{Image Processing} of \hyperref[appndx_a]{Appendix A} of \emph{this Report}.
+
+\end{noteblock}
+
 \newpage
 
-\subsection{\texorpdfstring{Image Processing \{\#\href{mailto:appndx_a@img}{\nolinkurl{appndx\_a@img}}\_proc\}}{Image Processing \{\#appndx\_a@img\_proc\}}}\label{image-processing-appndx_aimg_proc}
+\subsection{Image Processing}\label{appndx_a.img_proc}
 
 \begin{noteblock}
 The complete source code of the functions described in this section is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{Image Processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{data-helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
 
-\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L485}{magick\_img2matrix} Function}{magick\_img2matrix Function}}\label{func.}
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L485}{magick\_img2matrix} Function}{magick\_img2matrix Function}}\label{func.magick_img2matrix}
 
 \hfill\break
 
 This is a lightweight utility that converts a \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object} into a \emph{normalized numeric matrix of pixel intensities}.
 
 \protect\phantomsection\label{func.magick_img2matrix.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L294}{Usage}}{Usage}}\label{usage-3}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Usage}}{Usage}}\label{usage-3}
 
 \hfill\break
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
+\CommentTok{\# Sample image file:}
+\NormalTok{file\_path }\OtherTok{\textless{}{-}} \StringTok{"../../data/raw/Vaibs.HW{-}Chars/Train/W/0.jpg"}
+\NormalTok{img }\OtherTok{\textless{}{-}}\NormalTok{ magick}\SpecialCharTok{::}\FunctionTok{image\_read}\NormalTok{(file\_path)}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## *** Image visualization before processing ***
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Reads the image file from disk}
+\FunctionTok{plot}\NormalTok{(img)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
 
 \begin{noteblock}
 In the \emph{code snippet} above, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in \emph{this Section}.
 
 \end{noteblock}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Converts the loaded image into a numeric matrix representation}
+\NormalTok{img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## *** Image data view after processing ***
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(img.mx)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  num [1:32, 1:32] 0 0.00392 0 0 0.00784 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{image.mx}\NormalTok{(img.mx)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.data_view-1.pdf}}
 
 \protect\phantomsection\label{func.magick_img2matrix.args}
 \paragraph{Arguments}\label{arguments-3}

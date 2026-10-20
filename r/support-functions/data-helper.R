@@ -250,25 +250,6 @@ Completed processing Image Data objects")
        img.list = img_list)
 }
 
-image.dat2bin_28x28mx <- function(image.dat) {
-  image.dat2bin_mx(image.dat,
-                   resize.geometry = '28x28!')
-}
-
-image.dat2bin_mx <- function(image.dat,
-                             resize.geometry = NULL) {
-  img <- image_read(image.dat)
-  
-  if(!is.null(resize.geometry)) 
-    img <- image_resize(img, resize.geometry)
-
-  img.sharpened <- image_convolve(img, 'DoG:0,0,2', scaling = '100, 100%')
-  img.mx <- magick_img2matrix(img.sharpened)
-  img.bin <- img.mx > 0.5
-  # image.mx(img.bin)
-  img.bin
-}
-
 ds.load2bin28x28mx.list <- function(root_path, 
                                      folder.list = NULL, 
                                      char_files.max = NA,
@@ -514,6 +495,25 @@ magick_img2matrix <- function(img){
   mx.bin <- img.dat[1,,]
   mode(mx.bin) <- "numeric"
   mx.bin /255
+}
+
+image.dat2bin_28x28mx <- function(image.dat) {
+  image.dat2bin_mx(image.dat,
+                   resize.geometry = '28x28!')
+}
+
+image.dat2bin_mx <- function(image.dat,
+                             resize.geometry = NULL) {
+  img <- image_read(image.dat)
+  
+  if(!is.null(resize.geometry)) 
+    img <- image_resize(img, resize.geometry)
+
+  img.sharpened <- image_convolve(img, 'DoG:0,0,2', scaling = '100, 100%')
+  img.mx <- magick_img2matrix(img.sharpened)
+  img.bin <- img.mx > 0.5
+  # image.mx(img.bin)
+  img.bin
 }
 
 ## Data Visualization ---------------------------------

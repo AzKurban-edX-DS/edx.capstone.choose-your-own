@@ -14,23 +14,74 @@ The complete source code of the functions described in this section is available
 This is a core utility designed to recursively traverse a root directory passed in the [root_path](#func.load_image.list.args.root_path) argument, discover character-specific (or class-specific, in the terms of the project's multiclass classifier models) subfolders, load data from raw image files (downloaded from the [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) platform) using a custom parsing function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument, filter out empty or invalid images, and organize everything into an `R` list object with the corresponding labels and file paths.
 
 ::: { #func.load_image.list.usage .sidebar }
-##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L12)
 \
 
-```{r load_image.list#usage, eval=FALSE}
-  train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
-                                        fn.load_image.dat = load.img_trimmed.dat,
-                                        folder.list = NULL,
-                                        char_files.max = NA,
-                                        seed = NA,
-                                        random_sample = FALSE)
+::: {.noteblock data-latex=""}
+In the *code snippet* below, a pointer to the auxiliary function [load.img_trimmed.dat](#func.load.img_trimmed.dat) described below in *this Section* is used as the value of the argument [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat).
+:::
+
+```{r load_image.list@usage.setup, include=FALSE}
+path <- file.path(knitr.proj_root, train.img_dat.list.file)
+stopifnot(file.exists(path))
+train.img_dat.list <- readRDS(path)
 
 ```
+```{r load_image.list@usage, eval=FALSE}
+  put_log("Creating an Image list from the raw data files 
+stored in the following root directory: %1,
+Please wait...", img.train_root.dir)
 
-::: {.noteblock data-latex=""}
-In the *code snippet* above, a pointer to the auxiliary function [load.img_trimmed.dat](#func.load.img_trimmed.dat) described below in *this Section* is used as the value of the argument [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat).
+  train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
+                                        fn.load_image.dat = load.img_trimmed.dat
+                                        # folder.list = NULL,
+                                        # char_files.max = NA,
+                                        # seed = NA,
+                                        # random_sample = FALSE
+                                        )
+
+```
+```{r load_image.list@usage.img_data, echo=FALSE }
+writeLines('*** Training Image Data List Structure ***')
+
+print_log("Class Labels:
+%1", capture.output(train.img_dat.list$label.list))
+
+
+class_names <- names(train.img_dat.list$img.list)
+
+for (class_name in class_names) {
+  print_log("Class Name: %1", class_name)
+
+  class_list <- train.img_dat.list$img.list[[class_name]]
+  # print(names(class_list))
+  
+  
+  img.list <- class_list$img.list
+  
+  # writeLines("*** Image Files Number: ***", sep = ' ')
+  print_log("Image Files Number: %1", length(img.list))
+
+  fpath.list <- class_list$fpath.list
+  
+  print_log("Image File Path example: 
+%1", fpath.list[[1]])
+  # cat(head(fpath.list), sep = '\n')
+  
+  writeLines("Image File Shape:")
+  print(shape(img.list[[1]]))
+  writeLines("")
+}
+
+```
+```{r load_image.list@cleanup, include=FALSE}
+rm(path,
+   train.img_dat.list)
+```
+
 :::
-:::
+
+\newpage
 
 ::: { #func.load_image.list.args .sidebar }
 ##### Arguments
@@ -45,19 +96,19 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 
 :::
 ::: { #func.load_image.list.args.folder.list .sidebar }
-- **folder.list:**  (Optional, *Character*, $NULL$ by default) Vector of specific subfolder names to process. If $NULL$, it defaults to all directories found inside the *root path* passed in the [root_path](#func.load_image.list.args.root_path) argument; 
+- **folder.list:**  (Optional, *Character*, `NULL` by default) Vector of specific subfolder names to process. If `NULL`, it defaults to all directories found inside the *root path* passed in the [root_path](#func.load_image.list.args.root_path) argument; 
 
 :::
 ::: { #func.load_image.list.args.char_files.max .sidebar }
-- **char_files.max:**  (Optional, *Integer*, $NA$ by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing); 
+- **char_files.max:**  (Optional, *Integer*, `NA` by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing); 
 
 :::
 ::: { #func.load_image.list.args.seed .sidebar }
-- **seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.load_image.list.args.char_files.max) is specified (ignored otherwise); 
+- **seed:**  (Optional, *Integer*, `NA` by default) Random seed used for reproducible sampling when [char_files.max](#func.load_image.list.args.char_files.max) is specified (ignored otherwise); 
 
 :::
 ::: { #func.load_image.list.args.random_sample .sidebar }
-- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) Boolean ($TRUE/FALSE$) indicating whether files within a folder should be sampled randomly ($TRUE$) or taken sequentially from the top ($FALSE$). 
+- **random_sample:**  (Optional, *Boolean*, `FALSE` by default) Boolean (`TRUE/FALSE`) indicating whether files within a folder should be sampled randomly (`TRUE`) or taken sequentially from the top (`FALSE`). 
 
 :::
 :::
@@ -68,7 +119,7 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 
 Below is the *step-by-step execution flow* of the function:
 
-1. **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the [char_files.max](#func.load_image.list.args.char_files.max) argument), random sampling (depending on the value passed in the [random_sample](#func.load_image.list.args.random_sample) argument), and seed generation (if the [seed](#func.load_image.list.args.seed) argument value is not $NA$).
+1. **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the [char_files.max](#func.load_image.list.args.char_files.max) argument), random sampling (depending on the value passed in the [random_sample](#func.load_image.list.args.random_sample) argument), and seed generation (if the [seed](#func.load_image.list.args.seed) argument value is not `NA`).
 
 2. **Label Generation:** Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
 
@@ -85,10 +136,13 @@ Below is the *step-by-step execution flow* of the function:
 \
 
 Structured list containing two primary components:
+
 1. *Label list:* A factor of *class labels*;
 2. *Image list:* A nested list mapping each *class folder* to its valid loaded *image data* and corresponding *file paths*.
 
 :::
+
+\newpage
 
 ::: { #func.load_image.list.code .sidebar }
 ##### Source Code
@@ -171,14 +225,11 @@ open_logfile(".chunk.img.file_path.get_list@usage")
 root_path <- file.path(knitr.proj_root, img.train_root.dir)
 # dir(root_path)
 ```
-``` {r img.file_path.get_list@usage_log, echo=FALSE}
+``` {r img.file_path.get_list@usage_log, echo=TRUE}
 
 put_log("Function `load_image.list`:
 Getting file path lists from the following Root Path:
-%1", img.train_root.dir)
-
-```
-``` {r img.file_path.get_list@usage, echo=TRUE}
+%1", root_path)
 
 folder.list <- NULL 
 char_files.max <- NA
@@ -212,19 +263,19 @@ log_close()
 
 :::
 ::: { #func.img.file_path.get_list.args.folder.list .sidebar }
-- **folder.list:**  (Optional, *Character*, $NULL$ by default) Vector of specific subfolder names to process. If $NULL$, it defaults to all directories found inside the *root path* passed in the [root_path](#func.img.file_path.get_list.args.root_path) argument; 
+- **folder.list:**  (Optional, *Character*, `NULL` by default) Vector of specific subfolder names to process. If `NULL`, it defaults to all directories found inside the *root path* passed in the [root_path](#func.img.file_path.get_list.args.root_path) argument; 
 
 :::
 ::: { #func.img.file_path.get_list.args.char_files.max .sidebar }
-- **char_files.max:**  (Optional, *Integer*, $NA$ by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing); 
+- **char_files.max:**  (Optional, *Integer*, `NA` by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing); 
 
 :::
 ::: { #func.img.file_path.get_list.args.seed .sidebar }
-- **seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.img.file_path.get_list.args.char_files.max) is specified (ignored otherwise); 
+- **seed:**  (Optional, *Integer*, `NA` by default) Random seed used for reproducible sampling when [char_files.max](#func.img.file_path.get_list.args.char_files.max) is specified (ignored otherwise); 
 
 :::
 ::: { #func.img.file_path.get_list.args.random_sample .sidebar }
-- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) Logical ($TRUE / FALSE$) value indicating whether files within a folder should be sampled randomly ($TRUE$) or taken sequentially from the top ($FALSE$). 
+- **random_sample:**  (Optional, *Boolean*, `FALSE` by default) Logical ($TRUE / FALSE$) value indicating whether files within a folder should be sampled randomly (`TRUE`) or taken sequentially from the top (`FALSE`). 
 
 :::
 :::
@@ -237,12 +288,12 @@ This is an auxiliary function that is used internally in the [load_image.list](#
 
 Below is the *step-by-step execution flow* of the function:
 
-1. **Subfolder Discovery:** If the [folder.list](#func.img.file_path.get_list.args.folder.list) argument value is $NULL$ (the *folder list* is not provided), the function retrieves all subdirectory names inside the *root directory* (using the path passed in the [root_path](#func.img.file_path.get_list.args.root_path) argument) and uses them as the *folder list* for further processing. Otherwise, the [folder.list](#func.img.file_path.get_list.args.folder.list) value is used.
+1. **Subfolder Discovery:** If the [folder.list](#func.img.file_path.get_list.args.folder.list) argument value is `NULL` (the *folder list* is not provided), the function retrieves all subdirectory names inside the *root directory* (using the path passed in the [root_path](#func.img.file_path.get_list.args.root_path) argument) and uses them as the *folder list* for further processing. Otherwise, the [folder.list](#func.img.file_path.get_list.args.folder.list) value is used.
 2. **File Path Collection:** Next, it iterates through the *folder list* determined in the previous step, constructs the *full path* for each folder, and retrieves all file paths in that folder.
-3. *Capping and Sampling:* If the value for the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value. 
+3. **Capping and Sampling:** If the value for the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value. 
 
 ::: {.noteblock data-latex=""}
-- If the condition above is met, the *file selection method* depends on the value of the [random_sample](#func.img.file_path.get_list.args.random_sample) argument. If it is $TRUE$, a *sample* of the size provided in the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is taken using a *reproducibility seed offset* by the folder's index if a *seed* is provided (the value of the [seed](#func.img.file_path.get_list.args.seed) argument is not $NA$). Otherwise, a top list of the size provided in the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is selected.
+- If the condition above is met, the *file selection method* depends on the value of the [random_sample](#func.img.file_path.get_list.args.random_sample) argument. If it is `TRUE`, a *sample* of the size provided in the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is taken using a *reproducibility seed offset* by the folder's index if a *seed* is provided (the value of the [seed](#func.img.file_path.get_list.args.seed) argument is not `NA`). Otherwise, a top list of the size provided in the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is selected.
 - Otherwise, the full list of file paths obtained in the previous step is used for the final result.
 
 :::
@@ -333,16 +384,17 @@ The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx
 This specialized utility function reads an image file, dynamically detects whether it contains nonzero pixel data, optionally trims whitespace or empty borders around the visual features using the [magick package](https://docs.ropensci.org/magick/index.html), and extracts its raw data matrix structure.
 
 ::: { #func.load.img_trimmed.dat.usage .sidebar }
-##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L12)
 \
 
 ```{r func@load.img_trimmed.dat.u, eval=FALSE}
   train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
-                                        fn.load_image.dat = load.img_trimmed.dat,
-                                        folder.list = NULL,
-                                        char_files.max = NA,
-                                        seed = NA,
-                                        random_sample = FALSE)
+                                        fn.load_image.dat = load.img_trimmed.dat
+                                        # folder.list = NULL,
+                                        # char_files.max = NA,
+                                        # seed = NA,
+                                        # random_sample = FALSE
+                                        )
 ```
 
 ::: {.noteblock data-latex=""}
@@ -383,7 +435,10 @@ This is an auxiliary function, the pointer to which is passed in the [fn.load_im
 ##### Value
 \
 
+Raw pixel buffer data from the trimmed image returned by the internal function call of [magick::image_data](https://docs.ropensci.org/magick/reference/editing.html#details).
 :::
+
+\newpage
 
 ::: { #func.load.img_trimmed.dat.code .sidebar }
 ##### Source Code
@@ -392,45 +447,83 @@ This is an auxiliary function, the pointer to which is passed in the [fn.load_im
 The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L287) of the function is shown below:
 ```{r func@load.img_trimmed.dat.s, eval=FALSE}
 load.img_trimmed.dat <- function(file_path) {
+  # Reads the image file from disk
   img <- magick::image_read(file_path)
+  
+  # Converts the loaded image into a numeric matrix representation
   img.mx <- magick_img2matrix(img)
+  
   img.trimmed <- img
 
+  #' Evaluates the matrix's maximum value to check 
+  #' whether the image is entirely blank or empty.
   if (max(img.mx) > 0) {
     img.trimmed <- image_trim(img)
   }
   
+  # Extracts and returns the underlying raw pixel buffer data.
   magick::image_data(img.trimmed)
 }
+
 ```
 
+::: {.noteblock data-latex=""}
+During the execution, it calls internally the user-defined helper function [magick_img2matrix](#func.magick_img2matrix) described below in section [Image Processing](#appndx_a.img_proc) of [Appendix A](#appndx_a) of *this Report*.
+:::
 :::
 
 \newpage
 
-### Image Processing {#appndx_a@img_proc}
+### Image Processing {#appndx_a.img_proc}
 
 ::: {.noteblock data-latex=""}
 The complete source code of the functions described in this section is available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) script on _GitHub_.
 :::
 
-#### [magick_img2matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) Function {#func.}
+#### [magick_img2matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) Function {#func.magick_img2matrix}
 \
 
 This is a lightweight utility that converts a [Magick Image object](https://docs.ropensci.org/magick/reference/editing.html#details) into a *normalized numeric matrix of pixel intensities*.
 
 
 ::: { #func.magick_img2matrix.usage .sidebar }
-##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L294)
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)
 \
 
-```{r data-helper@l294, eval=FALSE}
-img.mx <- magick_img2matrix(img)
+```{r dmagick_img2matrix@usage.setup, eval=TRUE}
+# Sample image file:
+file_path <- "../../data/raw/Vaibs.HW-Chars/Train/W/0.jpg"
+img <- magick::image_read(file_path)
+```
+```{r dmagick_img2matrix@usage.before_proc, echo=FALSE}
+writeLines("*** Image visualization before processing ***")
+```
+```{r dmagick_img2matrix@usage.plot_before, echo=TRUE}
+# Reads the image file from disk
+plot(img)
+
 ```
 
 ::: {.noteblock data-latex=""}
 In the *code snippet* above, *this function* is called internally from the [load.img_trimmed.dat](#func.load.img_trimmed.dat) function described above in *this Section*.
 :::
+
+```{r dmagick_img2matrix@usage.proc, echo=TRUE}
+# Converts the loaded image into a numeric matrix representation
+img.mx <- magick_img2matrix(img)
+```
+```{r dmagick_img2matrix@usage.after_proc, echo=FALSE}
+writeLines("*** Image data view after processing ***")
+```
+```{r dmagick_img2matrix@usage.data_view, echo=TRUE}
+str(img.mx)
+image.mx(img.mx)
+```
+```{r dmagick_img2matrix@usage.cleanup, include=FALSE}
+rm(file_path,
+   img,
+   img.mx)
+```
 :::
 
 ::: { #func.magick_img2matrix.args .sidebar }
