@@ -22,7 +22,7 @@ load_image.list <- function(root_path,
                             fn.load_image.dat,
                             folder.list = NULL, 
                             char_files.max = NA,
-                            char_files.seed = NA,
+                            seed = NA,
                             random_sample = FALSE) {
   start <- put_start_date()
   put_log("Function `load_image.list`:
@@ -33,7 +33,7 @@ Getting file path lists...")
   img.file_list <- img.file_path.get_list(root_path, 
                                           folder.list,
                                           char_files.max,
-                                          char_files.seed,
+                                          seed,
                                           random_sample)
   put_log("Function `load_image.list`:
 File path lists have been created. The output list structure:
@@ -57,12 +57,12 @@ Loading files from root directory:
     img_dat.ls <- map(char.dir$file_path.list, 
                   fn.load_image.dat)
     
-    #' Evaluates a validity check on the loaded image data, 
-    #' effectively filtering out blank, corrupt, or unreadable images.
+    # Evaluates a validity check on the loaded image data. 
     valid.idx <- sapply(img_dat.ls, function(img.dat){
       mx.bin <- img.dat[1,,]
       mode(mx.bin) <- "numeric"
       
+      # Filter out blank, corrupt, or unreadable images.
       sum(mx.bin) > 0
     })
     
@@ -127,7 +127,7 @@ Getting file path list from the following char's root folders:
         # Samples the files randomly
         file.idx <- sample(fpath.len, size = char_files.max)
       } else {
-        # Selects the top file according to the specified limit.
+        #' Selects the `char_files.max` top files according to the specified limit.
         file.idx <- seq_len(char_files.max)
       }
       

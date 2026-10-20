@@ -17,12 +17,12 @@ This is a core utility designed to recursively traverse a root directory passed 
 ##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L15)
 \
 
-```{r usage@load_image.list, eval=FALSE}
+```{r load_image.list#usage, eval=FALSE}
   train.img_dat.list <- load_image.list(root_path = img.train_root.dir,
                                         fn.load_image.dat = load.img_trimmed.dat,
                                         folder.list = NULL,
                                         char_files.max = NA,
-                                        char_files.seed = NA,
+                                        seed = NA,
                                         random_sample = FALSE)
 
 ```
@@ -52,8 +52,8 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 - **char_files.max:**  (Optional, *Integer*, $NA$ by default) Numeric value limiting the maximum number of files to load per folder (useful for subsampling or testing); 
 
 :::
-::: { #func.load_image.list.args.char_files.seed .sidebar }
-- **char_files.seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.load_image.list.args.char_files.max) is specified (ignored otherwise); 
+::: { #func.load_image.list.args.seed .sidebar }
+- **seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.load_image.list.args.char_files.max) is specified (ignored otherwise); 
 
 :::
 ::: { #func.load_image.list.args.random_sample .sidebar }
@@ -68,7 +68,7 @@ In the *code snippet* above, a pointer to the auxiliary function [load.img_trimm
 
 Below is the *step-by-step execution flow* of the function:
 
-1. **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the [char_files.max](#func.load_image.list.args.char_files.max) argument), random sampling (depending on the value passed in the [random_sample](#func.load_image.list.args.random_sample) argument), and seed generation (if the [char_files.seed](#func.load_image.list.args.char_files.seed) argument value is not $NA$).
+1. **File Path Discovery:** Internally invokes the [img.file_path.get_list](#func.img.file_path.get_list) user-defined helper function (described below in the [Image Processing](#appndx_a@img_proc) section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the [char_files.max](#func.load_image.list.args.char_files.max) argument), random sampling (depending on the value passed in the [random_sample](#func.load_image.list.args.random_sample) argument), and seed generation (if the [seed](#func.load_image.list.args.seed) argument value is not $NA$).
 
 2. **Label Generation:** Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
 
@@ -94,50 +94,59 @@ Structured list containing two primary components:
 ##### Source Code
 \
 
-The simplified version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80)  function is shown below:
+The simplified version of the function's source code is shown below:
 ```{r func@load_image.list.s, eval=FALSE}
 load_image.list <- function(root_path,
                             fn.load_image.dat,
                             folder.list = NULL, 
                             char_files.max = NA,
-                            char_files.seed = NA,
+                            seed = NA,
                             random_sample = FALSE) {
-
+  #'Gather a structured list of file paths from each target subfolder, 
+  #'applying optional maximum limits, random sampling, and seed generation. 
   img.file_list <- img.file_path.get_list(root_path, 
                                           folder.list,
                                           char_files.max,
-                                          char_files.seed,
+                                          seed,
                                           random_sample)
-  
+
+  #' Extracts directory names from the file path list 
+  #' and converts them into a factor to serve as classification labels.
   label_list <- as.factor(names(img.file_list))
+  
+  # Load structured image data list
   img_list <- lapply(img.file_list, function(char.dir){
-    
+
+    #' Batch Loading using the custom loader function `fn.load_image.dat`.
     img_dat.ls <- map(char.dir$file_path.list, 
                   fn.load_image.dat)
     
+    # Evaluates a validity check on the loaded image data. 
     valid.idx <- sapply(img_dat.ls, function(img.dat){
       mx.bin <- img.dat[1,,]
       mode(mx.bin) <- "numeric"
       
+      # Filter out blank, corrupt, or unreadable images.
       sum(mx.bin) > 0
     })
     
     ls <- list(img.list = img_dat.ls[valid.idx], 
                fpath.list = char.dir$file_path.list[valid.idx])
     
+    #' Ensures that the filtered image list length strictly matches 
+    #' the corresponding filtered file path list length.
     stopifnot(length(ls$img.list) == length(ls$fpath.list))
-
+    
     ls
   })
-
+  
   list(label.list = label_list,
        img.list = img_list)
 }
-
 ```
 
 ::: {.noteblock data-latex=""}
-The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L4) function is also available in the [Data processing functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) section of the [data.helper.functions.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80) is available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
 :::
 :::
 
@@ -149,19 +158,50 @@ The source code of the [](https://github.com/AzKurban-edX-DS/edx.capstone.choose
 This function traverses *image directories*, collects *file paths* grouped by *folder* (representing *class labels*), and optionally limits, seeds, or randomly samples files for *dataset preparation*.
 
 ::: { #func.img.file_path.get_list.usage .sidebar }
-##### [Usage](#L)
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)
 \
 
-```{r data-helper@lXXX, eval=FALSE}
+::: {.noteblock data-latex=""}
+In the *code snippet* below, *this function* is called internally from the [load_image.list](#func.load_image.list) function described above in *this Section*.
+:::
+:::
+
+``` {r img.file_path.get_list@usage.setup, include=FALSE}
+open_logfile(".chunk.img.file_path.get_list@usage")
+root_path <- file.path(knitr.proj_root, img.train_root.dir)
+# dir(root_path)
+```
+``` {r img.file_path.get_list@usage_log, echo=FALSE}
+
+put_log("Function `load_image.list`:
+Getting file path lists from the following Root Path:
+%1", img.train_root.dir)
 
 ```
+``` {r img.file_path.get_list@usage, echo=TRUE}
 
-::: {.noteblock data-latex=""}
-In the *code snippet* above, *this function* is called internally from the [outer_img.file_path.get_list](#func.outer_img.file_path.get_list) function described above in *this Section*.
+folder.list <- NULL 
+char_files.max <- NA
+seed <- NA
+random_sample <- FALSE
 
-In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.img.file_path.get_list.args.fn.load_image.dat) argument to the [img.file_path.get_list](#func.img.file_path.get_list) function described above in *this Section*.
-:::
-:::
+
+#'Gather a structured list of file paths from each target subfolder, 
+#'applying optional maximum limits, random sampling, and seed generation. 
+img.file_list <- img.file_path.get_list(root_path, 
+                                        folder.list,
+                                        char_files.max,
+                                        seed,
+                                        random_sample)
+
+```
+``` {r img.file_path.get_list@usage_cleanup, include=FALSE}
+rm(root_path,
+   char_files.max,
+   seed,
+   random_sample)
+log_close()
+```
 
 ::: { #func.img.file_path.get_list.args .sidebar }
 ##### Arguments
@@ -179,12 +219,12 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 - **char_files.max:**  (Optional, *Integer*, $NA$ by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing); 
 
 :::
-::: { #func.img.file_path.get_list.args.char_files.seed .sidebar }
-- **char_files.seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.img.file_path.get_list.args.char_files.max) is specified (ignored otherwise); 
+::: { #func.img.file_path.get_list.args.seed .sidebar }
+- **seed:**  (Optional, *Integer*, $NA$ by default) Random seed used for reproducible sampling when [char_files.max](#func.img.file_path.get_list.args.char_files.max) is specified (ignored otherwise); 
 
 :::
 ::: { #func.img.file_path.get_list.args.random_sample .sidebar }
-- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) Boolean ($TRUE/FALSE$) indicating whether files within a folder should be sampled randomly ($TRUE$) or taken sequentially from the top ($FALSE$). 
+- **random_sample:**  (Optional, *Boolean*, $FALSE$ by default) Logical ($TRUE / FALSE$) value indicating whether files within a folder should be sampled randomly ($TRUE$) or taken sequentially from the top ($FALSE$). 
 
 :::
 :::
@@ -193,20 +233,18 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 ##### Details
 \
 
+This is an auxiliary function that is used internally in the [load_image.list](#func.load_image.list) function as shown above in the [Usage](#func.img.file_path.get_list.usage) section of *this Description*.
+
 Below is the *step-by-step execution flow* of the function:
 
-1. **Subfolder Discovery:** If the [folder.list](#) argument value is $NULL$ (the *folder list* is not provided), the function retrieves all subdirectory names inside the *root directory* (using the path passed in the [root_path](#) argument) and uses them as the *folder list* for further processing. Otherwise, the [folder.list](#) value is used.
-
+1. **Subfolder Discovery:** If the [folder.list](#func.img.file_path.get_list.args.folder.list) argument value is $NULL$ (the *folder list* is not provided), the function retrieves all subdirectory names inside the *root directory* (using the path passed in the [root_path](#func.img.file_path.get_list.args.root_path) argument) and uses them as the *folder list* for further processing. Otherwise, the [folder.list](#func.img.file_path.get_list.args.folder.list) value is used.
 2. **File Path Collection:** Next, it iterates through the *folder list* determined in the previous step, constructs the *full path* for each folder, and retrieves all file paths in that folder.
-
-3. Capping and Sampling: If the value for the [char_files.max] argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value. 
-  1. In the latter case, further processing depends on the value of the [random_sample] argument. If it is TRUE, a sample of the size provided in the [char_files.max] argument is taken using a reproducibility seed offset by the folder's index if a seed is provided (the value of the [seed] argument is not $NA$). Otherwise, a top list of the size provided in the [char_files.max] argument is selected.
-  2. Otherwise, the full list of file paths obtained in the previous step is used for the final result.
-
-
+3. *Capping and Sampling:* If the value for the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value. 
 
 ::: {.noteblock data-latex=""}
-This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.img.file_path.get_list.usage) section of *this Description*.
+- If the condition above is met, the *file selection method* depends on the value of the [random_sample](#func.img.file_path.get_list.args.random_sample) argument. If it is $TRUE$, a *sample* of the size provided in the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is taken using a *reproducibility seed offset* by the folder's index if a *seed* is provided (the value of the [seed](#func.img.file_path.get_list.args.seed) argument is not $NA$). Otherwise, a top list of the size provided in the [char_files.max](#func.img.file_path.get_list.args.char_files.max) argument is selected.
+- Otherwise, the full list of file paths obtained in the previous step is used for the final result.
+
 :::
 :::
 
@@ -214,14 +252,14 @@ This is an auxiliary function that is used internally in the [](#) function as s
 ##### Value
 \
 
-A named nested list where each element represents a subfolder, containing its root path and the file path list.
+A *named nested list* where each element represents a *subfolder*, containing its *root path* and the *file path list*.
 :::
 
 ::: { #func.img.file_path.get_list.code .sidebar }
 ##### Source Code
 \
 
-The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) of the function is shown below:
+The slightly simplified version of the function's source code is shown below:
 ```{r src@img.file_path.get_list, eval=FALSE}
 img.file_path.get_list <- function(root_path, 
                                    folder.list = NULL, 
@@ -234,14 +272,11 @@ img.file_path.get_list <- function(root_path,
 
   # Generates a file path list
   path_list <- lapply(folder.list, function(folder_name){
-    # Constructs the full path and retrieves all file paths for the given folder name.
+    #' Constructs the full path and retrieves all file paths 
+    #' for the given folder name.
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
-    put_log("Function: `img.file_path.get_list`:
-Getting file path list from the following char's root folders:
-%1", file.root_path)
-
     fpath.list <- list.files(file.root_path, 
                              full.names = TRUE)
     
@@ -253,7 +288,8 @@ Getting file path list from the following char's root folders:
       
       # If a seed is provided.
       if (!is.na(seed)) {
-        # Applies a reproducibility seed offset by the folder's index
+        #' Applies a reproducibility seed offset 
+        #' by the folder's index
         set.seed(seed + folder.idx)
       }
       
@@ -262,25 +298,28 @@ Getting file path list from the following char's root folders:
         # Samples the files randomly
         file.idx <- sample(fpath.len, size = char_files.max)
       } else {
-        # Selects the top file according to the specified limit.
+        #' Selects the `char_files.max` top files 
+        #' according to the specified limit.
         file.idx <- seq_len(char_files.max)
       }
       
       fpath.list <- fpath.list[file.idx]
     }
     
-    put_log("Function: `img.file_path.get_list`:
-%1 files in folder: %2", length(fpath.list), folder_name)
-
     list(root_path = file.root_path,
          file_path.list = fpath.list)
   })
   
-  # Shortens the name of each list item to the first character of the folder name..
+  #' Shortens the name of each list item to the first character 
+  #' of the folder name..
   names(path_list) <- folder.list |> substr(1,1)
   path_list
 }
 ```
+
+::: {.noteblock data-latex=""}
+The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) is available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+:::
 
 \newpage
 
@@ -302,7 +341,7 @@ This specialized utility function reads an image file, dynamically detects wheth
                                         fn.load_image.dat = load.img_trimmed.dat,
                                         folder.list = NULL,
                                         char_files.max = NA,
-                                        char_files.seed = NA,
+                                        seed = NA,
                                         random_sample = FALSE)
 ```
 

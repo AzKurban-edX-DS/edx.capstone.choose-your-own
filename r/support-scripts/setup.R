@@ -174,6 +174,7 @@ source(log_func_script.file_path,
        keep.source = TRUE)
 
 ## Init Project Directories ----------------------------------------------------
+knitr.proj_root <- '../../' 
 ### `R` Script Directories -----------------------------------------------------
 
 put_log("Root directory for the `R` scripts:
