@@ -42,7 +42,7 @@ Finally, we will conduct a final test of the best model we have developed, using
 
 ## Environment Setup
 ::: {.noteblock data-latex=""}
-The environment setup instructions are provided in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md#prerequisites--setup) section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own).
+The environment setup instructions are provided in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md#prerequisites--setup) Section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own).
 :::
 
 The environment setup configures an `R`-based machine learning environment with *Python* integration, required to build the *Deep Learning* models.
@@ -69,7 +69,7 @@ The installation follows a *4-step* process by sequentially running the followin
 
 ### Batch Execution & Cleanup Scripts
 
-As stated in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md#prerequisites--setup) section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own), on *Windows OS*, all 4 steps of the setup process described above can be completed automatically by launching the [__setup-env.cmd](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__setup-env.cmd) *Windows command script* in *PowerShell* or *Command Prompt*.
+As stated in the [Prerequisites & Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md#prerequisites--setup) Section of the [README](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md) document on [GitHub](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own), on *Windows OS*, all 4 steps of the setup process described above can be completed automatically by launching the [__setup-env.cmd](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__setup-env.cmd) *Windows command script* in *PowerShell* or *Command Prompt*.
 
 The script [__uninstall-all.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R) cleans up the environment by wiping installed packages, *Conda environments*, and *Python bindings*.
 
@@ -124,7 +124,7 @@ Besides, any of these scripts can be launched separately, or the execution can b
 :::
 
 ::: {.importantblock data-latex=""}
-If the interrupted execution resumes in another *`R` session*, the [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) section (with all its subsections) of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) script **\underline{must be run first at the very beginning of the session}**. 
+If the interrupted execution resumes in another *`R` session*, the [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) Section (with all its subsections) of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) script **\underline{must be run first at the very beginning of the session}**. 
 :::
 
 ### The Main `R` Script
@@ -134,13 +134,13 @@ Below is a detailed description of the script's structure, workflow, and core co
 
 
 #### Setup & Initialization
-The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L60) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
+The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) Section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L60) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
 
 ::: {.importantblock data-latex=""}
-Code in this section \underline{must run at the very beginning} of every _`R` session_ **\underline{before any other script executes}**.
+Code in this Section \underline{must run at the very beginning} of every _`R` session_ **\underline{before any other script executes}**.
 :::
 
-The code in this section first calls the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script (on [line 6](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L6)) to initialize global variables for the following `R` scripts' directory paths:
+The code in this Section first calls the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script (on [line 6](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L6)) to initialize global variables for the following `R` scripts' directory paths:
 
 - [root `R` scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r);
 - [support scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts);
@@ -174,7 +174,7 @@ Below is a detailed breakdown of the code by sections.
 ###### [Install Packages](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L8-L85) Section  
 \
 
-The code in this section automatically checks for required `R` packages across multiple domains and installs them if some or all are not installed.
+The code in this Section automatically checks for required `R` packages across multiple domains and installs them if some or all are not installed.
 
 ###### [Load Libraries & resolve conflicts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L86-L167) Section  
 \

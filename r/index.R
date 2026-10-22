@@ -911,7 +911,7 @@ str(missclass.G_as_9)
 print.missclass_image.grid(missclass.G_as_9,
                            tile = '6x100')
 
-# Appendix: The Device (laptop) Info Where the Project was Build & Tested ---------------
+# Appendix: Device (Laptop) Used for Development & Testing ---------------
 
 # Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
 # Installed RAM	32.0 GB (31.7 GB usable)
@@ -919,7 +919,7 @@ print.missclass_image.grid(missclass.G_as_9,
 
 # Edition	Windows 11 Pro
 # Version	25H2
-# Installed on	‎12/‎14/‎2024
+# Installed on	12/14/2024
 # OS build	26200.8973
 # Experience	Windows Feature Experience Pack 1000.26100.344.0
 

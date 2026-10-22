@@ -4,15 +4,21 @@
 
 ## Data Loading ----------------------------------------------------------------
 kaggle_cli.download <- function(dataset.dir, data.local_path, unzip = FALSE) {
+  # Check for Kaggle CLI Installation
   if (system("kaggle --version", ignore.stdout = TRUE, ignore.stderr = TRUE) != 0) {
+    #' Kaggle command-line interface is missing or not configured 
+    #' in your system's PATH.
     stop("Kaggle CLI is not installed or not in the PATH.")
   }
   
+  # Download the Dataset via CLI
   if (system(trimws(paste("kaggle datasets download", kaggle_dataset, "--path", 
                           data.local_path, ifelse(unzip, "--unzip", "")))) != 0) {
     stop(str.build("Failed to download the dataset with Kaggle CLI: `%1`.", dataset.dir))
   }
   
+  #'Verify that the dataset’s local directory exists, 
+  #'as it should have been created automatically during the download.
   if(!dir.exists(data.local_path)) {
     stop(str.build("Failed to download and unzip the Kaggle dataset: `%1`.", dataset.dir))
   }
@@ -491,9 +497,20 @@ as.matrix.cimg <- function(cimg.list, class.label) {
 }
 
 magick_img2matrix <- function(img){
+  #' Extract the underlying raw byte array buffer 
+  #' from the `magick` image object.
   img.dat <- image_data(img)
+  
+  #' Slice the multidimensional array to isolate 
+  #' the primary color channel matrix (capture the single intensity plane).
   mx.bin <- img.dat[1,,]
+  
+  #' Cast the extracted data array elements from raw/character bytes 
+  #' into a numeric data type.
   mode(mx.bin) <- "numeric"
+  
+  #' Normalize pixel values into a clean floating-point scale 
+  #' ranging from 0.0 (black/background) to 1.0. 
   mx.bin /255
 }
 

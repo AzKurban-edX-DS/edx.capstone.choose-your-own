@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-20}
+\date{2026-10-22}
 
 \begin{document}
 \maketitle
@@ -225,7 +225,7 @@ Finally, we will conduct a final test of the best model we have developed, using
 \section{Environment Setup}\label{environment-setup}
 
 \begin{noteblock}
-The environment setup instructions are provided in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md\#prerequisites--setup}{Prerequisites \& Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}.
+The environment setup instructions are provided in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md\#prerequisites--setup}{Prerequisites \& Setup} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}.
 
 \end{noteblock}
 
@@ -283,7 +283,7 @@ The installation follows a \emph{4-step} process by sequentially running the fol
 
 \subsection{Batch Execution \& Cleanup Scripts}\label{batch-execution-cleanup-scripts}
 
-As stated in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md\#prerequisites--setup}{Prerequisites \& Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}, on \emph{Windows OS}, all 4 steps of the setup process described above can be completed automatically by launching the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__setup-env.cmd}{\_\_setup-env.cmd} \emph{Windows command script} in \emph{PowerShell} or \emph{Command Prompt}.
+As stated in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md\#prerequisites--setup}{Prerequisites \& Setup} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/README.md}{README} document on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own}{GitHub}, on \emph{Windows OS}, all 4 steps of the setup process described above can be completed automatically by launching the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__setup-env.cmd}{\_\_setup-env.cmd} \emph{Windows command script} in \emph{PowerShell} or \emph{Command Prompt}.
 
 The script \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup-env/__uninstall-all.R}{\_\_uninstall-all.R} cleans up the environment by wiping installed packages, \emph{Conda environments}, and \emph{Python bindings}.
 
@@ -374,7 +374,7 @@ Besides, any of these scripts can be launched separately, or the execution can b
 \end{noteblock}
 
 \begin{importantblock}
-If the interrupted execution resumes in another \emph{\texttt{R} session}, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} section (with all its subsections) of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{index.R} script \textbf{\underline{must be run first at the very beginning of the session}}.
+If the interrupted execution resumes in another \emph{\texttt{R} session}, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} Section (with all its subsections) of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{index.R} script \textbf{\underline{must be run first at the very beginning of the session}}.
 
 \end{importantblock}
 
@@ -385,14 +385,14 @@ Below is a detailed description of the script's structure, workflow, and core co
 
 \subsubsection{Setup \& Initialization}\label{setup-initialization}
 
-The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L60}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, along with downloading, preparing, and preprocessing the project's datasets.
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L60}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, along with downloading, preparing, and preprocessing the project's datasets.
 
 \begin{importantblock}
-Code in this section \underline{must run at the very beginning} of every \emph{\texttt{R} session} \textbf{\underline{before any other script executes}}.
+Code in this Section \underline{must run at the very beginning} of every \emph{\texttt{R} session} \textbf{\underline{before any other script executes}}.
 
 \end{importantblock}
 
-The code in this section first calls the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L6}{line 6}) to initialize global variables for the following \texttt{R} scripts' directory paths:
+The code in this Section first calls the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L6}{line 6}) to initialize global variables for the following \texttt{R} scripts' directory paths:
 
 \begin{itemize}
 \tightlist
@@ -444,7 +444,7 @@ Below is a detailed breakdown of the code by sections.
 
 \hfill\break
 
-The code in this section automatically checks for required \texttt{R} packages across multiple domains and installs them if some or all are not installed.
+The code in this Section automatically checks for required \texttt{R} packages across multiple domains and installs them if some or all are not installed.
 
 \subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L86-L167}{Load Libraries \& resolve conflicts} Section}{Load Libraries \& resolve conflicts Section}}\label{load-libraries-resolve-conflicts-section}
 
@@ -562,12 +562,208 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 
 \hfill\break
 
-\subsection{Data Loading}\label{data-loading}
+\subsection{Data Loading}\label{appndx_a.dat_load}
 
 \begin{noteblock}
-The complete source code of the functions described in this section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{Data loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{data-helper.R} script on \emph{GitHub}.
+The complete source code of the functions described in this Section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{Data Loading} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{data-helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{kaggle\_cli.download} Function}{kaggle\_cli.download Function}}\label{func.kaggle_cli.download}
+
+\hfill\break
+
+Automates downloading datasets directly from \href{https://www.kaggle.com/datasets}{Kaggle} into a specified local directory using the \href{https://github.com/Kaggle/kaggle-cli/blob/main/docs/datasets.md\#kaggle-datasets-download}{Kaggle command-line interface* (\emph{CLI})}.
+
+\newpage
+
+\protect\phantomsection\label{func.kaggle_cli.download.usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R\#L16}{Usage}}{Usage}}\label{usage}
+
+\hfill\break
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{kaggle\_dataset }\OtherTok{\textless{}{-}} \StringTok{"vaibhao/handwritten{-}characters"}
+
+  \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Downloading dataset \textasciigrave{}\%1\textasciigrave{} ..."}\NormalTok{, kaggle\_dataset)}
+  \FunctionTok{kaggle\_cli.download}\NormalTok{(kaggle\_dataset, raw\_data.chars.dir, }\AttributeTok{unzip =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The Kaggle image files have been downloaded 
+## and unziped to the following directory: 
+## `../../data/raw/Vaibs.HW-Chars`
+\end{verbatim}
+
+\begin{verbatim}
+## *** Dataset Raw Data Local Directory Structure ***
+\end{verbatim}
+
+\begin{verbatim}
+## ../../data/raw/Vaibs.HW-Chars
+## +-- Train
+## |   +-- #
+## |   +-- $
+## |   +-- &
+## |   +-- 0
+## |   +-- 1
+## |   +-- 2
+## |   +-- 3
+## |   +-- 4
+## |   +-- 5
+## |   +-- 6
+## |   +-- 7
+## |   +-- 8
+## |   +-- 9
+## |   +-- @
+## |   +-- A
+## |   +-- B
+## |   +-- C
+## |   +-- D
+## |   +-- E
+## |   +-- F
+## |   +-- G
+## |   +-- H
+## |   +-- I
+## |   +-- J
+## |   +-- K
+## |   +-- L
+## |   +-- M
+## |   +-- N
+## |   +-- P
+## |   +-- Q
+## |   +-- R
+## |   +-- S
+## |   +-- T
+## |   +-- U
+## |   +-- V
+## |   +-- W
+## |   +-- X
+## |   +-- Y
+## |   \-- Z
+## \-- Validation
+##     +-- #
+##     +-- $
+##     +-- &
+##     +-- 0
+##     +-- 1
+##     +-- 2
+##     +-- 3
+##     +-- 4
+##     +-- 5
+##     +-- 6
+##     +-- 7
+##     +-- 8
+##     +-- 9
+##     +-- @
+##     +-- A
+##     +-- B
+##     +-- C
+##     +-- D
+##     +-- E
+##     +-- F
+##     +-- G
+##     +-- H
+##     +-- I
+##     +-- J
+##     +-- K
+##     +-- L
+##     +-- M
+##     +-- N
+##     +-- P
+##     +-- Q
+##     +-- R
+##     +-- S
+##     +-- T
+##     +-- U
+##     +-- V
+##     +-- W
+##     +-- X
+##     +-- Y
+##     \-- Z
+\end{verbatim}
+
+\protect\phantomsection\label{func.kaggle_cli.download.args}
+\paragraph{Arguments}\label{arguments}
+
+\hfill\break
+
+\protect\phantomsection\label{func.kaggle_cli.download.args.arg1}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{dataset.dir:} \emph{Remote path} to the \href{https://www.kaggle.com/datasets}{Kaggle dataset};
+\end{itemize}
+
+\protect\phantomsection\label{func.kaggle_cli.download.args.arg2}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{data.local\_path:} \emph{Local directory path} where the dataset files are saved;
+\end{itemize}
+
+\protect\phantomsection\label{func.kaggle_cli.download.args.arg5}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{unzip:} (Optional, \emph{Boolean}, \(FALSE\) by default) Logical flag indicating whether the \emph{downloaded archive} should be automatically unzipped.
+\end{itemize}
+
+\protect\phantomsection\label{func.kaggle_cli.download.details}
+\paragraph{Details}\label{details}
+
+\hfill\break
+
+Below is the \emph{step-by-step execution flow} of the function:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Prerequisite Check:} Verifies that the \href{https://github.com/Kaggle/kaggle-cli/blob/main/docs/datasets.md\#kaggle-datasets-download}{Kaggle CLI} is installed and accessible in the system's PATH (by running the kaggle --version command).
+\item
+  \textbf{Download Operation:} Executes the CLI command \texttt{kaggle\ datasets\ download\ \textless{}kaggle\_dataset\textgreater{}\ -\/-path\ \textless{}path\textgreater{}} (with an optional \texttt{-\/-unzip} flag if requested).
+\item
+  \textbf{Verification:} Checks that the local destination directory exists after the download completes, indicating that the download operation was successful.
+\end{enumerate}
+
+\newpage
+
+\protect\phantomsection\label{func.kaggle_cli.download.code}
+\paragraph{Source Code}\label{source-code}
+
+\hfill\break
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{source code} of the function is shown below:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{kaggle\_cli.download }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(dataset.dir, data.local\_path, }\AttributeTok{unzip =} \ConstantTok{FALSE}\NormalTok{) \{}
+  \CommentTok{\# Check for Kaggle CLI Installation}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{system}\NormalTok{(}\StringTok{"kaggle {-}{-}version"}\NormalTok{, }\AttributeTok{ignore.stdout =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{ignore.stderr =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{!=} \DecValTok{0}\NormalTok{) \{}
+    \CommentTok{\#\textquotesingle{} Kaggle command{-}line interface is missing or not configured }
+    \CommentTok{\#\textquotesingle{} in your system\textquotesingle{}s PATH.}
+    \FunctionTok{stop}\NormalTok{(}\StringTok{"Kaggle CLI is not installed or not in the PATH."}\NormalTok{)}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Download the Dataset via CLI}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{system}\NormalTok{(}\FunctionTok{trimws}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"kaggle datasets download"}\NormalTok{, kaggle\_dataset, }\StringTok{"{-}{-}path"}\NormalTok{, }
+\NormalTok{                          data.local\_path, }\FunctionTok{ifelse}\NormalTok{(unzip, }\StringTok{"{-}{-}unzip"}\NormalTok{, }\StringTok{""}\NormalTok{)))) }\SpecialCharTok{!=} \DecValTok{0}\NormalTok{) \{}
+    \FunctionTok{stop}\NormalTok{(}\FunctionTok{str.build}\NormalTok{(}\StringTok{"Failed to download the dataset with Kaggle CLI: \textasciigrave{}\%1\textasciigrave{}."}\NormalTok{, dataset.dir))}
+\NormalTok{  \}}
+  
+  \CommentTok{\#\textquotesingle{}Verify that the dataset’s local directory exists, }
+  \CommentTok{\#\textquotesingle{}as it should have been created automatically during the download.}
+  \ControlFlowTok{if}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{dir.exists}\NormalTok{(data.local\_path)) \{}
+    \FunctionTok{stop}\NormalTok{(}\FunctionTok{str.build}\NormalTok{(}\StringTok{"Failed to download and unzip the Kaggle dataset: \textasciigrave{}\%1\textasciigrave{}."}\NormalTok{, dataset.dir))}
+\NormalTok{  \}}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
 
 \subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L80}{load\_image.list} Function}{load\_image.list Function}}\label{func.load_image.list}
 
@@ -576,7 +772,7 @@ The complete source code of the functions described in this section is available
 This is a core utility designed to recursively traverse a root directory passed in the \hyperref[func.load_image.list.args.root_path]{root\_path} argument, discover character-specific (or class-specific, in the terms of the project's multiclass classifier models) subfolders, load data from raw image files (downloaded from the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} platform) using a custom parsing function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument, filter out empty or invalid images, and organize everything into an \texttt{R} list object with the corresponding labels and file paths.
 
 \protect\phantomsection\label{func.load_image.list.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L12}{Usage}}{Usage}}\label{usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L12}{Usage}}{Usage}}\label{usage-1}
 
 \hfill\break
 
@@ -889,7 +1085,7 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 \newpage
 
 \protect\phantomsection\label{func.load_image.list.args}
-\paragraph{Arguments}\label{arguments}
+\paragraph{Arguments}\label{arguments-1}
 
 \hfill\break
 
@@ -936,7 +1132,7 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 \end{itemize}
 
 \protect\phantomsection\label{func.load_image.list.details}
-\paragraph{Details}\label{details}
+\paragraph{Details}\label{details-1}
 
 \hfill\break
 
@@ -945,7 +1141,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.seed]{seed} argument value is not \texttt{NA}).
+  \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} Section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.seed]{seed} argument value is not \texttt{NA}).
 \item
   \textbf{Label Generation:} Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
 \item
@@ -982,7 +1178,7 @@ Structured list containing two primary components:
 \newpage
 
 \protect\phantomsection\label{func.load_image.list.code}
-\paragraph{Source Code}\label{source-code}
+\paragraph{Source Code}\label{source-code-1}
 
 \hfill\break
 
@@ -1041,7 +1237,7 @@ The simplified version of the function's source code is shown below:
 \end{Shaded}
 
 \begin{noteblock}
-The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L80}{source code} is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L-L}{Data Loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
+The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L80}{source code} is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L-L}{Data Loading} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
 
@@ -1054,7 +1250,7 @@ The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capston
 This function traverses \emph{image directories}, collects \emph{file paths} grouped by \emph{folder} (representing \emph{class labels}), and optionally limits, seeds, or randomly samples files for \emph{dataset preparation}.
 
 \protect\phantomsection\label{func.img.file_path.get_list.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Usage}}{Usage}}\label{usage-1}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Usage}}{Usage}}\label{usage-2}
 
 \hfill\break
 
@@ -1074,7 +1270,7 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \begin{verbatim}
 ## Function `load_image.list`:
 ## Getting file path lists from the following Root Path:
-## ../..//data/raw/Vaibs.HW-Chars/Train
+## ../../data/raw/Vaibs.HW-Chars/Train
 \end{verbatim}
 
 \begin{Shaded}
@@ -1098,203 +1294,203 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \begin{verbatim}
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/#
+## ../../data/raw/Vaibs.HW-Chars/Train/#
 ## Function: `img.file_path.get_list`:
 ## 15600 files in folder: #
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/$
+## ../../data/raw/Vaibs.HW-Chars/Train/$
 ## Function: `img.file_path.get_list`:
 ## 16199 files in folder: $
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/&
+## ../../data/raw/Vaibs.HW-Chars/Train/&
 ## Function: `img.file_path.get_list`:
 ## 13000 files in folder: &
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/@
+## ../../data/raw/Vaibs.HW-Chars/Train/@
 ## Function: `img.file_path.get_list`:
 ## 38009 files in folder: @
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/0
+## ../../data/raw/Vaibs.HW-Chars/Train/0
 ## Function: `img.file_path.get_list`:
 ## 65504 files in folder: 0
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/1
+## ../../data/raw/Vaibs.HW-Chars/Train/1
 ## Function: `img.file_path.get_list`:
 ## 43773 files in folder: 1
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/2
+## ../../data/raw/Vaibs.HW-Chars/Train/2
 ## Function: `img.file_path.get_list`:
 ## 39351 files in folder: 2
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/3
+## ../../data/raw/Vaibs.HW-Chars/Train/3
 ## Function: `img.file_path.get_list`:
 ## 39996 files in folder: 3
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/4
+## ../../data/raw/Vaibs.HW-Chars/Train/4
 ## Function: `img.file_path.get_list`:
 ## 38112 files in folder: 4
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/5
+## ../../data/raw/Vaibs.HW-Chars/Train/5
 ## Function: `img.file_path.get_list`:
 ## 32317 files in folder: 5
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/6
+## ../../data/raw/Vaibs.HW-Chars/Train/6
 ## Function: `img.file_path.get_list`:
 ## 38879 files in folder: 6
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/7
+## ../../data/raw/Vaibs.HW-Chars/Train/7
 ## Function: `img.file_path.get_list`:
 ## 41080 files in folder: 7
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/8
+## ../../data/raw/Vaibs.HW-Chars/Train/8
 ## Function: `img.file_path.get_list`:
 ## 38795 files in folder: 8
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/9
+## ../../data/raw/Vaibs.HW-Chars/Train/9
 ## Function: `img.file_path.get_list`:
 ## 38319 files in folder: 9
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/A
+## ../../data/raw/Vaibs.HW-Chars/Train/A
 ## Function: `img.file_path.get_list`:
 ## 17205 files in folder: A
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/B
+## ../../data/raw/Vaibs.HW-Chars/Train/B
 ## Function: `img.file_path.get_list`:
 ## 8666 files in folder: B
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/C
+## ../../data/raw/Vaibs.HW-Chars/Train/C
 ## Function: `img.file_path.get_list`:
 ## 13560 files in folder: C
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/D
+## ../../data/raw/Vaibs.HW-Chars/Train/D
 ## Function: `img.file_path.get_list`:
 ## 15509 files in folder: D
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/E
+## ../../data/raw/Vaibs.HW-Chars/Train/E
 ## Function: `img.file_path.get_list`:
 ## 32627 files in folder: E
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/F
+## ../../data/raw/Vaibs.HW-Chars/Train/F
 ## Function: `img.file_path.get_list`:
 ## 11636 files in folder: F
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/G
+## ../../data/raw/Vaibs.HW-Chars/Train/G
 ## Function: `img.file_path.get_list`:
 ## 5443 files in folder: G
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/H
+## ../../data/raw/Vaibs.HW-Chars/Train/H
 ## Function: `img.file_path.get_list`:
 ## 12134 files in folder: H
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/I
+## ../../data/raw/Vaibs.HW-Chars/Train/I
 ## Function: `img.file_path.get_list`:
 ## 13873 files in folder: I
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/J
+## ../../data/raw/Vaibs.HW-Chars/Train/J
 ## Function: `img.file_path.get_list`:
 ## 4261 files in folder: J
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/K
+## ../../data/raw/Vaibs.HW-Chars/Train/K
 ## Function: `img.file_path.get_list`:
 ## 4334 files in folder: K
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/L
+## ../../data/raw/Vaibs.HW-Chars/Train/L
 ## Function: `img.file_path.get_list`:
 ## 21648 files in folder: L
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/M
+## ../../data/raw/Vaibs.HW-Chars/Train/M
 ## Function: `img.file_path.get_list`:
 ## 12089 files in folder: M
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/N
+## ../../data/raw/Vaibs.HW-Chars/Train/N
 ## Function: `img.file_path.get_list`:
 ## 21421 files in folder: N
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/P
+## ../../data/raw/Vaibs.HW-Chars/Train/P
 ## Function: `img.file_path.get_list`:
 ## 11095 files in folder: P
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/Q
+## ../../data/raw/Vaibs.HW-Chars/Train/Q
 ## Function: `img.file_path.get_list`:
 ## 4707 files in folder: Q
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/R
+## ../../data/raw/Vaibs.HW-Chars/Train/R
 ## Function: `img.file_path.get_list`:
 ## 20498 files in folder: R
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/S
+## ../../data/raw/Vaibs.HW-Chars/Train/S
 ## Function: `img.file_path.get_list`:
 ## 25911 files in folder: S
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/T
+## ../../data/raw/Vaibs.HW-Chars/Train/T
 ## Function: `img.file_path.get_list`:
 ## 30853 files in folder: T
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/U
+## ../../data/raw/Vaibs.HW-Chars/Train/U
 ## Function: `img.file_path.get_list`:
 ## 16385 files in folder: U
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/V
+## ../../data/raw/Vaibs.HW-Chars/Train/V
 ## Function: `img.file_path.get_list`:
 ## 7246 files in folder: V
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/W
+## ../../data/raw/Vaibs.HW-Chars/Train/W
 ## Function: `img.file_path.get_list`:
 ## 7266 files in folder: W
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/X
+## ../../data/raw/Vaibs.HW-Chars/Train/X
 ## Function: `img.file_path.get_list`:
 ## 5106 files in folder: X
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/Y
+## ../../data/raw/Vaibs.HW-Chars/Train/Y
 ## Function: `img.file_path.get_list`:
 ## 6762 files in folder: Y
 ## Function: `img.file_path.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../..//data/raw/Vaibs.HW-Chars/Train/Z
+## ../../data/raw/Vaibs.HW-Chars/Train/Z
 ## Function: `img.file_path.get_list`:
 ## 4867 files in folder: Z
 \end{verbatim}
 
 \protect\phantomsection\label{func.img.file_path.get_list.args}
-\paragraph{Arguments}\label{arguments-1}
+\paragraph{Arguments}\label{arguments-2}
 
 \hfill\break
 
@@ -1334,11 +1530,11 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \end{itemize}
 
 \protect\phantomsection\label{func.img.file_path.get_list.details}
-\paragraph{Details}\label{details-1}
+\paragraph{Details}\label{details-2}
 
 \hfill\break
 
-This is an auxiliary function that is used internally in the \hyperref[func.load_image.list]{load\_image.list} function as shown above in the \hyperref[func.img.file_path.get_list.usage]{Usage} section of \emph{this Description}.
+This is an auxiliary function that is used internally in the \hyperref[func.load_image.list]{load\_image.list} function as shown above in the \hyperref[func.img.file_path.get_list.usage]{Usage} Section of \emph{this Description}.
 
 Below is the \emph{step-by-step execution flow} of the function:
 
@@ -1373,7 +1569,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 A \emph{named nested list} where each element represents a \emph{subfolder}, containing its \emph{root path} and the \emph{file path list}.
 
 \protect\phantomsection\label{func.img.file_path.get_list.code}
-\paragraph{Source Code}\label{source-code-1}
+\paragraph{Source Code}\label{source-code-2}
 
 \hfill\break
 
@@ -1439,7 +1635,7 @@ The slightly simplified version of the function's source code is shown below:
 \end{Shaded}
 
 \begin{noteblock}
-The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{source code} is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L-L}{Data Loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
+The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{source code} is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L-L}{Data Loading} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
 
@@ -1452,7 +1648,7 @@ The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capston
 This specialized utility function reads an image file, dynamically detects whether it contains nonzero pixel data, optionally trims whitespace or empty borders around the visual features using the \href{https://docs.ropensci.org/magick/index.html}{magick package}, and extracts its raw data matrix structure.
 
 \protect\phantomsection\label{func.load.img_trimmed.dat.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L12}{Usage}}{Usage}}\label{usage-2}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R\#L12}{Usage}}{Usage}}\label{usage-3}
 
 \hfill\break
 
@@ -1474,7 +1670,7 @@ In the \emph{code snippet} above, a pointer to \emph{this function} is passed in
 \end{noteblock}
 
 \protect\phantomsection\label{func.load.img_trimmed.dat.args}
-\paragraph{Arguments}\label{arguments-2}
+\paragraph{Arguments}\label{arguments-3}
 
 \hfill\break
 
@@ -1486,7 +1682,7 @@ In the \emph{code snippet} above, a pointer to \emph{this function} is passed in
 \end{itemize}
 
 \protect\phantomsection\label{func.load.img_trimmed.dat.details}
-\paragraph{Details}\label{details-2}
+\paragraph{Details}\label{details-3}
 
 \hfill\break
 
@@ -1497,7 +1693,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 \item
   \textbf{\emph{Image Loading:}} The function begins by reading the image file from disk into memory as an object using \href{https://docs.ropensci.org/magick/reference/editing.html}{magick::image\_read}.
 \item
-  \textbf{\emph{Matrix Conversion \& Validation:}} Converts the loaded image into a numeric matrix representation using the user-defined helper function \hyperref[func.magick_img2matrix]{magick\_img2matrix} described below in described below in the \hyperref[appndx_aux40img_proc]{Image Processing} section.
+  \textbf{\emph{Matrix Conversion \& Validation:}} Converts the loaded image into a numeric matrix representation using the user-defined helper function \hyperref[func.magick_img2matrix]{magick\_img2matrix} described below in described below in the \hyperref[appndx_aux40img_proc]{Image Processing} Section.
 \item
   \textbf{\emph{Image Validation \& Conditional Cropping:}} Evaluates the matrix's maximum value to check whether the image is entirely blank or empty. If valid content exists (the maximum pixel value is greater than zero), it applies \href{https://docs.ropensci.org/magick/reference/editing.html}{magick::image\_trim} to automatically crop out uniform background borders or whitespace, centering the content around the core visual features.
 \item
@@ -1505,7 +1701,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 \end{enumerate}
 
 \begin{noteblock}
-This is an auxiliary function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function, as shown above in the \hyperref[func.load.img_trimmed.dat.usage]{Usage} section of \emph{this Description}.
+This is an auxiliary function, the pointer to which is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function, as shown above in the \hyperref[func.load.img_trimmed.dat.usage]{Usage} Section of \emph{this Description}.
 
 \end{noteblock}
 
@@ -1514,12 +1710,12 @@ This is an auxiliary function, the pointer to which is passed in the \hyperref[f
 
 \hfill\break
 
-Raw pixel buffer data from the trimmed image returned by the internal function call of \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{magick::image\_data}.
+Raw pixel buffer data from the trimmed image, returned by the internal call to \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{magick::image\_data}.
 
 \newpage
 
 \protect\phantomsection\label{func.load.img_trimmed.dat.code}
-\paragraph{Source Code}\label{source-code-2}
+\paragraph{Source Code}\label{source-code-3}
 
 \hfill\break
 
@@ -1549,7 +1745,7 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 \end{Shaded}
 
 \begin{noteblock}
-During the execution, it calls internally the user-defined helper function \hyperref[func.magick_img2matrix]{magick\_img2matrix} described below in section \hyperref[appndx_a.img_proc]{Image Processing} of \hyperref[appndx_a]{Appendix A} of \emph{this Report}.
+During the execution, it calls internally the user-defined helper function \hyperref[func.magick_img2matrix]{magick\_img2matrix} described below in Section \hyperref[appndx_a.img_proc]{Image Processing} of \hyperref[appndx_a]{Appendix A} of \emph{this Report}.
 
 \end{noteblock}
 
@@ -1558,7 +1754,7 @@ During the execution, it calls internally the user-defined helper function \hype
 \subsection{Image Processing}\label{appndx_a.img_proc}
 
 \begin{noteblock}
-The complete source code of the functions described in this section is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{Image Processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{data-helper.R} script on \emph{GitHub}.
+The complete source code of the functions described in this Section is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{Image Processing} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{data-helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
 
@@ -1566,10 +1762,10 @@ The complete source code of the functions described in this section is available
 
 \hfill\break
 
-This is a lightweight utility that converts a \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object} into a \emph{normalized numeric matrix of pixel intensities}.
+This is a lightweight utility that converts a \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{\emph{\textbf{magick} image} object} into a \emph{normalized numeric matrix of pixel intensities}.
 
 \protect\phantomsection\label{func.magick_img2matrix.usage}
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Usage}}{Usage}}\label{usage-3}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Usage}}{Usage}}\label{usage-4}
 
 \hfill\break
 
@@ -1595,7 +1791,7 @@ This is a lightweight utility that converts a \href{https://docs.ropensci.org/ma
 \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
 
 \begin{noteblock}
-In the \emph{code snippet} above, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in \emph{this Section}.
+In the \emph{code snippet} below, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in Section \hyperref[appndx_a.dat_load]{Data Loading}.
 
 \end{noteblock}
 
@@ -1629,7 +1825,7 @@ In the \emph{code snippet} above, \emph{this function} is called internally from
 \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.data_view-1.pdf}}
 
 \protect\phantomsection\label{func.magick_img2matrix.args}
-\paragraph{Arguments}\label{arguments-3}
+\paragraph{Arguments}\label{arguments-4}
 
 \hfill\break
 
@@ -1641,7 +1837,7 @@ In the \emph{code snippet} above, \emph{this function} is called internally from
 \end{itemize}
 
 \protect\phantomsection\label{func.magick_img2matrix.details}
-\paragraph{Details}\label{details-3}
+\paragraph{Details}\label{details-4}
 
 \hfill\break
 
@@ -1651,18 +1847,17 @@ Below is the \emph{step-by-step execution flow} of the function:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L486}{Line 482}) \textbf{\emph{Raw Binary Data Extraction:}} The function calls the {[}image\_data{]} function to extract the underlying raw hexadecimal or integer byte-array buffer from the \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{Magick Image object}.
+  \textbf{\emph{Raw Binary Data Extraction:}} The function calls the {[}image\_data{]} function to extract the underlying raw hexadecimal or integer byte array buffer from the \href{https://docs.ropensci.org/magick/reference/editing.html\#details}{\emph{magick} Image object}.
 \item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L487}{(Line 483}) \textbf{\emph{Color Channel Isolation:}}
-  Slices the multidimensional array to isolate the primary color channel matrix. For grayscale or black-and-white pipeline images (as in our case), this captures the single intensity plane.
+  \textbf{\emph{Color Channel Isolation:}} Slices the multidimensional array to isolate the primary color channel matrix. For grayscale or black-and-white pipeline images (as in our case), this captures the single intensity plane.
 \item
-  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L488}{Line 484}) \textbf{\emph{Data Type Conversion:}} Explicitly casts the extracted data array elements from raw/character bytes into a numeric data type, making mathematical operations possible.
+  \textbf{\emph{Data Type Conversion:}} Explicitly casts the extracted data array elements from raw/character bytes into a numeric data type, making mathematical operations possible.
 \item
-  (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L489}{Line 485}) \textbf{\emph{Min-Max Normalization:}} Divides the entire matrix by 255 (the maximum 8-bit color intensity value) to normalize pixel values into a clean floating-point scale ranging from 0.0 (black/background) to 1.0
+  \textbf{\emph{Min-Max Normalization:}} Divides the entire matrix by 255 (the maximum 8-bit color intensity value) to normalize pixel values into a clean floating-point scale ranging from 0.0 (black/background) to 1.0
 \end{enumerate}
 
 \begin{noteblock}
-This is a utility function used internally by the other user-defined functions, as shown in the usage example above in the \hyperref[func.magick_img2matrix.usage]{Usage} section of \emph{this Description}.
+This is a utility function used internally by the other user-defined functions, as shown in the usage example above in the \hyperref[func.magick_img2matrix.usage]{Usage} Section of \emph{this Description}.
 
 \end{noteblock}
 
@@ -1671,8 +1866,10 @@ This is a utility function used internally by the other user-defined functions, 
 
 \hfill\break
 
+\emph{Grayscale image} data matrix representing \emph{pixel intensity}, normalized to a \emph{floating-point} scale ranging from \(0.0\) (black/background) to \(1.0\).
+
 \protect\phantomsection\label{func.magick_img2matrix.code}
-\paragraph{Source Code}\label{source-code-3}
+\paragraph{Source Code}\label{source-code-4}
 
 \hfill\break
 
@@ -1681,9 +1878,20 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{magick\_img2matrix }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(img)\{}
+  \CommentTok{\#\textquotesingle{} Extract the underlying raw byte array buffer }
+  \CommentTok{\#\textquotesingle{} from the \textasciigrave{}magick\textasciigrave{} image object.}
 \NormalTok{  img.dat }\OtherTok{\textless{}{-}} \FunctionTok{image\_data}\NormalTok{(img)}
+  
+  \CommentTok{\#\textquotesingle{} Slice the multidimensional array to isolate }
+  \CommentTok{\#\textquotesingle{} the primary color channel matrix (capture the single intensity plane).}
 \NormalTok{  mx.bin }\OtherTok{\textless{}{-}}\NormalTok{ img.dat[}\DecValTok{1}\NormalTok{,,]}
+  
+  \CommentTok{\#\textquotesingle{} Cast the extracted data array elements from raw/character bytes }
+  \CommentTok{\#\textquotesingle{} into a numeric data type.}
   \FunctionTok{mode}\NormalTok{(mx.bin) }\OtherTok{\textless{}{-}} \StringTok{"numeric"}
+  
+  \CommentTok{\#\textquotesingle{} Normalize pixel values into a clean floating{-}point scale }
+  \CommentTok{\#\textquotesingle{} ranging from 0.0 (black/background) to 1.0. }
 \NormalTok{  mx.bin }\SpecialCharTok{/}\DecValTok{255}
 \NormalTok{\}}
 \end{Highlighting}
@@ -1691,9 +1899,26 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 
 \newpage
 
-\chapter{-------------------}\label{section}
+\chapter{Appendix B: Device (Laptop) Used for Development \& Testing}\label{appndx_b}
 
-\chapter{----------------------}\label{section-1}
+\begin{itemize}
+\item
+  Processor 13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
+\item
+  Installed RAM 32.0 GB (31.7 GB usable)
+\item
+  System type 64-bit operating system, x64-based processor
+\item
+  Edition Windows 11 Pro
+\item
+  Version 25H2
+\item
+  Installed on 12/14/2024
+\item
+  OS build 26200.8973
+\item
+  Experience Windows Feature Experience Pack 1000.26100.344.0
+\end{itemize}
 
 \printbibliography
 

@@ -5,7 +5,7 @@
 ### Data Loading
 
 ::: {.noteblock data-latex=""}
-The complete source code of the functions described in this section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) script on _GitHub_.
+The complete source code of the functions described in this Section is available in the the [Data loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) Section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) script on _GitHub_.
 :::
 
 #### [foo](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.foo}
@@ -40,19 +40,19 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 
 :::
 ::: { #func.foo.args.arg3 .sidebar }
-- **arg3:**  (Optional, *Numeric*, $NA$ by default) ; 
+- **arg3:**  (Optional, *Numeric*, `NA` by default) ; 
 
 :::
 ::: { #func.foo.args.arg4 .sidebar }
-- **arg4:**  (Optional, *Integer*, $NA$ by default) ; 
+- **arg4:**  (Optional, *Integer*, `NA` by default) ; 
 
 :::
 ::: { #func.foo.args.arg5 .sidebar }
-- **arg5:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+- **arg5:**  (Optional, *Boolean*, `FALSE` by default) ; 
 
 :::
 ::: { #func.foo.args.arg6 .sidebar }
-- **arg6:**  (Optional, *Character*, $NULL$ by default) ; 
+- **arg6:**  (Optional, *Character*, `NULL` by default) ; 
 
 :::
 :::
@@ -63,7 +63,7 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 
 
 ::: {.noteblock data-latex=""}
-This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.foo.usage) section of *this Description*.
+This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.foo.usage) Section of *this Description*.
 :::
 :::
 
@@ -82,14 +82,14 @@ The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-ow
 The slightly simplified version of the function's source code is shown below:
 
 The simplified version of the function's source code is shown below:
-```{r src@foo eval=FALSE}
+```{r foo@source, eval=FALSE}
 
 ```
 
 ::: {.noteblock data-latex=""}
-The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)is also available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)is also available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) Section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
 
-The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) is available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) is available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) Section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
 :::
 :::
 
@@ -98,7 +98,7 @@ The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx
 ### Image Processing {#appndx_a@img_proc}
 
 ::: {.noteblock data-latex=""}
-The complete source code of the functions described in this section is available in the the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) script on _GitHub_.
+The complete source code of the functions described in this Section is available in the the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) Section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L420-L488) script on _GitHub_.
 :::
 
 #### [foo](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.foo}
@@ -109,8 +109,18 @@ The complete source code of the functions described in this section is available
 ##### [Usage](#L)
 \
 
-```{r foo@usage, eval=FALSE}
 
+```{r foo@usage.setup, include=FALSE}
+path <- file.path(knitr.proj_root, proj_path)
+
+```
+```{r foo@usage, eval=FALSE}
+```
+```{r foo@usage.exe, eval=TRUE}
+```
+```{r foo@usage.result, echo=FALSE}
+```
+```{r foo@usage.finalize, include=FALSE}
 ```
 
 ::: {.noteblock data-latex=""}
@@ -133,19 +143,19 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 
 :::
 ::: { #func.foo.args.arg3 .sidebar }
-- **arg3:**  (Optional, *Numeric*, $NA$ by default) ; 
+- **arg3:**  (Optional, *Numeric*, `NA` by default) ; 
 
 :::
 ::: { #func.foo.args.arg4 .sidebar }
-- **arg4:**  (Optional, *Integer*, $NA$ by default) ; 
+- **arg4:**  (Optional, *Integer*, `NA` by default) ; 
 
 :::
 ::: { #func.foo.args.arg5 .sidebar }
-- **arg5:**  (Optional, *Boolean*, $FALSE$ by default) ; 
+- **arg5:**  (Optional, *Boolean*, `FALSE` by default) ; 
 
 :::
 ::: { #func.foo.args.arg6 .sidebar }
-- **arg6:**  (Optional, *Character*, $NULL$ by default) ; 
+- **arg6:**  (Optional, *Character*, `NULL` by default) ; 
 
 :::
 :::
@@ -156,7 +166,7 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 
 
 ::: {.noteblock data-latex=""}
-This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.foo.usage) section of *this Description*.
+This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.foo.usage) Section of *this Description*.
 :::
 :::
 
@@ -173,14 +183,14 @@ This is an auxiliary function that is used internally in the [](#) function as s
 The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) of the function is shown below:
 
 The simplified version of the function's source code is shown below:
-```{r src@foo eval=FALSE}
+```{r foo#source eval=FALSE}
 
 ```
 
 ::: {.noteblock data-latex=""}
-The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)is also available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)is also available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) Section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
 
-The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80) is available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
+The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80) is available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L-L) Section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) script on _GitHub_.
 :::
 :::
 
