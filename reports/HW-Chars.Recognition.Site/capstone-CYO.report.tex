@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-22}
+\date{2026-10-23}
 
 \begin{document}
 \maketitle
@@ -298,7 +298,7 @@ The first script it launches, \href{https://github.com/AzKurban-edX-DS/edx.capst
 The second (and last) script it runs, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__rmd.render.R}{\_\_rmd.render.R}, renders \emph{this Report}.
 
 \begin{warningblock}
-Some scripts may take a long time when executed on their first run. In particular, the longest run on the author's laptop was the first run of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R}{2.cnn-mcc.lr-tuner.R} script (for fine-tuning the \emph{CNN-based MCC} model) and took about \textbf{17 hours}.
+Some scripts may take a long time when executed on their first run. In particular, the longest run on the \emph{author's laptop} (for technical specifications, see \hyperref[appndx_c]{Appendix C}) was the first run of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R}{2.cnn-mcc.lr-tuner.R} script (for fine-tuning the \emph{CNN-based MCC} model) and took about \textbf{17 hours}.
 
 \end{warningblock}
 
@@ -383,6 +383,11 @@ If the interrupted execution resumes in another \emph{\texttt{R} session}, the \
 The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R}{index.R} script serves as the main orchestrator and \emph{entry point} for \emph{this Project}, focused on \href{https://en.wikipedia.org/wiki/Multiclass_classification}{Multi-Class Classification (MCC)} models applied to the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Handwritten Character Image Dataset} (which uses \href{https://www.tensorflow.org/datasets/catalog/emnist}{EMNIST data} for Alphabets and Digits).
 Below is a detailed description of the script's structure, workflow, and core components.
 
+\begin{noteblock}
+During execution, this script runs several support scripts located in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support-scripts} folder. Most of them are described in \hyperref[appndx_b]{Appendix B} of \emph{this Report}.
+
+\end{noteblock}
+
 \subsubsection{Setup \& Initialization}\label{setup-initialization}
 
 The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L60}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, along with downloading, preparing, and preprocessing the project's datasets.
@@ -392,99 +397,30 @@ Code in this Section \underline{must run at the very beginning} of every \emph{\
 
 \end{importantblock}
 
-The code in this Section first calls the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L6}{line 6}) to initialize global variables for the following \texttt{R} scripts' directory paths:
+The code in this Section first calls (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L6}{line 6}) the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (see \hyperref[appndx_b.r_global.path]{Appendix B} for details) to initialize the global variables for \emph{this Project}'s essential \texttt{R} scripts directory paths.
 
-\begin{itemize}
-\tightlist
-\item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r}{root \texttt{R} scripts' directory};
-\item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support scripts' directory};
-\item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions}{user-defined support (helper) functions' scripts directory}.
-\end{itemize}
+Next (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{line 10}), it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \hyperref[appndx_b.setup]{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
-Next (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{line 10}), it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it executes the \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} script to download the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}.
 
-Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it downloads the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}, executing the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} script.
+The last subsection, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L28-L60}{Prepare Input Data}, prepares the project's datasets. It is, in turn, divided into the following subsections (corresponding to the stages of image data processing):
 
-The last subsection, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L28-L60}{Prepare Input Data}, prepares the project's datasets. It is, in turn, divided into the following subsections:
-
-\begin{itemize}
-\tightlist
-\item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L26-L}{Train Set: Create Trimmed Image Data List}:
-\item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L-L}{}:
-\end{itemize}
-
-\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/.R}{}
-
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} Script}{setup.R Script}}\label{setup.r-script}
-
-\hfill\break
-
-This script serves as the master initialization and environment-configuration script for the entire project.
-Its primary purpose is to set up and configure all software dependencies, Python environments, directory paths, and helper functions before running any project execution scripts.
-
-The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L5-L6}{first two lines of the code} perform the following operations in order:
-
+\protect\phantomsection\label{main.data_prep.step1}
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Adjust the global download timeout to handle packages and large dataset downloads;
-\item
-  Increase the expression nesting limit.
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L33-L42}{Train Set: Create Trimmed Image Data List}: Executes the \hyperref[appndx_b.ds.train2trimmed_img.dat]{ds.train2trimmed\_img.dat.R} script to validate and load downloaded \emph{raw image files} into a standardized list of \emph{trimmed image data} objects for the \emph{model training pipelines}.
 \end{enumerate}
 
-Below is a detailed breakdown of the code by sections.
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L8-L85}{Install Packages} Section}{Install Packages Section}}\label{install-packages-section}
-
-\hfill\break
-
-The code in this Section automatically checks for required \texttt{R} packages across multiple domains and installs them if some or all are not installed.
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L86-L167}{Load Libraries \& resolve conflicts} Section}{Load Libraries \& resolve conflicts Section}}\label{load-libraries-resolve-conflicts-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L168-L177}{Load Logging Helper Functions} Section}{Load Logging Helper Functions Section}}\label{load-logging-helper-functions-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L178-L425}{Init Project Directories} Section}{Init Project Directories Section}}\label{init-project-directories-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L426-L444}{Init Input Data Paths} Section}{Init Input Data Paths Section}}\label{init-input-data-paths-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L445-L547}{Init Project Script Paths} Section}{Init Project Script Paths Section}}\label{init-project-script-paths-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L548-L557}{Load Common Helper Functions} Section}{Load Common Helper Functions Section}}\label{load-common-helper-functions-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L558-L569}{Load Data Helper Functions} Section}{Load Data Helper Functions Section}}\label{load-data-helper-functions-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L570-L581}{Load Model Helper Functions} Section}{Load Model Helper Functions Section}}\label{load-model-helper-functions-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L582-L594}{Load \texttt{CNN\_MCC.HyperModel} helper class} Section}{Load CNN\_MCC.HyperModel helper class Section}}\label{load-cnn_mcc.hypermodel-helper-class-section}
-
-\hfill\break
-
-\subparagraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L595-L607}{Load \texttt{CNN\_MCC.HyperParameters} helper class} Section}{Load CNN\_MCC.HyperParameters helper class Section}}\label{load-cnn_mcc.hyperparameters-helper-class-section}
-
-\hfill\break
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L43-L51}{Prepare Training Datasets}: Runs the \hyperref[appndx_b.prepare_training_set]{prepare-training-set.R} script to preprocess and structure preliminary \emph{trimmed image data} from the \hyperref[main.data_prep.step1]{previous data-processing step} into various formats and backup datasets needed to train the project's models (i.e., \emph{Multiclass Handwritten Character Classifiers (MCC)} built using different approaches and algorithms).
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L52-L60}{Prepare Final Test Set}: Runs the script \hyperref[appndx_b.prepare_final_test_set]{prepare-final-test-set.R} to prepare the \emph{image data} intended for the \emph{final test} of the project's \emph{best-performing model}.
+\end{enumerate}
 
 \subsubsection{Downloading \& Preprocessing Input Datasets}\label{downloading-preprocessing-input-datasets}
 
@@ -558,11 +494,11 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 
 \chapter{Appendix A: Support Functions}\label{appndx_a}
 
-\section{Data Helper Functions}\label{appndx_a.data_helper.functions}
+\section{Data Helper Script}\label{appndx_a.data_helper}
 
 \hfill\break
 
-\subsection{Data Loading}\label{appndx_a.dat_load}
+\subsection{Data Loading}\label{appndx_a.data_helper.loading}
 
 \begin{noteblock}
 The complete source code of the functions described in this Section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{Data Loading} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{data-helper.R} script on \emph{GitHub}.
@@ -1751,7 +1687,7 @@ During the execution, it calls internally the user-defined helper function \hype
 
 \newpage
 
-\subsection{Image Processing}\label{appndx_a.img_proc}
+\subsection{Image Processing}\label{appndx_a.data_helper.img_proc}
 
 \begin{noteblock}
 The complete source code of the functions described in this Section is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{Image Processing} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L420-L488}{data-helper.R} script on \emph{GitHub}.
@@ -1791,7 +1727,7 @@ This is a lightweight utility that converts a \href{https://docs.ropensci.org/ma
 \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
 
 \begin{noteblock}
-In the \emph{code snippet} below, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in Section \hyperref[appndx_a.dat_load]{Data Loading}.
+In the \emph{code snippet} below, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in Section \hyperref[appndx_a.data_helper.loading]{Data Loading}.
 
 \end{noteblock}
 
@@ -1899,25 +1835,158 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 
 \newpage
 
-\chapter{Appendix B: Device (Laptop) Used for Development \& Testing}\label{appndx_b}
+\chapter{Appendix B: Support Scripts}\label{appndx_b}
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} Script}{r-global.path.R Script}}\label{appndx_b.r_global.path}
+
+This script establishes and validates the following paramount \texttt{R} scripts' directory paths:
 
 \begin{itemize}
+\tightlist
 \item
-  Processor 13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r}{root \texttt{R} scripts' directory};
 \item
-  Installed RAM 32.0 GB (31.7 GB usable)
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support scripts' directory};
 \item
-  System type 64-bit operating system, x64-based processor
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions}{user-defined support (helper) functions' scripts directory}.
+\end{itemize}
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R}{setup.R} Script}{setup.R Script}}\label{appndx_b.setup}
+
+\hfill\break
+
+This script serves as the master initialization and environment-configuration script for the entire project.
+Its primary purpose is to set up and configure all software dependencies, Python environments, directory paths, and helper functions before running any project execution scripts.
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L5-L6}{first two lines of the code} perform the following operations in order:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
 \item
-  Edition Windows 11 Pro
+  Adjust the global download timeout to handle packages and large dataset downloads;
 \item
-  Version 25H2
+  Increase the expression nesting limit.
+\end{enumerate}
+
+Below is a detailed breakdown of the code by sections.
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L8-L85}{Install Packages} Section}{Install Packages Section}}\label{install-packages-section}
+
+\hfill\break
+
+The code in this Section automatically checks for required \texttt{R} packages across multiple domains and installs them if some or all are not installed.
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L86-L167}{Load Libraries \& resolve conflicts} Section}{Load Libraries \& resolve conflicts Section}}\label{load-libraries-resolve-conflicts-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L168-L177}{Load Logging Helper Functions} Section}{Load Logging Helper Functions Section}}\label{load-logging-helper-functions-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L178-L425}{Init Project Directories} Section}{Init Project Directories Section}}\label{init-project-directories-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L426-L444}{Init Input Data Paths} Section}{Init Input Data Paths Section}}\label{init-input-data-paths-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L445-L547}{Init Project Script Paths} Section}{Init Project Script Paths Section}}\label{init-project-script-paths-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L548-L557}{Load Common Helper Functions} Section}{Load Common Helper Functions Section}}\label{load-common-helper-functions-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L558-L569}{Load Data Helper Functions} Section}{Load Data Helper Functions Section}}\label{load-data-helper-functions-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L570-L581}{Load Model Helper Functions} Section}{Load Model Helper Functions Section}}\label{load-model-helper-functions-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L582-L594}{Load \texttt{CNN\_MCC.HyperModel} helper class} Section}{Load CNN\_MCC.HyperModel helper class Section}}\label{load-cnn_mcc.hypermodel-helper-class-section}
+
+\hfill\break
+
+\subsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R\#L595-L607}{Load \texttt{CNN\_MCC.HyperParameters} helper class} Section}{Load CNN\_MCC.HyperParameters helper class Section}}\label{load-cnn_mcc.hyperparameters-helper-class-section}
+
+\hfill\break
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} Script}{ds.kaggle.download.R Script}}\label{appndx_b.ds.kaggle.download}
+
+\hfill\break
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R}{ds.train2trimmed\_img.dat.R} Script}{ds.train2trimmed\_img.dat.R Script}}\label{appndx_b.ds.train2trimmed_img.dat}
+
+\hfill\break
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} Script}{prepare-training-set.R Script}}\label{appndx_b.prepare_training_set}
+
+\hfill\break
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-final-test-set.R}{prepare-final-test-set.R} Script}{prepare-final-test-set.R Script}}\label{appndx_b.prepare_final_test_set}
+
+\hfill\break
+
+\section{Script}\label{appndx_b.}
+
+\hfill\break
+
+\section{Script}\label{appndx_b.}
+
+\hfill\break
+
+\section{Script}\label{appndx_b.}
+
+\hfill\break
+
+\section{Script}\label{appndx_b.}
+
+\hfill\break
+
+\section{Script}\label{appndx_b.}
+
+\hfill\break
+
+\chapter{Appendix C: Device (Laptop) Used for Development \& Testing}\label{appndx_c}
+
+\section{\texorpdfstring{\href{https://ninkear.com/collections/laptops}{Ninkear} Laptop}{Ninkear Laptop}}\label{ninkear-laptop}
+
+\hfill\break
+
+\subsection{System}\label{system}
+
+\subsubsection{Device Specifications}\label{device-specifications}
+
+\begin{itemize}
+\tightlist
 \item
-  Installed on 12/14/2024
+  \textbf{Processor:} 13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
 \item
-  OS build 26200.8973
+  \textbf{Installed RAM:} 32.0 GB (31.7 GB usable)
 \item
-  Experience Windows Feature Experience Pack 1000.26100.344.0
+  \textbf{System type:} 64-bit operating system, x64-based processor
+\end{itemize}
+
+\subsubsection{Windows Specifications}\label{windows-specifications}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Edition:} Windows 11 Pro
+\item
+  \textbf{Version:} 25H2
+\item
+  \textbf{Installed on:} 12/14/2024
+\item
+  \textbf{OS build:} 26200.8973
+\item
+  \textbf{Experience:} Windows Feature Experience Pack 1000.26100.344.0
 \end{itemize}
 
 \printbibliography

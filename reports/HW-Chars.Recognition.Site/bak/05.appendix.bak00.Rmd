@@ -19,7 +19,7 @@ Automates downloading datasets directly from [Kaggle](https://www.kaggle.com/dat
 ##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R#L16)
 \
 
-```{r kaggle_cli.download@usage.setup, include=FALSE}
+```{r kaggle_cli.download@kaggle_cli.download, include=FALSE}
 open_logfile(".report.appx_a.kaggle_cli.download")
 path <- file.path(knitr.proj_root, raw_data.chars.dir)
 
@@ -59,7 +59,6 @@ log_close()
 :::
 ::: { #func.kaggle_cli.download.args.arg5 .sidebar }
 - **unzip:**  (Optional, *Boolean*, $FALSE$ by default) Logical flag indicating whether the *downloaded archive* should be automatically unzipped.
- 
 
 :::
 :::
@@ -692,20 +691,6 @@ magick_img2matrix <- function(img){
 \newpage
 
 
-
-
-
-# Appendix B: Device (Laptop) Used for Development & Testing {#appndx_b}
-
-- Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
-- Installed RAM	32.0 GB (31.7 GB usable)
-- System type	64-bit operating system, x64-based processor
-
-- Edition	Windows 11 Pro
-- Version	25H2
-- Installed on	12/14/2024
-- OS build	26200.8973
-- Experience	Windows Feature Experience Pack 1000.26100.344.0
 
 
 

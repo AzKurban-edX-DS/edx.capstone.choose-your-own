@@ -1,5 +1,5 @@
 # Appendix A: Support Functions {#appndx_a}
-## Data Helper Functions {#appndx_a.data_helper.functions}
+## Data Helper Functions {#appndx_a.data_helper}
 \
 
 ### Data Loading

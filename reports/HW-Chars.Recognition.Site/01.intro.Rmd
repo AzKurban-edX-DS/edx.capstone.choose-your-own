@@ -84,7 +84,7 @@ The first script it launches, [index.R](https://github.com/AzKurban-edX-DS/edx.c
 The second (and last) script it runs, [__rmd.render.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/__rmd.render.R), renders *this Report*. 
 
 ::: {.warningblock data-latex=""}
-Some scripts may take a long time when executed on their first run. In particular, the longest run on the author's laptop was the first run of the [2.cnn-mcc.lr-tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R) script (for fine-tuning the *CNN-based MCC* model) and took about **17 hours**.
+Some scripts may take a long time when executed on their first run. In particular, the longest run on the *author's laptop* (for technical specifications, see [Appendix C](#appndx_c)) was the first run of the [2.cnn-mcc.lr-tuner.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/2.cnn-mcc.lr-tuner.R) script (for fine-tuning the *CNN-based MCC* model) and took about **17 hours**.
 :::
 
 The other long-running scripts are as follows:
@@ -132,96 +132,34 @@ If the interrupted execution resumes in another *`R` session*, the [Setup](https
 The [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R) script serves as the main orchestrator and *entry point* for *this Project*, focused on [Multi-Class Classification (MCC)](https://en.wikipedia.org/wiki/Multiclass_classification) models applied to the [Kaggle Handwritten Character Image Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) (which uses [EMNIST data](https://www.tensorflow.org/datasets/catalog/emnist) for Alphabets and Digits).
 Below is a detailed description of the script's structure, workflow, and core components.
 
+::: {.noteblock data-latex=""}
+During execution, this script runs several support scripts located in the [support-scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts) folder. Most of them are described in [Appendix B](#appndx_b) of *this Report*.
+:::
 
 #### Setup & Initialization
+
 The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) Section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L60) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
 
 ::: {.importantblock data-latex=""}
 Code in this Section \underline{must run at the very beginning} of every _`R` session_ **\underline{before any other script executes}**.
 :::
 
-The code in this Section first calls the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script (on [line 6](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L6)) to initialize global variables for the following `R` scripts' directory paths:
+The code in this Section first calls (on [line 6](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L6)) the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script (see [Appendix B](#appndx_b.r_global.path) for details) to initialize the global variables for *this Project*’s essential `R` scripts directory paths.
 
-- [root `R` scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r);
-- [support scripts' directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts);
-- [user-defined support (helper) functions' scripts directory](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions).
+Next (on [line 10](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10)), it [executes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10) the [setup.R](#appndx_b.setup) script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
-Next (on [line 10](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10)), it [executes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10) the [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+Next, in the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L17-L27) subsection, it executes the [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) script to download the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
 
-Next, in the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L17-L27) subsection, it downloads the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), executing the [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) script.
+The last subsection, [Prepare Input Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L28-L60), prepares the project's datasets. It is, in turn, divided into the following subsections (corresponding to the stages of image data processing):
 
-The last subsection, [Prepare Input Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L28-L60), prepares the project's datasets. It is, in turn, divided into the following subsections:
+::: { #main.data_prep.step1 .sidebar }
+1. [Train Set: Create Trimmed Image Data List](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L33-L42): Executes the [ds.train2trimmed_img.dat.R](#appndx_b.ds.train2trimmed_img.dat) script to validate and load downloaded *raw image files* into a standardized list of *trimmed image data* objects for the *model training pipelines*.
 
-- [Train Set: Create Trimmed Image Data List](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L26-L): 
-- [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L-L):
+:::
 
-[](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/.R)
+2. [Prepare Training Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L43-L51): Runs the [prepare-training-set.R](#appndx_b.prepare_training_set) script to preprocess and structure preliminary *trimmed image data* from the [previous data-processing step](#main.data_prep.step1) into various formats and backup datasets needed to train the project's models (i.e., *Multiclass Handwritten Character Classifiers (MCC)* built using different approaches and algorithms).
 
-
-##### [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) Script
-\
-
-This script serves as the master initialization and environment-configuration script for the entire project.
-Its primary purpose is to set up and configure all software dependencies, Python environments, directory paths, and helper functions before running any project execution scripts.
-
-The [first two lines of the code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L5-L6) perform the following operations in order:
-
-1. Adjust the global download timeout to handle packages and large dataset downloads;
-2. Increase the expression nesting limit. 
-
-Below is a detailed breakdown of the code by sections.
-
-###### [Install Packages](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L8-L85) Section  
-\
-
-The code in this Section automatically checks for required `R` packages across multiple domains and installs them if some or all are not installed.
-
-###### [Load Libraries & resolve conflicts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L86-L167) Section  
-\
-
-
-
-###### [Load Logging Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L168-L177) Section  
-\
-
-
-###### [Init Project Directories](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L178-L425) Section  
-\
-
-
-
-###### [Init Input Data Paths](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L426-L444) Section  
-\
-
-
-
-###### [Init Project Script Paths](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L445-L547) Section  
-\
-
-
-
-###### [Load Common Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L548-L557) Section  
-\
-
-
-
-###### [Load Data Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L558-L569) Section  
-\
-
-
-
-###### [Load Model Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L570-L581) Section  
-\
-
-
-
-###### [Load `CNN_MCC.HyperModel` helper class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L582-L594) Section  
-\
-
-
-
-###### [Load `CNN_MCC.HyperParameters` helper class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L595-L607) Section  
-\
+3. [Prepare Final Test Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L52-L60): Runs the script [prepare-final-test-set.R](#appndx_b.prepare_final_test_set) to prepare the *image data* intended for the *final test* of the project's *best-performing model*.
 
 
 
