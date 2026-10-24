@@ -3,6 +3,26 @@ title: "tmp1"
 output: html_document
 ---
 
+```{r, echo=FALSE}
+writeLines("*** ! ***")
+```
+
+
+``` {r @usage.setup, include=FALSE}
+open_logfile('.@usage')
+path <- file.path(knitr.proj_root, )
+stopifnot(file.exists(path))
+x <- readRDS(path)
+
+rm(path)
+```
+
+``` {r @usage.cleanup, include=FALSE}
+
+log_close()
+```
+
+
 Below is the *step-by-step execution flow* of the function:
 
 1. ([Line ](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)) ***

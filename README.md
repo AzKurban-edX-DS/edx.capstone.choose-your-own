@@ -85,7 +85,7 @@ The following are essential directories and files of the project:
 Since this project is an [RStudio
 Project](https://support.posit.co/hc/en-us/articles/200526207-Using-RStudio-Projects),
 it is recommended to work with the project in *RStudio IDE*. As
-mentioned above in section [Essential Directories and
+mentioned above in Section [Essential Directories and
 Files](#essential-directories-and-files), the *RStudio Project* file is
 [edx.capstone.choose-your-own.Rproj](edx.capstone.choose-your-own.Rproj).
 

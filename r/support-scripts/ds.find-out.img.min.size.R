@@ -27,12 +27,33 @@ x <- lapply(img_dat.list$img.list, function(ch.class) {
          dimnames = list(NULL, 
                          c('width', 'height')))
 
-put_log("Shape of the Image Size Array:
-%1", capture.output(shape(x)))
-
 put_log("Structure of the Image Size Array:
 %1", capture.output(str(x)))
 
+y <- as.data.frame(x)
+str(y)
+
+y.grouped <- y |> group_by(width) |>
+  summarise(min.height = min(height))
+
+print(y.grouped)
+
+y.size <- y.grouped$width * y.grouped$min.height
+y.size
+
+min_size.idx <- which.min(y.size)
+img.min_size <- y.grouped[min_size.idx,]
+
+
+ds.img_min.geometry <- paste0(img.min_size$width,
+                              'x',
+                              img.min_size$min.height,
+                              '!')[1]
+ds.img_min.geometry
+
+# "28x28!"
+
+# --------------------------
 z <- sapply(seq(nrow(x)), function(i) {
   x[i,1]*x[i,2]
 })
