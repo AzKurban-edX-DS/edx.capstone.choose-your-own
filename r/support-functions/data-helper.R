@@ -514,9 +514,14 @@ magick_img2matrix <- function(img){
   mx.bin /255
 }
 
+image.dat2bin_mx.resized <- function(image.dat) {
+  image.dat2bin_mx(image.dat,
+                   resize.geometry = ds.img_min.geometry) # '28x28!'
+}
+
 image.dat2bin_28x28mx <- function(image.dat) {
   image.dat2bin_mx(image.dat,
-                   resize.geometry = '28x28!')
+                   resize.geometry = '28x28!') 
 }
 
 image.dat2bin_mx <- function(image.dat,

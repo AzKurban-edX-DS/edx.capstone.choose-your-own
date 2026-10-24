@@ -148,7 +148,13 @@ The code in this Section first calls (on [line 6](https://github.com/AzKurban-ed
 
 Next (on [line 10](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10)), it [executes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10) the [setup.R](#appndx_b.setup) script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
-Next, in the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L17-L27) subsection, it executes the [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) script to download the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
+
+The remaining operations in this section relate to downloading and preparing the project datasets.
+
+#### Downloading & Preprocessing Input Datasets
+
+
+In the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L17-L27) subsection, it executes the [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) script to download the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
 
 The last subsection, [Prepare Input Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L28-L60), prepares the project's datasets. It is, in turn, divided into the following subsections (corresponding to the stages of image data processing):
 
@@ -164,9 +170,6 @@ The last subsection, [Prepare Input Data](https://github.com/AzKurban-edX-DS/edx
 
 
 
-#### Downloading & Preprocessing Input Datasets
-
-##### [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) Script
 
 
 #### Machine Learning Model Pipelines
