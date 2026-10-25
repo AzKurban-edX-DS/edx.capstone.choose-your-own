@@ -5,14 +5,10 @@
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit
 
-## Install Packages ------------------------------------------------------------
-#> Reference: Some ideas and code snippers were used from the following GitHub repository:
-#> https://github.com/AzKurban-edX-DS/harvardx-movielens
-if(!require(matrixStats))
-  install.packages("matrixStats")
+## Install Logging Feature -----------------------------------------------------
+if(!require("logr")) 
+  install.packages("logr")
 
-if(!require(dslabs))
-  install.packages("dslabs")
 if(!require(tidyverse))
   install.packages("tidyverse")
 
@@ -21,8 +17,43 @@ if(!require(tidyverse))
 # if(!require(stringr))
 #   install.packages("stringr")
 
-if(!require("logr")) 
-  install.packages("logr")
+library(logr)
+library(tidyverse)
+
+### Load Logging Helper Functions -----------------------------------------------
+log_open()
+
+source('r/r-global.path.R')
+
+log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
+stopifnot(file.exists(log_func_script.file_path))
+
+source(log_func_script.file_path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+log_close()
+
+
+
+
+put_log("Root directory for the custom functions definition scripts:
+%1", support_functions.dir)
+
+
+
+
+## Install Other Packages ------------------------------------------------------------
+#> Reference: Some ideas and code snippers were used from the following GitHub repository:
+#> https://github.com/AzKurban-edX-DS/harvardx-movielens
+if(!require(matrixStats))
+  install.packages("matrixStats")
+
+if(!require(dslabs))
+  install.packages("dslabs")
 
 if(!require(prodlim))
   install.packages("prodlim")
@@ -43,9 +74,6 @@ if(!require(remotes))
 
 if(!require(doParallel))
   install.packages("doParallel")
-
-
-
 
 if(!require(tfdatasets))
   install.packages("tfdatasets")
@@ -110,7 +138,6 @@ library(kerastuneR)
 
 library(matrixStats)
 library(dslabs)
-library(tidyverse)
 
 library(prodlim)
 library(caret)
@@ -118,7 +145,6 @@ library(randomForest)
 library(kernlab)
 library(ggplot2)
 
-library(logr)
 library(utils)
 library(fs)
 
@@ -165,17 +191,6 @@ N_pcCores
 n.img_rows <- 28
 n.img_cols <- 28
 
-## Load Logging Helper Functions -----------------------------------------------
-source('r-global.path.R')
-log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
-
-source(log_func_script.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
-
 ## Init Project Directories ----------------------------------------------------
 knitr.proj_root <- '../..' 
 ### `R` Script Directories -----------------------------------------------------
@@ -185,9 +200,6 @@ put_log("Root directory for the `R` scripts:
 
 put_log("Root directory for the support scripts:
 %1", support_scripts.dir)
-
-put_log("Root directory for the custom functions definition scripts:
-%1", support_functions.dir)
 
 #### Directories for Model Scripts ---------------------------------------------
 model_scripts.dir <- file.path(r_scripts.dir, "models")
@@ -416,7 +428,8 @@ cnn_mcc.tuner.plots.dat.dir <- file.path(cnn_mcc.tuner.dir, "plots.dat")
 if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
   dir.create(cnn_mcc.tuner.plots.dat.dir)
 
-## Init Input Data Paths -------------------------------------------------------
+## Input Data Paths ------------------------------------------------------------
+### Training Set ---------------------------------------------------------------
 train.img_dat.list.file <- file.path(train.data.dir, 
                                      "train.img_dat.list.rds")
 
@@ -435,13 +448,17 @@ my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.
 
 my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
 
+### Final Test Set -------------------------------------------------------------
+final_test.img_dat.list.file <- file.path(final_test.data.dir, 
+                                     "final-test.img_dat.list.rds")
+
 ## Init Project Script Paths ---------------------------------------------------
 ds.kaggle.download.script.path <- file.path(support_scripts.dir, "ds.kaggle.download.R")
 stopifnot(file.exists(ds.kaggle.download.script.path))
 
-ds.train2trimmed_img.dat.script.path <- file.path(support_scripts.dir, 
-                                                  "ds.train2trimmed_img.dat.R")
-stopifnot(file.exists(ds.train2trimmed_img.dat.script.path))
+ds2trimmed_img.dat.script.path <- file.path(support_scripts.dir, 
+                                                  "ds2trimmed_img.dat.R")
+stopifnot(file.exists(ds2trimmed_img.dat.script.path))
 
 prepare_ds.train_set.script_path <- file.path(support_scripts.dir, "prepare-training-set.R")
 stopifnot(file.exists(prepare_ds.train_set.script_path))

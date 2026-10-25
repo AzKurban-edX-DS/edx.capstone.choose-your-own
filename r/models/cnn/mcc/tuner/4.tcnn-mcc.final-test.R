@@ -8,9 +8,9 @@ stopifnot(file.exists(tcnn_mcc.final.file,
                       final_test.img28x28mx.array.file_path))
 
 ### Preparing a Test Set for the Best Model Final Test -------------------------
-put_log("Loading the Test Binary Image 28x28 array set from the backup file...")
+put_log("Loading the Test Standardized Image Binary Data array set from the backup file...")
 ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
-put_log("The Test Binary Image 28x28 array set has been loaded from the following file:
+put_log("The Test Standardized Image Binary Data array set has been loaded from the following file:
 %1", final_test.img28x28mx.array.file_path)
 
 ds.test <-shuffle.rows.x3d(ftest_set$img28x28mx.array,

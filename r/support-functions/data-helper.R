@@ -152,32 +152,6 @@ Getting file path list from the following char's root folders:
   path_list
 }
 
-
-load.img28x28bin.list <- function(file) {
-  if(!file.exists(file)) {
-    stop("Function `load.img28x28bin.list`:
-File for Binary Image 28x28 Matrix list DOES NOT EXIST:", file)
-  }
-  start <- put_start_date()
-  put_log("Function `load.img28x28bin.list`:
-Loading Binary Image 28x28 Matrix list from the backup file...")
-  load(file, envir = .GlobalEnv)
-
-  if(!exists("img28x28bin.list"))
-    stop("Function `load.img28x28bin.list`:
-File `", file, 
-         "` does not contain the object `img28x28bin.list`.")
-  
-  put_log("Function `load.img28x28bin.list`:
-The Binary Image 28x28 Matrix list has been loaded from the following file:
-%1", file)
-  put_log("Function `load.img28x28bin.list`:
-The Binary Image 28x28 Matrix list Summary:
-%1", capture.output(summary(img28x28bin.list)))
-  put_end_date(start)
-}
-
-
 load.img_data.train.flatten <- function(file_path) {
   start <- put_start_date()
   put_log("Loading flatten training dataset from the backup file...")
@@ -212,132 +186,42 @@ The `%1` object exists.", object.name)
   }
 }
 
-img.load.bin28x28mx.list <- function(img_dat.list.file,
+ds.standardize.img_dat <- function(img_dat.list,
+                                     fn.img2bin_mx.resized,
                                      random_sample = FALSE) {
   
-  put_log("Function `img.load.bin28x28mx.list`:
-Loading list of Image objects...")
-  img_dat.ls <- readRDS(img_dat.list.file)
-  put_log("Function `img.load.bin28x28mx.list`:
-The list of Image objects has been loading from the following file:
-%1", img_dat.list.file)
-  
   start <- put_start_date()
-  # img_list <- lapply(img_dat.ls$label.list[37:39], function(lbl){
-  img_list <- lapply(img_dat.ls$label.list, function(lbl){
+
+  img_list <- lapply(img_dat.list$label.list, function(lbl){
     
-    put_log("Function `img.load.bin28x28mx.list`:
+    put_log("Function `ds.standardize.img_dat`:
 Processing images of character: %1", lbl)
     
-    char.dat <- img_dat.ls$img.list[[lbl]]
+    char.dat <- img_dat.list$img.list[[lbl]]
     
     img_ls <- map(char.dat$img.list, 
-                  image.dat2bin_28x28mx) 
+                  fn.img2bin_mx.resuzed) 
     
     ls <- list(img.list = img_ls, 
                fpath.list = char.dat$fpath.list)
     
     stopifnot(length(ls$img.list) == length(ls$fpath.list))
     
-    put_log("Function `img.load.bin28x28mx.list`:
+    put_log("Function `ds.standardize.img_dat`:
 Completed processing images of character: %1", lbl)
     put_end_date(start)
     ls
   })
   
-  # names(img_list) <- img_dat.ls$label.list[37:39]
-  names(img_list) <- img_dat.ls$label.list
+  # names(img_list) <- img_dat.list$label.list[37:39]
+  names(img_list) <- img_dat.list$label.list
   
-  put_log("Function `img.load.bin28x28mx.list`:
+  put_log("Function `ds.standardize.img_dat`:
 Completed processing Image Data objects")
   put_end_date(start)
 
-  list(label.list = img_dat.ls$label.list,
+  list(label.list = img_dat.list$label.list,
        img.list = img_list)
-}
-
-ds.load2bin28x28mx.list <- function(root_path, 
-                                     folder.list = NULL, 
-                                     char_files.max = NA,
-                                     char_files.seed = NA,
-                                     random_sample = FALSE) {
-  start <- put_start_date()
-  put_log("Getting file path lists...")
-  img.file_list <- img.file_path.get_list(root_path, 
-                                          folder.list,
-                                          char_files.max,
-                                          char_files.seed,
-                                          random_sample)
-  put_log("File path lists have been created. The output list structure:
-%1", capture.output(str(img.file_list)))
-  put_end_date(start)
-  
-  label_list <- as.factor(names(img.file_list))
-  
-  start <- put_start_date()
-  put_log("Loading image files...")
-  
-  img_list <- lapply(img.file_list, function(char.dir){
-    put_log("Loading files from root directory:
-%1...",char.dir$root_path)
-    
-    img_ls <- map(char.dir$file_path.list, 
-                  image.load_bin.shape28x28) # |> compact(),
-    
-    valid.idx <- sapply(img_ls, function(img){
-      sum(img) > 0
-    })
-    
-    # sum(ivalid.idx)
-    # bad_img <- img_ls[!ivalid.idx]
-    # length(bad_img)
-    # 
-    # char.image(bad_img[[1]])
-    
-    ls <- list(img.list = img_ls[valid.idx], 
-               fpath.list = char.dir$file_path.list[valid.idx])
-    
-    stopifnot(length(ls$img.list) == length(ls$fpath.list))
-    
-    put_log("Completed Loading files from directory:
-%1.",char.dir$root_path)
-    put_end_date(start)
-    ls
-  })
-  
-  put_log("Image files have been loaded. The output list structure:
-%1", capture.output(str(img_list)))
-  
-  list(label.list = label_list,
-       img.list = img_list)
-}
-
-image.load_bin.shape28x28 <- function(file_path) {
-  img0 <- magick::image_read(file_path)
-  # plot(img0)
-  
-  img0.mx <- magick_img2matrix(img0)
-  
-  if (max(img0.mx) > 0) {
-    img0.trimmed <- image_trim(img0)
-    # plot(img0.trimmed)
-    
-    im0.dim <- dim(image_data(img0.trimmed)) 
-    im0.dim
-    
-    img28x28 <- image_resize(img0.trimmed, '28x28!')
-    # dim(image_data(img28x28))
-    # plot(img28x28)
-    
-    img.sharpened <- image_convolve(img28x28, 'DoG:0,0,2', scaling = '100, 100%')
-    # plot(img.sharpened)
-    
-    img.mx <- magick_img2matrix(img.sharpened)
-    
-    img.bin <- img.mx > 0.5
-    # image.mx(img.bin)
-    img.bin
-  }
 }
 
 load.img_trimmed.dat <- function(file_path) {
@@ -514,11 +398,6 @@ magick_img2matrix <- function(img){
   mx.bin /255
 }
 
-image.dat2bin_mx.resized <- function(image.dat) {
-  image.dat2bin_mx(image.dat,
-                   resize.geometry = ds.img_min.geometry) # '28x28!'
-}
-
 image.dat2bin_28x28mx <- function(image.dat) {
   image.dat2bin_mx(image.dat,
                    resize.geometry = '28x28!') 
@@ -665,10 +544,10 @@ split.img28x28mx_array <- function(file,
   stopifnot(file.exists(file))
   
   put_log("Function `split.img28x28mx_array`:
-Loading the Binary Image 28x28 array set from the backup file...")
+Loading the Standardized Image Binary Data array set from the backup file...")
   img28x28mx.set <- readRDS(file)
   put_log("Function `split.img28x28mx_array`:
-The Binary Image 28x28 array set has been loaded from the following file:
+The Standardized Image Binary Data array set has been loaded from the following file:
 %1", file)
   
   put_log("Function `split.img28x28mx_array`:

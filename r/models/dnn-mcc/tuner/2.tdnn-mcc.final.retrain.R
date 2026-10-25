@@ -14,10 +14,10 @@ start <- put_start_date()
 
 ## Prepare a Training Set for Re-training the Final Model -----------------------
 
-put_log("Loading the Training Set of 28x28-size image data...")
+put_log("Loading the Training Set of standardized image data...")
 train_set <- load.train_set(ds28x28.split.train_0.8.file)
 
-put_log("The Training Set of 28x28-size image data has been loaded from the following file:
+put_log("The Training Set of standardized image data has been loaded from the following file:
 %1", ds28x28.split.train_0.8.file)
 
 

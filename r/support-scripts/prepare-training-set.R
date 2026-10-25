@@ -2,44 +2,91 @@
 # Preparing Training Datasets 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-open_logfile(".prepare28x28bin.train-dat")
+## Transforming into a List of Binary standardized Image Data Objects ----------
+
+open_logfile(".prepare-bin.train-dat")
 start <- put_start_date()
 
-## Transforming into a List of Binary 28x28-size Image Data Objects ------------
 
-put_log("Preparing a List of Binary 28x28-size Image Data Objects...")
+put_log("Preparing a List of Binary standardized Image Data Objects...")
 
-train.img28x28bin.list.file_path <- file.path(train.data.dir, 
-                                              "train.img28x28bin.list.rds")
+train.img_bin.mx_list.file <- file.path(train.data.dir, 
+                                              "train.img_bin.mx_list.rds")
 
-put_log("The path for the backup file to save the Binary 28x28-size Image Object list:
-%1", train.img28x28bin.list.file_path)
+put_log("The path for the backup file to save the Binary standardized Image Object list:
+%1", train.img_bin.mx_list.file)
 
-if (!file.exists(train.img28x28bin.list.file_path)) {
+if (!file.exists(train.img_bin.mx_list.file)) {
   stopifnot(file.exists(train.img_dat.list.file))
   
-  put_log("Creating a Binary Image 28x28 list from the raw data files 
+  put_log("Loading list of Image objects...")
+  img_dat.list <- readRDS(train.img_dat.list.file)
+  put_log("The list of Image objects has been loading from the following file:
+%1", train.img_dat.list.file)
+
+### Define the Standard Image Size Geometry ------------------------------------
+  
+  x <- lapply(img_dat.list$img.list, function(ch.class) {
+    img_dat.ls <- ch.class$img.list
+    x <- lapply(img_dat.ls, function(img_dat) {
+      dim(img_dat[1,,])
+    })
+  }) |> unlist() |>
+    matrix(ncol = 2, 
+           byrow = T, 
+           dimnames = list(NULL, 
+                           c('width', 'height')))
+  
+  put_log("Structure of the Image Size Array:
+%1", capture.output(str(x)))
+  
+  y <- as.data.frame(x)
+  
+  y.grouped <- y |> group_by(width) |>
+    summarise(min.height = min(height))
+  
+  print(y.grouped)
+  
+  y.size <- y.grouped$width * y.grouped$min.height
+  img.min_size <- y.grouped[which.min(y.size),]
+  
+  ds.img_min.geometry <- paste0(img.min_size$width,
+                                'x',
+                                img.min_size$min.height,
+                                '!')[1]
+  rm(x,y,)
+  
+### Standardize the Image Data -------------------------------------------------    
+  
+  put_log("Creating a Standardized Image Binary Data list from the raw data files 
 stored in the following root directory: %1,
 Please wait...", img.train_root.dir)
   
   start <- put_start_date()
-  img28x28bin.list <- img.load.bin28x28mx.list(train.img_dat.list.file)
   
-  put_log("The Binary Image 28x28 list has been created with the following structure:
-%1", capture.output(str(img28x28bin.list)))
+  train.img_bin.mx_list <- 
+    ds.standardize.img_dat(img_dat.list,
+                          function(image.dat) {
+                            image.dat2bin_mx(image.dat,
+                                             ds.img_min.geometry) # '28x28!'
+                          })
+  
+  put_log("The Standardized Image Binary Data list has been created 
+with the following structure:
+%1", capture.output(str(train.img_bin.mx_list)))
   put_end_date(start)
 
-  put_log("Saving Binary Image 28x28 list to the backup file...")
-  saveRDS(img28x28bin.list,
-       file = train.img28x28bin.list.file_path)
-  put_log("Binary Image 28x28 list has been saved to the following file:
-%1", train.img28x28bin.list.file_path)
+  put_log("Saving Standardized Image Binary Data list to the backup file...")
+  saveRDS(train.img_bin.mx_list,
+       file = train.img_bin.mx_list.file)
+  put_log("Standardized Image Binary Data list has been saved to the following file:
+%1", train.img_bin.mx_list.file)
   put_end_date(start)
   
 } else {
-    put_log("The Binary Image 28x28 list has already been constructed 
+    put_log("The Standardized Image Binary Data list has already been constructed 
 and backed up to the following file:
-%1", train.img28x28bin.list.file_path)
+%1", train.img_bin.mx_list.file)
 }
 
 log_close()
@@ -50,7 +97,7 @@ log_close()
 
 ## Prepare Training Datasets ---------------------------------------------------
 open_logfile(".prepare-train-set")
-stopifnot(file.exists(train.img28x28bin.list.file_path))
+stopifnot(file.exists(train.img_bin.mx_list.file))
 
 ### Preparing the Multiclass Classifier Class Label List -----------------------
 start <- put_start_date()
@@ -64,14 +111,14 @@ put_log("The path for the backup file to save the list of the Multiclass Classif
 %1", classifier.label_list.file_path)
 
 if(!file.exists(classifier.label_list.file_path)){
-  if(!exists("img28x28bin.list")) {
-    put_log("Loading the Binary Image 28x28 list from the backup file...")
-    img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
-    put_log("The Binary Image 28x28 list has been loaded from the following file:
-%1", train.img28x28bin.list.file_path)
+  if(!exists("train.img_bin.mx_list")) {
+    put_log("Loading the Standardized Image Binary Data list from the backup file...")
+    train.img_bin.mx_list <- readRDS(train.img_bin.mx_list.file)
+    put_log("The Standardized Image Binary Data list has been loaded from the following file:
+%1", train.img_bin.mx_list.file)
   }
  
-  Y.Labels <- img28x28bin.list$label.list
+  Y.Labels <- train.img_bin.mx_list$label.list
   
   put_log("Saving Classifier Label List to the backup file...")
   saveRDS(Y.Labels,
@@ -95,24 +142,24 @@ N.classes <- length(Y.Labels)
 put_log("The Classifier Handwritten Character List contains the following labels:
 %1", Y.Labels, .sep = " ")
 
-### Preparing a List of Binary 28x28-size Image  Matrix ------------------------
+### Preparing a List of Binary standardized Image  Matrix ----------------------
 
-put_log("Preparing a List of the Binary 28x28-size Image  Matrix...")
+put_log("Preparing a List of the Binary standardized Image  Matrix...")
 
-train.img28x28mx.list.file_path <- file.path(train.data.dir, "train.img28x28mx.list.rds")
+img.bin_mx.list.file <- file.path(train.data.dir, "train.img_bin.mx.list.rds")
 
-put_log("The path for the backup file to save the Binary 28x28-size Image  Matrix object:
-%1", train.img28x28mx.list.file_path)
+put_log("The path for the backup file to save the Binary standardized Image  Matrix object:
+%1", img.bin_mx.list.file)
 
-if(!file.exists(train.img28x28mx.list.file_path)){
-  if(!exists("img28x28bin.list")) {
-    stopifnot(file.exists(train.img28x28bin.list.file_path))
-    img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
+if(!file.exists(img.bin_mx.list.file)){
+  if(!exists("train.img_bin.mx_list")) {
+    stopifnot(file.exists(train.img_bin.mx_list.file))
+    train.img_bin.mx_list <- readRDS(train.img_bin.mx_list.file)
   }
 
   put_log("Combining nested list of images to list of arrays...")
   
-  img.nested_list <- img28x28bin.list$img.list
+  img.nested_list <- train.img_bin.mx_list$img.list
   # names(img.nested_list)
   
   
@@ -138,28 +185,28 @@ if(!file.exists(train.img28x28mx.list.file_path)){
   names(img28x28mx.list) <- as.character(Y.Labels)
   rm(img.nested_list)
   
-  put_log("A Binary Image 28x28 Matrix list has been created with the following structure:
+  put_log("A Standardized Image Binary Data Matrix list has been created with the following structure:
   %1", capture.output(str(img28x28mx.list)))
   put_end_date(start)
   
-  put_log("Saving Binary Image 28x28 Matrix list to the backup file...")
+  put_log("Saving Standardized Image Binary Data Matrix list to the backup file...")
   saveRDS(img28x28mx.list,
-          file = train.img28x28mx.list.file_path)
+          file = img.bin_mx.list.file)
   
   # rm(img28x28mx.list)
   
-  put_log("Binary Image 28x28 Matrix list has been saved to the following file:
-%1", train.img28x28mx.list.file_path)
+  put_log("Standardized Image Binary Data Matrix list has been saved to the following file:
+%1", img.bin_mx.list.file)
 
 } else {
-  put_log("The Binary Image 28x28 Matrix list has already been constructed 
+  put_log("The Standardized Image Binary Data Matrix list has already been constructed 
 and backed up to the following file:
-%1", train.img28x28mx.list.file_path)
+%1", img.bin_mx.list.file)
 }
 
-### Preparing an Array of the Binary 28x28-size Image  Matrix ------------------
+### Preparing an Array of the Binary standardized Image  Matrix ------------------
 
-put_log("Preparing an Array of the Binary 28x28-size Image  Matrix...")
+put_log("Preparing an Array of the Binary standardized Image  Matrix...")
 
 train.img28x28mx.array.file_path <- file.path(train.data.dir, "train.img28x28mx.array.rds")
 
@@ -168,13 +215,13 @@ put_log("The path for the backup file to save the Array of the Binary Image  Mat
 
 if(!file.exists(train.img28x28mx.array.file_path)){
   if(!exists("img28x28mx.list")) {
-    stopifnot(file.exists(train.img28x28mx.list.file_path))
+    stopifnot(file.exists(img.bin_mx.list.file))
     
-    put_log("Loading the Train Binary Image 28x28 Matrix list...")
-    img28x28mx.list <- readRDS(train.img28x28mx.list.file_path)
+    put_log("Loading the Train Standardized Image Binary Data Matrix list...")
+    img28x28mx.list <- readRDS(img.bin_mx.list.file)
 
-    put_log("The Train Binary Image 28x28 Matrix list has been loaded from the following file:
-%1", final_test.img28x28mx.list.file_path)
+    put_log("The Train Standardized Image Binary Data Matrix list has been loaded from the following file:
+%1", img.bin_mx.list.file)
   }
   
   put_log("Combining Binary image 28x28x matrix list to array...")
@@ -207,12 +254,12 @@ if(!file.exists(train.img28x28mx.array.file_path)){
   put_log("Combined Binary image matrix 28x28 array has the following dimentions:
   %1", capture.output(dim(img28x28mx.array)))
   
-  put_log("Saving Binary Image 28x28 array set to the backup file...")
+  put_log("Saving Standardized Image Binary Data array set to the backup file...")
   saveRDS(list(img28x28mx.array = img28x28mx.array,
                img28x28mx.fpath = img28x28mx.fpath),
           file = train.img28x28mx.array.file_path)
   
-  put_log("The Binary Image 28x28 array set has been saved to the following file:
+  put_log("The Standardized Image Binary Data array set has been saved to the following file:
 %1", train.img28x28mx.array.file_path)
   
   rm(img28x28mx.array,
@@ -220,7 +267,7 @@ if(!file.exists(train.img28x28mx.array.file_path)){
 
   put_end_date(start)
 } else {
-  put_log("The Binary Image 28x28 array has already been constructed 
+  put_log("The Standardized Image Binary Data array has already been constructed 
 and backed up to the following file:
 %1", train.img28x28mx.array.file_path)
 }
@@ -360,17 +407,17 @@ put_log("The path for the backup file to save the Flattened EMNIST-Like Dataset:
 
 
 if(!file.exists(my_emnist.file_path)){
-  if(!exists("img28x28bin.list")) {
-    stopifnot(file.exists(train.img28x28bin.list.file_path))
-    img28x28bin.list <- readRDS(train.img28x28bin.list.file_path)
+  if(!exists("train.img_bin.mx_list")) {
+    stopifnot(file.exists(train.img_bin.mx_list.file))
+    train.img_bin.mx_list <- readRDS(train.img_bin.mx_list.file)
   }
   
-  Y.Labels <- img28x28bin.list$label.list
+  Y.Labels <- train.img_bin.mx_list$label.list
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
   
-  my_emnist.set <- img.list2flatten_matrix(img28x28bin.list$img.list)
-  rm(img28x28bin.list)
+  my_emnist.set <- img.list2flatten_matrix(train.img_bin.mx_list$img.list)
+  rm(train.img_bin.mx_list)
 
   put_log("The flatten dataset have been created with the following structure:
   %1", capture.output(str(my_emnist.set)))

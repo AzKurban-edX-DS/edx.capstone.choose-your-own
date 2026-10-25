@@ -3,7 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%
 
 ## Setup -----------------------------------------------------------------------
-source('r-global.path.R')
+source('r/r-global.path.R')
 setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.file_path))
 
@@ -26,19 +26,29 @@ source(ds.kaggle.download.script.path,
        keep.source = TRUE)
 
 ### Prepare Input Data ---------------------------------------------------------
-stopifnot(file.exists(ds.train2trimmed_img.dat.script.path,
+stopifnot(file.exists(ds2trimmed_img.dat.script.path,
                       prepare_ds.train_set.script_path,
                       prepare_final_test_set.script_path))
 
 #### Train Set: Create Trimmed Image Data List ---------------------------------
+open_logfile(".train.ds2trimmed_img.dat")
 
-source(ds.train2trimmed_img.dat.script.path, 
+root_dir <- img.train_root.dir
+img_dat.list.file <- train.img_dat.list.file
+
+
+source(ds2trimmed_img.dat.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()
+# =========================================================================
+# Log End Time: 2026-10-25 14:04:28.365784
+# Log Elapsed Time: 0 00:50:02
+# =========================================================================
 
 #### Prepare Training Datasets -------------------------------------------------
 
@@ -48,6 +58,23 @@ source(prepare_ds.train_set.script_path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+
+#### Final Test Set: Create Trimmed Image Data List ---------------------------------
+open_logfile(".ds.final-test2trimmed_img.dat")
+
+root_dir <- img.validation_root.dir
+img_dat.list.file <- final_test.img_dat.list.file
+
+
+source(ds2trimmed_img.dat.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+log_close()
 
 #### Prepare Final Test Set ----------------------------------------------------
 

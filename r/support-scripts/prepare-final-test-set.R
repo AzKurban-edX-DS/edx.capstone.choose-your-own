@@ -2,67 +2,98 @@
 # Preparing Final Test Datasets 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-open_logfile(".prepare-final_test-data")
+## Transforming into a List of Binary standardized Image Data Objects ----------
+
+open_logfile(".prepare-bin.train-dat")
 start <- put_start_date()
 
-## Pre-process the Final Test Image Data ---------------------------------------
 
-final_test.img28x28bin.list.file_path <- file.path(final_test.data.dir, 
-                                                   "final_test.img28x28bin.list.rds")
+put_log("Preparing a List of Binary standardized Image Data Objects...")
+
+ft.img_bin.mx_list.file <- file.path(train.data.dir, 
+                                        "final-test.img_bin.mx_list.rds")
+
+put_log("The path for the backup file to save the Binary standardized Image Object list:
+%1", ft.img_bin.mx_list.file)
+
+if (!file.exists(ft.img_bin.mx_list.file)) {
+  stopifnot(file.exists(final_test.img_dat.list.file))
+  
+  put_log("Loading list of Image objects...")
+  img_dat.list <- readRDS(final_test.img_dat.list.file)
+  put_log("The list of Image objects has been loading from the following file:
+%1", final_test.img_dat.list.file)
+  
+  ### Standardize the Image Data -------------------------------------------------    
+  
+  put_log("Creating a Standardized Image Binary Data list from the raw data files 
+stored in the following root directory: %1,
+Please wait...", img.train_root.dir)
+  
+  start <- put_start_date()
+  
+  ft.img_bin.mx_list <- 
+    ds.standardize.img_dat(img_dat.list,
+                           function(image.dat) {
+                             image.dat2bin_mx(image.dat,
+                                              ds.img_min.geometry) # '28x28!'
+                           })
+  
+  put_log("The Standardized Image Binary Data list has been created 
+with the following structure:
+%1", capture.output(str(ft.img_bin.mx_list)))
+  put_end_date(start)
+  
+  put_log("Saving Standardized Image Binary Data list to the backup file...")
+  saveRDS(ft.img_bin.mx_list,
+          file = ft.img_bin.mx_list.file)
+  put_log("Standardized Image Binary Data list has been saved to the following file:
+%1", ft.img_bin.mx_list.file)
+  put_end_date(start)
+  
+} else {
+  put_log("The Standardized Image Binary Data list has already been constructed 
+and backed up to the following file:
+%1", ft.img_bin.mx_list.file)
+}
+
+log_close()
+
+## Pre-process the Final Test Image Data ---------------------------------------
+### Preparing a List of Binary standardized Image  Matrix ----------------------
+
+final_test.img_bin.mx_list.file_path <- file.path(final_test.data.dir, 
+                                                  "final_test.img_bin.mx_list.rds")
 
 put_log("The path for the backup file to save the Final Test
-List of Binary 28x28-size Image Objects:
-%1", final_test.img28x28bin.list.file_path)
-
-final_test.img28x28mx.list.file_path <- file.path(final_test.data.dir, 
-                                                  "final_test.img28x28mx.list.rds")
-
-put_log("The path for the backup file to save the Final Test 
-List of Binary 28x28-size Image  Matrix:
-%1", final_test.img28x28mx.list.file_path)
+List of Binary standardized Image Objects:
+%1", final_test.img_bin.mx_list.file_path)
 
 final_test.img28x28mx.array.file_path <- file.path(final_test.data.dir, 
                                                    "final_test.img28x28mx.array.rds")
 
 put_log("The path for the backup file to save the Final Test 
-Array of the Binary 28x28-size Image  Matrix:
+Array of the Binary standardized Image  Matrix:
 %1", final_test.img28x28mx.array.file_path)
 
-if (!file.exists(final_test.img28x28bin.list.file_path)) {
-  put_log("Creating the Final Test Binary Image 28x28 list from the raw data files 
-stored in the following root directory: %1,
-Please wait...", img.validation_root.dir)
-  #label_folder.list <- c("0","1","2","3","7", "A", "B", "C", "D") 
-  ft.img28x28bin.list <- ds.load2bin28x28mx.list(img.validation_root.dir)
-  put_end_date(start)
-  
-  put_log("The Final Test Binary Image 28x28 list has been created with the following structure:
-%1", capture.output(str(ft.img28x28bin.list)))
-  
-  put_log("Saving the Final Test Binary Image 28x28 list...")
-  
-  saveRDS(ft.img28x28bin.list,
-          file = final_test.img28x28bin.list.file_path)
-  
-  put_log("The Final Test Binary Image 28x28 list has been saved to the following file:
-%1", final_test.img28x28bin.list.file_path)
-} else {
-  put_log("The Binary Image 28x28 list has already been constructed 
-and backed up in the following file:
-%1", final_test.img28x28bin.list.file_path)
-}
-put_end_date(start)
 
-if(!file.exists(final_test.img28x28mx.list.file_path)){
-  if(!exists("ft.img28x28bin.list")) {
-    stopifnot(file.exists(final_test.img28x28bin.list.file_path))
-    ft.img28x28bin.list <- readRDS(final_test.img28x28bin.list.file_path)
+img.bin_mx.list.file <- file.path(final_test.data.dir, 
+                                  "final_test.img.bin_mx.list.rds")
+
+put_log("The path for the backup file to save the Final Test 
+List of Binary standardized Image  Matrix:
+%1", img.bin_mx.list.file)
+
+if(!file.exists(img.bin_mx.list.file)){
+  if(!exists("ft.img_bin.mx_list")) {
+    stopifnot(file.exists(final_test.img_bin.mx_list.file_path))
+    ft.img_bin.mx_list <- readRDS(final_test.img_bin.mx_list.file_path)
   }
   
   put_log("Combining nested list of images to list of arrays...")
   
-  img.nested_list <- ft.img28x28bin.list$img.list
-  rm(ft.img28x28bin.list)
+  img.nested_list <- ft.img_bin.mx_list$img.list
+  rm(ft.img_bin.mx_list)
   
   length(img.nested_list)
   names(img.nested_list)
@@ -90,34 +121,34 @@ if(!file.exists(final_test.img28x28mx.list.file_path)){
   
   names(ft.img28x28mx.list) <- as.character(Y.Labels)
   
-  put_log("The Final Test Binary Image 28x28 Matrix list has been created with the following structure:
+  put_log("The Final Test Standardized Image Binary Data Matrix list has been created with the following structure:
   %1", capture.output(str(ft.img28x28mx.list)))
   put_end_date(start)
   
-  put_log("Saving Binary Image 28x28 Matrix list to the backup file...")
+  put_log("Saving Standardized Image Binary Data Matrix list to the backup file...")
   saveRDS(ft.img28x28mx.list,
-          file = final_test.img28x28mx.list.file_path)
+          file = img.bin_mx.list.file)
   
-  put_log("Binary Image 28x28 Matrix list has been saved to the following file:
-%1", final_test.img28x28mx.list.file_path)
+  put_log("Standardized Image Binary Data Matrix list has been saved to the following file:
+%1", img.bin_mx.list.file)
   put_end_date(start)
 } else {
-  put_log("The Binary Image 28x28 Matrix list has already been constructed 
+  put_log("The Standardized Image Binary Data Matrix list has already been constructed 
 and backed up to the following file:
-%1", final_test.img28x28mx.list.file_path)
+%1", img.bin_mx.list.file)
 }
 
 ## Prepare a Dataset for the Final Test of the Best Model ----------------------
 
 if(!file.exists(final_test.img28x28mx.array.file_path)){
   if (!exists("ft.img28x28mx.list")) {
-    stopifnot(file.exists(final_test.img28x28mx.list.file_path))
+    stopifnot(file.exists(img.bin_mx.list.file))
     
-    put_log("Loading the Final Binary Image 28x28 Matrix list...")
-    ft.img28x28mx.list <- readRDS(final_test.img28x28mx.list.file_path)
+    put_log("Loading the Final Standardized Image Binary Data Matrix list...")
+    ft.img28x28mx.list <- readRDS(img.bin_mx.list.file)
     
-    put_log("The Final Test Binary Image 28x28 Matrix list has been loaded from the following file:
-%1", final_test.img28x28mx.list.file_path)
+    put_log("The Final Test Standardized Image Binary Data Matrix list has been loaded from the following file:
+%1", img.bin_mx.list.file)
   }
   
   put_log("Combining Binary image 28x28x matrix list to array...")
@@ -145,18 +176,18 @@ if(!file.exists(final_test.img28x28mx.array.file_path)){
   put_log("Combined Final Test Binary image matrix 28x28 array has the following dimentions:
   %1", capture.output(dim(img28x28mx.array)))
   
-  put_log("Saving Final Test Binary Image 28x28 array to the backup file...")
+  put_log("Saving Final Test Standardized Image Binary Data array to the backup file...")
   saveRDS(list(img28x28mx.array = img28x28mx.array,
                img28x28mx.fpath = img28x28mx.fpath),
           file = final_test.img28x28mx.array.file_path)
   
-  put_log("The Final Test Binary Image 28x28 array has been saved to the following file:
+  put_log("The Final Test Standardized Image Binary Data array has been saved to the following file:
 %1", final_test.img28x28mx.array.file_path)
   
   rm(img28x28mx.array)
   rm(img28x28mx.fpath)
 } else {
-  put_log("The Binary Image 28x28 array has already been constructed 
+  put_log("The Standardized Image Binary Data array has already been constructed 
 and backed up to the following file:
 %1", final_test.img28x28mx.array.file_path)
 }

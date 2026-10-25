@@ -13,10 +13,10 @@ stopifnot(dir.exists(dnn_mcc.tuner.dir),
 ## Prepare a Test Set for the TDNN MCC Final Model Evaluation ------------------
 start <- put_start_date()
 
-put_log("Loading the Test Set of 28x28-size image data...")
+put_log("Loading the Test Set of standardized image data...")
 test_set <- load.test_set(ds28x28.split.train_0.8.file)
 
-put_log("The Test Set of 28x28-size image data has been loaded from the following file:
+put_log("The Test Set of standardized image data has been loaded from the following file:
 %1", ds28x28.split.train_0.8.file)
 
 
