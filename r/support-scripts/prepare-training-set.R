@@ -50,11 +50,15 @@ if (!file.exists(train.img_bin.mx_list.file)) {
   y.size <- y.grouped$width * y.grouped$min.height
   img.min_size <- y.grouped[which.min(y.size),]
   
-  ds.img_min.geometry <- paste0(img.min_size$width,
-                                'x',
-                                img.min_size$min.height,
-                                '!')[1]
+  ds.img_min.geometry  <- paste0(img.min_size$width,
+                                 'x',
+                                 img.min_size$min.height,
+                                 '!')[1]
   #rm(x,y)
+  
+  put_log("The geometry for standardizing images to a uniform size, 
+based on the smallest existing image, is as follows: 
+%1", ds.img_min.geometry)
   
 ### Standardize the Image Data -------------------------------------------------    
   
@@ -66,10 +70,11 @@ Please wait...", img.train_root.dir)
   
   train.img_bin.mx_list <- 
     ds.standardize.img_dat(img_dat.list,
-                          function(image.dat) {
-                            image.dat2bin_mx(image.dat,
-                                             ds.img_min.geometry) # '28x28!'
-                          })
+                           function(image.dat) {
+                             image.dat2bin_mx(image.dat,
+                                              ds.img_min.geometry, # '28x28!'
+                                              trim_image = TRUE)
+                           })
   
   put_log("The Standardized Image Binary Data list has been created 
 with the following structure:

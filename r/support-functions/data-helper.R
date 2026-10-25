@@ -224,32 +224,6 @@ Completed processing Image Data objects")
        img.list = img_list)
 }
 
-load.img_dat <- function(file_path) {
-  #' Load image, extracts, and returns 
-  #' the underlying raw pixel buffer data.
- magic::image_data(image_read(file_path))
-}
-
-
-load.img_trimmed.dat <- function(file_path) {
-  # Reads the image file from disk
-  img <- magick::image_read(file_path)
-  
-  # Converts the loaded image into a numeric matrix representation
-  img.mx <- magick_img2matrix(img)
-  
-  img.trimmed <- img
-
-  #' Evaluates the matrix's maximum value to check 
-  #' whether the image is entirely blank or empty.
-  if (max(img.mx) > 0) {
-    img.trimmed <- image_trim(img)
-  }
-  
-  # Extracts and returns the underlying raw pixel buffer data.
-  magick::image_data(img.trimmed)
-}
-
 load_datasets <- function(backup.file) {
   put_log("Function `load_datasets`:
 Loading dataset from the backup file...")
@@ -405,14 +379,13 @@ magick_img2matrix <- function(img){
   mx.bin /255
 }
 
-image.dat2bin_28x28mx <- function(image.dat) {
-  image.dat2bin_mx(image.dat,
-                   resize.geometry = '28x28!') 
-}
-
 image.dat2bin_mx <- function(image.dat,
-                             resize.geometry = NULL) {
+                             resize.geometry = NULL,
+                             trim_image = FALSE) {
   img <- image_read(image.dat)
+  
+  if(trim_image)
+    img <- image_trim(img)
   
   if(!is.null(resize.geometry)) 
     img <- image_resize(img, resize.geometry)
