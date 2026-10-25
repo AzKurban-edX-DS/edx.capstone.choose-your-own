@@ -26,18 +26,23 @@ source(ds.kaggle.download.script.path,
        keep.source = TRUE)
 
 ### Prepare Input Data ---------------------------------------------------------
-stopifnot(file.exists(ds2trimmed_img.dat.script.path,
+stopifnot(file.exists(load.raw_img_dat.list,
                       prepare_ds.train_set.script_path,
                       prepare_final_test_set.script_path))
 
-#### Train Set: Create Trimmed Image Data List ---------------------------------
+#### Train Set: Load Image Data List ---------------------------------
 open_logfile(".train.ds2trimmed_img.dat")
 
 root_dir <- img.train_root.dir
 img_dat.list.file <- train.img_dat.list.file
 
+load.image_dat <- function(file_path) {
+  #' Load image, extracts, and returns 
+  #' the underlying raw pixel buffer data.
+  magic::image_data(image_read(file_path))
+}
 
-source(ds2trimmed_img.dat.script.path, 
+source(load.raw_img_dat.list, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -45,11 +50,11 @@ source(ds2trimmed_img.dat.script.path,
        keep.source = TRUE)
 
 log_close()
-# =========================================================================
+# *************************************************************************
 # Log End Time: 2026-10-25 14:04:28.365784
 # Log Elapsed Time: 0 00:50:02
+# *************************************************************************
 # =========================================================================
-
 #### Prepare Training Datasets -------------------------------------------------
 
 source(prepare_ds.train_set.script_path, 
@@ -65,9 +70,9 @@ open_logfile(".ds.final-test2trimmed_img.dat")
 
 root_dir <- img.validation_root.dir
 img_dat.list.file <- final_test.img_dat.list.file
-
-
-source(ds2trimmed_img.dat.script.path, 
+load.image_dat <- load.img_trimmed.dat
+  
+source(load.raw_img_dat.list, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -75,6 +80,11 @@ source(ds2trimmed_img.dat.script.path,
        keep.source = TRUE)
 
 log_close()
+# *************************************************************************
+# Log End Time: 2026-10-25 14:54:10.636092
+# Log Elapsed Time: 0 00:01:30
+# *************************************************************************
+# =========================================================================
 
 #### Prepare Final Test Set ----------------------------------------------------
 

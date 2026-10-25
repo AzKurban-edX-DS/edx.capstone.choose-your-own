@@ -21,7 +21,7 @@ library(logr)
 library(tidyverse)
 
 ### Load Logging Helper Functions -----------------------------------------------
-log_open()
+log_open('log/setup-logging.log')
 
 source('r/r-global.path.R')
 
@@ -35,16 +35,11 @@ source(log_func_script.file_path,
        verbose = TRUE,
        keep.source = TRUE)
 
+put_log("The user-defined Logging Helper functions have been loaded from the following script:
+%1", log_func_script.file_path)
 log_close()
 
-
-
-
-put_log("Root directory for the custom functions definition scripts:
-%1", support_functions.dir)
-
-
-
+open_logfile(".setup-project")
 
 ## Install Other Packages ------------------------------------------------------------
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
@@ -200,6 +195,9 @@ put_log("Root directory for the `R` scripts:
 
 put_log("Root directory for the support scripts:
 %1", support_scripts.dir)
+
+put_log("Root directory for the custom functions definition scripts:
+%1", support_functions.dir)
 
 #### Directories for Model Scripts ---------------------------------------------
 model_scripts.dir <- file.path(r_scripts.dir, "models")
@@ -456,9 +454,9 @@ final_test.img_dat.list.file <- file.path(final_test.data.dir,
 ds.kaggle.download.script.path <- file.path(support_scripts.dir, "ds.kaggle.download.R")
 stopifnot(file.exists(ds.kaggle.download.script.path))
 
-ds2trimmed_img.dat.script.path <- file.path(support_scripts.dir, 
-                                                  "ds2trimmed_img.dat.R")
-stopifnot(file.exists(ds2trimmed_img.dat.script.path))
+load.raw_img_dat.list <- file.path(support_scripts.dir, 
+                                                  "load-raw-image-data.R")
+stopifnot(file.exists(load.raw_img_dat.list))
 
 prepare_ds.train_set.script_path <- file.path(support_scripts.dir, "prepare-training-set.R")
 stopifnot(file.exists(prepare_ds.train_set.script_path))
@@ -618,3 +616,4 @@ source(cnn_mcc.hyperparams.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()

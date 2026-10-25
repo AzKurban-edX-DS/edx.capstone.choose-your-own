@@ -224,6 +224,13 @@ Completed processing Image Data objects")
        img.list = img_list)
 }
 
+load.img_dat <- function(file_path) {
+  #' Load image, extracts, and returns 
+  #' the underlying raw pixel buffer data.
+ magic::image_data(image_read(file_path))
+}
+
+
 load.img_trimmed.dat <- function(file_path) {
   # Reads the image file from disk
   img <- magick::image_read(file_path)

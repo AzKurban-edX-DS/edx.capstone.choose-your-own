@@ -14,7 +14,9 @@ put_log("The list of Trimmed Image objects has been loading from the following f
 put_end_date(start)
 
 # length(img_dat.list)
-# str(img_dat.list$img.list$W$img.list)
+# img_dat.list$img.list$W$img.list
+str(img_dat.list$img.list$W$img.list)
+str(img_dat.list$img.list$`#`$img.list[1:8])
 
 x <- lapply(img_dat.list$img.list, function(ch.class) {
   img_dat.ls <- ch.class$img.list

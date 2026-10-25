@@ -54,7 +54,7 @@ if (!file.exists(train.img_bin.mx_list.file)) {
                                 'x',
                                 img.min_size$min.height,
                                 '!')[1]
-  rm(x,y,)
+  #rm(x,y)
   
 ### Standardize the Image Data -------------------------------------------------    
   
