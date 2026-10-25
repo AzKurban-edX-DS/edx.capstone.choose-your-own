@@ -39,7 +39,7 @@ img_dat.list.file <- train.img_dat.list.file
 load.image_dat <- function(file_path) {
   #' Load image, extracts, and returns 
   #' the underlying raw pixel buffer data.
-  magic::image_data(image_read(file_path))
+  magick::image_data(image_read(file_path))
 }
 
 source(load.raw_img_dat.list, 
