@@ -64,8 +64,7 @@ open_logfile(".ds.final-test2trimmed_img.dat")
 
 root_dir <- img.validation_root.dir
 img_dat.list.file <- final_test.img_dat.list.file
-load.image_dat <- load.img_trimmed.dat
-  
+
 source(load.raw_img_dat.list, 
        catch.aborts = TRUE,
        echo = TRUE,
