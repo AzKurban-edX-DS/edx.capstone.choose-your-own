@@ -25,13 +25,13 @@ source(ds.kaggle.download.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Prepare Input Data ---------------------------------------------------------
+### Prepare Training Set -------------------------------------------------------
 stopifnot(file.exists(load.raw_img_dat.script.path,
-                      prepare_ds.train_set.script.path,
-                      prepare_final_test_set.script.path))
+                      raw_img.dat2std_bin.script.path,
+                      prepare_ds.train_set.script.path))
 
-#### Train Set: Load Image Data List ---------------------------------
-open_logfile(".ds.train.load_image.dat")
+#### Training Set: Load Image Data List ---------------------------------
+open_logfile(".ds.train.load-raw-image.dat")
 
 root_dir <- img.train_root.dir
 raw_img.dat.file <- train.raw_img.dat.file
@@ -47,12 +47,12 @@ source(load.raw_img_dat.script.path,
 rm(root_dir)
 log_close()
 # *************************************************************************
-# Log End Time: 2026-10-25 22:55:14.912752
-# Log Elapsed Time: 0 00:37:13
+# Log End Time: 2026-10-27 17:49:23.309253
+# Log Elapsed Time: 0 00:41:23
 # *************************************************************************
 
 #### Training Set: Prepare Standardize Binary Image Data -----------------------
-open_logfile(".prepare,ds.std-bin.array")
+open_logfile(".ds.train.raw-dat2std-bin.array")
 
 stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
@@ -76,6 +76,11 @@ source(raw_img.dat2std_bin.script.path,
        keep.source = TRUE)
 
 log_close()
+# *************************************************************************
+# Log End Time: 2026-10-27 18:15:06.159371
+# Log Elapsed Time: 0 00:25:42
+# *************************************************************************
+
 # =========================================================================
 #### Prepare Training Datasets -------------------------------------------------
 
@@ -87,8 +92,14 @@ source(prepare_ds.train_set.script.path,
        keep.source = TRUE)
 
 
-#### Final Test Set: Load Image Data List --------------------------------------
-open_logfile(".ds.final-test.load_image.dat")
+# =========================================================================
+### Prepare Final Test Set -----------------------------------------------------
+stopifnot(file.exists(load.raw_img_dat.script.path,
+                      raw_img.dat2std_bin.script.path,
+                      prepare_final_test_set.script.path))
+
+#### Final Test set: Load Image Data List --------------------------------------
+open_logfile(".ds.final-test.load-raw-image.dat")
 
 root_dir <- img.validation_root.dir
 raw_img.dat.file <- final_test.raw_img.dat.file
@@ -105,8 +116,29 @@ log_close()
 # Log End Time: 2026-10-25 14:54:10.636092
 # Log Elapsed Time: 0 00:01:30
 # *************************************************************************
-# =========================================================================
 
+#### Final Test set: Prepare Standardize Binary Image Data ---------------------
+open_logfile(".ds.final-test.raw-dat2std-bin.array")
+
+img.std_bin.ls.nested.file <- file.path(final_test.data.dir, 
+                                        "final-test.img.std_bin.ls-nested.rds")
+
+img.std_bin.array.ls.file <- file.path(final_test.data.dir, 
+                                       "final-test.img.std_bin.array.ls.rds")
+
+img.std_bin.array.file <- file.path(final_test.data.dir, 
+                                    "final-test.img.std_bin.array.rds")
+
+source(raw_img.dat2std_bin.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+log_close()
+
+# =========================================================================
 #### Prepare Final Test Set ----------------------------------------------------
 
 source(prepare_final_test_set.script.path, 
