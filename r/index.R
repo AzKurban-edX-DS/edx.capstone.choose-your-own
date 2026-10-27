@@ -31,7 +31,7 @@ stopifnot(file.exists(load.raw_img_dat.script.path,
                       prepare_final_test_set.script.path))
 
 #### Train Set: Load Image Data List ---------------------------------
-open_logfile(".train.ds2trimmed_img.dat")
+open_logfile(".ds.train.load_image.dat")
 
 root_dir <- img.train_root.dir
 raw_img.dat.file <- train.raw_img.dat.file
@@ -84,8 +84,8 @@ source(prepare_ds.train_set.script.path,
        keep.source = TRUE)
 
 
-#### Final Test Set: Create Trimmed Image Data List ---------------------------------
-open_logfile(".ds.final-test2trimmed_img.dat")
+#### Final Test Set: Load Image Data List --------------------------------------
+open_logfile(".ds.final-test.load_image.dat")
 
 root_dir <- img.validation_root.dir
 raw_img.dat.file <- final_test.raw_img.dat.file
