@@ -166,7 +166,7 @@ tdnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
 
 dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints")
-dnn_mcc.tuner.checkpoint.file_path <- 
+dnn_mcc.tuner.checkpoint.file <- 
   file.path(dnn_mcc.tuner.checkpoints.dir, 
             "dnn_mcc.tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -215,7 +215,7 @@ for (i in seq(dnn_mcc.tuner.max_layers)) {
 
 tdnn_mcc.callback_list <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dnn_mcc.tuner.checkpoint.file_path,
+  callback_model_checkpoint(filepath = dnn_mcc.tuner.checkpoint.file,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)

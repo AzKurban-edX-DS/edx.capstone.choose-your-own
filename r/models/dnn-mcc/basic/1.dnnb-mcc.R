@@ -6,7 +6,7 @@
 open_logfile(".dnnb-mcc.model-building")
 start <- put_start_date()
 
-stopifnot(file.exists(my_emnist.split.file_path))
+stopifnot(file.exists(my_emnist.split.file))
 
 # Dense Neural Network Based Basic Multiclass Classifier (DNNB MCC)  Model
 
@@ -137,7 +137,7 @@ dnnb_mcc.checkpoints.dir <- file.path(data.dnn_mcc.basic.dir,
 if(!dir.exists(dnnb_mcc.checkpoints.dir))
   dir.create(dnnb_mcc.checkpoints.dir)
 
-dnnb_mcc.checkpoint.file_path.tmpl <- 
+dnnb_mcc.checkpoint.file.tmpl <- 
   file.path(dnnb_mcc.checkpoints.dir, 
             "dnnb_mcc.{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -167,7 +167,7 @@ summary(dnnb_mcc)
 
 dnnb_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file_path.tmpl,
+  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file.tmpl,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)

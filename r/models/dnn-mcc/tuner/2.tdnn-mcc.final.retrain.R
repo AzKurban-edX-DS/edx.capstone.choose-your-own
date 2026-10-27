@@ -102,7 +102,7 @@ rm(y.train.groups)
 
 tdnn_mcc.final.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                            "checkpoints.final")
-tdnn_mcc.final.checkpoints.file_path <- 
+tdnn_mcc.final.checkpoints.file <- 
   file.path(tdnn_mcc.final.checkpoints.dir, 
             "dnn_mcc.best.{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -141,7 +141,7 @@ put_log("The Tuned DNN-Based Final Model Summary:
 
 tdnn_mcc.final.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = tdnn_mcc.final.checkpoints.file_path,
+  callback_model_checkpoint(filepath = tdnn_mcc.final.checkpoints.file,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)

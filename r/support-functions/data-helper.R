@@ -36,7 +36,7 @@ Getting file path lists...")
   
   #'Gather a structured list of file paths from each target subfolder, 
   #'applying optional maximum limits, random sampling, and seed generation. 
-  img.file_list <- img.file_path.get_list(root_path, 
+  img.file_list <- img.file.get_list(root_path, 
                                           folder.list,
                                           char_files.max,
                                           seed,
@@ -94,7 +94,7 @@ Image files have been loaded. The output list structure:
        img.list = img_list)
 }
 
-img.file_path.get_list <- function(root_path, 
+img.file.get_list <- function(root_path, 
                                    folder.list = NULL, 
                                    char_files.max = NA,
                                    seed = NA,
@@ -109,7 +109,7 @@ img.file_path.get_list <- function(root_path,
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
-    put_log("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file.get_list`:
 Getting file path list from the following char's root folders:
 %1", file.root_path)
     
@@ -140,7 +140,7 @@ Getting file path list from the following char's root folders:
       fpath.list <- fpath.list[file.idx]
     }
     
-    put_log("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file.get_list`:
 %1 files in folder: %2", length(fpath.list), folder_name)
     
     list(root_path = file.root_path,
@@ -186,21 +186,21 @@ The `%1` object exists.", object.name)
   }
 }
 
-ds.standardize.img_dat <- function(img_dat.list,
+ds.standardize.img_dat <- function(img.dat,
                                      fn.img2bin_mx.resized,
                                      random_sample = FALSE) {
   
   start <- put_start_date()
 
-  img_list <- lapply(img_dat.list$label.list, function(lbl){
+  img_list <- lapply(img.dat$label.list, function(lbl){
     
     put_log("Function `ds.standardize.img_dat`:
 Processing images of character: %1", lbl)
     
-    char.dat <- img_dat.list$img.list[[lbl]]
+    char.dat <- img.dat$img.list[[lbl]]
     
     img_ls <- map(char.dat$img.list, 
-                  fn.img2bin_mx.resuzed) 
+                  fn.img2bin_mx.resized) 
     
     ls <- list(img.list = img_ls, 
                fpath.list = char.dat$fpath.list)
@@ -213,14 +213,14 @@ Completed processing images of character: %1", lbl)
     ls
   })
   
-  # names(img_list) <- img_dat.list$label.list[37:39]
-  names(img_list) <- img_dat.list$label.list
+  # names(img_list) <- img.dat$label.list[37:39]
+  names(img_list) <- img.dat$label.list
   
   put_log("Function `ds.standardize.img_dat`:
 Completed processing Image Data objects")
   put_end_date(start)
 
-  list(label.list = img_dat.list$label.list,
+  list(label.list = img.dat$label.list,
        img.list = img_list)
 }
 
@@ -315,23 +315,23 @@ load.cnn_mcc.tuner.datasets <- function() {
 }
 
 load28x28x1.final_test_set <- function() {
-  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
+  stopifnot(file.exists(final_test.img.std_bin.array.file))
   
   put_log("Function `load28x28x1.final_test_set`:
 Loading the Final Test 28x28 Image Data Array Set from the backup file...")
-  ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
+  ftest_set <- readRDS(final_test.img.std_bin.array.file)
   
   put_log("Function `load28x28x1.final_test_set`:
 The Final Test 28x28 Image Data Array Set has been loading from the following file:
-%1", final_test.img28x28mx.array.file_path)
+%1", final_test.img.std_bin.array.file)
   
   put_log("Function `load28x28x1.final_test_set`:
 The Final Test 28x28 Image Data Set structure:
 %1", capture.output(str(ftest_set)))
 
-  ftest.x <- ftest_set$img28x28mx.array
+  ftest.x <- ftest_set$img_dat.array
   
-  ftest.files <- ftest_set$img28x28mx.fpath
+  ftest.files <- ftest_set$img.file_path.array
   
   class_groups <- ds.get_classIDs.grouped(ftest.x)
   
@@ -440,7 +440,7 @@ data.plot <- function(data,
 
 recognition_err.table <- function(predicted.values, 
                                   actual.values, 
-                                  img.file_paths,
+                                  img.files,
                                   pred.char = NULL,
                                   target.char = NULL) {
   
@@ -450,11 +450,11 @@ recognition_err.table <- function(predicted.values,
   
   err.result <- data.frame(predicted = predicted.values[err.idx],
                            actual = actual.values[err.idx],
-                           file = img.file_paths[err.idx])
+                           file = img.files[err.idx])
   
   # true.result <- data.frame(predicted = predicted.values[true.idx],
   #                          actual = actual.values[true.idx],
-  #                          file = img.file_paths[true.idx])
+  #                          file = img.files[true.idx])
 
   if(is.null(pred.char))
     return(err.result)
@@ -536,11 +536,11 @@ Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
   if(!is.na(seed)) {
     set.seed(seed)
   } else if(seed.default) {
-    set.seed(nrow(img28x28mx.set$img28x28mx.array))
+    set.seed(nrow(img28x28mx.set$img_dat.array))
   }
 
-  split.list <- sample_train_test_sets.x3d(img28x28mx.set$img28x28mx.array,
-                                           img28x28mx.set$img28x28mx.fpath,
+  split.list <- sample_train_test_sets.x3d(img28x28mx.set$img_dat.array,
+                                           img28x28mx.set$img.file_path.array,
                                            test.ratio = test_ratio,
                                            shuffle_rows = shuffle_rows,
                                            balanced = balanced)
@@ -571,17 +571,17 @@ Combined image data matrix has been created with the following structure:
     item$fpath.list
   })
   
-  img.file_path <- abind(file_path.ls)
-  names(img.file_path) <- rownames(img.mx)
+  img.file <- abind(file_path.ls)
+  names(img.file) <- rownames(img.mx)
 
   if (shuffle.rows) {
     put_log("Shuffling flatten matrix rows...")
-    img.mx <- shuffle.rows(img.mx, img.file_path, shuffle.seed)
+    img.mx <- shuffle.rows(img.mx, img.file, shuffle.seed)
     put_log("The flatten matrix rows have been shuffled.")
   }
 
   list(img.mx = img.mx,
-       img.file_path = img.file_path)
+       img.file = img.file)
 }
 
 img.list2flatten_matrix.list <- function(img_list){

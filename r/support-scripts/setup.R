@@ -25,10 +25,10 @@ log_open('log/setup-logging.log')
 
 source('r/r-global.path.R')
 
-log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
-stopifnot(file.exists(log_func_script.file_path))
+log_func_script.path <- file.path(support_functions.dir, "logging-helper.R")
+stopifnot(file.exists(log_func_script.path))
 
-source(log_func_script.file_path, 
+source(log_func_script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -36,7 +36,7 @@ source(log_func_script.file_path,
        keep.source = TRUE)
 
 put_log("The user-defined Logging Helper functions have been loaded from the following script:
-%1", log_func_script.file_path)
+%1", log_func_script.path)
 log_close()
 
 open_logfile(".setup-project")
@@ -428,10 +428,10 @@ if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
 
 ## Input Data Paths ------------------------------------------------------------
 ### Training Set ---------------------------------------------------------------
-train.img_dat.list.file <- file.path(train.data.dir, 
-                                     "train.img_dat.list.rds")
+train.raw_img.dat.file <- file.path(train.data.dir, 
+                                     "train.raw-image.dat.rds")
 
-my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+my_emnist.split.file <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
 
 ds28x28.split.train_0.8.file <- file.path(train.data.dir, 
                                                  "ds28x28.split.train_0.8.backup.rds")
@@ -442,27 +442,32 @@ ds28x28.split.train_0.1.file <- file.path(train.data.dir,
 ds.imbalanced.final_retraining.file <- file.path(train.data.dir, 
                                                  "ds.imbalanced.final-retraining.backup.rds")
 
-my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+my_emnist.split.file <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
 
-my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
+my_emnist.0.1split.file <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
 
 ### Final Test Set -------------------------------------------------------------
-final_test.img_dat.list.file <- file.path(final_test.data.dir, 
-                                     "final-test.img_dat.list.rds")
+final_test.raw_img.dat.file <- file.path(final_test.data.dir, 
+                                     "final-test.raw-image.dat.rds")
 
 ## Init Project Script Paths ---------------------------------------------------
 ds.kaggle.download.script.path <- file.path(support_scripts.dir, "ds.kaggle.download.R")
 stopifnot(file.exists(ds.kaggle.download.script.path))
 
-load.raw_img_dat.list <- file.path(support_scripts.dir, 
+load.raw_img_dat.script.path <- file.path(support_scripts.dir, 
                                                   "load-raw-image-data.R")
-stopifnot(file.exists(load.raw_img_dat.list))
+stopifnot(file.exists(load.raw_img_dat.script.path))
 
-prepare_ds.train_set.script_path <- file.path(support_scripts.dir, "prepare-training-set.R")
-stopifnot(file.exists(prepare_ds.train_set.script_path))
+raw_img.dat2std_bin.script.path <- file.path(support_scripts.dir, 
+                                                  "raw-img.dat2std_bin.R")
+stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
-prepare_final_test_set.script_path <- file.path(support_scripts.dir, "prepare-final-test-set.R")
-stopifnot(file.exists(prepare_final_test_set.script_path))
+
+prepare_ds.train_set.script.path <- file.path(support_scripts.dir, "prepare-training-set.R")
+stopifnot(file.exists(prepare_ds.train_set.script.path))
+
+prepare_final_test_set.script.path <- file.path(support_scripts.dir, "prepare-final-test-set.R")
+stopifnot(file.exists(prepare_final_test_set.script.path))
 
 model_visualization.shared.script.path <- file.path(model_scripts.dir, 
                                                     "model-visualization.shared.R")
@@ -557,9 +562,9 @@ cnn_mcc.hyperparams.script.path <- file.path(cnn_mcc.tuner.classes.scripts.dir,
 stopifnot(file.exists(cnn_mcc.hyperparams.script.path))
 
 ## Load Common Helper Functions ------------------------------------------------
-common_helper.funcs.file_path <- file.path(support_functions.dir, 
+common_helper.funcs.file <- file.path(support_functions.dir, 
                                            "common-helper.R")
-source(common_helper.funcs.file_path, 
+source(common_helper.funcs.file, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -567,10 +572,10 @@ source(common_helper.funcs.file_path,
        keep.source = TRUE)
 
 ## Load Data Helper Functions --------------------------------------------------
-data_helper.funcs.file_path <- file.path(support_functions.dir, "data-helper.R")
+data_helper.funcs.file <- file.path(support_functions.dir, "data-helper.R")
 
 
-source(data_helper.funcs.file_path, 
+source(data_helper.funcs.file, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -579,10 +584,10 @@ source(data_helper.funcs.file_path,
 
 
 ## Load Model Helper Functions --------------------------------------------------
-model_helper.funcs.file_path <- file.path(support_functions.dir, "models-helper.R")
+model_helper.funcs.file <- file.path(support_functions.dir, "models-helper.R")
 
 
-source(model_helper.funcs.file_path, 
+source(model_helper.funcs.file, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,

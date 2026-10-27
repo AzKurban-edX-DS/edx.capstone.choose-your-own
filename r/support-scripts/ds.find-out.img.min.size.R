@@ -8,17 +8,17 @@ open_logfile(".find-out.smallest-img_dat-size")
 
 start <- put_start_date()
 put_log("Loading list of Trimmed Image objects...")
-img_dat.list <- readRDS(train.img_dat.list.file)
+raw_img.dat.ls <- readRDS(train.raw_img.dat.file)
 put_log("The list of Trimmed Image objects has been loading from the following file:
-%1", train.img_dat.list.file)
+%1", train.raw_img.dat.file)
 put_end_date(start)
 
-# length(img_dat.list)
-# img_dat.list$img.list$W$img.list
-str(img_dat.list$img.list$W$img.list)
-str(img_dat.list$img.list$`#`$img.list[1:8])
+# length(raw_img.dat.ls)
+# raw_img.dat.ls$img.list$W$img.list
+str(raw_img.dat.ls$img.list$W$img.list)
+str(raw_img.dat.ls$img.list$`#`$img.list[1:8])
 
-x <- lapply(img_dat.list$img.list, function(ch.class) {
+x <- lapply(raw_img.dat.ls$img.list, function(ch.class) {
   img_dat.ls <- ch.class$img.list
   x <- lapply(img_dat.ls, function(img_dat) {
     dim(img_dat[1,,])
@@ -77,7 +77,7 @@ put_log("Structure of the Smallest Image Size Array:
 
 head(min.x)
 
-rm(img_dat.list, x, z)
+rm(raw_img.dat.ls, x, z)
 
 put_log("Size of the smallest image in the training dataset,
 %1", capture.output(min.x[which.min(min.x[,1]),]))

@@ -5,16 +5,16 @@
 ## Setup -----------------------------------------------------------------------
 open_logfile(".tuner.cnn-mcc.final-model.test")
 stopifnot(file.exists(tcnn_mcc.final.file,
-                      final_test.img28x28mx.array.file_path))
+                      final_test.img.std_bin.array.file))
 
 ### Preparing a Test Set for the Best Model Final Test -------------------------
 put_log("Loading the Test Standardized Image Binary Data array set from the backup file...")
-ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
+ftest_set <- readRDS(final_test.img.std_bin.array.file)
 put_log("The Test Standardized Image Binary Data array set has been loaded from the following file:
-%1", final_test.img28x28mx.array.file_path)
+%1", final_test.img.std_bin.array.file)
 
-ds.test <-shuffle.rows.x3d(ftest_set$img28x28mx.array,
-                           ftest_set$img28x28mx.fpath)
+ds.test <-shuffle.rows.x3d(ftest_set$img_dat.array,
+                           ftest_set$img.file_path.array)
 
 x <- ds.test$x
 x_test.files <- ds.test$x.files

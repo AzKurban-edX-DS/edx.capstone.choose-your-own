@@ -4,16 +4,16 @@
 
 ## Setup -----------------------------------------------------------------------
 source('r/r-global.path.R')
-setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
-stopifnot(file.exists(setup_script.file_path))
+setup_script.path <- file.path(support_scripts.dir, "setup.R")
+stopifnot(file.exists(setup_script.path))
 
-source(setup_script.file_path, 
+source(setup_script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
-
+# ------------------
 ### Download the Kaggle Dataset ------------------------------------------------
 
 stopifnot(file.exists(ds.kaggle.download.script.path))
@@ -26,32 +26,57 @@ source(ds.kaggle.download.script.path,
        keep.source = TRUE)
 
 ### Prepare Input Data ---------------------------------------------------------
-stopifnot(file.exists(load.raw_img_dat.list,
-                      prepare_ds.train_set.script_path,
-                      prepare_final_test_set.script_path))
+stopifnot(file.exists(load.raw_img_dat.script.path,
+                      prepare_ds.train_set.script.path,
+                      prepare_final_test_set.script.path))
 
 #### Train Set: Load Image Data List ---------------------------------
 open_logfile(".train.ds2trimmed_img.dat")
 
 root_dir <- img.train_root.dir
-img_dat.list.file <- train.img_dat.list.file
+raw_img.dat.file <- train.raw_img.dat.file
+stopifnot(exists("raw_img.dat.file"))
 
-source(load.raw_img_dat.list, 
+source(load.raw_img_dat.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
+rm(root_dir)
 log_close()
 # *************************************************************************
-# Log End Time: 2026-10-25 14:04:28.365784
-# Log Elapsed Time: 0 00:50:02
+# Log End Time: 2026-10-25 22:55:14.912752
+# Log Elapsed Time: 0 00:37:13
 # *************************************************************************
+
+#### Training Set: Prepare Standardize Binary Image Data -----------------------
+stopifnot(file.exists(raw_img.dat2std_bin.script.path))
+
+ds.img_min.geometry <- NULL
+Y.Labels <- NULL
+
+img.std_bin.ls.nested.file <- file.path(train.data.dir, 
+                                      "train.img.std_bin.ls-nested.rds")
+
+img.std_bin.array.ls.file <- file.path(train.data.dir, 
+                                  "train.img.std_bin.array.ls.rds")
+
+img.std_bin.array.file <- file.path(train.data.dir, 
+                                    "train.img.std_bin.array.rds")
+
+source(raw_img.dat2std_bin.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
 # =========================================================================
 #### Prepare Training Datasets -------------------------------------------------
 
-source(prepare_ds.train_set.script_path, 
+source(prepare_ds.train_set.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -63,9 +88,9 @@ source(prepare_ds.train_set.script_path,
 open_logfile(".ds.final-test2trimmed_img.dat")
 
 root_dir <- img.validation_root.dir
-img_dat.list.file <- final_test.img_dat.list.file
+raw_img.dat.file <- final_test.raw_img.dat.file
 
-source(load.raw_img_dat.list, 
+source(load.raw_img_dat.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -81,7 +106,7 @@ log_close()
 
 #### Prepare Final Test Set ----------------------------------------------------
 
-source(prepare_final_test_set.script_path, 
+source(prepare_final_test_set.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -299,7 +324,7 @@ log_close()
 ### DNN-Based Basic MCC Model --------------------------------------------------
 stopifnot(file.exists(dnnb_mcc.script.path,
                       dnnb_mcc.eval.script.path,
-                      my_emnist.split.file_path))
+                      my_emnist.split.file))
 #### Init Paths ----------------------------------------------------------------
 dnnb_mcc.file <- file.path(data.dnn_mcc.basic.dir, 
                                        "dnnb_mcc.pre-trained.keras")

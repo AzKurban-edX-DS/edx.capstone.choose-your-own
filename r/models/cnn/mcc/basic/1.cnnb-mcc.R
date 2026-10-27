@@ -116,7 +116,7 @@ rm(train_set)
 
 cnnb_mcc.checkpoints.dir <- file.path(data.cnnb_mcc.dir, "checkpoints")
 
-cnnb_mcc.checkpoint.file_path.tmpl <- 
+cnnb_mcc.checkpoint.file.tmpl <- 
   file.path(cnnb_mcc.checkpoints.dir, 
             "{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -189,7 +189,7 @@ dim(y_train.cat)
 
 cnnb_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = cnnb_mcc.checkpoint.file_path.tmpl,
+  callback_model_checkpoint(filepath = cnnb_mcc.checkpoint.file.tmpl,
                             monitor = "val_loss",
                             mode = max,
                             save_best_only = TRUE,

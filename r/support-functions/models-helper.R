@@ -289,7 +289,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(hp,
   if(!dir.exists(checkpoints.dir))
     dir.create(checkpoints.dir)
   
-  checkpoints.file_path <- 
+  checkpoints.file <- 
     file.path(checkpoints.dir, 
               "{epoch:02d}-{val_loss:.2f}.keras")
   
@@ -310,7 +310,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(hp,
   
   callbacks <- list(
     callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = checkpoints.file_path,
+    callback_model_checkpoint(filepath = checkpoints.file,
                               # monitor = "val_loss",
                               # mode = "auto",
                               save_best_only = TRUE,

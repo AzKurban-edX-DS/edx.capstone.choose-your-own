@@ -2,23 +2,23 @@
 # Load Flatten Dataset
 #%%%%%%%%%%%%%%%%%%%%%
 
-stopifnot(file.exists(my_emnist.file_path))
+stopifnot(file.exists(my_emnist.file))
 
 ## Load Flatten Dataset --------------------------------------------------------
 start <- put_start_date()
           
 put_log("Loading the Flattened Training Dataset from the backup file...")
-my_emnist.set <- readRDS(my_emnist.file_path)
+my_emnist.set <- readRDS(my_emnist.file)
 
 put_log("The Flattened Training Dataset has been loaded from the following backup:
-%1", my_emnist.file_path)
+%1", my_emnist.file)
 
 put_log("The Flattened Dataset Set (containing the  EMNIST-like dataset) has the following structure:
   %1", capture.output(str(my_emnist.set)))
 
 if(!exists("Y.Labels")) {
-  stopifnot(file.exists(classifier.label_list.file_path))
-  Y.Labels <- readRDS(classifier.label_list.file_path)
+  stopifnot(file.exists(classifier.label_list.file))
+  Y.Labels <- readRDS(classifier.label_list.file)
 }
 
 put_log("The Classifier Handwritten Character Class List contains the following labels:
