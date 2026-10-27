@@ -261,10 +261,9 @@ if(file.exists(fit_rf.mtry.coarse_tuned.backup.path)) {
 } else {
   put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
   
-  #> Since p = n.img_cols * n.img_rows = n.img_cols^2 = 28^2
-  #> sqrt(p) = n.img_cols = 28
+  mtry.coarse_tune.values <- seq(std_img.side/2, 2*std_img.side, 6)
+  #> [1] 14 20 26 32 38 44 50 56 
   
-  mtry.coarse_tune.values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
   start <- put_start_date()
   
   cl <- makeCluster(N_pcCores)

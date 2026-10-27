@@ -204,7 +204,7 @@ hp$Int('num_layers',
 for (i in seq(dnn_mcc.tuner.max_layers)) {
   hp$Int(paste0("units_", i),
          min_value = N.classes,
-         max_value = 28*28,
+         max_value = std_img.side^2,
          step = 32)   
   
   hp$Float(paste0("dropout", i, "_rate"), 

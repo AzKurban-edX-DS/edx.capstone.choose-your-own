@@ -58,6 +58,9 @@ stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
 ds.img_min.geometry <- NULL
 Y.Labels <- NULL
+N.classes <- NULL
+std_img.side <- NULL
+
 
 img.std_bin.ls.nested.file <- file.path(train.data.dir, 
                                       "train.img.std_bin.ls-nested.rds")
@@ -74,6 +77,12 @@ source(raw_img.dat2std_bin.script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
+
+stopifnot(!is.null(Y.Labels),
+          !is.null(ds.img_min.geometry),
+          !is.null(std_img.side))
+
+N.classes <- length(Y.Labels)
 
 log_close()
 # *************************************************************************

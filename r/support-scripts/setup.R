@@ -178,13 +178,10 @@ conflicts_prefer(base::save.image)
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
 
-N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
-N_pcCores
-
 ## Init Global Variables -------------------------------------------------------
 
-n.img_rows <- 28
-n.img_cols <- 28
+N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
+N_pcCores
 
 ## Init Project Directories ----------------------------------------------------
 knitr.proj_root <- '../..' 

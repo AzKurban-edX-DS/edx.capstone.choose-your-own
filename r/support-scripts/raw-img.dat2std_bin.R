@@ -56,6 +56,8 @@ if(is.null(ds.img_min.geometry)) {
   y.size <- y.grouped$width * y.grouped$min.height
   img.min_size <- y.grouped[which.min(y.size),]
   
+  std_img.side <- min(img.min_size$width, img.min_size$min.height)
+  
   # Define the geometry based on the smallest image found in the dataset.
   ds.img_min.geometry  <- paste0(img.min_size$width,
                                  'x',

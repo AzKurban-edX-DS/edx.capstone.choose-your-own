@@ -20,7 +20,10 @@ x <- ds.test$x
 x_test.files <- ds.test$x.files
 rm(ftest_set, ds.test)
 
-x_test <- array_reshape(x, c(nrow(x), 28, 28, 1))
+x_test <- array_reshape(x, c(nrow(x), 
+                             std_img.side, 
+                             std_img.side, 
+                             1))
 str(x_test)
 shape(x_test)
 
@@ -34,7 +37,7 @@ str(y_test)
 dim(y_test)
 
 stopifnot(min(y_test) == 0,
-          max(y_test) == 38,
+          max(y_test) == N.classes - 1,
           dim(y_test) == nrow(x_test))
 
 y_test.cat <- to_categorical(y_test)

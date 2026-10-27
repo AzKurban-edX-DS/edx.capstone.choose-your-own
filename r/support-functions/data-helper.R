@@ -263,9 +263,9 @@ load28x28x1.train_set <- function(backup.file) {
   
   x <- array_reshape(ds.train$x, 
                      c(nrow(ds.train$x), 
-                       28, 
-                       28, 
-                       1))
+                       std_img.side, 
+                       std_img.side, 
+                       1L))
   list(x = x,
        class_groups = ds.train$class_groups)
 } 
@@ -275,9 +275,9 @@ load28x28x1.test_set <- function(backup.file) {
   
   x <- array_reshape(ds.test$x, 
                      c(nrow(ds.test$x), 
-                       28, 
-                       28, 
-                       1))
+                       std_img.side, 
+                       std_img.side, 
+                       1L))
   list(x = x,
        files = ds.test$files,
        class_groups = ds.test$class_groups)
@@ -289,8 +289,8 @@ load28x28x1.datasets <- function(backup.file) {
   train <- list()
   train$x <- array_reshape(ds$train$x, 
                            c(nrow(ds$train$x), 
-                             28L, 
-                             28L, 
+                             std_img.side, 
+                             std_img.side, 
                              1L))
   
   train$class_groups <- ds$train$class_groups
@@ -298,8 +298,8 @@ load28x28x1.datasets <- function(backup.file) {
   test <- list()
   test$x <- array_reshape(ds$test$x, 
                           c(nrow(ds$test$x), 
-                            28L, 
-                            28L, 
+                            std_img.side, 
+                            std_img.side, 
                             1L))
   
   test$class_groups <- ds$test$class_groups
@@ -337,8 +337,8 @@ The Final Test 28x28 Image Data Set structure:
   
   x <- array_reshape(ftest.x, 
                      c(nrow(ftest.x), 
-                       28, 
-                       28, 
+                       std_img.side, 
+                       std_img.side, 
                        1))
   list(x = x,
        files = ds.test$files,
@@ -351,7 +351,7 @@ as.vector.cimg <- function(cimg) {
 }
 
 as.matrix.cimg <- function(cimg.list, class.label) {
-  mx.ncols <- 28*28
+  mx.ncols <- std_img.side^2
   
   map(cimg.list, as.vector.cimg) |>
     unlist() |>
@@ -402,7 +402,7 @@ image.mx <- function(mx) {
   image(mx[, seq(ncol(mx), 1)])
 }
 char.image <- function(char.vector) {
-  image(matrix(char.vector, nrow = 28)[, 28:1])
+  image(matrix(char.vector, nrow = std_img.side)[, std_img.side:1])
 }
 
 data.plot <- function(data, 
@@ -605,7 +605,7 @@ Image matrix list has been created with the following structure:
 }
 
 class_img.list2flatten_matrix <- function(img.list, class.label) {
-  mx.ncols <- n.img_rows*n.img_cols
+  mx.ncols <- std_img.side^2
   
   map(img.list, as.vector) |>
     unlist() |>

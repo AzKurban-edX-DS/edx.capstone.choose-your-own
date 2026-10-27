@@ -119,7 +119,7 @@ max_img_pixels <- max(rowSums(x_train))
 # https://ijettjournal.org/assets/volume-3/issue-6/IJETT-V3I6P206.pdf
 # https://www.heatonresearch.com/2017/06/01/hidden-layers.html [JH_NHL]
 
-n.hl.units <- ceiling(28*28/3*2 + 39)
+n.hl.units <- ceiling(std_img.side^2/3*2 + 39)
 # 562
 
 put_log("For the couple of hidden layers of our first deep learning model, 
@@ -147,7 +147,8 @@ dnnb_mcc.checkpoint.file.tmpl <-
 n.input_shape <- ncol(x_train)
 # 784
 
-dnnb_mcc.inputs <- layer_input(shape = c(28, 28))
+dnnb_mcc.inputs <- layer_input(shape = c(std_img.side,
+                                         std_img.side))
 
 dnnb_mcc.outputs <- dnnb_mcc.inputs |>
   layer_flatten() |>

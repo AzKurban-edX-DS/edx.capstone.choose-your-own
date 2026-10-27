@@ -217,11 +217,12 @@ x.binarize <- function(x) {
 dnnb_mcc.sequential = function(hp) {
   
   model = keras_model_sequential() %>% 
-    layer_flatten(input_shape = c(28,28))
+    layer_flatten(input_shape = c(std_img.side,
+                                  std_img.side))
   
   for (i in 1:(hp$get('num_layers')) ) {
     model %>% layer_dense(128, activation='relu') %>% 
-      layer_dense(units = 39, activation='softmax')
+      layer_dense(units = N.classes, activation='softmax')
   } %>% 
     compile(
       optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
@@ -232,7 +233,7 @@ dnnb_mcc.sequential = function(hp) {
 }
 
 build.dnnb_mcc <- function(hp) {
-  n.inputs <- 28*28
+  n.inputs <- std_img.side^2
  
   model_inputs <- layer_input(shape = c(n.inputs))
   
@@ -402,8 +403,9 @@ dnn_mcc.tuner.build_model <- function(hp) {
 }
 
 dnn_mcc.tuner.build_model <- function(hp,
-                                  input_shape = c(28, 28),
-                                  n.outputs = N.classes ) {
+                                      input_shape = c(std_img.side, 
+                                                      std_img.side),
+                                      n.outputs = N.classes) {
   
   model_inputs <- layer_input(shape = input_shape)
   layer <- model_inputs |> layer_flatten()
