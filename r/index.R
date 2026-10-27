@@ -13,7 +13,7 @@ source(setup_script.path,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
-# ------------------
+
 ### Download the Kaggle Dataset ------------------------------------------------
 
 stopifnot(file.exists(ds.kaggle.download.script.path))
@@ -52,6 +52,8 @@ log_close()
 # *************************************************************************
 
 #### Training Set: Prepare Standardize Binary Image Data -----------------------
+open_logfile(".prepare,ds.std-bin.array")
+
 stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
 ds.img_min.geometry <- NULL
@@ -73,6 +75,7 @@ source(raw_img.dat2std_bin.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()
 # =========================================================================
 #### Prepare Training Datasets -------------------------------------------------
 

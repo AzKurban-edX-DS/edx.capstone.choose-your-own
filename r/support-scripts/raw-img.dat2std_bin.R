@@ -2,7 +2,6 @@
 # Standardize & Binarize Image Data  
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-open_logfile(".prepare,std-bin.mx.ls-nested")
 start <- put_start_date()
 
 
@@ -132,14 +131,12 @@ and backed up to the following file:
 %1", img.std_bin.ls.nested.file)
 }
 
-log_close()
 # =========================================================================
 # Log End Time: 2026-10-26 02:52:02.624323
 # Log Elapsed Time: 0 00:21:09
 # =========================================================================
 
 ### Preparing a List of Standardized Image Binary Data Matrices ----------------
-open_logfile(".prepare,ds.std-bin.array")
 
 put_log("Preparing a List of the Standardized Binary Image  Matrix...")
 
@@ -201,11 +198,8 @@ and backed up to the following file:
 %1", img.std_bin.array.ls.file)
 }
 
-log_close()
-
 ### Preparing an Array of the Standardized Binary Image  Matrices --------------
 
-open_logfile(".prepare,ds.std-bin.array")
 
 put_log("Preparing an Array of the Standardized Binary Image  Matrices...")
 
@@ -270,9 +264,4 @@ and backed up to the following file:
 }
 
 if (exists("img.std_bin.array.ls")) rm(img.std_bin.array.ls)
-
-
-
-
-log_close()
 
