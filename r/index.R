@@ -95,8 +95,7 @@ source(prepare_ds.train_set.script.path,
 # =========================================================================
 ### Prepare Final Test Set -----------------------------------------------------
 stopifnot(file.exists(load.raw_img_dat.script.path,
-                      raw_img.dat2std_bin.script.path,
-                      prepare_final_test_set.script.path))
+                      raw_img.dat2std_bin.script.path))
 
 #### Final Test set: Load Image Data List --------------------------------------
 open_logfile(".ds.final-test.load-raw-image.dat")
@@ -136,17 +135,14 @@ source(raw_img.dat2std_bin.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+final_test.img.std_bin.array.file <- img.std_bin.array.file
+stopifnot(file.exists(final_test.img.std_bin.array.file))
+
 log_close()
-
-# =========================================================================
-#### Prepare Final Test Set ----------------------------------------------------
-
-source(prepare_final_test_set.script.path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+# *************************************************************************
+# Log End Time: 2026-10-27 22:16:11.091957
+# Log Elapsed Time: 0 00:00:47
+# *************************************************************************
 
 ## kNN+PCA MCC Model -----------------------------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path,

@@ -466,9 +466,6 @@ stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 prepare_ds.train_set.script.path <- file.path(support_scripts.dir, "prepare-training-set.R")
 stopifnot(file.exists(prepare_ds.train_set.script.path))
 
-prepare_final_test_set.script.path <- file.path(support_scripts.dir, "prepare-final-test-set.R")
-stopifnot(file.exists(prepare_final_test_set.script.path))
-
 model_visualization.shared.script.path <- file.path(model_scripts.dir, 
                                                     "model-visualization.shared.R")
 stopifnot(file.exists(model_visualization.shared.script.path))
