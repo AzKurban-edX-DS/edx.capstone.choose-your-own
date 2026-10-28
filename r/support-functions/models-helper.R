@@ -360,9 +360,11 @@ The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", conv_blocks.max)
 }
 
 cnn_mcc.tunable_model <- function(hp,
-                                   input_shape = c(28L, 28L, 1),
-                                   n.outputs,
-                                   dropout.rate = 0.2) {
+                                  input_shape = c(std_img.side, 
+                                                  std_img.side, 
+                                                  1L),
+                                  n.outputs,
+                                  dropout.rate = 0.2) {
 #> References:
 #> Hyperparameter tuning with Keras Tuner
 #> https://blog.tensorflow.org/2020/01/hyperparameter-tuning-with-keras-tuner.html  
@@ -462,8 +464,8 @@ Predictions have been constructed:
   predictions$numpy()
 }
 
-cnn.create_model.binary_classifier <- function(img.width = 28L,
-                                               img.height = 28L,
+cnn.create_model.binary_classifier <- function(img.width = std_img.side,
+                                               img.height = std_img.side,
                                                filters1 = 8L,
                                                filters2 = 16L,
                                                kernal1.size = c(2.2),

@@ -31,10 +31,15 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
     `__init__` = function(self, 
                           num_classes,
                           macro_f1_score = FALSE,
+                          img_width = std_img.side,
+                          img_height = std_img.side,
                           start_date = NULL) {
       
       self$num_classes = num_classes
       self$macro_f1_score = macro_f1_score
+      
+      self$img_width = img_width
+      self$img_height = img_height
       
       self$start_date = ifelse(is.null(start_date), 
                                Sys.time(), 
@@ -63,7 +68,9 @@ CNN_MCC.HyperModel <- reticulate::PyClass(
         loss <- 'categorical_crossentropy'
       }
       
-      input_layer <- layer_input(shape = shape(28L, 28L, 1L))
+      input_layer <- layer_input(shape = shape(self$img_width, 
+                                               self$img_height, 
+                                               1L))
       layer <- input_layer
       
       # conv_padding <- hp$get('conv_padding') # same | valid

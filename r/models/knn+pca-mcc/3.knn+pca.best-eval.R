@@ -6,7 +6,7 @@
 
 open_logfile(".eval.k(best)nn+pca")
 
-stopifnot(file.exists(my_emnist.split.file,
+stopifnot(file.exists(ds.flatten.split.file,
                       k_best.nn_pca.model.backup.path))
 
 start <- put_start_date()
@@ -19,7 +19,7 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.split.file)
+ds <- load_datasets(ds.flatten.split.file)
 str(ds)
 
 x_test <- ds$test$x

@@ -258,32 +258,7 @@ load.test_set <- function(backup.file) {
   return(ds$test)
 }
 
-load28x28x1.train_set <- function(backup.file) {
-  ds.train <- load.train_set(backup.file)
-  
-  x <- array_reshape(ds.train$x, 
-                     c(nrow(ds.train$x), 
-                       std_img.side, 
-                       std_img.side, 
-                       1L))
-  list(x = x,
-       class_groups = ds.train$class_groups)
-} 
-
-load28x28x1.test_set <- function(backup.file) {
-  ds.test <- load.test_set(backup.file)
-  
-  x <- array_reshape(ds.test$x, 
-                     c(nrow(ds.test$x), 
-                       std_img.side, 
-                       std_img.side, 
-                       1L))
-  list(x = x,
-       files = ds.test$files,
-       class_groups = ds.test$class_groups)
-} 
-
-load28x28x1.datasets <- function(backup.file) {
+load.cnn_datasets <- function(backup.file) {
   ds <- load_datasets(backup.file)
   
   train <- list()
@@ -310,39 +285,8 @@ load28x28x1.datasets <- function(backup.file) {
 } 
 
 load.cnn_mcc.tuner.datasets <- function() {
-  stopifnot(file.exists(ds28x28.split.train_0.1.file))
+  stopifnot(file.exists(ds.split.train_0.1.file))
             
-}
-
-load28x28x1.final_test_set <- function() {
-  stopifnot(file.exists(final_test.img.std_bin.array.file))
-  
-  put_log("Function `load28x28x1.final_test_set`:
-Loading the Final Test 28x28 Image Data Array Set from the backup file...")
-  ftest_set <- readRDS(final_test.img.std_bin.array.file)
-  
-  put_log("Function `load28x28x1.final_test_set`:
-The Final Test 28x28 Image Data Array Set has been loading from the following file:
-%1", final_test.img.std_bin.array.file)
-  
-  put_log("Function `load28x28x1.final_test_set`:
-The Final Test 28x28 Image Data Set structure:
-%1", capture.output(str(ftest_set)))
-
-  ftest.x <- ftest_set$img_dat.array
-  
-  ftest.files <- ftest_set$img.file_path.array
-  
-  class_groups <- ds.get_classIDs.grouped(ftest.x)
-  
-  x <- array_reshape(ftest.x, 
-                     c(nrow(ftest.x), 
-                       std_img.side, 
-                       std_img.side, 
-                       1))
-  list(x = x,
-       files = ds.test$files,
-       class_groups = class_groups)
 }
 
 ## Image Processing ------------------------------------------------------------
@@ -515,7 +459,7 @@ plot_image <- function(image_file) {
 }
 
 ## Data processing -------------------------------------------------------------
-split.img28x28mx_array <- function(file,
+ds.split.img_mx.array <- function(file,
                                    seed = NA,
                                    seed.default = TRUE,
                                    test_ratio = 0.2,
@@ -523,29 +467,29 @@ split.img28x28mx_array <- function(file,
                                    balanced = TRUE) {
   stopifnot(file.exists(file))
   
-  put_log("Function `split.img28x28mx_array`:
+  put_log("Function `ds.split.img_mx.array`:
 Loading the Standardized Image Binary Data array set from the backup file...")
-  img28x28mx.set <- readRDS(file)
-  put_log("Function `split.img28x28mx_array`:
+  ds.std_img.mx <- readRDS(file)
+  put_log("Function `ds.split.img_mx.array`:
 The Standardized Image Binary Data array set has been loaded from the following file:
 %1", file)
   
-  put_log("Function `split.img28x28mx_array`:
-Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+  put_log("Function `ds.split.img_mx.array`:
+Splitting the Standardized Image Data Array into a Train and Test Sets...")
   
   if(!is.na(seed)) {
     set.seed(seed)
   } else if(seed.default) {
-    set.seed(nrow(img28x28mx.set$img_dat.array))
+    set.seed(nrow(ds.std_img.mx$img_dat.array))
   }
 
-  split.list <- sample_train_test_sets.x3d(img28x28mx.set$img_dat.array,
-                                           img28x28mx.set$img.file_path.array,
+  split.list <- ds.3d_array.sample(ds.std_img.mx$img_dat.array,
+                                           ds.std_img.mx$img.file_path.array,
                                            test.ratio = test_ratio,
                                            shuffle_rows = shuffle_rows,
                                            balanced = balanced)
 
-  put_log("Function `split.img28x28mx_array`:
+  put_log("Function `ds.split.img_mx.array`:
 The Result Split Dataset object structure:
 %1", capture.output(str(split.list)))
   
@@ -817,7 +761,7 @@ The total size of the Training Set is %1.",
        test.index = test.idx)
 } 
 
-binClass.sample_train_test_sets.x3d <- function(x,
+binClass.ds.3d_array.sample <- function(x,
                                                 x.files = NULL,
                                                 class.label,
                                                 seed = NA, 
@@ -848,7 +792,7 @@ binClass.sample_train_test_sets.x3d <- function(x,
 
   dim.x = dim(x_train)
     
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 The Train and Test Sets has been created with the following dimensions:
 %1", capture.output(dim.x))
 
@@ -863,7 +807,7 @@ The Train and Test Sets has been created with the following dimensions:
   y.train <- (y_train  == class.label) |> as.integer() 
   
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 The Training Set has been reshaped as follows:
 %1", capture.output(shape(x.train)))
   
@@ -879,7 +823,7 @@ The Training Set has been reshaped as follows:
   y.test <- (y_test  == class.label) |> as.integer() 
   
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 The Test Set has been reshaped as follows:
 %1", capture.output(shape(x.test)))
 
@@ -887,7 +831,7 @@ The Test Set has been reshaped as follows:
                     y.train = y.train,
                     x.files = train.files)
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 A training sample of size %1 rows has been generated with the following structure:
 %2", nrow(train.set$x.train), capture.output(str(train.set)))
   
@@ -895,7 +839,7 @@ A training sample of size %1 rows has been generated with the following structur
                    y.test = y.test,
                    x.files = test.files)
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 A testing sample of size %1 rows has been generated with the following structure:
 %2", nrow(test.set$x.test), capture.output(str(test.set)))
 
@@ -903,13 +847,14 @@ A testing sample of size %1 rows has been generated with the following structure
        test_set = test.set)
 }
 
-sample_train_test_sets.mx <- function(x,
-                                      x.files = NULL,
-                                      seed = NA, 
-                                      test.ratio = 0.2,
-                                      shuffle_rows = TRUE,
-                                      balanced = TRUE,
-                                      bootstap.sample = FALSE) { 
+ds.flatten.sample <- function(x,
+                              x.files = NULL,
+                              seed = NA, 
+                              test.ratio = 0.2,
+                              shuffle_rows = TRUE,
+                              balanced = TRUE,
+                              bootstap.sample = FALSE) { 
+  
   sample.idx <- get_sample.idx(x, 
                               seed, 
                               test.ratio,
@@ -928,25 +873,25 @@ sample_train_test_sets.mx <- function(x,
   train.size <- (1 - test.ratio) * 100
   test.size <- test.ratio * 100
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 Generating a training sample of size %1% from the original dataset...",
           train.size)
   
   train.set <- list(x.train = x[sample.idx$train.index,],
                     x.files = train.files)
 
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 A training sample of size %1% has been made with the following structure:
 %2", train.size, capture.output(str(train.set)))
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 Generating a testing sample of size %1% from the original dataset...",
           test.size)
   
   test.set <- list(x.test = x[sample.idx$test.index,],
                    x.files = test.files)
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 A testing sample of size %1% has been made with the following structure:
 %2", test.size, capture.output(str(test.set)))
   
@@ -955,7 +900,7 @@ A testing sample of size %1% has been made with the following structure:
        test_set = test.set)
 }
 
-sample_train_test_sets.x3d <- function(x,
+ds.3d_array.sample <- function(x,
                                        x.files = NULL,
                                        seed = NA, 
                                        test.ratio = 0.2,
@@ -980,25 +925,25 @@ sample_train_test_sets.x3d <- function(x,
   train.size <- (1 - test.ratio) * 100
   test.size <- test.ratio * 100
 
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `ds.3d_array.sample`: 
 Generating a training sample of size %1% from the original dataset...",
           train.size)
 
   train.set <- list(x.train = x[sample.idx$train.index,,],
                     x.files = train.files)
   
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `ds.3d_array.sample`: 
 A training sample of size %1% has been made with the following structure:
 %2", train.size, capture.output(str(train.set)))
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 Generating a testing sample of size %1% from the original dataset...",
           test.size)
 
   test.set <- list(x.test = x[sample.idx$test.index,,],
                     x.files = test.files)
   
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `ds.3d_array.sample`: 
 A testing sample of size %1% has been made with the following structure:
 %2", test.size, capture.output(str(test.set)))
   

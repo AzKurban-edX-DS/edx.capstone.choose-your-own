@@ -15,7 +15,7 @@
 ## Setup -----------------------------------------------------------------------
 open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 
-stopifnot(file.exists(my_emnist.0.1split.file))
+stopifnot(file.exists(ds.flatten.0.1split.file))
 
 start <- put_start_date()
 
@@ -26,10 +26,10 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.0.1split.file)
+ds <- load_datasets(ds.flatten.0.1split.file)
 
 put_log("The Split Flattened Dataset has been loaded from the folowing file:
-%1", my_emnist.0.1split.file)
+%1", ds.flatten.0.1split.file)
 
 put_log("The Split Flattened Dataset has the follwoing structure:
 %1", capture.output(str(ds)))

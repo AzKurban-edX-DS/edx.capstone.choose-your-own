@@ -27,6 +27,8 @@ the *context* of the dataset is as follows:
 4.  Merged the Categories to avoid the misclassification
 5.  Total 39 Categories in Train and Validation set
 
+To use the data in *this Project* we need to do some preprocessing.
+
 ## Essential Directories and Files
 
 The following are essential directories and files of the project:
@@ -46,8 +48,8 @@ The following are essential directories and files of the project:
 - [prepare-input-data.R](r/support-scripts/prepare-input-data.R):
   Support script for preparing datasets for training and testing the
   *Handwritten Character Classifier* models developed in the project;
-- [load-flattened-dataset.R](r/support-scripts/load-flattened-dataset.R):
-  Support script for loading flattened dataset used by the following
+- [prepare-flattened-datasets.R](r/support-scripts/prepare-flattened-datasets.R):
+  Support script for preparing a flattened dataset used by the following
   models:
   - ***kNN+PCA MCC***: *Multiclass Classifier (MCC)* based on the
     [k-Nearest Neighborhood
@@ -120,6 +122,6 @@ Ensure you have `R` (version **4.0** or higher recommended) and
   - [4,install-kerastuner.R](r/support-scripts/setup-env/4.install-kerastuner.R).
 
 > [!IMPORTANT]
-> If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to remove the packages previously installed by the script mentioned above.
+> If you are reinstalling the previously configured environment, run the [__uninstall-all.R](r/support-scripts/setup-env/__uninstall-all.R) script first to clean up the environment.
 
 ## Running the Project

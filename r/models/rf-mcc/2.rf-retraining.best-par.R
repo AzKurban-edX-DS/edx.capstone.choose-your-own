@@ -14,7 +14,7 @@
 
 open_logfile(".fit_rf.re-train.mtry_best.ntree400")
 
-stopifnot(file.exists(my_emnist.split.file,
+stopifnot(file.exists(ds.flatten.split.file,
                       fit_rf.fine_tuned.backup.path),
           dir.exists(data.models.rf.dir))
 
@@ -80,7 +80,7 @@ put_log("The best parameter value obtained as a result of the RF Model tuning:
 
 put_log("Loading the Split Flattened Dataset allocated 20% for the Text Set from the backup file...")
 
-ds <- load_datasets(my_emnist.split.file)
+ds <- load_datasets(ds.flatten.split.file)
 str(ds)
 
 x_train <- ds$train$x

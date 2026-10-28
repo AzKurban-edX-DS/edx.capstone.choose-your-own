@@ -13,7 +13,7 @@
 ## Setup -----------------------------------------------------------------------
 
 open_logfile(".cnnb-mcc.model-building")
-stopifnot(file.exists(ds28x28.split.train_0.8.file),
+stopifnot(file.exists(ds.split.train_0.8.backup.path),
           exists("cnnb_mcc.file"),
           exists("cnnb_mcc.train_history.file"))
 
@@ -21,15 +21,22 @@ start <- put_start_date()
 
 ### Prepare a Training Set -----------------------------------------------------
 
-put_log("Loading the Training Set of 28x28x1-shape image data...")
+put_log("Loading the Training Set...")
 
-train_set <- load28x28x1.train_set(ds28x28.split.train_0.8.file)
-put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.file)
+ds.train <- load.train_set(ds.split.train_0.8.backup.path)
 
-x_train <- train_set$x
 
-y_train <- train_set$class_groups$classID
+put_log("The Training Set has been loaded from the following file:
+%1", ds.split.train_0.8.backup.path)
+
+x_train <- array_reshape(ds.train$x, 
+                         c(nrow(ds.train$x), 
+                           std_img.side, 
+                           std_img.side, 
+                           1L))
+
+# class_groups = ds.train$class_groups
+y_train <- ds.train$class_groups$classID
 
 stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0,
           length(y_train) == nrow(x_train))
@@ -63,7 +70,7 @@ head(y_train.cat)
 
 #### Size of the Training Set by Class -----------------------------------------
 put_log("The Training Set is balanced by the set of Classes:
-%1", capture.output(print(train_set$class_groups$groupByClass, n = N.classes)))
+%1", capture.output(print(ds.train$class_groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -110,7 +117,7 @@ put_log("The Training Set is balanced by the set of Classes:
   invisible(NULL)
 }
 
-rm(train_set)
+rm(ds.train)
 
 ### Init CNNB MCC Model Paths ---------------------------------------------------
 
@@ -141,8 +148,9 @@ cnnb_mcc.vld_split <- 0.2
 #> of the image. [*]
 
 # [*] 3.3.1 Define a CNN model structure
-cnnb_mcc.inputs <- layer_input(shape = shape(28L, 28L, 1L))
-
+cnnb_mcc.inputs <- layer_input(shape = shape(std_img.side, 
+                                             std_img.side, 
+                                             1L))
 cnnb_mcc.outputs <- cnnb_mcc.inputs |>
   layer_conv_2d(filters = 32L,
                 kernel_size = c(3L, 3L), 

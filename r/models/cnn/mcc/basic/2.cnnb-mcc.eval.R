@@ -6,20 +6,25 @@
 open_logfile(".cnnb-mcc.evaluation")
 
 stopifnot(file.exists(cnnb_mcc.file,
-                      ds28x28.split.train_0.8.file))
+                      ds.split.train_0.8.backup.path))
 
 start <- put_start_date()
 
 ### Preparing a Test Set for the Model Evaluation Job ---------------------------
 
-put_log("Loading the Test Set of 28x28x1-shape image data...")
-test_set <- load28x28x1.test_set(ds28x28.split.train_0.8.file)
-put_log("The Training Set of 28x28x1-shape image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.file)
+put_log("Loading the Test Set...")
+ds.test <- load.test_set(ds.split.train_0.8.backup.path)
 
-x_test <- test_set$x
+put_log("The Test Set has been loaded from the following file:
+%1", ds.split.train_0.8.backup.path)
 
-y_test <- test_set$class_groups$classID
+x_test <- array_reshape(ds.test$x, 
+                   c(nrow(ds.test$x), 
+                     std_img.side, 
+                     std_img.side, 
+                     1L))
+
+y_test <- ds.test$class_groups$classID
 
 
 stopifnot(sum(as.character(y_test) != rownames(x_test)) == 0,
@@ -31,7 +36,7 @@ str(y_test)
 dim(x_test)
 dim(y_test)
 
-x_test.files <- test_set$files
+x_test.files <- ds.test$files
 
 y_test.cat <- to_categorical(y_test)
 colnames(y_test.cat) <- Y.Labels
@@ -56,7 +61,7 @@ head(y_test.cat)
 #### Size of the Test Set by Class ------------------------------------------
 
 put_log("The Training Set is balanced by the set of Classes:
-%1", capture.output(print(test_set$class_groups$groupByClass, n = N.classes)))
+%1", capture.output(print(ds.test$class_groups$groupByClass, n = N.classes)))
 {
   # A tibble: 39 × 2
   #    classID     n
@@ -103,7 +108,7 @@ put_log("The Training Set is balanced by the set of Classes:
   invisible()
 }
 
-rm(test_set)
+rm(ds.test)
 
 ## CNNB MCC Model Evaluation ---------------------------------------------------
 

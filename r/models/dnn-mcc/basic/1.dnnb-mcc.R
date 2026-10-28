@@ -6,7 +6,7 @@
 open_logfile(".dnnb-mcc.model-building")
 start <- put_start_date()
 
-stopifnot(file.exists(my_emnist.split.file))
+stopifnot(file.exists(ds.flatten.split.file))
 
 # Dense Neural Network Based Basic Multiclass Classifier (DNNB MCC)  Model
 
@@ -18,10 +18,10 @@ stopifnot(file.exists(my_emnist.split.file))
 ## Prepare a Data Set for the Model Training -----------------------------------
 
 put_log("Loading the Training Set of standardized image data...")
-train_set <- load.train_set(ds28x28.split.train_0.8.file)
+train_set <- load.train_set(ds.split.train_0.8.backup.path)
 
 put_log("The Training Set of standardized image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.file)
+%1", ds.split.train_0.8.backup.path)
 
 
 put_log("The Training Set object structure is as follows:

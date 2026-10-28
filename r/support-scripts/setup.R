@@ -428,20 +428,20 @@ if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
 train.raw_img.dat.file <- file.path(train.data.dir, 
                                      "train.raw-image.dat.rds")
 
-my_emnist.split.file <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+ds.flatten.split.file <- file.path(train.data.dir, "ds.flatten.20%test-split.rds")
 
-ds28x28.split.train_0.8.file <- file.path(train.data.dir, 
-                                                 "ds28x28.split.train_0.8.backup.rds")
+ds.split.train_0.8.backup.path <- file.path(train.data.dir, 
+                                                 "ds.split.train_0.8.backup.rds")
 
-ds28x28.split.train_0.1.file <- file.path(train.data.dir, 
-                                                 "ds28x28.split.train_0.1.backup.rds")
+ds.split.train_0.1.file <- file.path(train.data.dir, 
+                                                 "ds.split.train_0.1.backup.rds")
 
 ds.imbalanced.final_retraining.file <- file.path(train.data.dir, 
                                                  "ds.imbalanced.final-retraining.backup.rds")
 
-my_emnist.split.file <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+ds.flatten.split.file <- file.path(train.data.dir, "ds.flatten.20%test-split.rds")
 
-my_emnist.0.1split.file <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
+ds.flatten.0.1split.file <- file.path(train.data.dir, "ds.flatten-split(10%train-set).rds")
 
 ### Final Test Set -------------------------------------------------------------
 final_test.raw_img.dat.file <- file.path(final_test.data.dir, 

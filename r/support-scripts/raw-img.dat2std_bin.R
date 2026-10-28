@@ -217,7 +217,7 @@ if(!file.exists(img.std_bin.array.file)){
   put_log("The Standardized Image Binary Data Matrix list has been loaded from the following file:
 %1", img.std_bin.array.ls.file)
   
-  put_log("Combining Binary image 28x28x matrix list to array...")
+  put_log("Combining Binary image matrix list to array...")
   
   img.array.ls <- lapply(img.std_bin.array.ls, function(item) {
     item$img.array

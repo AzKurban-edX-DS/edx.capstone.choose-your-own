@@ -15,7 +15,7 @@
 
 open_logfile(".pre-train-model.k1-8nn+pca")
 
-stopifnot(file.exists(my_emnist.0.1split.file),
+stopifnot(file.exists(ds.flatten.0.1split.file),
           exists("k1_8nn_pca.model.backup.path"))
 
 
@@ -28,10 +28,10 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.0.1split.file)
+ds <- load_datasets(ds.flatten.0.1split.file)
 
 put_log("The Split Flattened Dataset has been loaded from the folowing file:
-%1", my_emnist.0.1split.file)
+%1", ds.flatten.0.1split.file)
 
 put_log("The Split Flattened Dataset has the follwoing structure:
 %1", capture.output(str(ds)))

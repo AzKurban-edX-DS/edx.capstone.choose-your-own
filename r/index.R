@@ -2,10 +2,14 @@
 # Main (Index) Script
 #%%%%%%%%%%%%%%%%%%%%
 
-## Setup -----------------------------------------------------------------------
+# Workspace Setup --------------------------------------------------------------
+
 source('r/r-global.path.R')
 setup_script.path <- file.path(support_scripts.dir, "setup.R")
+
+## Project Environment Setup ---------------------------------------------------
 stopifnot(file.exists(setup_script.path))
+
 
 source(setup_script.path, 
        catch.aborts = TRUE,
@@ -14,6 +18,7 @@ source(setup_script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+## Preparing Input Data --------------------------------------------------------
 ### Download the Kaggle Dataset ------------------------------------------------
 
 stopifnot(file.exists(ds.kaggle.download.script.path))
@@ -83,6 +88,8 @@ stopifnot(!is.null(Y.Labels),
           !is.null(std_img.side))
 
 N.classes <- length(Y.Labels)
+train.img.std_bin.array.file <- img.std_bin.array.file
+train.img.std_bin.ls.nested.file <- img.std_bin.ls.nested.file
 
 log_close()
 # *************************************************************************
@@ -90,7 +97,6 @@ log_close()
 # Log Elapsed Time: 0 00:25:42
 # *************************************************************************
 
-# =========================================================================
 #### Prepare Training Datasets -------------------------------------------------
 
 source(prepare_ds.train_set.script.path, 
@@ -101,7 +107,6 @@ source(prepare_ds.train_set.script.path,
        keep.source = TRUE)
 
 
-# =========================================================================
 ### Prepare Final Test Set -----------------------------------------------------
 stopifnot(file.exists(load.raw_img_dat.script.path,
                       raw_img.dat2std_bin.script.path))
@@ -153,6 +158,7 @@ log_close()
 # Log Elapsed Time: 0 00:00:47
 # *************************************************************************
 
+# ML Models Development --------------------------------------------------------
 ## kNN+PCA MCC Model -----------------------------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path,
                       knn_pca.retrain.best_k.script.path,
@@ -364,7 +370,7 @@ log_close()
 ### DNN-Based Basic MCC Model --------------------------------------------------
 stopifnot(file.exists(dnnb_mcc.script.path,
                       dnnb_mcc.eval.script.path,
-                      my_emnist.split.file))
+                      ds.flatten.split.file))
 #### Init Paths ----------------------------------------------------------------
 dnnb_mcc.file <- file.path(data.dnn_mcc.basic.dir, 
                                        "dnnb_mcc.pre-trained.keras")
@@ -1006,7 +1012,11 @@ str(missclass.G_as_9)
 print.missclass_image.grid(missclass.G_as_9,
                            tile = '6x100')
 
-# Appendix: Device (Laptop) Used for Development & Testing ---------------
+# Appendix: Device Used for Development & Testing -------------
+
+# Ninkear Laptop:
+# **************
+# Ref: https://ninkear.com/collections/laptops
 
 # Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
 # Installed RAM	32.0 GB (31.7 GB usable)
