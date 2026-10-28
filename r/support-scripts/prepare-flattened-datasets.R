@@ -3,23 +3,25 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 stopifnot(exists("ds.flatten.split.file"),
-          exists("ds.flatten.0.1split.file"))
+          exists("ds.flatten.0.1split.file"),
+          file.exists(ds.train.flatten.file))
+
+# Load Flatten Dataset 
+put_log("Loading the Flattened Training Dataset from the backup file...")
+ds.train.flatten <- readRDS(ds.train.flatten.file)
+
+put_log("The Flattened Training Dataset has been loaded from the following backup:
+%1", ds.train.flatten.file)
+
+put_log("The Flattened Dataset Set (containing the  EMNIST-like dataset) has the following structure:
+  %1", capture.output(str(ds.train.flatten)))
+
 
 ds.flatten.seed <- nrow(ds.train.flatten$img.mx)
 
 ## Split the Dataset into Sets with 20% Test Ratio (default) -------------------
 if(!file.exists(ds.flatten.split.file)) {
-  stopifnot(file.exists(ds.train.flatten.file))
-  
-  # Load Flatten Dataset 
-  put_log("Loading the Flattened Training Dataset from the backup file...")
-  ds.train.flatten <- readRDS(ds.train.flatten.file)
-  
-  put_log("The Flattened Training Dataset has been loaded from the following backup:
-%1", ds.train.flatten.file)
-  
-  put_log("The Flattened Dataset Set (containing the  EMNIST-like dataset) has the following structure:
-  %1", capture.output(str(ds.train.flatten)))
+  stopifnot()
   
   put_log("Splitting the Flattened Training Dataset into a Train and Test Sets with 20% Test Ratio...")
   
@@ -55,7 +57,6 @@ with 90% Test Ratio (10% for Training Set)...")
                                                         ds.train.flatten$img.file,
                                                         test.ratio = 0.9,
                                                         seed = ds.flatten.seed)
-  rm(ds.train.flatten)
   
   put_log("The Flattened Training Dataset has been split into a Train and Test Sets 
 with 90% Test Ration (10% for Training Set):
