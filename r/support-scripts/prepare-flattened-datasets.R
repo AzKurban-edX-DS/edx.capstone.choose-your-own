@@ -3,8 +3,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 stopifnot(exists("ds.flatten.split.file"),
-          exists("ds.flatten.0.1split.file"),
-          file.exists(ds.load_flattened.script.path))
+          exists("ds.flatten.0.1split.file"))
 
 ds.flatten.seed <- nrow(ds.train.flatten$img.mx)
 

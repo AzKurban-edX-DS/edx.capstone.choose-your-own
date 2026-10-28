@@ -175,8 +175,7 @@ stopifnot(dir.exists(support_scripts.dir))
 ds.prepare_flattened.script.path <- file.path(support_scripts.dir, 
                                               "prepare-flattened-datasets.R")
 
-stopifnot(file.exists(ds.prepare_flattened.script.path,
-                      ds.load_flattened.script.path))
+stopifnot(file.exists(ds.prepare_flattened.script.path))
 
 source(ds.prepare_flattened.script.path, 
        catch.aborts = TRUE,
