@@ -11,7 +11,7 @@
 
 open_logfile(".re-train-model.k5(best)nn+pca")
 
-stopifnot(file.exists(my_emnist.split.file_path,
+stopifnot(file.exists(ds.flatten.split.file,
                       k1_8nn_pca.model.backup.path),
           exists("k_best.nn_pca.model.backup.path"))
 
@@ -22,7 +22,7 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.split.file_path)
+ds <- load_datasets(ds.flatten.split.file)
 str(ds)
 
 x_train <- ds$train$x

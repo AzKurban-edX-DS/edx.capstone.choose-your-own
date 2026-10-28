@@ -6,7 +6,7 @@
 open_logfile(".dnnb-mcc.model-building")
 start <- put_start_date()
 
-stopifnot(file.exists(my_emnist.split.file_path))
+stopifnot(file.exists(ds.flatten.split.file))
 
 # Dense Neural Network Based Basic Multiclass Classifier (DNNB MCC)  Model
 
@@ -17,11 +17,11 @@ stopifnot(file.exists(my_emnist.split.file_path))
 
 ## Prepare a Data Set for the Model Training -----------------------------------
 
-put_log("Loading the Training Set of 28x28-size image data...")
-train_set <- load.train_set(ds28x28.split.train_0.8.file)
+put_log("Loading the Training Set of standardized image data...")
+train_set <- load.train_set(ds.split.train_0.8.backup.path)
 
-put_log("The Training Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.file)
+put_log("The Training Set of standardized image data has been loaded from the following file:
+%1", ds.split.train_0.8.backup.path)
 
 
 put_log("The Training Set object structure is as follows:
@@ -119,7 +119,7 @@ max_img_pixels <- max(rowSums(x_train))
 # https://ijettjournal.org/assets/volume-3/issue-6/IJETT-V3I6P206.pdf
 # https://www.heatonresearch.com/2017/06/01/hidden-layers.html [JH_NHL]
 
-n.hl.units <- ceiling(28*28/3*2 + 39)
+n.hl.units <- ceiling(std_img.side^2/3*2 + 39)
 # 562
 
 put_log("For the couple of hidden layers of our first deep learning model, 
@@ -137,7 +137,7 @@ dnnb_mcc.checkpoints.dir <- file.path(data.dnn_mcc.basic.dir,
 if(!dir.exists(dnnb_mcc.checkpoints.dir))
   dir.create(dnnb_mcc.checkpoints.dir)
 
-dnnb_mcc.checkpoint.file_path.tmpl <- 
+dnnb_mcc.checkpoint.file.tmpl <- 
   file.path(dnnb_mcc.checkpoints.dir, 
             "dnnb_mcc.{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -147,7 +147,8 @@ dnnb_mcc.checkpoint.file_path.tmpl <-
 n.input_shape <- ncol(x_train)
 # 784
 
-dnnb_mcc.inputs <- layer_input(shape = c(28, 28))
+dnnb_mcc.inputs <- layer_input(shape = c(std_img.side,
+                                         std_img.side))
 
 dnnb_mcc.outputs <- dnnb_mcc.inputs |>
   layer_flatten() |>
@@ -167,7 +168,7 @@ summary(dnnb_mcc)
 
 dnnb_mcc.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file_path.tmpl,
+  callback_model_checkpoint(filepath = dnnb_mcc.checkpoint.file.tmpl,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)

@@ -15,7 +15,7 @@
 ## Setup -----------------------------------------------------------------------
 open_logfile("fit_rf.pre-train.mtry_default.ntree500")
 
-stopifnot(file.exists(my_emnist.0.1split.file_path))
+stopifnot(file.exists(ds.flatten.0.1split.file))
 
 start <- put_start_date()
 
@@ -26,10 +26,10 @@ start <- put_start_date()
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
-ds <- load_datasets(my_emnist.0.1split.file_path)
+ds <- load_datasets(ds.flatten.0.1split.file)
 
 put_log("The Split Flattened Dataset has been loaded from the folowing file:
-%1", my_emnist.0.1split.file_path)
+%1", ds.flatten.0.1split.file)
 
 put_log("The Split Flattened Dataset has the follwoing structure:
 %1", capture.output(str(ds)))
@@ -261,10 +261,9 @@ if(file.exists(fit_rf.mtry.coarse_tuned.backup.path)) {
 } else {
   put_log("Tuning the `RF MCC` model by `mtry` parameter values...")
   
-  #> Since p = n.img_cols * n.img_rows = n.img_cols^2 = 28^2
-  #> sqrt(p) = n.img_cols = 28
+  mtry.coarse_tune.values <- seq(std_img.side/2, 2*std_img.side, 6)
+  #> [1] 14 20 26 32 38 44 50 56 
   
-  mtry.coarse_tune.values <- seq(n.img_cols/2, 2*n.img_cols, 6) # 14:56
   start <- put_start_date()
   
   cl <- makeCluster(N_pcCores)

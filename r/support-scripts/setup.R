@@ -5,14 +5,10 @@
 options(timeout = max(1000, getOption("timeout")))
 options(expressions = 50000) # Increases nesting limit
 
-## Install Packages ------------------------------------------------------------
-#> Reference: Some ideas and code snippers were used from the following GitHub repository:
-#> https://github.com/AzKurban-edX-DS/harvardx-movielens
-if(!require(matrixStats))
-  install.packages("matrixStats")
+## Install Logging Feature -----------------------------------------------------
+if(!require("logr")) 
+  install.packages("logr")
 
-if(!require(dslabs))
-  install.packages("dslabs")
 if(!require(tidyverse))
   install.packages("tidyverse")
 
@@ -21,8 +17,38 @@ if(!require(tidyverse))
 # if(!require(stringr))
 #   install.packages("stringr")
 
-if(!require("logr")) 
-  install.packages("logr")
+library(logr)
+library(tidyverse)
+
+### Load Logging Helper Functions -----------------------------------------------
+log_open('log/setup-logging.log')
+
+source('r/r-global.path.R')
+
+log_func_script.path <- file.path(support_functions.dir, "logging-helper.R")
+stopifnot(file.exists(log_func_script.path))
+
+source(log_func_script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+put_log("The user-defined Logging Helper functions have been loaded from the following script:
+%1", log_func_script.path)
+log_close()
+
+open_logfile(".setup-project")
+
+## Install Other Packages ------------------------------------------------------------
+#> Reference: Some ideas and code snippers were used from the following GitHub repository:
+#> https://github.com/AzKurban-edX-DS/harvardx-movielens
+if(!require(matrixStats))
+  install.packages("matrixStats")
+
+if(!require(dslabs))
+  install.packages("dslabs")
 
 if(!require(prodlim))
   install.packages("prodlim")
@@ -43,9 +69,6 @@ if(!require(remotes))
 
 if(!require(doParallel))
   install.packages("doParallel")
-
-
-
 
 if(!require(tfdatasets))
   install.packages("tfdatasets")
@@ -110,7 +133,6 @@ library(kerastuneR)
 
 library(matrixStats)
 library(dslabs)
-library(tidyverse)
 
 library(prodlim)
 library(caret)
@@ -118,7 +140,6 @@ library(randomForest)
 library(kernlab)
 library(ggplot2)
 
-library(logr)
 library(utils)
 library(fs)
 
@@ -157,24 +178,10 @@ conflicts_prefer(base::save.image)
 tf$constant("Hello TensorFlow!")
 tensorflow::tf_version()
 
-N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
-N_pcCores
-
 ## Init Global Variables -------------------------------------------------------
 
-n.img_rows <- 28
-n.img_cols <- 28
-
-## Load Logging Helper Functions -----------------------------------------------
-source('r-global.path.R')
-log_func_script.file_path <- file.path(support_functions.dir, "logging-helper.R")
-
-source(log_func_script.file_path, 
-       catch.aborts = TRUE,
-       echo = TRUE,
-       spaced = TRUE,
-       verbose = TRUE,
-       keep.source = TRUE)
+N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
+N_pcCores
 
 ## Init Project Directories ----------------------------------------------------
 knitr.proj_root <- '../..' 
@@ -416,38 +423,45 @@ cnn_mcc.tuner.plots.dat.dir <- file.path(cnn_mcc.tuner.dir, "plots.dat")
 if(!dir.exists(cnn_mcc.tuner.plots.dat.dir))
   dir.create(cnn_mcc.tuner.plots.dat.dir)
 
-## Init Input Data Paths -------------------------------------------------------
-train.img_dat.list.file <- file.path(train.data.dir, 
-                                     "train.img_dat.list.rds")
+## Input Data Paths ------------------------------------------------------------
+### Training Set ---------------------------------------------------------------
+train.raw_img.dat.file <- file.path(train.data.dir, 
+                                     "train.raw-image.dat.rds")
 
-my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+ds.flatten.split.file <- file.path(train.data.dir, "ds.flatten.20%test-split.rds")
 
-ds28x28.split.train_0.8.file <- file.path(train.data.dir, 
-                                                 "ds28x28.split.train_0.8.backup.rds")
+ds.split.train_0.8.backup.path <- file.path(train.data.dir, 
+                                                 "ds.split.train_0.8.backup.rds")
 
-ds28x28.split.train_0.1.file <- file.path(train.data.dir, 
-                                                 "ds28x28.split.train_0.1.backup.rds")
+ds.split.train_0.1.file <- file.path(train.data.dir, 
+                                                 "ds.split.train_0.1.backup.rds")
 
 ds.imbalanced.final_retraining.file <- file.path(train.data.dir, 
                                                  "ds.imbalanced.final-retraining.backup.rds")
 
-my_emnist.split.file_path <- file.path(train.data.dir, "my_emnist.20%test-split.rds")
+ds.flatten.split.file <- file.path(train.data.dir, "ds.flatten.20%test-split.rds")
 
-my_emnist.0.1split.file_path <- file.path(train.data.dir, "my_emnist-split(10%train-set).rds")
+ds.flatten.0.1split.file <- file.path(train.data.dir, "ds.flatten-split(10%train-set).rds")
+
+### Final Test Set -------------------------------------------------------------
+final_test.raw_img.dat.file <- file.path(final_test.data.dir, 
+                                     "final-test.raw-image.dat.rds")
 
 ## Init Project Script Paths ---------------------------------------------------
 ds.kaggle.download.script.path <- file.path(support_scripts.dir, "ds.kaggle.download.R")
 stopifnot(file.exists(ds.kaggle.download.script.path))
 
-ds.train2trimmed_img.dat.script.path <- file.path(support_scripts.dir, 
-                                                  "ds.train2trimmed_img.dat.R")
-stopifnot(file.exists(ds.train2trimmed_img.dat.script.path))
+load.raw_img_dat.script.path <- file.path(support_scripts.dir, 
+                                                  "load-raw-image-data.R")
+stopifnot(file.exists(load.raw_img_dat.script.path))
 
-prepare_ds.train_set.script_path <- file.path(support_scripts.dir, "prepare-training-set.R")
-stopifnot(file.exists(prepare_ds.train_set.script_path))
+raw_img.dat2std_bin.script.path <- file.path(support_scripts.dir, 
+                                                  "raw-img.dat2std_bin.R")
+stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
-prepare_final_test_set.script_path <- file.path(support_scripts.dir, "prepare-final-test-set.R")
-stopifnot(file.exists(prepare_final_test_set.script_path))
+
+prepare_ds.train_set.script.path <- file.path(support_scripts.dir, "prepare-training-set.R")
+stopifnot(file.exists(prepare_ds.train_set.script.path))
 
 model_visualization.shared.script.path <- file.path(model_scripts.dir, 
                                                     "model-visualization.shared.R")
@@ -542,9 +556,9 @@ cnn_mcc.hyperparams.script.path <- file.path(cnn_mcc.tuner.classes.scripts.dir,
 stopifnot(file.exists(cnn_mcc.hyperparams.script.path))
 
 ## Load Common Helper Functions ------------------------------------------------
-common_helper.funcs.file_path <- file.path(support_functions.dir, 
+common_helper.funcs.file <- file.path(support_functions.dir, 
                                            "common-helper.R")
-source(common_helper.funcs.file_path, 
+source(common_helper.funcs.file, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -552,10 +566,10 @@ source(common_helper.funcs.file_path,
        keep.source = TRUE)
 
 ## Load Data Helper Functions --------------------------------------------------
-data_helper.funcs.file_path <- file.path(support_functions.dir, "data-helper.R")
+data_helper.funcs.file <- file.path(support_functions.dir, "data-helper.R")
 
 
-source(data_helper.funcs.file_path, 
+source(data_helper.funcs.file, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -564,10 +578,10 @@ source(data_helper.funcs.file_path,
 
 
 ## Load Model Helper Functions --------------------------------------------------
-model_helper.funcs.file_path <- file.path(support_functions.dir, "models-helper.R")
+model_helper.funcs.file <- file.path(support_functions.dir, "models-helper.R")
 
 
-source(model_helper.funcs.file_path, 
+source(model_helper.funcs.file, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
@@ -601,3 +615,4 @@ source(cnn_mcc.hyperparams.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()

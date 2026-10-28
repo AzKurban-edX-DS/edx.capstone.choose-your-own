@@ -2,18 +2,23 @@
 # Main (Index) Script
 #%%%%%%%%%%%%%%%%%%%%
 
-## Setup -----------------------------------------------------------------------
-source('r-global.path.R')
-setup_script.file_path <- file.path(support_scripts.dir, "setup.R")
-stopifnot(file.exists(setup_script.file_path))
+# Workspace Setup --------------------------------------------------------------
 
-source(setup_script.file_path, 
+source('r/r-global.path.R')
+setup_script.path <- file.path(support_scripts.dir, "setup.R")
+
+## Project Environment Setup ---------------------------------------------------
+stopifnot(file.exists(setup_script.path))
+
+
+source(setup_script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
+## Preparing Input Data --------------------------------------------------------
 ### Download the Kaggle Dataset ------------------------------------------------
 
 stopifnot(file.exists(ds.kaggle.download.script.path))
@@ -25,39 +30,135 @@ source(ds.kaggle.download.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-### Prepare Input Data ---------------------------------------------------------
-stopifnot(file.exists(ds.train2trimmed_img.dat.script.path,
-                      prepare_ds.train_set.script_path,
-                      prepare_final_test_set.script_path))
+### Prepare Training Set -------------------------------------------------------
+stopifnot(file.exists(load.raw_img_dat.script.path,
+                      raw_img.dat2std_bin.script.path,
+                      prepare_ds.train_set.script.path))
 
-#### Train Set: Create Trimmed Image Data List ---------------------------------
+#### Training Set: Load Image Data List ---------------------------------
+open_logfile(".ds.train.load-raw-image.dat")
 
-source(ds.train2trimmed_img.dat.script.path, 
+root_dir <- img.train_root.dir
+raw_img.dat.file <- train.raw_img.dat.file
+stopifnot(exists("raw_img.dat.file"))
+
+source(load.raw_img_dat.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
+rm(root_dir)
+log_close()
+# *************************************************************************
+# Log End Time: 2026-10-27 17:49:23.309253
+# Log Elapsed Time: 0 00:41:23
+# *************************************************************************
+
+#### Training Set: Prepare Standardize Binary Image Data -----------------------
+open_logfile(".ds.train.raw-dat2std-bin.array")
+
+stopifnot(file.exists(raw_img.dat2std_bin.script.path))
+
+ds.img_min.geometry <- NULL
+Y.Labels <- NULL
+N.classes <- NULL
+std_img.side <- NULL
+
+
+img.std_bin.ls.nested.file <- file.path(train.data.dir, 
+                                      "train.img.std_bin.ls-nested.rds")
+
+img.std_bin.array.ls.file <- file.path(train.data.dir, 
+                                  "train.img.std_bin.array.ls.rds")
+
+img.std_bin.array.file <- file.path(train.data.dir, 
+                                    "train.img.std_bin.array.rds")
+
+source(raw_img.dat2std_bin.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+stopifnot(!is.null(Y.Labels),
+          !is.null(ds.img_min.geometry),
+          !is.null(std_img.side))
+
+N.classes <- length(Y.Labels)
+train.img.std_bin.array.file <- img.std_bin.array.file
+train.img.std_bin.ls.nested.file <- img.std_bin.ls.nested.file
+
+log_close()
+# *************************************************************************
+# Log End Time: 2026-10-27 18:15:06.159371
+# Log Elapsed Time: 0 00:25:42
+# *************************************************************************
 
 #### Prepare Training Datasets -------------------------------------------------
 
-source(prepare_ds.train_set.script_path, 
+source(prepare_ds.train_set.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
-#### Prepare Final Test Set ----------------------------------------------------
 
-source(prepare_final_test_set.script_path, 
+### Prepare Final Test Set -----------------------------------------------------
+stopifnot(file.exists(load.raw_img_dat.script.path,
+                      raw_img.dat2std_bin.script.path))
+
+#### Final Test set: Load Image Data List --------------------------------------
+open_logfile(".ds.final-test.load-raw-image.dat")
+
+root_dir <- img.validation_root.dir
+raw_img.dat.file <- final_test.raw_img.dat.file
+
+source(load.raw_img_dat.script.path, 
        catch.aborts = TRUE,
        echo = TRUE,
        spaced = TRUE,
        verbose = TRUE,
        keep.source = TRUE)
 
+log_close()
+# *************************************************************************
+# Log End Time: 2026-10-25 14:54:10.636092
+# Log Elapsed Time: 0 00:01:30
+# *************************************************************************
+
+#### Final Test set: Prepare Standardize Binary Image Data ---------------------
+open_logfile(".ds.final-test.raw-dat2std-bin.array")
+
+img.std_bin.ls.nested.file <- file.path(final_test.data.dir, 
+                                        "final-test.img.std_bin.ls-nested.rds")
+
+img.std_bin.array.ls.file <- file.path(final_test.data.dir, 
+                                       "final-test.img.std_bin.array.ls.rds")
+
+img.std_bin.array.file <- file.path(final_test.data.dir, 
+                                    "final-test.img.std_bin.array.rds")
+
+source(raw_img.dat2std_bin.script.path, 
+       catch.aborts = TRUE,
+       echo = TRUE,
+       spaced = TRUE,
+       verbose = TRUE,
+       keep.source = TRUE)
+
+final_test.img.std_bin.array.file <- img.std_bin.array.file
+stopifnot(file.exists(final_test.img.std_bin.array.file))
+
+log_close()
+# *************************************************************************
+# Log End Time: 2026-10-27 22:16:11.091957
+# Log Elapsed Time: 0 00:00:47
+# *************************************************************************
+
+# ML Models Development --------------------------------------------------------
 ## kNN+PCA MCC Model -----------------------------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path,
                       knn_pca.retrain.best_k.script.path,
@@ -269,7 +370,7 @@ log_close()
 ### DNN-Based Basic MCC Model --------------------------------------------------
 stopifnot(file.exists(dnnb_mcc.script.path,
                       dnnb_mcc.eval.script.path,
-                      my_emnist.split.file_path))
+                      ds.flatten.split.file))
 #### Init Paths ----------------------------------------------------------------
 dnnb_mcc.file <- file.path(data.dnn_mcc.basic.dir, 
                                        "dnnb_mcc.pre-trained.keras")
@@ -911,7 +1012,11 @@ str(missclass.G_as_9)
 print.missclass_image.grid(missclass.G_as_9,
                            tile = '6x100')
 
-# Appendix: Device (Laptop) Used for Development & Testing ---------------
+# Appendix: Device Used for Development & Testing -------------
+
+# Ninkear Laptop:
+# **************
+# Ref: https://ninkear.com/collections/laptops
 
 # Processor	13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
 # Installed RAM	32.0 GB (31.7 GB usable)

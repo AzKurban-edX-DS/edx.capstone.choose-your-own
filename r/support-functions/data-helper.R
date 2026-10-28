@@ -36,7 +36,7 @@ Getting file path lists...")
   
   #'Gather a structured list of file paths from each target subfolder, 
   #'applying optional maximum limits, random sampling, and seed generation. 
-  img.file_list <- img.file_path.get_list(root_path, 
+  img.file_list <- img.file.get_list(root_path, 
                                           folder.list,
                                           char_files.max,
                                           seed,
@@ -94,7 +94,7 @@ Image files have been loaded. The output list structure:
        img.list = img_list)
 }
 
-img.file_path.get_list <- function(root_path, 
+img.file.get_list <- function(root_path, 
                                    folder.list = NULL, 
                                    char_files.max = NA,
                                    seed = NA,
@@ -109,7 +109,7 @@ img.file_path.get_list <- function(root_path,
     file.root_path <- file.path(root_path, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
-    put_log("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file.get_list`:
 Getting file path list from the following char's root folders:
 %1", file.root_path)
     
@@ -140,7 +140,7 @@ Getting file path list from the following char's root folders:
       fpath.list <- fpath.list[file.idx]
     }
     
-    put_log("Function: `img.file_path.get_list`:
+    put_log("Function: `img.file.get_list`:
 %1 files in folder: %2", length(fpath.list), folder_name)
     
     list(root_path = file.root_path,
@@ -151,32 +151,6 @@ Getting file path list from the following char's root folders:
   names(path_list) <- folder.list |> substr(1,1)
   path_list
 }
-
-
-load.img28x28bin.list <- function(file) {
-  if(!file.exists(file)) {
-    stop("Function `load.img28x28bin.list`:
-File for Binary Image 28x28 Matrix list DOES NOT EXIST:", file)
-  }
-  start <- put_start_date()
-  put_log("Function `load.img28x28bin.list`:
-Loading Binary Image 28x28 Matrix list from the backup file...")
-  load(file, envir = .GlobalEnv)
-
-  if(!exists("img28x28bin.list"))
-    stop("Function `load.img28x28bin.list`:
-File `", file, 
-         "` does not contain the object `img28x28bin.list`.")
-  
-  put_log("Function `load.img28x28bin.list`:
-The Binary Image 28x28 Matrix list has been loaded from the following file:
-%1", file)
-  put_log("Function `load.img28x28bin.list`:
-The Binary Image 28x28 Matrix list Summary:
-%1", capture.output(summary(img28x28bin.list)))
-  put_end_date(start)
-}
-
 
 load.img_data.train.flatten <- function(file_path) {
   start <- put_start_date()
@@ -212,151 +186,42 @@ The `%1` object exists.", object.name)
   }
 }
 
-img.load.bin28x28mx.list <- function(img_dat.list.file,
+ds.standardize.img_dat <- function(img.dat,
+                                     fn.img2bin_mx.resized,
                                      random_sample = FALSE) {
   
-  put_log("Function `img.load.bin28x28mx.list`:
-Loading list of Image objects...")
-  img_dat.ls <- readRDS(img_dat.list.file)
-  put_log("Function `img.load.bin28x28mx.list`:
-The list of Image objects has been loading from the following file:
-%1", img_dat.list.file)
-  
   start <- put_start_date()
-  # img_list <- lapply(img_dat.ls$label.list[37:39], function(lbl){
-  img_list <- lapply(img_dat.ls$label.list, function(lbl){
+
+  img_list <- lapply(img.dat$label.list, function(lbl){
     
-    put_log("Function `img.load.bin28x28mx.list`:
+    put_log("Function `ds.standardize.img_dat`:
 Processing images of character: %1", lbl)
     
-    char.dat <- img_dat.ls$img.list[[lbl]]
+    char.dat <- img.dat$img.list[[lbl]]
     
     img_ls <- map(char.dat$img.list, 
-                  image.dat2bin_28x28mx) 
+                  fn.img2bin_mx.resized) 
     
     ls <- list(img.list = img_ls, 
                fpath.list = char.dat$fpath.list)
     
     stopifnot(length(ls$img.list) == length(ls$fpath.list))
     
-    put_log("Function `img.load.bin28x28mx.list`:
+    put_log("Function `ds.standardize.img_dat`:
 Completed processing images of character: %1", lbl)
     put_end_date(start)
     ls
   })
   
-  # names(img_list) <- img_dat.ls$label.list[37:39]
-  names(img_list) <- img_dat.ls$label.list
+  # names(img_list) <- img.dat$label.list[37:39]
+  names(img_list) <- img.dat$label.list
   
-  put_log("Function `img.load.bin28x28mx.list`:
+  put_log("Function `ds.standardize.img_dat`:
 Completed processing Image Data objects")
   put_end_date(start)
 
-  list(label.list = img_dat.ls$label.list,
+  list(label.list = img.dat$label.list,
        img.list = img_list)
-}
-
-ds.load2bin28x28mx.list <- function(root_path, 
-                                     folder.list = NULL, 
-                                     char_files.max = NA,
-                                     char_files.seed = NA,
-                                     random_sample = FALSE) {
-  start <- put_start_date()
-  put_log("Getting file path lists...")
-  img.file_list <- img.file_path.get_list(root_path, 
-                                          folder.list,
-                                          char_files.max,
-                                          char_files.seed,
-                                          random_sample)
-  put_log("File path lists have been created. The output list structure:
-%1", capture.output(str(img.file_list)))
-  put_end_date(start)
-  
-  label_list <- as.factor(names(img.file_list))
-  
-  start <- put_start_date()
-  put_log("Loading image files...")
-  
-  img_list <- lapply(img.file_list, function(char.dir){
-    put_log("Loading files from root directory:
-%1...",char.dir$root_path)
-    
-    img_ls <- map(char.dir$file_path.list, 
-                  image.load_bin.shape28x28) # |> compact(),
-    
-    valid.idx <- sapply(img_ls, function(img){
-      sum(img) > 0
-    })
-    
-    # sum(ivalid.idx)
-    # bad_img <- img_ls[!ivalid.idx]
-    # length(bad_img)
-    # 
-    # char.image(bad_img[[1]])
-    
-    ls <- list(img.list = img_ls[valid.idx], 
-               fpath.list = char.dir$file_path.list[valid.idx])
-    
-    stopifnot(length(ls$img.list) == length(ls$fpath.list))
-    
-    put_log("Completed Loading files from directory:
-%1.",char.dir$root_path)
-    put_end_date(start)
-    ls
-  })
-  
-  put_log("Image files have been loaded. The output list structure:
-%1", capture.output(str(img_list)))
-  
-  list(label.list = label_list,
-       img.list = img_list)
-}
-
-image.load_bin.shape28x28 <- function(file_path) {
-  img0 <- magick::image_read(file_path)
-  # plot(img0)
-  
-  img0.mx <- magick_img2matrix(img0)
-  
-  if (max(img0.mx) > 0) {
-    img0.trimmed <- image_trim(img0)
-    # plot(img0.trimmed)
-    
-    im0.dim <- dim(image_data(img0.trimmed)) 
-    im0.dim
-    
-    img28x28 <- image_resize(img0.trimmed, '28x28!')
-    # dim(image_data(img28x28))
-    # plot(img28x28)
-    
-    img.sharpened <- image_convolve(img28x28, 'DoG:0,0,2', scaling = '100, 100%')
-    # plot(img.sharpened)
-    
-    img.mx <- magick_img2matrix(img.sharpened)
-    
-    img.bin <- img.mx > 0.5
-    # image.mx(img.bin)
-    img.bin
-  }
-}
-
-load.img_trimmed.dat <- function(file_path) {
-  # Reads the image file from disk
-  img <- magick::image_read(file_path)
-  
-  # Converts the loaded image into a numeric matrix representation
-  img.mx <- magick_img2matrix(img)
-  
-  img.trimmed <- img
-
-  #' Evaluates the matrix's maximum value to check 
-  #' whether the image is entirely blank or empty.
-  if (max(img.mx) > 0) {
-    img.trimmed <- image_trim(img)
-  }
-  
-  # Extracts and returns the underlying raw pixel buffer data.
-  magick::image_data(img.trimmed)
 }
 
 load_datasets <- function(backup.file) {
@@ -393,39 +258,14 @@ load.test_set <- function(backup.file) {
   return(ds$test)
 }
 
-load28x28x1.train_set <- function(backup.file) {
-  ds.train <- load.train_set(backup.file)
-  
-  x <- array_reshape(ds.train$x, 
-                     c(nrow(ds.train$x), 
-                       28, 
-                       28, 
-                       1))
-  list(x = x,
-       class_groups = ds.train$class_groups)
-} 
-
-load28x28x1.test_set <- function(backup.file) {
-  ds.test <- load.test_set(backup.file)
-  
-  x <- array_reshape(ds.test$x, 
-                     c(nrow(ds.test$x), 
-                       28, 
-                       28, 
-                       1))
-  list(x = x,
-       files = ds.test$files,
-       class_groups = ds.test$class_groups)
-} 
-
-load28x28x1.datasets <- function(backup.file) {
+load.cnn_datasets <- function(backup.file) {
   ds <- load_datasets(backup.file)
   
   train <- list()
   train$x <- array_reshape(ds$train$x, 
                            c(nrow(ds$train$x), 
-                             28L, 
-                             28L, 
+                             std_img.side, 
+                             std_img.side, 
                              1L))
   
   train$class_groups <- ds$train$class_groups
@@ -433,8 +273,8 @@ load28x28x1.datasets <- function(backup.file) {
   test <- list()
   test$x <- array_reshape(ds$test$x, 
                           c(nrow(ds$test$x), 
-                            28L, 
-                            28L, 
+                            std_img.side, 
+                            std_img.side, 
                             1L))
   
   test$class_groups <- ds$test$class_groups
@@ -445,39 +285,8 @@ load28x28x1.datasets <- function(backup.file) {
 } 
 
 load.cnn_mcc.tuner.datasets <- function() {
-  stopifnot(file.exists(ds28x28.split.train_0.1.file))
+  stopifnot(file.exists(ds.split.train_0.1.file))
             
-}
-
-load28x28x1.final_test_set <- function() {
-  stopifnot(file.exists(final_test.img28x28mx.array.file_path))
-  
-  put_log("Function `load28x28x1.final_test_set`:
-Loading the Final Test 28x28 Image Data Array Set from the backup file...")
-  ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
-  
-  put_log("Function `load28x28x1.final_test_set`:
-The Final Test 28x28 Image Data Array Set has been loading from the following file:
-%1", final_test.img28x28mx.array.file_path)
-  
-  put_log("Function `load28x28x1.final_test_set`:
-The Final Test 28x28 Image Data Set structure:
-%1", capture.output(str(ftest_set)))
-
-  ftest.x <- ftest_set$img28x28mx.array
-  
-  ftest.files <- ftest_set$img28x28mx.fpath
-  
-  class_groups <- ds.get_classIDs.grouped(ftest.x)
-  
-  x <- array_reshape(ftest.x, 
-                     c(nrow(ftest.x), 
-                       28, 
-                       28, 
-                       1))
-  list(x = x,
-       files = ds.test$files,
-       class_groups = class_groups)
 }
 
 ## Image Processing ------------------------------------------------------------
@@ -486,7 +295,7 @@ as.vector.cimg <- function(cimg) {
 }
 
 as.matrix.cimg <- function(cimg.list, class.label) {
-  mx.ncols <- 28*28
+  mx.ncols <- std_img.side^2
   
   map(cimg.list, as.vector.cimg) |>
     unlist() |>
@@ -514,19 +323,13 @@ magick_img2matrix <- function(img){
   mx.bin /255
 }
 
-image.dat2bin_mx.resized <- function(image.dat) {
-  image.dat2bin_mx(image.dat,
-                   resize.geometry = ds.img_min.geometry) # '28x28!'
-}
-
-image.dat2bin_28x28mx <- function(image.dat) {
-  image.dat2bin_mx(image.dat,
-                   resize.geometry = '28x28!') 
-}
-
 image.dat2bin_mx <- function(image.dat,
-                             resize.geometry = NULL) {
+                             resize.geometry = NULL,
+                             trim_image = FALSE) {
   img <- image_read(image.dat)
+  
+  if(trim_image)
+    img <- image_trim(img)
   
   if(!is.null(resize.geometry)) 
     img <- image_resize(img, resize.geometry)
@@ -543,7 +346,7 @@ image.mx <- function(mx) {
   image(mx[, seq(ncol(mx), 1)])
 }
 char.image <- function(char.vector) {
-  image(matrix(char.vector, nrow = 28)[, 28:1])
+  image(matrix(char.vector, nrow = std_img.side)[, std_img.side:1])
 }
 
 data.plot <- function(data, 
@@ -581,7 +384,7 @@ data.plot <- function(data,
 
 recognition_err.table <- function(predicted.values, 
                                   actual.values, 
-                                  img.file_paths,
+                                  img.files,
                                   pred.char = NULL,
                                   target.char = NULL) {
   
@@ -591,11 +394,11 @@ recognition_err.table <- function(predicted.values,
   
   err.result <- data.frame(predicted = predicted.values[err.idx],
                            actual = actual.values[err.idx],
-                           file = img.file_paths[err.idx])
+                           file = img.files[err.idx])
   
   # true.result <- data.frame(predicted = predicted.values[true.idx],
   #                          actual = actual.values[true.idx],
-  #                          file = img.file_paths[true.idx])
+  #                          file = img.files[true.idx])
 
   if(is.null(pred.char))
     return(err.result)
@@ -656,7 +459,7 @@ plot_image <- function(image_file) {
 }
 
 ## Data processing -------------------------------------------------------------
-split.img28x28mx_array <- function(file,
+ds.split.img_mx.array <- function(file,
                                    seed = NA,
                                    seed.default = TRUE,
                                    test_ratio = 0.2,
@@ -664,29 +467,29 @@ split.img28x28mx_array <- function(file,
                                    balanced = TRUE) {
   stopifnot(file.exists(file))
   
-  put_log("Function `split.img28x28mx_array`:
-Loading the Binary Image 28x28 array set from the backup file...")
-  img28x28mx.set <- readRDS(file)
-  put_log("Function `split.img28x28mx_array`:
-The Binary Image 28x28 array set has been loaded from the following file:
+  put_log("Function `ds.split.img_mx.array`:
+Loading the Standardized Image Binary Data array set from the backup file...")
+  ds.std_img.mx <- readRDS(file)
+  put_log("Function `ds.split.img_mx.array`:
+The Standardized Image Binary Data array set has been loaded from the following file:
 %1", file)
   
-  put_log("Function `split.img28x28mx_array`:
-Splitting the Train 28x28 Image Data Array into a Train and Test Sets...")
+  put_log("Function `ds.split.img_mx.array`:
+Splitting the Standardized Image Data Array into a Train and Test Sets...")
   
   if(!is.na(seed)) {
     set.seed(seed)
   } else if(seed.default) {
-    set.seed(nrow(img28x28mx.set$img28x28mx.array))
+    set.seed(nrow(ds.std_img.mx$img_dat.array))
   }
 
-  split.list <- sample_train_test_sets.x3d(img28x28mx.set$img28x28mx.array,
-                                           img28x28mx.set$img28x28mx.fpath,
+  split.list <- ds.3d_array.sample(ds.std_img.mx$img_dat.array,
+                                           ds.std_img.mx$img.file_path.array,
                                            test.ratio = test_ratio,
                                            shuffle_rows = shuffle_rows,
                                            balanced = balanced)
 
-  put_log("Function `split.img28x28mx_array`:
+  put_log("Function `ds.split.img_mx.array`:
 The Result Split Dataset object structure:
 %1", capture.output(str(split.list)))
   
@@ -712,17 +515,17 @@ Combined image data matrix has been created with the following structure:
     item$fpath.list
   })
   
-  img.file_path <- abind(file_path.ls)
-  names(img.file_path) <- rownames(img.mx)
+  img.file <- abind(file_path.ls)
+  names(img.file) <- rownames(img.mx)
 
   if (shuffle.rows) {
     put_log("Shuffling flatten matrix rows...")
-    img.mx <- shuffle.rows(img.mx, img.file_path, shuffle.seed)
+    img.mx <- shuffle.rows(img.mx, img.file, shuffle.seed)
     put_log("The flatten matrix rows have been shuffled.")
   }
 
   list(img.mx = img.mx,
-       img.file_path = img.file_path)
+       img.file = img.file)
 }
 
 img.list2flatten_matrix.list <- function(img_list){
@@ -746,7 +549,7 @@ Image matrix list has been created with the following structure:
 }
 
 class_img.list2flatten_matrix <- function(img.list, class.label) {
-  mx.ncols <- n.img_rows*n.img_cols
+  mx.ncols <- std_img.side^2
   
   map(img.list, as.vector) |>
     unlist() |>
@@ -958,7 +761,7 @@ The total size of the Training Set is %1.",
        test.index = test.idx)
 } 
 
-binClass.sample_train_test_sets.x3d <- function(x,
+binClass.ds.3d_array.sample <- function(x,
                                                 x.files = NULL,
                                                 class.label,
                                                 seed = NA, 
@@ -989,7 +792,7 @@ binClass.sample_train_test_sets.x3d <- function(x,
 
   dim.x = dim(x_train)
     
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 The Train and Test Sets has been created with the following dimensions:
 %1", capture.output(dim.x))
 
@@ -1004,7 +807,7 @@ The Train and Test Sets has been created with the following dimensions:
   y.train <- (y_train  == class.label) |> as.integer() 
   
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 The Training Set has been reshaped as follows:
 %1", capture.output(shape(x.train)))
   
@@ -1020,7 +823,7 @@ The Training Set has been reshaped as follows:
   y.test <- (y_test  == class.label) |> as.integer() 
   
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 The Test Set has been reshaped as follows:
 %1", capture.output(shape(x.test)))
 
@@ -1028,7 +831,7 @@ The Test Set has been reshaped as follows:
                     y.train = y.train,
                     x.files = train.files)
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 A training sample of size %1 rows has been generated with the following structure:
 %2", nrow(train.set$x.train), capture.output(str(train.set)))
   
@@ -1036,7 +839,7 @@ A training sample of size %1 rows has been generated with the following structur
                    y.test = y.test,
                    x.files = test.files)
   
-  put_log("Function: `binClass.sample_train_test_sets.x3d`: 
+  put_log("Function: `binClass.ds.3d_array.sample`: 
 A testing sample of size %1 rows has been generated with the following structure:
 %2", nrow(test.set$x.test), capture.output(str(test.set)))
 
@@ -1044,13 +847,14 @@ A testing sample of size %1 rows has been generated with the following structure
        test_set = test.set)
 }
 
-sample_train_test_sets.mx <- function(x,
-                                      x.files = NULL,
-                                      seed = NA, 
-                                      test.ratio = 0.2,
-                                      shuffle_rows = TRUE,
-                                      balanced = TRUE,
-                                      bootstap.sample = FALSE) { 
+ds.flatten.sample <- function(x,
+                              x.files = NULL,
+                              seed = NA, 
+                              test.ratio = 0.2,
+                              shuffle_rows = TRUE,
+                              balanced = TRUE,
+                              bootstap.sample = FALSE) { 
+  
   sample.idx <- get_sample.idx(x, 
                               seed, 
                               test.ratio,
@@ -1069,25 +873,25 @@ sample_train_test_sets.mx <- function(x,
   train.size <- (1 - test.ratio) * 100
   test.size <- test.ratio * 100
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 Generating a training sample of size %1% from the original dataset...",
           train.size)
   
   train.set <- list(x.train = x[sample.idx$train.index,],
                     x.files = train.files)
 
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 A training sample of size %1% has been made with the following structure:
 %2", train.size, capture.output(str(train.set)))
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 Generating a testing sample of size %1% from the original dataset...",
           test.size)
   
   test.set <- list(x.test = x[sample.idx$test.index,],
                    x.files = test.files)
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 A testing sample of size %1% has been made with the following structure:
 %2", test.size, capture.output(str(test.set)))
   
@@ -1096,7 +900,7 @@ A testing sample of size %1% has been made with the following structure:
        test_set = test.set)
 }
 
-sample_train_test_sets.x3d <- function(x,
+ds.3d_array.sample <- function(x,
                                        x.files = NULL,
                                        seed = NA, 
                                        test.ratio = 0.2,
@@ -1121,25 +925,25 @@ sample_train_test_sets.x3d <- function(x,
   train.size <- (1 - test.ratio) * 100
   test.size <- test.ratio * 100
 
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `ds.3d_array.sample`: 
 Generating a training sample of size %1% from the original dataset...",
           train.size)
 
   train.set <- list(x.train = x[sample.idx$train.index,,],
                     x.files = train.files)
   
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `ds.3d_array.sample`: 
 A training sample of size %1% has been made with the following structure:
 %2", train.size, capture.output(str(train.set)))
   
-  put_log("Function: `sample_train_test_sets.mx`: 
+  put_log("Function: `ds.flatten.sample`: 
 Generating a testing sample of size %1% from the original dataset...",
           test.size)
 
   test.set <- list(x.test = x[sample.idx$test.index,,],
                     x.files = test.files)
   
-  put_log("Function: `sample_train_test_sets.x3d`: 
+  put_log("Function: `ds.3d_array.sample`: 
 A testing sample of size %1% has been made with the following structure:
 %2", test.size, capture.output(str(test.set)))
   

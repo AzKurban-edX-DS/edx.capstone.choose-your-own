@@ -7,18 +7,18 @@
 open_logfile(".re-training.tuned-final.dnn_mcc-model")
 
 stopifnot(dir.exists(dnn_mcc.tuner.dir),
-          file.exists(ds28x28.split.train_0.8.file,
+          file.exists(ds.split.train_0.8.backup.path,
                       tdnn_mcc.best_hp.config.file))
 
 start <- put_start_date()
 
 ## Prepare a Training Set for Re-training the Final Model -----------------------
 
-put_log("Loading the Training Set of 28x28-size image data...")
-train_set <- load.train_set(ds28x28.split.train_0.8.file)
+put_log("Loading the Training Set of standardized image data...")
+train_set <- load.train_set(ds.split.train_0.8.backup.path)
 
-put_log("The Training Set of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.8.file)
+put_log("The Training Set of standardized image data has been loaded from the following file:
+%1", ds.split.train_0.8.backup.path)
 
 
 put_log("The Training Set object structure is as follows:
@@ -102,7 +102,7 @@ rm(y.train.groups)
 
 tdnn_mcc.final.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                            "checkpoints.final")
-tdnn_mcc.final.checkpoints.file_path <- 
+tdnn_mcc.final.checkpoints.file <- 
   file.path(tdnn_mcc.final.checkpoints.dir, 
             "dnn_mcc.best.{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -141,7 +141,7 @@ put_log("The Tuned DNN-Based Final Model Summary:
 
 tdnn_mcc.final.callbacks <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = tdnn_mcc.final.checkpoints.file_path,
+  callback_model_checkpoint(filepath = tdnn_mcc.final.checkpoints.file,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)

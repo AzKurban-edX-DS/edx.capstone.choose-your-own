@@ -10,13 +10,13 @@ stopifnot(file.exists(ds.imbalanced.final_retraining.file))
 
 ### Prepare Input Datasets for Retraining the Final Model ----------------------
 
-put_log("Loading the Input Datasets of 28x28-size image data...")
-ds <- load28x28x1.datasets(ds.imbalanced.final_retraining.file)
+put_log("Loading the Input Datasets of standardized image data...")
+ds <- load.cnn_datasets(ds.imbalanced.final_retraining.file)
 train_set <- ds$train
 test_set <- ds$test
 rm(ds)
 
-put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
+put_log("The Input Dataset of standardized image data has been loaded from the following file:
 %1", ds.imbalanced.final_retraining.file)
 
 #### Prepare a Training Set -----------------------------------------------------

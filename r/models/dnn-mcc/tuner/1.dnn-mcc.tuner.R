@@ -16,7 +16,7 @@
 
 open_logfile(".dnn-mcc.model-tuning")
 
-stopifnot(file.exists(ds28x28.split.train_0.1.file),
+stopifnot(file.exists(ds.split.train_0.1.file),
           exists("dnn_mcc.tuner.dir"),
           exists("tdnn_mcc.best_hp.config.file"))
 
@@ -28,18 +28,18 @@ start <- put_start_date()
 
 ## Prepare Input Datasets for the DNN MCC Model Tuning -------------------------
 
-put_log("Loading the Input Datasets of 28x28-size image data...")
-ds <- load_datasets(ds28x28.split.train_0.1.file)
+put_log("Loading the Input Datasets of standardized image data...")
+ds <- load_datasets(ds.split.train_0.1.file)
 train_set <- ds$train
 test_set <- ds$test
 rm(ds)
 
-put_log("The Input Dataset of 28x28-size image data has been loaded from the following file:
-%1", ds28x28.split.train_0.1.file)
+put_log("The Input Dataset of standardized image data has been loaded from the following file:
+%1", ds.split.train_0.1.file)
 
 ### Prepare a Training Set -----------------------------------------------------
 start <- put_start_date()
-stopifnot(file.exists(ds28x28.split.train_0.1.file))
+stopifnot(file.exists(ds.split.train_0.1.file))
 
 put_log("The Training Set object structure is as follows:
 %1", capture.output(str(train_set)))
@@ -166,7 +166,7 @@ tdnn_mcc.best_model.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
 
 dnn_mcc.tuner.checkpoints.dir <- file.path(dnn_mcc.tuner.dir,
                                             "checkpoints")
-dnn_mcc.tuner.checkpoint.file_path <- 
+dnn_mcc.tuner.checkpoint.file <- 
   file.path(dnn_mcc.tuner.checkpoints.dir, 
             "dnn_mcc.tuner.{epoch:02d}-{val_loss:.2f}.keras")
 
@@ -204,7 +204,7 @@ hp$Int('num_layers',
 for (i in seq(dnn_mcc.tuner.max_layers)) {
   hp$Int(paste0("units_", i),
          min_value = N.classes,
-         max_value = 28*28,
+         max_value = std_img.side^2,
          step = 32)   
   
   hp$Float(paste0("dropout", i, "_rate"), 
@@ -215,7 +215,7 @@ for (i in seq(dnn_mcc.tuner.max_layers)) {
 
 tdnn_mcc.callback_list <- list(
   callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-  callback_model_checkpoint(filepath = dnn_mcc.tuner.checkpoint.file_path,
+  callback_model_checkpoint(filepath = dnn_mcc.tuner.checkpoint.file,
                             monitor = "val_loss",
                             save_best_only = TRUE,
                             verbose = 1)

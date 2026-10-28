@@ -5,22 +5,25 @@
 ## Setup -----------------------------------------------------------------------
 open_logfile(".tuner.cnn-mcc.final-model.test")
 stopifnot(file.exists(tcnn_mcc.final.file,
-                      final_test.img28x28mx.array.file_path))
+                      final_test.img.std_bin.array.file))
 
 ### Preparing a Test Set for the Best Model Final Test -------------------------
-put_log("Loading the Test Binary Image 28x28 array set from the backup file...")
-ftest_set <- readRDS(final_test.img28x28mx.array.file_path)
-put_log("The Test Binary Image 28x28 array set has been loaded from the following file:
-%1", final_test.img28x28mx.array.file_path)
+put_log("Loading the Test Standardized Image Binary Data array set from the backup file...")
+ftest_set <- readRDS(final_test.img.std_bin.array.file)
+put_log("The Test Standardized Image Binary Data array set has been loaded from the following file:
+%1", final_test.img.std_bin.array.file)
 
-ds.test <-shuffle.rows.x3d(ftest_set$img28x28mx.array,
-                           ftest_set$img28x28mx.fpath)
+ds.test <-shuffle.rows.x3d(ftest_set$img_dat.array,
+                           ftest_set$file_path.array)
 
 x <- ds.test$x
 x_test.files <- ds.test$x.files
 rm(ftest_set, ds.test)
 
-x_test <- array_reshape(x, c(nrow(x), 28, 28, 1))
+x_test <- array_reshape(x, c(nrow(x), 
+                             std_img.side, 
+                             std_img.side, 
+                             1))
 str(x_test)
 shape(x_test)
 
@@ -34,7 +37,7 @@ str(y_test)
 dim(y_test)
 
 stopifnot(min(y_test) == 0,
-          max(y_test) == 38,
+          max(y_test) == N.classes - 1,
           dim(y_test) == nrow(x_test))
 
 y_test.cat <- to_categorical(y_test)

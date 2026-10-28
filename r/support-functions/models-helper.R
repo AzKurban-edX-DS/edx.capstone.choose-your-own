@@ -217,11 +217,12 @@ x.binarize <- function(x) {
 dnnb_mcc.sequential = function(hp) {
   
   model = keras_model_sequential() %>% 
-    layer_flatten(input_shape = c(28,28))
+    layer_flatten(input_shape = c(std_img.side,
+                                  std_img.side))
   
   for (i in 1:(hp$get('num_layers')) ) {
     model %>% layer_dense(128, activation='relu') %>% 
-      layer_dense(units = 39, activation='softmax')
+      layer_dense(units = N.classes, activation='softmax')
   } %>% 
     compile(
       optimizer = tf$keras$optimizers$Adam(hp$get('learning_rate')),
@@ -232,7 +233,7 @@ dnnb_mcc.sequential = function(hp) {
 }
 
 build.dnnb_mcc <- function(hp) {
-  n.inputs <- 28*28
+  n.inputs <- std_img.side^2
  
   model_inputs <- layer_input(shape = c(n.inputs))
   
@@ -289,7 +290,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(hp,
   if(!dir.exists(checkpoints.dir))
     dir.create(checkpoints.dir)
   
-  checkpoints.file_path <- 
+  checkpoints.file <- 
     file.path(checkpoints.dir, 
               "{epoch:02d}-{val_loss:.2f}.keras")
   
@@ -310,7 +311,7 @@ cnn_mcc.Hyperband.fit_tuner <- function(hp,
   
   callbacks <- list(
     callback_early_stopping(patience = 3, monitor = 'val_accuracy'),
-    callback_model_checkpoint(filepath = checkpoints.file_path,
+    callback_model_checkpoint(filepath = checkpoints.file,
                               # monitor = "val_loss",
                               # mode = "auto",
                               save_best_only = TRUE,
@@ -359,9 +360,11 @@ The model with %1 Convolution Blocks HAS NOT BEEN TUNED.", conv_blocks.max)
 }
 
 cnn_mcc.tunable_model <- function(hp,
-                                   input_shape = c(28L, 28L, 1),
-                                   n.outputs,
-                                   dropout.rate = 0.2) {
+                                  input_shape = c(std_img.side, 
+                                                  std_img.side, 
+                                                  1L),
+                                  n.outputs,
+                                  dropout.rate = 0.2) {
 #> References:
 #> Hyperparameter tuning with Keras Tuner
 #> https://blog.tensorflow.org/2020/01/hyperparameter-tuning-with-keras-tuner.html  
@@ -402,8 +405,9 @@ dnn_mcc.tuner.build_model <- function(hp) {
 }
 
 dnn_mcc.tuner.build_model <- function(hp,
-                                  input_shape = c(28, 28),
-                                  n.outputs = N.classes ) {
+                                      input_shape = c(std_img.side, 
+                                                      std_img.side),
+                                      n.outputs = N.classes) {
   
   model_inputs <- layer_input(shape = input_shape)
   layer <- model_inputs |> layer_flatten()
@@ -460,8 +464,8 @@ Predictions have been constructed:
   predictions$numpy()
 }
 
-cnn.create_model.binary_classifier <- function(img.width = 28L,
-                                               img.height = 28L,
+cnn.create_model.binary_classifier <- function(img.width = std_img.side,
+                                               img.height = std_img.side,
                                                filters1 = 8L,
                                                filters2 = 16L,
                                                kernal1.size = c(2.2),
