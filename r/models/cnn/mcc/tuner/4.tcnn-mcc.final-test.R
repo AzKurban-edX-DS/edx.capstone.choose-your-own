@@ -14,7 +14,7 @@ put_log("The Test Standardized Image Binary Data array set has been loaded from 
 %1", final_test.img.std_bin.array.file)
 
 ds.test <-shuffle.rows.x3d(ftest_set$img_dat.array,
-                           ftest_set$img.file_path.array)
+                           ftest_set$file_path.array)
 
 x <- ds.test$x
 x_test.files <- ds.test$x.files
