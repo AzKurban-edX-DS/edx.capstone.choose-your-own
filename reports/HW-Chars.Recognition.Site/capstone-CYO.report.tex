@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-23}
+\date{2026-10-30}
 
 \begin{document}
 \maketitle
@@ -356,13 +356,11 @@ The other long-running scripts are as follows:
   \begin{itemize}
   \tightlist
   \item
-    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} (about \textbf{\emph{an hour}}).
+    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} (about \textbf{\emph{an hour}}): downloads the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} dataset;
   \item
-    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.find-out.img.min.size.R}{ds.find-out.img.min.size.R} (about \emph{half an hour}).
+    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} (for the \emph{Training Set}, around \emph{40 minutes}): loads into memory the \emph{raw image data} previously downloaded from \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle}.
   \item
-    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R}{prepare-input-data.R} (more than \emph{half an hour}).
-  \item
-    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R}{ds.train2trimmed\_img.dat.R} (about \textbf{\emph{an hour}}).
+    \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R}{raw-img.dat2std\_bin.R} (for the \emph{Training Set}, about \emph{half an hour}): prepares \emph{standardized binary} image data;
   \end{itemize}
 \end{itemize}
 
@@ -374,7 +372,7 @@ Besides, any of these scripts can be launched separately, or the execution can b
 \end{noteblock}
 
 \begin{importantblock}
-If the interrupted execution resumes in another \emph{\texttt{R} session}, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} Section (with all its subsections) of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{index.R} script \textbf{\underline{must be run first at the very beginning of the session}}.
+If the interrupted execution resumes in another \emph{\texttt{R} Session}, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L160}{Workspace Setup} Section (with all its subsections) of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R}{index.R} script \textbf{\underline{must be run first}} at the very beginning of the \emph{Session}.
 
 \end{importantblock}
 
@@ -401,7 +399,11 @@ The code in this Section first calls (on \href{https://github.com/AzKurban-edX-D
 
 Next (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{line 10}), it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \hyperref[appndx_b.setup]{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
-Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it executes the \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} script to download the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}.
+The remaining operations in this section relate to downloading and preparing the project datasets.
+
+\subsubsection{Downloading \& Preprocessing Input Datasets}\label{downloading-preprocessing-input-datasets}
+
+In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it executes the \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} script to download the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}.
 
 The last subsection, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L28-L60}{Prepare Input Data}, prepares the project's datasets. It is, in turn, divided into the following subsections (corresponding to the stages of image data processing):
 
@@ -421,10 +423,6 @@ The last subsection, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choos
 \item
   \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L52-L60}{Prepare Final Test Set}: Runs the script \hyperref[appndx_b.prepare_final_test_set]{prepare-final-test-set.R} to prepare the \emph{image data} intended for the \emph{final test} of the project's \emph{best-performing model}.
 \end{enumerate}
-
-\subsubsection{Downloading \& Preprocessing Input Datasets}\label{downloading-preprocessing-input-datasets}
-
-\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R}{prepare-input-data.R} Script}{prepare-input-data.R Script}}\label{prepare-input-data.r-script}
 
 \subsubsection{Machine Learning Model Pipelines}\label{machine-learning-model-pipelines}
 
@@ -723,7 +721,7 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 \StringTok{stored in the following root directory: \%1,}
 \StringTok{Please wait..."}\NormalTok{, img.train\_root.dir)}
 
-\NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
+\NormalTok{  train.raw\_img.dat.ls }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
                                         \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat}
                                         \CommentTok{\# folder.list = NULL,}
                                         \CommentTok{\# char\_files.max = NA,}
@@ -1077,7 +1075,7 @@ Below is the \emph{step-by-step execution flow} of the function:
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file_path.get_list]{img.file\_path.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} Section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.seed]{seed} argument value is not \texttt{NA}).
+  \textbf{File Path Discovery:} Internally invokes the \hyperref[func.img.file.get_list]{img.file.get\_list} user-defined helper function (described below in the \hyperref[appndx_aux40img_proc]{Image Processing} Section) to gather a structured list of file paths from each target subfolder, applying optional maximum limits (passed in the \hyperref[func.load_image.list.args.char_files.max]{char\_files.max} argument), random sampling (depending on the value passed in the \hyperref[func.load_image.list.args.random_sample]{random\_sample} argument), and seed generation (if the \hyperref[func.load_image.list.args.seed]{seed} argument value is not \texttt{NA}).
 \item
   \textbf{Label Generation:} Extracts directory names from the file path list and converts them into a factor to serve as classification labels.
 \item
@@ -1130,7 +1128,7 @@ The simplified version of the function's source code is shown below:
                             \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{) \{}
   \CommentTok{\#\textquotesingle{}Gather a structured list of file paths from each target subfolder, }
   \CommentTok{\#\textquotesingle{}applying optional maximum limits, random sampling, and seed generation. }
-\NormalTok{  img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file\_path.get\_list}\NormalTok{(root\_path, }
+\NormalTok{  img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file.get\_list}\NormalTok{(root\_path, }
 \NormalTok{                                          folder.list,}
 \NormalTok{                                          char\_files.max,}
 \NormalTok{                                          seed,}
@@ -1179,13 +1177,13 @@ The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capston
 
 \newpage
 
-\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L421}{img.file\_path.get\_list} Function}{img.file\_path.get\_list Function}}\label{func.img.file_path.get_list}
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L421}{img.file.get\_list} Function}{img.file.get\_list Function}}\label{func.img.file.get_list}
 
 \hfill\break
 
 This function traverses \emph{image directories}, collects \emph{file paths} grouped by \emph{folder} (representing \emph{class labels}), and optionally limits, seeds, or randomly samples files for \emph{dataset preparation}.
 
-\protect\phantomsection\label{func.img.file_path.get_list.usage}
+\protect\phantomsection\label{func.img.file.get_list.usage}
 \paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L}{Usage}}{Usage}}\label{usage-2}
 
 \hfill\break
@@ -1219,7 +1217,7 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 
 \CommentTok{\#\textquotesingle{}Gather a structured list of file paths from each target subfolder, }
 \CommentTok{\#\textquotesingle{}applying optional maximum limits, random sampling, and seed generation. }
-\NormalTok{img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file\_path.get\_list}\NormalTok{(root\_path, }
+\NormalTok{img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file.get\_list}\NormalTok{(root\_path, }
 \NormalTok{                                        folder.list,}
 \NormalTok{                                        char\_files.max,}
 \NormalTok{                                        seed,}
@@ -1228,249 +1226,249 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \end{Shaded}
 
 \begin{verbatim}
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/#
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 15600 files in folder: #
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/$
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 16199 files in folder: $
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/&
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 13000 files in folder: &
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/@
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 38009 files in folder: @
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/0
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 65504 files in folder: 0
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/1
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 43773 files in folder: 1
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/2
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 39351 files in folder: 2
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/3
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 39996 files in folder: 3
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/4
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 38112 files in folder: 4
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/5
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 32317 files in folder: 5
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/6
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 38879 files in folder: 6
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/7
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 41080 files in folder: 7
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/8
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 38795 files in folder: 8
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/9
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 38319 files in folder: 9
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/A
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 17205 files in folder: A
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/B
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 8666 files in folder: B
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/C
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 13560 files in folder: C
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/D
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 15509 files in folder: D
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/E
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 32627 files in folder: E
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/F
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 11636 files in folder: F
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/G
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 5443 files in folder: G
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/H
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 12134 files in folder: H
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/I
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 13873 files in folder: I
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/J
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 4261 files in folder: J
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/K
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 4334 files in folder: K
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/L
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 21648 files in folder: L
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/M
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 12089 files in folder: M
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/N
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 21421 files in folder: N
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/P
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 11095 files in folder: P
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/Q
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 4707 files in folder: Q
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/R
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 20498 files in folder: R
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/S
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 25911 files in folder: S
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/T
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 30853 files in folder: T
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/U
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 16385 files in folder: U
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/V
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 7246 files in folder: V
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/W
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 7266 files in folder: W
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/X
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 5106 files in folder: X
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/Y
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 6762 files in folder: Y
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
 ## ../../data/raw/Vaibs.HW-Chars/Train/Z
-## Function: `img.file_path.get_list`:
+## Function: `img.file.get_list`:
 ## 4867 files in folder: Z
 \end{verbatim}
 
-\protect\phantomsection\label{func.img.file_path.get_list.args}
+\protect\phantomsection\label{func.img.file.get_list.args}
 \paragraph{Arguments}\label{arguments-2}
 
 \hfill\break
 
-\protect\phantomsection\label{func.img.file_path.get_list.args.root_path}
+\protect\phantomsection\label{func.img.file.get_list.args.root_path}
 \begin{itemize}
 \tightlist
 \item
   \textbf{root\_path:} The root directory path containing subfolders of images organized by character recognition classes;
 \end{itemize}
 
-\protect\phantomsection\label{func.img.file_path.get_list.args.folder.list}
+\protect\phantomsection\label{func.img.file.get_list.args.folder.list}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{folder.list:} (Optional, \emph{Character}, \texttt{NULL} by default) Vector of specific subfolder names to process. If \texttt{NULL}, it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.img.file_path.get_list.args.root_path]{root\_path} argument;
+  \textbf{folder.list:} (Optional, \emph{Character}, \texttt{NULL} by default) Vector of specific subfolder names to process. If \texttt{NULL}, it defaults to all directories found inside the \emph{root path} passed in the \hyperref[func.img.file.get_list.args.root_path]{root\_path} argument;
 \end{itemize}
 
-\protect\phantomsection\label{func.img.file_path.get_list.args.char_files.max}
+\protect\phantomsection\label{func.img.file.get_list.args.char_files.max}
 \begin{itemize}
 \tightlist
 \item
   \textbf{char\_files.max:} (Optional, \emph{Integer}, \texttt{NA} by default) Numeric value limiting the maximum number of files to list per folder (useful for subsampling or testing);
 \end{itemize}
 
-\protect\phantomsection\label{func.img.file_path.get_list.args.seed}
+\protect\phantomsection\label{func.img.file.get_list.args.seed}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{seed:} (Optional, \emph{Integer}, \texttt{NA} by default) Random seed used for reproducible sampling when \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
+  \textbf{seed:} (Optional, \emph{Integer}, \texttt{NA} by default) Random seed used for reproducible sampling when \hyperref[func.img.file.get_list.args.char_files.max]{char\_files.max} is specified (ignored otherwise);
 \end{itemize}
 
-\protect\phantomsection\label{func.img.file_path.get_list.args.random_sample}
+\protect\phantomsection\label{func.img.file.get_list.args.random_sample}
 \begin{itemize}
 \tightlist
 \item
   \textbf{random\_sample:} (Optional, \emph{Boolean}, \texttt{FALSE} by default) Logical (\(TRUE / FALSE\)) value indicating whether files within a folder should be sampled randomly (\texttt{TRUE}) or taken sequentially from the top (\texttt{FALSE}).
 \end{itemize}
 
-\protect\phantomsection\label{func.img.file_path.get_list.details}
+\protect\phantomsection\label{func.img.file.get_list.details}
 \paragraph{Details}\label{details-2}
 
 \hfill\break
 
-This is an auxiliary function that is used internally in the \hyperref[func.load_image.list]{load\_image.list} function as shown above in the \hyperref[func.img.file_path.get_list.usage]{Usage} Section of \emph{this Description}.
+This is an auxiliary function that is used internally in the \hyperref[func.load_image.list]{load\_image.list} function as shown above in the \hyperref[func.img.file.get_list.usage]{Usage} Section of \emph{this Description}.
 
 Below is the \emph{step-by-step execution flow} of the function:
 
@@ -1478,11 +1476,11 @@ Below is the \emph{step-by-step execution flow} of the function:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \textbf{Subfolder Discovery:} If the \hyperref[func.img.file_path.get_list.args.folder.list]{folder.list} argument value is \texttt{NULL} (the \emph{folder list} is not provided), the function retrieves all subdirectory names inside the \emph{root directory} (using the path passed in the \hyperref[func.img.file_path.get_list.args.root_path]{root\_path} argument) and uses them as the \emph{folder list} for further processing. Otherwise, the \hyperref[func.img.file_path.get_list.args.folder.list]{folder.list} value is used.
+  \textbf{Subfolder Discovery:} If the \hyperref[func.img.file.get_list.args.folder.list]{folder.list} argument value is \texttt{NULL} (the \emph{folder list} is not provided), the function retrieves all subdirectory names inside the \emph{root directory} (using the path passed in the \hyperref[func.img.file.get_list.args.root_path]{root\_path} argument) and uses them as the \emph{folder list} for further processing. Otherwise, the \hyperref[func.img.file.get_list.args.folder.list]{folder.list} value is used.
 \item
   \textbf{File Path Collection:} Next, it iterates through the \emph{folder list} determined in the previous step, constructs the \emph{full path} for each folder, and retrieves all file paths in that folder.
 \item
-  \textbf{Capping and Sampling:} If the value for the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value.
+  \textbf{Capping and Sampling:} If the value for the \hyperref[func.img.file.get_list.args.char_files.max]{char\_files.max} argument is provided and does not exceed the folder's file count, the number of files to process is limited to that value.
 \end{enumerate}
 
 \begin{noteblock}
@@ -1490,21 +1488,21 @@ Below is the \emph{step-by-step execution flow} of the function:
 \begin{itemize}
 \tightlist
 \item
-  If the condition above is met, the \emph{file selection method} depends on the value of the \hyperref[func.img.file_path.get_list.args.random_sample]{random\_sample} argument. If it is \texttt{TRUE}, a \emph{sample} of the size provided in the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is taken using a \emph{reproducibility seed offset} by the folder's index if a \emph{seed} is provided (the value of the \hyperref[func.img.file_path.get_list.args.seed]{seed} argument is not \texttt{NA}). Otherwise, a top list of the size provided in the \hyperref[func.img.file_path.get_list.args.char_files.max]{char\_files.max} argument is selected.
+  If the condition above is met, the \emph{file selection method} depends on the value of the \hyperref[func.img.file.get_list.args.random_sample]{random\_sample} argument. If it is \texttt{TRUE}, a \emph{sample} of the size provided in the \hyperref[func.img.file.get_list.args.char_files.max]{char\_files.max} argument is taken using a \emph{reproducibility seed offset} by the folder's index if a \emph{seed} is provided (the value of the \hyperref[func.img.file.get_list.args.seed]{seed} argument is not \texttt{NA}). Otherwise, a top list of the size provided in the \hyperref[func.img.file.get_list.args.char_files.max]{char\_files.max} argument is selected.
 \item
   Otherwise, the full list of file paths obtained in the previous step is used for the final result.
 \end{itemize}
 
 \end{noteblock}
 
-\protect\phantomsection\label{func.img.file_path.get_list.value}
+\protect\phantomsection\label{func.img.file.get_list.value}
 \paragraph{Value}\label{value-1}
 
 \hfill\break
 
 A \emph{named nested list} where each element represents a \emph{subfolder}, containing its \emph{root path} and the \emph{file path list}.
 
-\protect\phantomsection\label{func.img.file_path.get_list.code}
+\protect\phantomsection\label{func.img.file.get_list.code}
 \paragraph{Source Code}\label{source-code-2}
 
 \hfill\break
@@ -1513,7 +1511,7 @@ The slightly simplified version of the function's source code is shown below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{img.file\_path.get\_list }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(root\_path, }
+\NormalTok{img.file.get\_list }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(root\_path, }
                                    \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{, }
                                    \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
                                    \AttributeTok{seed =} \ConstantTok{NA}\NormalTok{,}
@@ -1590,7 +1588,7 @@ This specialized utility function reads an image file, dynamically detects wheth
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{  train.img\_dat.list }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
+\NormalTok{  train.raw\_img.dat.ls }\OtherTok{\textless{}{-}} \FunctionTok{load\_image.list}\NormalTok{(}\AttributeTok{root\_path =}\NormalTok{ img.train\_root.dir,}
                                         \AttributeTok{fn.load\_image.dat =}\NormalTok{ load.img\_trimmed.dat}
                                         \CommentTok{\# folder.list = NULL,}
                                         \CommentTok{\# char\_files.max = NA,}
@@ -1610,7 +1608,7 @@ In the \emph{code snippet} above, a pointer to \emph{this function} is passed in
 
 \hfill\break
 
-\protect\phantomsection\label{func.load.img_trimmed.dat.args.file_path}
+\protect\phantomsection\label{func.load.img_trimmed.dat.args.file}
 \begin{itemize}
 \tightlist
 \item
