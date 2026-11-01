@@ -111,10 +111,9 @@ The other long-running scripts are as follows:
 
 - For downloading, analyzing, and preprocessing datasets:
 
-	- [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) (about ***an hour***).
-	- [ds.find-out.img.min.size.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.find-out.img.min.size.R) (about *half an hour*).
-	- [prepare-input-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-input-data.R) (more than *half an hour*).
-	- [ds.train2trimmed_img.dat.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R) (about ***an hour***).
+	- [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) (about ***an hour***): downloads the [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) dataset;
+	- [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) (for the *Training Set*, around *40 minutes*): loads into memory the *raw image data* previously downloaded from [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
+	- [raw-img.dat2std_bin.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R) (for the *Training Set*, about *half an hour*): prepares *standardized binary* image data;
 
 
 ::: {.noteblock data-latex=""}
@@ -124,7 +123,7 @@ Besides, any of these scripts can be launched separately, or the execution can b
 :::
 
 ::: {.importantblock data-latex=""}
-If the interrupted execution resumes in another *`R` session*, the [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) Section (with all its subsections) of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) script **\underline{must be run first at the very beginning of the session}**. 
+If the interrupted execution resumes in another *`R` Session*, the [Workspace Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L160) Section (with all its subsections) of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R) script **\underline{must be run first}** at the very beginning of the *Session*. 
 :::
 
 ### The Main `R` Script

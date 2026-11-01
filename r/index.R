@@ -56,7 +56,7 @@ log_close()
 # Log Elapsed Time: 0 00:41:23
 # *************************************************************************
 
-#### Training Set: Prepare Standardize Binary Image Data -----------------------
+#### Training Set: Prepare Standardized Binary Image Data -----------------------
 open_logfile(".ds.train.raw-dat2std-bin.array")
 
 stopifnot(file.exists(raw_img.dat2std_bin.script.path))
