@@ -35,7 +35,7 @@ stopifnot(file.exists(load.raw_img_dat.script.path,
                       raw_img.dat2std_bin.script.path,
                       prepare_ds.train_set.script.path))
 
-#### Training Set: Load Image Data List ---------------------------------
+#### Training Set: Load Raw Image Data -----------------------------------------
 open_logfile(".ds.train.load-raw-image.dat")
 
 root_dir <- img.train_root.dir
@@ -111,7 +111,7 @@ source(prepare_ds.train_set.script.path,
 stopifnot(file.exists(load.raw_img_dat.script.path,
                       raw_img.dat2std_bin.script.path))
 
-#### Final Test set: Load Image Data List --------------------------------------
+#### Final Test set: Load Raw Image Data ---------------------------------------
 open_logfile(".ds.final-test.load-raw-image.dat")
 
 root_dir <- img.validation_root.dir
