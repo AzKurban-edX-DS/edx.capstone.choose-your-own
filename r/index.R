@@ -159,6 +159,9 @@ log_close()
 # *************************************************************************
 
 # ML Models Development --------------------------------------------------------
+
+tblResults <- NULL
+
 ## kNN+PCA MCC Model -----------------------------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path,
                       knn_pca.retrain.best_k.script.path,
@@ -224,7 +227,12 @@ put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...")
 
 knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
 put_end_date(start)
-# Time difference of 
+
+tblResults <- tblResults.AddRow(method = 'kNN+PCA',
+                                acc_value = knn_pca.eval.results$accuracy)
+# str(tblResults)
+
+tblResults.kable(tblResults)
 
 put_log("The Predicted Data of the Fine-Tuned kNN+PCA Model has been loaded from the following file:
 %1...", knn_pca.eval.results.backup)
@@ -334,6 +342,13 @@ put_log("Prediction accuracy of the fine-tuned 'RF MCC' Model,
 trained with the best `mtry` parameter value, is as follows:
 %1", fit_rf.final$test$accuracy)
 # 0.886029854339713
+
+tblResults <- tblResults |> tblResults.AddRow(method = "Random Forest",
+                                              acc_value = fit_rf.final$test$accuracy)
+# str(tblResults)
+
+tblResults.kable(tblResults)
+
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -909,6 +924,20 @@ put_log("The Tuned CNN-Based MCC Final Model Evaluation Result metrics:
                          'loss' = tcnn_mcc.final.eval.result$loss)))
 #  accuracy  f1_macro      loss 
 # 0.9487213 0.9190166 0.1859616 
+
+tblResults <- tblResults |> tblResults.AddColumn.F1Macro()
+str(tblResults)
+
+tblResults <- tblResults |> 
+  tblResults_F1Macro.AddRow(method = "CNN Tuned (Final Test)",
+                            acc_value = tcnn_mcc.final.eval.result$accuracy,
+                            loss = tcnn_mcc.final.eval.result$loss,
+                            f1_macro = tcnn_mcc.final.eval.result$f1_macro)
+str(tblResults)
+
+
+tblResults.kable(tblResults)
+
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
