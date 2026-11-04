@@ -78,20 +78,19 @@ The code in this Section automatically checks for required `R` packages across m
 \
 
 
-## [ds.train2trimmed_img.dat.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R) Script {#appndx_b.ds.train2trimmed_img.dat}
+## [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) Script {#appndx_b.load_raw_image_data}
+\
+
+## [raw-img.dat2std_bin.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R)  Script { #appndx_b.raw_img.dat2std_bin}
 \
 
 
 ## [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) Script {#appndx_b.prepare_training_set}
 \
 
-## [prepare-final-test-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-final-test-set.R) Script {#appndx_b.prepare_final_test_set}
-\
 
-##  Script {#appndx_b.}
-\
 
-##  Script {#appndx_b.}
+## [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/)  Script {#appndx_b.}
 \
 
 ##  Script {#appndx_b.}

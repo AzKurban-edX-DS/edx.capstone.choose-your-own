@@ -223,6 +223,9 @@ dropout2 <- hp$Float('dropout2',
 
 hp$Fixed("learning_rate", value = 1e-4)
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 tuner.result <- 
   cnn_mcc.Hyperband.fit_tuner(hp,
                               x_train,
@@ -231,7 +234,8 @@ tuner.result <-
                               project.dir = cnn_mcc.arch_tuner.proj.dir,
                               project.name = 'tuner.dat',
                               checkpoints.dir = cnn_mcc.arch_tuner.checkpoints.dir)
-
+stopCluster(cl)
+stopImplicitCluster()
 
 if(!is.null(tuner.result$error) ||
    !is.null(tuner.result$hypermodel$error)) {

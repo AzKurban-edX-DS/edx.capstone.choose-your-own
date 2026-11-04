@@ -231,14 +231,21 @@ dnn_mcc.tuner = RandomSearch(
   project_name = "DNN-MCC.Tuner"
   )
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 dnn_mcc.tuner |> fit_tuner(x = x_train,
                            y = y_train,
                            callbacks = tdnn_mcc.callback_list,
                            # validation_split = 0.2,
                            validation_data = tuple(x_test, y_test),
                            epochs = 100L)
-# rm(x_train,
-#    y_train)
+stopCluster(cl)
+stopImplicitCluster()
+
+
+rm(x_train,
+   y_train)
 
 put_log("The DNN MCC Model Tuning has been completed.")
 put_end_date(start)

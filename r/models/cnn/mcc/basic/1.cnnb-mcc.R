@@ -207,6 +207,9 @@ cnnb_mcc.callbacks <- list(
 put_log("Training the CNN-based Multiclass Classifier (CNN MCC) Model...")
 start <- put_start_date()
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 # Train model
 cnnb_mcc.train_history <- cnnb_mcc |> 
   fit(x_train, 
@@ -218,6 +221,9 @@ cnnb_mcc.train_history <- cnnb_mcc |>
       #validation_data = tuple(x_test, y_test.cat)
   )
 # acc: 0.8741
+
+stopCluster(cl)
+stopImplicitCluster()
 
 plot(cnnb_mcc.train_history)
 

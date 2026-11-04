@@ -285,6 +285,9 @@ cnn_mcc.best.callbacks <- list(
 put_log("Training the tuned Final MCC Model...")
 start <- put_start_date()
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 tcnn_mcc.final.train_history <- cnn_mcc.final |> 
   fit(x_train, 
       y_train.cat, 
@@ -294,6 +297,9 @@ tcnn_mcc.final.train_history <- cnn_mcc.final |>
       # validation_split = 0.2
       validation_data = tuple(x_test, y_test.cat)
   )
+
+stopCluster(cl)
+stopImplicitCluster()
 
 put_log("Saving re-trained final tuned Final MCC Model...")
 keras3::save_model(cnn_mcc.final,

@@ -107,7 +107,9 @@ if(!require("fs"))
   install.packages("fs")
 
 library(pacman)
-p_load(conflicted)
+
+p_load(conflicted, latex2exp, kableExtra)
+
 
 ## Load Libraries & resolve conflicts ------------------------------------------
 
@@ -133,6 +135,7 @@ library(kerastuneR)
 
 library(matrixStats)
 library(dslabs)
+library(dplyr)
 
 library(prodlim)
 library(caret)

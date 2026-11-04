@@ -97,6 +97,9 @@ hp <- CNN_MCC.HyperParameters()
 hp$Float("learning_rate", min_value=1e-5, max_value=1e-2, sampling="log")
 hp$set_fixed(best_hp)
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 tuner.result <- 
   cnn_mcc.Hyperband.fit_tuner(hp,
                               x_train,
@@ -108,6 +111,9 @@ tuner.result <-
                               max_epochs = 15L)
 
 # Best val_accuracy So Far: 0.9064242839813232
+
+stopCluster(cl)
+stopImplicitCluster()
 
 if(!is.null(tuner.result$error) ||
    !is.null(tuner.result$hypermodel$error)) {

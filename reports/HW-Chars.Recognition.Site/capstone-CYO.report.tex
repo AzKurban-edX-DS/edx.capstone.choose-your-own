@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-10-30}
+\date{2026-11-02}
 
 \begin{document}
 \maketitle
@@ -382,46 +382,59 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 Below is a detailed description of the script's structure, workflow, and core components.
 
 \begin{noteblock}
-During execution, this script runs several support scripts located in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support-scripts} folder. Most of them are described in \hyperref[appndx_b]{Appendix B} of \emph{this Report}.
+During execution, this script runs several support scripts located in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts}{support-scripts} folder.
+\hyperref[appndx_b]{Appendix B} of \emph{this Report} describes most of them.
 
 \end{noteblock}
 
 \subsubsection{Setup \& Initialization}\label{setup-initialization}
 
-The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L52}{Setup} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L60}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, along with downloading, preparing, and preprocessing the project's datasets.
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L160}{Workspace Setup} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R}{index.R} code configures and initializes the \emph{Global Environment} for the current \texttt{R} session, as well as downloads, prepares, and preprocesses the \emph{project's datasets}.
 
 \begin{importantblock}
 Code in this Section \underline{must run at the very beginning} of every \emph{\texttt{R} session} \textbf{\underline{before any other script executes}}.
 
 \end{importantblock}
 
-The code in this Section first calls (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L6}{line 6}) the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (see \hyperref[appndx_b.r_global.path]{Appendix B} for details) to initialize the global variables for \emph{this Project}'s essential \texttt{R} scripts directory paths.
+The code in \emph{this Section} first calls the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R}{r-global.path.R} script (see \hyperref[appndx_b.r_global.path]{Appendix B} for details) to initialize the global variables for \emph{this Project}'s essential \texttt{R} scripts directory paths.
 
-Next (on \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{line 10}), it \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10}{executes} the \hyperref[appndx_b.setup]{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+Next, in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L10-L20}{Project Environment Setup} subsection, it executes the \hyperref[appndx_b.setup]{setup.R} script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
-The remaining operations in this section relate to downloading and preparing the project datasets.
+The remaining operations (carried out in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L21-L160}{Preparing Input Data} subsection) relate to downloading and preparing the \emph{project datasets}.
 
 \subsubsection{Downloading \& Preprocessing Input Datasets}\label{downloading-preprocessing-input-datasets}
 
-In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L17-L27}{Download the Kaggle Dataset} subsection, it executes the \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} script to download the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}.
+The code in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L21-L160}{Preparing Input Data} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L5-L160}{Workspace Setup} section downloads and prepares the \emph{project datasets} in the following order:
 
-The last subsection, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L28-L60}{Prepare Input Data}, prepares the project's datasets. It is, in turn, divided into the following subsections (corresponding to the stages of image data processing):
-
-\protect\phantomsection\label{main.data_prep.step1}
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L33-L42}{Train Set: Create Trimmed Image Data List}: Executes the \hyperref[appndx_b.ds.train2trimmed_img.dat]{ds.train2trimmed\_img.dat.R} script to validate and load downloaded \emph{raw image files} into a standardized list of \emph{trimmed image data} objects for the \emph{model training pipelines}.
-\end{enumerate}
+  In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L22-L32}{Download the Kaggle Dataset} subsection, it runs the \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} script to retrieve the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset}.
+\item
+  In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L33-L109}{Prepare Training Set} subsection, the script prepares the \emph{training datasets} by executing dedicated auxiliary scripts in the following order:
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\setcounter{enumi}{1}
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \tightlist
+  \item
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L38-L58}{Training Set: Load Raw Image Data} subsection, it runs the \hyperref[appndx_b.load_raw_image_data]{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Training Set}.
+  \item
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L59-L99}{Training Set: Prepare Standardized Binary Image Data} subsection, it runs the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Training Set}.
+  \item
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L100-L109}{Prepare Training Datasets} subsection, it runs the \hyperref[appndx_b.prepare_training_set]{prepare-training-set.R} script to split the data of the \emph{Training Set} and prepare \emph{ready to use} datasets for training the \emph{Handwritten Character Recognition (HCR)} models.
+  \end{enumerate}
 \item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L43-L51}{Prepare Training Datasets}: Runs the \hyperref[appndx_b.prepare_training_set]{prepare-training-set.R} script to preprocess and structure preliminary \emph{trimmed image data} from the \hyperref[main.data_prep.step1]{previous data-processing step} into various formats and backup datasets needed to train the project's models (i.e., \emph{Multiclass Handwritten Character Classifiers (MCC)} built using different approaches and algorithms).
-\item
-  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L52-L60}{Prepare Final Test Set}: Runs the script \hyperref[appndx_b.prepare_final_test_set]{prepare-final-test-set.R} to prepare the \emph{image data} intended for the \emph{final test} of the project's \emph{best-performing model}.
+  In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L110-L160}{Prepare Final Test Set} subsection, the script prepares the \emph{final test datasets} by executing dedicated auxiliary scripts in the following order:
+
+  \begin{enumerate}
+  \def\labelenumii{\arabic{enumii}.}
+  \tightlist
+  \item
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L114-L132}{Final Test Set: Load Raw Image Data} subsection, it runs the \hyperref[appndx_b.load_raw_image_data]{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Validation Set}.
+  \item
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L133-L160}{Fianal Test Set: Prepare Standardized Binary Image Data} subsection, it runs the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Final Test Set}.
+  \end{enumerate}
 \end{enumerate}
 
 \subsubsection{Machine Learning Model Pipelines}\label{machine-learning-model-pipelines}
@@ -1919,7 +1932,11 @@ The code in this Section automatically checks for required \texttt{R} packages a
 
 \hfill\break
 
-\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R}{ds.train2trimmed\_img.dat.R} Script}{ds.train2trimmed\_img.dat.R Script}}\label{appndx_b.ds.train2trimmed_img.dat}
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} Script}{load-raw-image-data.R Script}}\label{appndx_b.load_raw_image_data}
+
+\hfill\break
+
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R}{raw-img.dat2std\_bin.R} Script}{raw-img.dat2std\_bin.R Script}}\label{appndx_b.raw_img.dat2std_bin}
 
 \hfill\break
 
@@ -1927,15 +1944,7 @@ The code in this Section automatically checks for required \texttt{R} packages a
 
 \hfill\break
 
-\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-final-test-set.R}{prepare-final-test-set.R} Script}{prepare-final-test-set.R Script}}\label{appndx_b.prepare_final_test_set}
-
-\hfill\break
-
-\section{Script}\label{appndx_b.}
-
-\hfill\break
-
-\section{Script}\label{appndx_b.}
+\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/}{} Script}{ Script}}\label{appndx_b.}
 
 \hfill\break
 

@@ -132,44 +132,37 @@ The [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/bl
 Below is a detailed description of the script's structure, workflow, and core components.
 
 ::: {.noteblock data-latex=""}
-During execution, this script runs several support scripts located in the [support-scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts) folder. Most of them are described in [Appendix B](#appndx_b) of *this Report*.
+During execution, this script runs several support scripts located in the [support-scripts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-scripts) folder. 
+[Appendix B](#appndx_b) of *this Report* describes most of them.
 :::
 
 #### Setup & Initialization
 
-The [Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L52) Section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L60) code configures and initializes the *Global Environment* for the current `R` session, along with downloading, preparing, and preprocessing the project's datasets.
+The [Workspace Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L160) Section of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R) code configures and initializes the *Global Environment* for the current `R` session, as well as downloads, prepares, and preprocesses the *project’s datasets*.
 
 ::: {.importantblock data-latex=""}
 Code in this Section \underline{must run at the very beginning} of every _`R` session_ **\underline{before any other script executes}**.
 :::
 
-The code in this Section first calls (on [line 6](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L6)) the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script (see [Appendix B](#appndx_b.r_global.path) for details) to initialize the global variables for *this Project*’s essential `R` scripts directory paths.
+The code in *this Section* first calls the [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) script (see [Appendix B](#appndx_b.r_global.path) for details) to initialize the global variables for *this Project*’s essential `R` scripts directory paths.
 
-Next (on [line 10](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10)), it [executes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10) the [setup.R](#appndx_b.setup) script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
+Next, in the [Project Environment Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L10-L20) subsection, it executes the [setup.R](#appndx_b.setup) script, which installs the full set of required packages (those not yet installed), loads the required libraries, and completes the remaining initialization.
 
 
-The remaining operations in this section relate to downloading and preparing the project datasets.
+The remaining operations (carried out in the [Preparing Input Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L21-L160) subsection) relate to downloading and preparing the *project datasets*.
 
 #### Downloading & Preprocessing Input Datasets
 
+The code in the [Preparing Input Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L21-L160) subsection of the [Workspace Setup](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L5-L160) section downloads and prepares the *project datasets* in the following order:
 
-In the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L17-L27) subsection, it executes the [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) script to download the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
-
-The last subsection, [Prepare Input Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L28-L60), prepares the project's datasets. It is, in turn, divided into the following subsections (corresponding to the stages of image data processing):
-
-::: { #main.data_prep.step1 .sidebar }
-1. [Train Set: Create Trimmed Image Data List](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L33-L42): Executes the [ds.train2trimmed_img.dat.R](#appndx_b.ds.train2trimmed_img.dat) script to validate and load downloaded *raw image files* into a standardized list of *trimmed image data* objects for the *model training pipelines*.
-
-:::
-
-2. [Prepare Training Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L43-L51): Runs the [prepare-training-set.R](#appndx_b.prepare_training_set) script to preprocess and structure preliminary *trimmed image data* from the [previous data-processing step](#main.data_prep.step1) into various formats and backup datasets needed to train the project's models (i.e., *Multiclass Handwritten Character Classifiers (MCC)* built using different approaches and algorithms).
-
-3. [Prepare Final Test Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L52-L60): Runs the script [prepare-final-test-set.R](#appndx_b.prepare_final_test_set) to prepare the *image data* intended for the *final test* of the project's *best-performing model*.
-
-
-
-
-
+1. In the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L22-L32) subsection, it runs the [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) script to retrieve the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
+2. In the [Prepare Training Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L33-L109) subsection, the script prepares the *training datasets* by executing dedicated auxiliary scripts in the following order:
+    1. In the [Training Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L38-L58) subsection, it runs the [load-raw-image-data.R](#appndx_b.load_raw_image_data) script to load the *raw image data* of the *Training Set*.
+    2. In the [Training Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L59-L99) subsection, it runs the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script to *standardize and binarize* the raw image data for the *Training Set*.
+    3. In the [Prepare Training Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L100-L109) subsection, it runs the [prepare-training-set.R](#appndx_b.prepare_training_set) script to split the data of the *Training Set* and prepare *ready to use* datasets for training the *Handwritten Character Recognition (HCR)* models.
+3. In the [Prepare Final Test Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L110-L160) subsection, the script prepares the *final test datasets* by executing dedicated auxiliary scripts in the following order:
+    1. In the [Final Test Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L114-L132) subsection, it runs the [load-raw-image-data.R](#appndx_b.load_raw_image_data) script to load the *raw image data* of the *Validation Set*.
+    2. In the [Fianal Test Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L133-L160) subsection, it runs the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script to *standardize and binarize* the raw image data for the *Final Test Set*.
 
 #### Machine Learning Model Pipelines
 
