@@ -644,9 +644,7 @@ tblResults.tdnn <- tblResults.dnnb |> tblResults.AddRow(method = "Tuned DNN",
                                               acc_value = tdnn_mcc.final.eval.result$accuracy,
                                               loss = tdnn_mcc.final.eval.result$loss,
                                               comment = "Fine-tuned DNN-Based MCC.")
-# str(tblResults)
 tblResults.kable(tblResults.tdnn)
-
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -776,6 +774,15 @@ from the following file:
 put_log("The CNNB MCC Model Evaluation Result accuracy: %1", 
         cnnb_mcc.eval.result$accuracy)
 # 0.92193329334259
+
+
+tblResults.cnnb <- tblResults.tdnn |> tblResults.AddRow(method = "CNN Basic",
+                                                        acc_value = cnnb_mcc.eval.result$accuracy,
+                                                        loss = cnnb_mcc.eval.result$loss,
+                                                        comment = "Convolutional Neural Network (CNN) Based Basic MCC.")
+tblResults.kable(tblResults.cnnb)
+
+
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -942,18 +949,22 @@ put_log("The Tuned CNN-Based MCC Final Model Evaluation Result metrics:
 #  accuracy  f1_macro      loss 
 # 0.9487213 0.9190166 0.1859616 
 
-tblResults <- tblResults |> tblResults.AddColumn.F1Macro()
-str(tblResults)
+tblResults.cnnb_f1 <- tblResults.cnnb |> tblResults.AddColumn.F1Macro()
 
-tblResults <- tblResults |> 
+tblResults.tcnn <- tblResults.cnnb_f1 |> 
   tblResults_F1Macro.AddRow(method = "CNN Tuned (Final Test)",
                             acc_value = tcnn_mcc.final.eval.result$accuracy,
                             loss = tcnn_mcc.final.eval.result$loss,
-                            f1_macro = tcnn_mcc.final.eval.result$f1_macro)
-str(tblResults)
+                            f1_macro = tcnn_mcc.final.eval.result$f1_macro,
+                            comment = "Fine-Tuned CNN-Based MCC")
 
+tblResults_F1Macro.kable(tblResults.tcnn)
 
-tblResults.kable(tblResults)
+# Total Results Table:
+tblTotalResults <- tblResults.tcnn |> 
+  tblResults.AddDiffColumn()
+
+tblResults.Total_kable(tblTotalResults)
 
 
 #' Initialize the `plots.args` object containing argument values 
