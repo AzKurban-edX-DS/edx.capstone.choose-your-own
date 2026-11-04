@@ -177,7 +177,9 @@ dnnb_mcc.callbacks <- list(
 put_log("Training the BDNNB MCC Model...")
 start <- put_start_date()
 
-# dnnb_mcc.train_history <- tdnn_mcc.final |> 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 dnnb_mcc.train_history <- dnnb_mcc |>
   fit(x_train, 
       y_train, 
@@ -186,6 +188,9 @@ dnnb_mcc.train_history <- dnnb_mcc |>
       callbacks = dnnb_mcc.callbacks,
       validation_split = 0.2
   )
+
+stopCluster(cl)
+stopImplicitCluster()
 
 put_log("Saving pre-trained BDNNB MCC Model...")
 keras3::save_model(dnnb_mcc,

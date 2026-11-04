@@ -116,6 +116,9 @@ if(file.exists(dnnb_mcc.train_history.file)){
 ", dnnb_mcc.train_history.file)
 }
 
+# cl <- makeCluster(N_pcCores)
+# registerDoParallel(cl)
+
 put_log("Evaluating the pre-trained DNNB MCC Model...")
 dnnb_mcc.eval.result <- dnnb_mcc |> evaluate(x_test, y_test)
 put_log("DNN-Based Basic MCC Model evaluation result:
@@ -134,7 +137,9 @@ put_end_date(start)
 
 dnnb_mcc.eval.result$predicted.probs <- dnnb_mcc |> predict(x_test) 
 put_end_date(start)
-# Time difference of  mins
+
+# stopCluster(cl)
+# stopImplicitCluster()
 
 colnames(dnnb_mcc.eval.result$predicted.probs) <- Y.Labels
 head(dnnb_mcc.eval.result$predicted.probs[,1:5])

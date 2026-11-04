@@ -150,6 +150,9 @@ tdnn_mcc.final.callbacks <- list(
 put_log("Training the BDL MCC Model...")
 start <- put_start_date()
 
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
 tdnn_mcc.final.train_history <- tdnn_mcc.final |> 
   fit(x_train, 
       y_train, 
@@ -158,6 +161,9 @@ tdnn_mcc.final.train_history <- tdnn_mcc.final |>
       callbacks = tdnn_mcc.final.callbacks,
       validation_split = 0.2
   )
+
+stopCluster(cl)
+stopImplicitCluster()
 
 put_log("Saving re-trained final BDL MCC Model...")
 keras3::save_model(tdnn_mcc.final,
