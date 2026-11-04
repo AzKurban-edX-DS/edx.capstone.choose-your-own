@@ -228,12 +228,13 @@ put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...")
 knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
 put_end_date(start)
 
-tblResults <- tblResults.AddRow(method = 'kNN+PCA',
-                                acc_value = knn_pca.eval.results$accuracy,
-                                comment = "Fine-tuned using Principal Component Analysis (PCA) 
+tblResults.knn_pcc <- 
+  tblResults.AddRow(method = 'kNN+PCA',
+                    acc_value = knn_pca.eval.results$accuracy,
+                    comment = "Fine-tuned using Principal Component Analysis (PCA) 
 integrated with k-Nearest Neighbors (kNN) Multiclass Classification (MCC).")
 # str(tblResults)
-tblResults.kable(tblResults)
+tblResults.kable(tblResults.knn_pcc)
 
 put_log("The Predicted Data of the Fine-Tuned kNN+PCA MCC Model has been loaded from the following file:
 %1...", knn_pca.eval.results.backup)
@@ -344,11 +345,11 @@ trained with the best `mtry` parameter value, is as follows:
 %1", fit_rf.final$test$accuracy)
 # 0.886029854339713
 
-tblResults <- tblResults |> tblResults.AddRow(method = "RF",
-                                              acc_value = fit_rf.final$test$accuracy,
-                                              comment = "Fine-tuned using Random Forest (RF) MCC.")
+tblResults.rf <- tblResults.knn_pcc |> tblResults.AddRow(method = "RF",
+                                                         acc_value = fit_rf.final$test$accuracy,
+                                                         comment = "Fine-tuned using Random Forest (RF) MCC.")
 # str(tblResults)
-tblResults.kable(tblResults)
+tblResults.kable(tblResults.rf)
 
 
 #' Initialize the `plots.args` object containing argument values 
@@ -483,11 +484,12 @@ put_log("The DNNB MCC Model Evaluation Result accuracy: %1",
         dnnb_mcc.eval.result$accuracy)
 # 0.8973456
 
-tblResults <- tblResults |> tblResults.AddRow(method = "DNN Basic",
-                                              acc_value = dnnb_mcc.eval.result$accuracy,
-                                              comment = "")
+tblResults.dnnb <- tblResults.rf |> tblResults.AddRow(method = "DNN Basic",
+                                                      acc_value = dnnb_mcc.eval.result$accuracy,
+                                                      loss = dnnb_mcc.eval.result$loss,
+                                                      comment = "Dense Neural Network (DNN) Based Basic MCC model")
 # str(tblResults)
-tblResults.kable(tblResults)
+tblResults.kable(tblResults.dnnb)
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -637,6 +639,14 @@ has been loaded from the following file:
 put_log("The Tuned DNN-Based MCC Final Model Evaluation Result accuracy: %1", 
         tdnn_mcc.final.eval.result$accuracy)
 # 0.9035151
+
+tblResults.tdnn <- tblResults.dnnb |> tblResults.AddRow(method = "Tuned DNN",
+                                              acc_value = tdnn_mcc.final.eval.result$accuracy,
+                                              loss = tdnn_mcc.final.eval.result$loss,
+                                              comment = "Fine-tuned DNN-Based MCC.")
+# str(tblResults)
+tblResults.kable(tblResults.tdnn)
+
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
