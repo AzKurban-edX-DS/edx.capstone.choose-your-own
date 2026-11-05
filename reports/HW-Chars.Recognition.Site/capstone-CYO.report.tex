@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-02}
+\date{2026-11-06}
 
 \begin{document}
 \maketitle
@@ -192,7 +192,7 @@ All the source files for \emph{this Project} are available in the \emph{Project}
 
 In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model]{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections {[}k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model{]} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
 
 Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
 
@@ -433,11 +433,14 @@ The code in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-you
   \item
     In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L114-L132}{Final Test Set: Load Raw Image Data} subsection, it runs the \hyperref[appndx_b.load_raw_image_data]{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Validation Set}.
   \item
-    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L133-L160}{Fianal Test Set: Prepare Standardized Binary Image Data} subsection, it runs the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Final Test Set}.
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L133-L160}{Final Test Set: Prepare Standardized Binary Image Data} subsection, it runs the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Final Test Set}.
   \end{enumerate}
 \end{enumerate}
 
 \subsubsection{Machine Learning Model Pipelines}\label{machine-learning-model-pipelines}
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L161-L1066}{ML Models Development} section implements, tunes, trains, and evaluates a comprehensive benchmarking pipeline for the 39-class Handwritten Character Recognition (HCR) system.
+The workflow systematically develops and tests four distinct machine learning architectures, logs evaluation metrics in a comparative results table, generates confusion matrices and per-class accuracy (PCA) visualizations, and concludes with an in-depth error analysis of common misclassifications.
 
 \paragraph{k-Nearest Neighbors with Principal Component Analysis (kNN + PCA) Model}\label{k-nearest-neighbors-with-principal-component-analysis-knn-pca-model}
 
@@ -487,7 +490,7 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
-\section{k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model}\label{k-nearest-neighbors-principal-component-analysis-knnpca-multiclass-classifier-mcc-model}
+\section{kNN+PCA MCC Model}\label{knnpca-mcc-model}
 
 \section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model-1}
 
@@ -751,7 +754,7 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 \begin{verbatim}
 ## Class Labels:
 ##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
-## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+## 39 Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U ... Z
 \end{verbatim}
 
 \begin{verbatim}

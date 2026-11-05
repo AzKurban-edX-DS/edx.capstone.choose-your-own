@@ -162,11 +162,12 @@ The code in the [Preparing Input Data](https://github.com/AzKurban-edX-DS/edx.ca
     3. In the [Prepare Training Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L100-L109) subsection, it runs the [prepare-training-set.R](#appndx_b.prepare_training_set) script to split the data of the *Training Set* and prepare *ready to use* datasets for training the *Handwritten Character Recognition (HCR)* models.
 3. In the [Prepare Final Test Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L110-L160) subsection, the script prepares the *final test datasets* by executing dedicated auxiliary scripts in the following order:
     1. In the [Final Test Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L114-L132) subsection, it runs the [load-raw-image-data.R](#appndx_b.load_raw_image_data) script to load the *raw image data* of the *Validation Set*.
-    2. In the [Fianal Test Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L133-L160) subsection, it runs the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script to *standardize and binarize* the raw image data for the *Final Test Set*.
+    2. In the [Final Test Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L133-L160) subsection, it runs the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script to *standardize and binarize* the raw image data for the *Final Test Set*.
 
 #### Machine Learning Model Pipelines
 
-
+The [ML Models Development](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L161-L1066) section implements, tunes, trains, and evaluates a comprehensive benchmarking pipeline for the 39-class Handwritten Character Recognition (HCR) system.
+The workflow systematically develops and tests four distinct machine learning architectures, logs evaluation metrics in a comparative results table, generates confusion matrices and per-class accuracy (PCA) visualizations, and concludes with an in-depth error analysis of common misclassifications.
 
 ##### k-Nearest Neighbors with Principal Component Analysis (kNN + PCA) Model
 

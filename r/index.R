@@ -159,9 +159,6 @@ log_close()
 # *************************************************************************
 
 # ML Models Development --------------------------------------------------------
-
-tblResults <- NULL
-
 ## kNN+PCA MCC Model -----------------------------------------------------------
 stopifnot(file.exists(knn_pca.tune.script.path,
                       knn_pca.retrain.best_k.script.path,
@@ -233,7 +230,7 @@ tblResults.knn_pcc <-
                     acc_value = knn_pca.eval.results$accuracy,
                     comment = "Fine-tuned using Principal Component Analysis (PCA) 
 integrated with k-Nearest Neighbors (kNN) Multiclass Classification (MCC).")
-# str(tblResults)
+
 tblResults.kable(tblResults.knn_pcc)
 
 put_log("The Predicted Data of the Fine-Tuned kNN+PCA MCC Model has been loaded from the following file:
@@ -348,7 +345,6 @@ trained with the best `mtry` parameter value, is as follows:
 tblResults.rf <- tblResults.knn_pcc |> tblResults.AddRow(method = "RF",
                                                          acc_value = fit_rf.final$test$accuracy,
                                                          comment = "Fine-tuned using Random Forest (RF) MCC.")
-# str(tblResults)
 tblResults.kable(tblResults.rf)
 
 
@@ -488,7 +484,6 @@ tblResults.dnnb <- tblResults.rf |> tblResults.AddRow(method = "DNN Basic",
                                                       acc_value = dnnb_mcc.eval.result$accuracy,
                                                       loss = dnnb_mcc.eval.result$loss,
                                                       comment = "Dense Neural Network (DNN) Based Basic MCC model")
-# str(tblResults)
 tblResults.kable(tblResults.dnnb)
 
 #' Initialize the `plots.args` object containing argument values 
