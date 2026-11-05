@@ -44,13 +44,15 @@ tblResults_F1Macro.AddRow <- function(tbl_results,
                               acc_value,
                               loss,
                               f1_macro,
-                              comment = ""){
+                              comment = "",
+                              before = NULL){
   tbl_results |>
     add_row(Method = method,
             Accuracy = acc_value,
             Loss = loss,
             F1Macro = f1_macro,
-            Comment = comment)
+            Comment = comment,
+            .before = before)
 }
 
 tblResults.AddColumn.F1Macro <- function(tbl_results) {
@@ -60,17 +62,21 @@ tblResults.AddColumn.F1Macro <- function(tbl_results) {
 
 tblResults.AddDiffColumn <- function(tbl_results){
   tblResults.Diff <- tbl_results |>
-    tblResults.AddRow(NULL, 
-                      tbl_results$Accuracy,
-                      NULL,
-                      before = 1)
+    tblResults_F1Macro.AddRow(NULL, 
+                              tbl_results$Accuracy[1],
+                              NULL,  # Loss
+                              NA,    # F1Macro
+                              NULL,  # Comment
+                              before = 1)
   
   tblResults.Diff <- tblResults.Diff[-nrow(tblResults.Diff),]
   
-  tbl_results |>
-    add_column(AccDiff = tblResults.Diff$Accuracy - tbl_results$Accuracy,
+  tbl_results <- tbl_results |>
+    add_column(AccDiff = tbl_results$Accuracy - tblResults.Diff$Accuracy,
                .before = "Comment")
   
+  tbl_results$AccDiff[1] <- NA
+  tbl_results
 }
 
 tblResults.kable <- function(tbl_results,
