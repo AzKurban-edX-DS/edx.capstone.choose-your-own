@@ -167,46 +167,38 @@ The code in the [Preparing Input Data](https://github.com/AzKurban-edX-DS/edx.ca
 #### Machine Learning Model Pipelines
 
 The [ML Models Development](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L161-L1066) section implements, tunes, trains, and evaluates a comprehensive benchmarking pipeline for the 39-class Handwritten Character Recognition (HCR) system.
-The workflow systematically develops and tests four distinct machine learning architectures, logs evaluation metrics in a comparative results table, generates confusion matrices and per-class accuracy (PCA) visualizations, and concludes with an in-depth error analysis of common misclassifications.
 
-##### k-Nearest Neighbors with Principal Component Analysis (kNN + PCA) Model
+The workflow systematically develops and tests four distinct machine learning architectures, logs evaluation metrics in a comparative results table, and concludes with an in-depth error analysis of common misclassifications.
 
+Additionally, for each model, it generates a visual representation of the following metrics:
 
+* [ROC curves](https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/);
+* [Confusion Matrix](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#the-confusion-matrix);
+* A custom metric: Per-Class Accuracy (PCA) (calculated by the user-defined helper function [MCClassifier.accuracy.by_class](#func.MCClassifier.accuracy.by_class) described in section [Models Helper / Calculating PCA & Constructing Bar Chart](#appndx_a.mh.calc_pca.bar_chart) of [Appendix A](#appndx_a)).
 
-##### Random Forest (RF) MCC Model
-
-
-
-##### Deep Learning Models
-
-
-
-###### Models Based on Dense Neural Network (DNN) 
-
-
+##### [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) Models
 \
-####### Basic DNN-Based Model
 
+The *SL models* are implemented in the following sections of the script:
 
-####### Tuned DNN-Based Model
+- The [kNN+PCA MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L162-L269) script section implements a model that combines [Principal Component Analysis (PCA)](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html#sec-pca) (for data preprocessing) and [k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro). The implementation, which uses the [caret::train](https://cran.r-project.org/web/packages/caret/refman/caret.html#train) function, is described in detail in the [kNN+PCA MCC Model] section of *this Report*.   
+- The [Random Forest (RF) MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L270-L381) script section implements the [Random Forest (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) algorithm. The implementation, which uses the [caret::train](https://cran.r-project.org/web/packages/caret/refman/caret.html#train) function, is described in detail in the [Random Forest (RF) MCC Model] section of *this Report*.
 
+\newpage
 
-######  Models Based on Dense Neural Network (DNN)
+##### [Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/) Models
+\
 
+The *DL models* are implemented in the following sections of the script:
 
+- The [DNN-Based MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L382-L667) script section implements the [Dense Neural Network (DNN)](https://liora.io/en/dense-neural-networks-understanding-their-structure-and-function) architecture. The implementation, described in detail in the [Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models] section of *this Report*, includes the following two models:
+  * *DNN-Based Basic (DNNB) MCC* implemented by the script subsection [DNN-Based Basic MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L383-L519) and described in subsection [DNN-Based Basic (DNNB) MCC Model];
+  * *Fine-Tuned DNN (TDNN) MCC* implemented by the script subsection [DNN-Based MCC Model Tuning](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L520-L667) and described in subsection [Tuned DNN-Based (TDNN) MCC Model].
 
-####### Basic CNN-Based Model
+- The [CNN-based MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L668-L1066) script section implements the [Couvolutional Neural Network (CNN)](https://en.wikipedia.org/wiki/Convolutional_neural_network) architecture. The implementation, described in detail in the [Convolutional Neural Network Based (CNN) MCC Models] section of *this Report*, includes the following two models:
 
-
-####### Tuned CNN-Based Model
-
-
-
-#### Logging & Utility Features 
-
-
-
-
+  * *CNN-Based Basic (CNNB) MCC* implemented by the script subsection [CNN-Based Basic MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L671-L812) and described in subsection [CNN-Based Basic (CNNB) MCC Model];
+  * *Fine-Tuned CNN (TCNN) MCC* implemented by the script subsection [CNN-Based MCC Model Tuning](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L813-L1066) and described in subsection [Tuned CNN-Based (TCNN) MCC Model].
 
 
 ## Datasets Overview

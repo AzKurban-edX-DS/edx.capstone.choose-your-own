@@ -1,3 +1,0 @@
-## Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model
-
-
