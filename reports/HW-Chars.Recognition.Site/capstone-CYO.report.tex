@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-06}
+\date{2026-11-08}
 
 \begin{document}
 \maketitle
@@ -203,7 +203,7 @@ The \textbf{\emph{DNN-Based}} models are as follows:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section \hyperref[dense-neural-network-based-basic-multiclass-classifier-dnnb-mcc-model]{Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model};
+  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section {[}Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model{]};
 \item
   \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
 \end{itemize}
@@ -213,7 +213,7 @@ The last models we will build and explore, the \textbf{\emph{CNN-Based}} models,
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section \hyperref[convolutional-neural-network-based-basic-cnnb-mcc-model]{Convolutional Neural Network-Based Basic (CNNB) MCC Model};
+  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section {[}Convolutional Neural Network-Based Basic (CNNB) MCC Model{]};
 \item
   \textbf{\emph{Tuned CNN-Based MCC Model:}} described in Section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
 \end{itemize}
@@ -440,28 +440,79 @@ The code in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-you
 \subsubsection{Machine Learning Model Pipelines}\label{machine-learning-model-pipelines}
 
 The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L161-L1066}{ML Models Development} section implements, tunes, trains, and evaluates a comprehensive benchmarking pipeline for the 39-class Handwritten Character Recognition (HCR) system.
-The workflow systematically develops and tests four distinct machine learning architectures, logs evaluation metrics in a comparative results table, generates confusion matrices and per-class accuracy (PCA) visualizations, and concludes with an in-depth error analysis of common misclassifications.
 
-\paragraph{k-Nearest Neighbors with Principal Component Analysis (kNN + PCA) Model}\label{k-nearest-neighbors-with-principal-component-analysis-knn-pca-model}
+The workflow systematically develops and tests four distinct machine learning architectures, logs evaluation metrics in a comparative results table, and concludes with an in-depth error analysis of common misclassifications.
 
-\paragraph{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model}
+Additionally, for each model, it generates a visual representation of the following metrics:
 
-\paragraph{Deep Learning Models}\label{deep-learning-models}
+\begin{itemize}
+\tightlist
+\item
+  \href{https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/}{ROC curves};
+\item
+  \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#the-confusion-matrix}{Confusion Matrix};
+\item
+  \textbf{A custom metric:} \emph{Per-Class Accuracy (PCA)} (calculated by the user-defined helper function \hyperref[func.MCClassifier.accuracy.by_class]{MCClassifier.accuracy.by\_class} described in section \hyperref[appndx_a.mh.calc_pca.bar_chart]{Models Helper / Calculating PCA \& Constructing Bar Chart} of \hyperref[appndx_a]{Appendix A}).
+\end{itemize}
 
-\subparagraph{Models Based on Dense Neural Network (DNN)}\label{models-based-on-dense-neural-network-dnn}
+\paragraph{\texorpdfstring{\href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} Models}{Shallow Learning (SL) Models}}\label{shallow-learning-sl-models}
 
 \hfill\break
-\#\#\#\#\#\#\# Basic DNN-Based Model
 
-Tuned DNN-Based Model
+The \emph{SL models} are implemented in the following sections of the script:
 
-\subparagraph{Models Based on Dense Neural Network (DNN)}\label{models-based-on-dense-neural-network-dnn-1}
+\begin{itemize}
+\tightlist
+\item
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L162-L269}{kNN+PCA MCC Model} script section implements a model that combines \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html\#sec-pca}{Principal Component Analysis (PCA)} (for data preprocessing) and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)}. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} section of \emph{this Report}.\\
+\item
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L270-L381}{Random Forest (RF) MCC Model} script section implements the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} algorithm. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} section of \emph{this Report}.
+\end{itemize}
 
-Basic CNN-Based Model
+\newpage
 
-Tuned CNN-Based Model
+\paragraph{\texorpdfstring{\href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} Models}{Deep Learning (DL) Models}}\label{deep-learning-dl-models}
 
-\subsubsection{Logging \& Utility Features}\label{logging-utility-features}
+\hfill\break
+
+The \emph{DL models} are implemented in the following sections of the script:
+
+\begin{itemize}
+\item
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L382-L667}{DNN-Based MCC Model} script section implements the \href{https://liora.io/en/dense-neural-networks-understanding-their-structure-and-function}{Dense Neural Network (DNN)} architecture. The implementation, described in detail in the \hyperref[dense-neural-network-based-multiclass-classifier-dnn-based-mcc-models]{Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models} section of \emph{this Report}, includes the following two models:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \emph{DNN-Based Basic (DNNB) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L383-L519}{DNN-Based Basic MCC Model} and described in subsection \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
+  \item
+    \emph{Fine-Tuned DNN (TDNN) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L520-L667}{DNN-Based MCC Model Tuning} and described in subsection \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
+  \end{itemize}
+\item
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L668-L1066}{CNN-based MCC Model} script section implements the \href{https://en.wikipedia.org/wiki/Convolutional_neural_network}{Couvolutional Neural Network (CNN)} architecture. The implementation, described in detail in the \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models} section of \emph{this Report}, includes the following two models:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \emph{CNN-Based Basic (CNNB) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L671-L812}{CNN-Based Basic MCC Model} and described in subsection \hyperref[cnn-based-basic-cnnb-mcc-model]{CNN-Based Basic (CNNB) MCC Model};
+  \item
+    \emph{Fine-Tuned CNN (TCNN) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L813-L1066}{CNN-Based MCC Model Tuning} and described in subsection \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
+  \end{itemize}
+\end{itemize}
+
+\paragraph{\texorpdfstring{The \emph{Final Test} of the Best Model}{The Final Test of the Best Model}}\label{the-final-test-of-the-best-model}
+
+The latest model we developed (described below in section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}) achieves the highest accuracy (the metric is used to assess performance). So we apply the \emph{Final Test} to this model using the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters?select=Validation}{Validation portion} of the \emph{Kaggle dataset}.
+
+The \emph{Final Test} is performed by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/4.tcnn-mcc.final-test.R}{4.tcnn-mcc.final-test.R} script invoked from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L885}{CNN-Based MCC Model Tuning / Run Scripts} section of the \emph{main script}. The \hyperref[tcnn-mcc-final-test]{TCNN MCC: Final Test} section below provides the details.
+
+\subparagraph{The Most Frequent Error Results Review}\label{the-most-frequent-error-results-review}
+
+The script section \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L988-L1066}{Reviewing the Most Frequent Error Results} implements the recognition error analysis phase, which pinpoints the most confusing characters that cause the poorest recognition performance.
+
+Finally, it visualizes several image examples of such characters, along with information about which characters they were confused with.
+
+The \hyperref[the-most-confusing-characters-for-recognition]{The Most Confusing Characters for Recognition} section below provides the details and visualizations of the confused character examples.
 
 \section{Datasets Overview}\label{datasets-overview}
 
@@ -484,25 +535,31 @@ As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-ch
   Total 39 Categories in Train and Validation set
 \end{enumerate}
 
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Dataset}.
-
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
 \section{kNN+PCA MCC Model}\label{knnpca-mcc-model}
 
-\section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model-1}
+\section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model}
 
-\section{Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model}\label{dense-neural-network-based-basic-multiclass-classifier-dnnb-mcc-model}
+\href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forests (RF)} approach explained in {[}Section 30.5 Random forests{]} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_30_5_RF}
+
+\section{Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models}\label{dense-neural-network-based-multiclass-classifier-dnn-based-mcc-models}
+
+\subsection{DNN-Based Basic (DNNB) MCC Model}\label{dnn-based-basic-dnnb-mcc-model}
 
 \section{Tuned DNN-Based (TDNN) MCC Model}\label{tuned-dnn-based-tdnn-mcc-model}
 
-\section{Convolutional Neural Network-Based Basic (CNNB) MCC Model}\label{convolutional-neural-network-based-basic-cnnb-mcc-model}
+\section{Convolutional Neural Network Based (CNN) MCC Models}\label{convolutional-neural-network-based-cnn-mcc-models}
+
+\subsection{CNN-Based Basic (CNNB) MCC Model}\label{cnn-based-basic-cnnb-mcc-model}
 
 \section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
 
+\subsection{TCNN MCC: Final Test}\label{tcnn-mcc-final-test}
+
 \chapter{Results}\label{results}
+
+\section{The Most Confusing Characters for Recognition}\label{the-most-confusing-characters-for-recognition}
 
 \chapter{Conclusion}\label{conclusion}
 
@@ -754,7 +811,7 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 \begin{verbatim}
 ## Class Labels:
 ##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
-## 39 Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U ... Z
+## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 \end{verbatim}
 
 \begin{verbatim}
@@ -1846,6 +1903,106 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
+
+\newpage
+
+\section{Models Helper}\label{appndx_a.models.helper}
+
+\subsection{Calculating PCA \& Constructing Bar Chart}\label{appndx_a.mh.calc_pca.bar_chart}
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{MCClassifier.accuracy.by\_class} Function}{MCClassifier.accuracy.by\_class Function}}\label{func.MCClassifier.accuracy.by_class}
+
+\hfill\break
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.usage}
+\paragraph{\texorpdfstring{\hyperref[L]{Usage}}{Usage}}\label{usage-5}
+
+\hfill\break
+
+\begin{noteblock}
+In the \emph{code snippet} above, \emph{this function} is called internally from the \hyperref[func.outer_MCClassifier.accuracy.by_class]{outer\_MCClassifier.accuracy.by\_class} function described above in \emph{this Section}.
+
+In the \emph{code snippet} above, a pointer to \emph{this function} is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function described above in \emph{this Section}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args}
+\paragraph{Arguments}\label{arguments-5}
+
+\hfill\break
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg1}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg1:} ;
+\end{itemize}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg2}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg2:} (Optional, \emph{Numeric}, \(0\) by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg3}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg3:} (Optional, \emph{Numeric}, \texttt{NA} by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg4}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg4:} (Optional, \emph{Integer}, \texttt{NA} by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg5}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg5:} (Optional, \emph{Boolean}, \texttt{FALSE} by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg6}
+\begin{itemize}
+\tightlist
+\item
+  \textbf{arg6:} (Optional, \emph{Character}, \texttt{NULL} by default) ;
+\end{itemize}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.details}
+\paragraph{Details}\label{details-5}
+
+\hfill\break
+
+\begin{noteblock}
+This is an auxiliary function that is used internally in the \hyperref[]{} function as shown above in the \hyperref[func.MCClassifier.accuracy.by_class.usage]{Usage} Section of \emph{this Description}.
+
+\end{noteblock}
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.value}
+\paragraph{Value}\label{value-4}
+
+\hfill\break
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.code}
+\paragraph{Source Code}\label{source-code-5}
+
+\hfill\break
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{source code} of the function is shown below:
+
+The simplified version of the function's source code is shown below:
+
+\begin{noteblock}
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{source code}is also available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L-L}{Image Processing} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
+
+The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L80}{source code} is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L-L}{Image Processing} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
+
+\end{noteblock}
 
 \newpage
 

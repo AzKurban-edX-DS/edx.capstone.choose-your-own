@@ -100,16 +100,16 @@ source(setup_script.path,
 ```{r child = '02.3.RF.MCC.Rmd'}
 ```
 
-```{r child = '02.4.DNNB-MCC.Rmd'}
+```{r child = '02.4(1)DNNB-MCC.Rmd'}
 ```
 
-```{r child = '02.5.TDNN-MCC.Rmd'}
+```{r child = '02.4.2.TDNN-MCC.Rmd'}
 ```
 
-```{r child = '02.6.CNNB-MCC.model.Rmd'}
+```{r child = '02.5(1)CNNB-MCC.model.Rmd'}
 ```
 
-```{r child = '02.7.TCNN-MCC.model.Rmd'}
+```{r child = '02.5.2.TCNN-MCC.model.Rmd'}
 ```
 
 ```{r child = '03.results.Rmd'}

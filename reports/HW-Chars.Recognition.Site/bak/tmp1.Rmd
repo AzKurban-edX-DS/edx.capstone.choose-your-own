@@ -3,6 +3,35 @@ title: "tmp1"
 output: html_document
 ---
 
+
+[Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/)
+
+[k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) 
+[Random Forest (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) methods.
+
+
+[Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/)
+
+[Dense Neural Network (DNN)](https://smltar.com/dldnn) 
+
+[Convolutional Neural Network (CNN)](https://smltar.com/dlcnn#what-are-cnns) 
+
+--------------------
+The ***DNN-Based*** models are as follows:
+
+* ***DNN-Based Basic MCC Model:*** described in Section [Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model];
+* ***Tuned DNN-Based MCC Model:*** described in Section [Tuned DNN-Based (TDNN) MCC Model].
+
+The last models we will build and explore, the ***CNN-Based*** models, are as follows:
+
+* ***CNN-Based Basic MCC Model:*** described in Section [Convolutional Neural Network-Based Basic (CNNB) MCC Model];
+* ***Tuned CNN-Based MCC Model:*** described in Section [Tuned CNN-Based (TCNN) MCC Model].
+
+Finally, we will conduct a final test of the best model we have developed, using a specially designated dataset, and see what we will achieve.
+
+----------------------
+
+
 ```{r, echo=FALSE}
 writeLines("*** ! ***")
 ```
