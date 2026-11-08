@@ -985,7 +985,7 @@ source(model_visualization.shared.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-##### Reviewing the Most Confusion Error Results --------------------------------
+##### Reviewing the Most Frequent Error Results --------------------------------
 ###### Target Value `1`--------------------------------------------------------
 
 # Mistakenly predicted as `I` (47 cases of misclassification)

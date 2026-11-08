@@ -138,7 +138,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-07}
+\date{2026-11-08}
 
 \begin{document}
 \maketitle
@@ -452,7 +452,7 @@ Additionally, for each model, it generates a visual representation of the follow
 \item
   \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#the-confusion-matrix}{Confusion Matrix};
 \item
-  A custom metric: Per-Class Accuracy (PCA) (calculated by the user-defined helper function \hyperref[func.MCClassifier.accuracy.by_class]{MCClassifier.accuracy.by\_class} described in section \hyperref[appndx_a.mh.calc_pca.bar_chart]{Models Helper / Calculating PCA \& Constructing Bar Chart} of \hyperref[appndx_a]{Appendix A}).
+  \textbf{A custom metric:} \emph{Per-Class Accuracy (PCA)} (calculated by the user-defined helper function \hyperref[func.MCClassifier.accuracy.by_class]{MCClassifier.accuracy.by\_class} described in section \hyperref[appndx_a.mh.calc_pca.bar_chart]{Models Helper / Calculating PCA \& Constructing Bar Chart} of \hyperref[appndx_a]{Appendix A}).
 \end{itemize}
 
 \paragraph{\texorpdfstring{\href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} Models}{Shallow Learning (SL) Models}}\label{shallow-learning-sl-models}
@@ -500,6 +500,20 @@ The \emph{DL models} are implemented in the following sections of the script:
   \end{itemize}
 \end{itemize}
 
+\paragraph{\texorpdfstring{The \emph{Final Test} of the Best Model}{The Final Test of the Best Model}}\label{the-final-test-of-the-best-model}
+
+The latest model we developed (described below in section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}) achieves the highest accuracy (the metric is used to assess performance). So we apply the \emph{Final Test} to this model using the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters?select=Validation}{Validation portion} of the \emph{Kaggle dataset}.
+
+The \emph{Final Test} is performed by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/4.tcnn-mcc.final-test.R}{4.tcnn-mcc.final-test.R} script invoked from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L885}{CNN-Based MCC Model Tuning / Run Scripts} section of the \emph{main script}. The \hyperref[tcnn-mcc-final-test]{TCNN MCC: Final Test} section below provides the details.
+
+\subparagraph{The Most Frequent Error Results Review}\label{the-most-frequent-error-results-review}
+
+The script section \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L988-L1066}{Reviewing the Most Frequent Error Results} implements the recognition error analysis phase, which pinpoints the most confusing characters that cause the poorest recognition performance.
+
+Finally, it visualizes several image examples of such characters, along with information about which characters they were confused with.
+
+The \hyperref[the-most-confusing-characters-for-recognition]{The Most Confusing Characters for Recognition} section below provides the details and visualizations of the confused character examples.
+
 \section{Datasets Overview}\label{datasets-overview}
 
 The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{HandWritten\_Character Dataset} downloaded from the \href{https://www.kaggle.com}{Kaggle} platform.
@@ -521,10 +535,6 @@ As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-ch
   Total 39 Categories in Train and Validation set
 \end{enumerate}
 
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle Dataset}.
-
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
 \section{kNN+PCA MCC Model}\label{knnpca-mcc-model}
@@ -545,7 +555,11 @@ using a \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Ka
 
 \section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
 
+\subsection{TCNN MCC: Final Test}\label{tcnn-mcc-final-test}
+
 \chapter{Results}\label{results}
+
+\section{The Most Confusing Characters for Recognition}\label{the-most-confusing-characters-for-recognition}
 
 \chapter{Conclusion}\label{conclusion}
 
