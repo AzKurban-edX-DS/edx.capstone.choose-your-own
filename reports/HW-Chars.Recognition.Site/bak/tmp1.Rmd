@@ -1,7 +1,47 @@
 ---
-title: "tmp1"
-output: html_document
+title: "Styled PDF Report"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - |
+    \usepackage{tcolorbox}
+    \usepackage{xcolor}
+    \tcbuselibrary{skins}
+    
+    % 1. Environment with a thick colored left accent bar
+    \newtcolorbox{accentquote}{
+      enhanced,
+      colback=gray!5!white,     % Light background
+      colframe=gray!20!white,   % Subtle outer border (or make transparent)
+      borderline west={4pt}{0pt}{blue!60!black}, % Thick left accent bar
+      boxrule=0pt,
+      left=12pt,
+      right=12pt,
+      top=8pt,
+      bottom=8pt,
+      before skip=10pt,
+      after skip=10pt
+    }
+
+    % 2. Environment with a left icon/title banner
+    \newtcolorbox{iconquote}{
+      enhanced,
+      colback=blue!3!white,
+      colframe=blue!30!black,
+      boxrule=0.5pt,
+      left=10pt,
+      right=10pt,
+      top=8pt,
+      bottom=8pt,
+      before skip=10pt,
+      after skip=10pt,
+      fonttitle=\bfseries,
+      title=💡 Note
+    }
 ---
+
+
 
 
 [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/)

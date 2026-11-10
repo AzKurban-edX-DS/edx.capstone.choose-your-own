@@ -412,27 +412,22 @@ recognition_err.table <- function(predicted.values,
   err.pred.char[err.pred.char$actual == target.char,]
 }
 
-print.missclass_image.grid <- function(missclass.dat,
+print.image_grid <- function(img.info,
                              index.range = NULL,
                              image.scale ="100",
                              font.size = 10,
                              font.color = "red4",
                              box.color = colors()[492], #"#F5F5DC",
                              tile = NULL,
-                             geometry = NULL,
-                             image.annotate = F
-                             ) {
+                             geometry = NULL) {
   if(is.null(index.range))
-    index.range <- 1:nrow(missclass.dat)
+    index.range <- 1:length(img.info$file)
   
   img_grid <- lapply(index.range, function(i) {
-    img <- image_read(missclass.dat$file[i]) |> image_scale(image.scale)
+    img <- image_read(img.info$file[i]) |> image_scale(image.scale)
       
-    if(image.annotate){
-      img <- img |> image_annotate(str_flatten(c(as.character(missclass.dat$predicted[i]),
-                                   " vs ",
-                                   as.character(missclass.dat$actual[i]),
-                                   " (actual)")),
+    if(!is.null(img.info$annotation)){
+      img <- img |> image_annotate(img.info$annotation[i],
                      size = font.size, color = font.color,
                      boxcolor = box.color,
                      # location = "+1+2",
@@ -450,6 +445,42 @@ print.missclass_image.grid <- function(missclass.dat,
   print(img_grid)
   # dev.off()
   img_grid
+}
+
+print.missclass_image.grid <- function(missclass.dat,
+                             index.range = NULL,
+                             image.scale ="100",
+                             font.size = 10,
+                             font.color = "red4",
+                             box.color = colors()[492], #"#F5F5DC",
+                             tile = NULL,
+                             geometry = NULL,
+                             image.annotate = F
+                             ) {
+  
+  img.annotation <- NULL
+  
+  if(image.annotate) {
+    
+    
+    img.annotation <- sapply(seq_len(length(missclass.dat$file)), function(i){
+      str_flatten(c(as.character(missclass.dat$predicted[i]),
+                    " vs ",
+                    as.character(missclass.dat$actual[i]),
+                    " (actual)"))
+    })
+  }
+
+  print.image_grid(list(file = missclass.dat$file,
+                        annotation = img.annotation),
+                   index.range,
+                   image.scale,
+                   font.size,
+                   font.color,
+                   box.color,
+                   tile,
+                   geometry,
+                   image_caption)
 }
 
 plot_image <- function(image_file) {

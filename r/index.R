@@ -174,6 +174,8 @@ k_best.nn_pca.model.backup.path <-
 knn_pca.eval.results.backup <-
   file.path(knn_pca.data.dir, "knn+pca.eval-results.rds")
 
+tblResults.knn_pca.backup <- 
+  file.path(knn_pca.data.dir, "tblResults.knn_pca.backup.rds")
 
 knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
                                            "knn+pca-tuned.eval.confusion-matrix.png")
@@ -221,20 +223,26 @@ if(!file.exists(knn_pca.eval.results.backup)) {
 open_logfile(".visual.eval-results.k(best)nn+pca")
 
 put_log("Loading Predicted Data of the Fine-Tuned kNN+PCA Model...") 
-
 knn_pca.eval.results <- readRDS(knn_pca.eval.results.backup)
 put_end_date(start)
 
-tblResults.knn_pcc <- 
+put_log("The Predicted Data of the Fine-Tuned `kNN+PCA MCC` Model has been loaded from the following file:
+%1", knn_pca.eval.results.backup)
+
+
+tblResults.knn_pca <- 
   tblResults.AddRow(method = 'kNN+PCA',
                     acc_value = knn_pca.eval.results$accuracy,
                     comment = "Fine-tuned using Principal Component Analysis (PCA) 
 integrated with k-Nearest Neighbors (kNN) Multiclass Classification (MCC).")
 
-tblResults.kable(tblResults.knn_pcc)
+tblResults.kable(tblResults.knn_pca)
 
-put_log("The Predicted Data of the Fine-Tuned kNN+PCA MCC Model has been loaded from the following file:
-%1...", knn_pca.eval.results.backup)
+put_log("Saving Results Table for `` Model...")
+saveRDS(tblResults.knn_pca,
+        file = tblResults.knn_pca.backup)
+put_log("The Results Table for `` Model has been saved to the following file:
+%1", tblResults.knn_pca.backup)
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -281,6 +289,10 @@ fit_rf.fine_tuned.backup.path <- file.path(data.models.rf.tuning.dir,
 
 fit_rf.final.backup.path <- file.path(data.models.rf.dir, 
                                       "fit_rf.final.ntree400.back.rds")
+
+tblResults.rf.backup <- file.path(data.models.rf.dir, 
+                                      "tblResults.rf.backup.rds")
+
 
 rf_tuned.eval.conf.mx.img_file <- file.path(data.models.rf.plots.dat.dir,
                                             "rf-tuned.eval.confusion-matrix.png")
@@ -342,11 +354,22 @@ trained with the best `mtry` parameter value, is as follows:
 %1", fit_rf.final$test$accuracy)
 # 0.886029854339713
 
+stopifnot(file.exists(tblResults.knn_pca.backup))
+put_log("Loading Results Table for `kNN+PCA MCC` Model...")
+tblResults.knn_pca <- readRDS(tblResults.knn_pca.backup)
+put_log("The Results Table for `kNN+PCA MCC` Model has been loading from the following file:
+%1", tblResults.knn_pca.backup)
+
 tblResults.rf <- tblResults.knn_pcc |> tblResults.AddRow(method = "RF",
                                                          acc_value = fit_rf.final$test$accuracy,
                                                          comment = "Fine-tuned using Random Forest (RF) MCC.")
 tblResults.kable(tblResults.rf)
 
+put_log("Saving Results Table for `RF MCC` Model...")
+saveRDS(tblResults.rf,
+        file = tblResults.rf.backup)
+put_log("The Results Table for `RF MCC` Model has been saved to the following file:
+%1", tblResults.rf.backup)
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -393,6 +416,9 @@ dnnb_mcc.train_history.file <- file.path(data.dnn_mcc.basic.dir,
 
 dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
                                        "dnnb_mcc.eval.result.rds")
+
+tblResults.dnnb.backup <- file.path(data.dnn_mcc.basic.dir,
+                                       "tblResults.dnnb.backup.rds")
 
 dnnb_mcc.plot_img.file <- file.path(dnnb_mcc.plots.dat.dir,
                                     "dnnb_mcc.model.png")
@@ -480,11 +506,23 @@ put_log("The DNNB MCC Model Evaluation Result accuracy: %1",
         dnnb_mcc.eval.result$accuracy)
 # 0.8973456
 
+
+put_log("Loading Results Table for `RF MCC` Model...")
+tblResults.rf <- readRDS(tblResults.rf.backup)
+put_log("The Results Table for `RF MCC` Model has been loading from the following file:
+%1", tblResults.rf.backup)
+
 tblResults.dnnb <- tblResults.rf |> tblResults.AddRow(method = "DNN Basic",
                                                       acc_value = dnnb_mcc.eval.result$accuracy,
                                                       loss = dnnb_mcc.eval.result$loss,
                                                       comment = "Dense Neural Network (DNN) Based Basic MCC model")
 tblResults.kable(tblResults.dnnb)
+
+put_log("Saving Results Table for `` Model...")
+saveRDS(tblResults.dnnb,
+        file = tblResults.dnnb.backup)
+put_log("The Results Table for `` Model has been saved to the following file:
+%1", tblResults.dnnb.backup)
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -535,6 +573,9 @@ tdnn_mcc.final.train_history.file <- file.path(dnn_mcc.tuner.dir,
 
 tdnn_mcc.final.eval_result.file <- file.path(dnn_mcc.tuner.dir,
                                         "tdnn-mcc.final.eval-result.rds")
+
+tblResults.tdnn.backup <- file.path(dnn_mcc.tuner.dir,
+                                        "tblResults.tdnn.backup.rds")
 
 tdnn_mcc.final.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
                                           "tdnn_mcc.final-model.png")
@@ -635,11 +676,23 @@ put_log("The Tuned DNN-Based MCC Final Model Evaluation Result accuracy: %1",
         tdnn_mcc.final.eval.result$accuracy)
 # 0.9035151
 
+put_log("Loading Results Table for Tuned DNN MCC Model...")
+tblResults.dnnb <- readRDS(tblResults.dnnb.backup)
+put_log("The Results Table for Tuned DNN MCC Model has been loading from the following file:
+%1", tblResults.dnnb.backup)
+
 tblResults.tdnn <- tblResults.dnnb |> tblResults.AddRow(method = "Tuned DNN",
                                               acc_value = tdnn_mcc.final.eval.result$accuracy,
                                               loss = tdnn_mcc.final.eval.result$loss,
                                               comment = "Fine-tuned DNN-Based MCC.")
 tblResults.kable(tblResults.tdnn)
+
+put_log("Saving Results Table for Tuned DNN MCC Model...")
+saveRDS(tblResults.tdnn,
+        file = tblResults.tdnn.backup)
+put_log("The Results Table for Tuned DNN MCC Model has been saved to the following file:
+%1", tblResults.tdnn.backup)
+
 
 #' Initialize the `plots.args` object containing argument values 
 #' for the visualization helper functions being called in the following script 
@@ -777,6 +830,17 @@ tblResults.cnnb <- tblResults.tdnn |> tblResults.AddRow(method = "CNN Basic",
                                                         comment = "Convolutional Neural Network (CNN) Based Basic MCC.")
 tblResults.kable(tblResults.cnnb)
 
+# ---------------
+put_log("Loading Results Table for `` Model...")
+tblResults. <- readRDS(tblResults..backup)
+put_log("The Results Table for `` Model has been loading from the following file:
+%1", tblResults..backup)
+
+put_log("Saving Results Table for `` Model...")
+saveRDS(tblResults.,
+        file = tblResults..backup)
+put_log("The Results Table for `` Model has been saved to the following file:
+%1", tblResults..backup)
 
 
 #' Initialize the `plots.args` object containing argument values 
@@ -955,11 +1019,32 @@ tblResults.tcnn <- tblResults.cnnb_f1 |>
 
 tblResults_F1Macro.kable(tblResults.tcnn)
 
+# ---------------
+put_log("Loading Results Table for `` Model...")
+tblResults. <- readRDS(tblResults..backup)
+put_log("The Results Table for `` Model has been loading from the following file:
+%1", tblResults..backup)
+
+put_log("Saving Results Table for `` Model...")
+saveRDS(tblResults.,
+        file = tblResults..backup)
+put_log("The Results Table for `` Model has been saved to the following file:
+%1", tblResults..backup)
+
+
 # Total Results Table:
 tblTotalResults <- tblResults.tcnn |> 
   tblResults.AddDiffColumn()
 
 tblResults.Total_kable(tblTotalResults)
+
+# -----------------------------------------------------
+
+put_log("Saving Results Table for `` Model...")
+saveRDS(tblResults.,
+        file = tblResults..backup)
+put_log("The Results Table for `` Model has been saved to the following file:
+%1", tblResults..backup)
 
 
 #' Initialize the `plots.args` object containing argument values 

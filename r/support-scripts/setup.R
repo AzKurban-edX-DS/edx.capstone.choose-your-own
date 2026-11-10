@@ -110,6 +110,8 @@ library(pacman)
 
 p_load(conflicted, latex2exp, kableExtra)
 
+# Enable automatic package installation
+tinytex::tlmgr_install(pkg = NULL) # Resets or ensures auto-install is active
 
 ## Load Libraries & resolve conflicts ------------------------------------------
 

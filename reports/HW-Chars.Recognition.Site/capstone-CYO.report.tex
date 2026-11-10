@@ -112,6 +112,40 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \hypersetup{backref, pdfpagemode=Normal, colorlinks=true, implicit=false}
+\usepackage{tcolorbox}
+\usepackage{xcolor}
+\tcbuselibrary{skins}
+% 1. Environment with a thick colored left accent bar
+\newtcolorbox{accentquote}{
+  enhanced,
+  colback=gray!5!white,     % Light background
+  colframe=gray!20!white,   % Subtle outer border (or make transparent)
+  borderline west={4pt}{0pt}{blue!60!black}, % Thick left accent bar
+  boxrule=0pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=10pt,
+  after skip=10pt
+}
+
+% 2. Environment with a left icon/title banner
+\newtcolorbox{iconquote}{
+  enhanced,
+  colback=blue!3!white,
+  colframe=blue!30!black,
+  boxrule=0.5pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=10pt,
+  after skip=10pt,
+  fonttitle=\bfseries,
+  title=💡 Note
+}
+
 \usepackage{bookmark}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
@@ -138,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-08}
+\date{2026-11-10}
 
 \begin{document}
 \maketitle
@@ -516,9 +550,99 @@ The \hyperref[the-most-confusing-characters-for-recognition]{The Most Confusing 
 
 \section{Datasets Overview}\label{datasets-overview}
 
-The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{HandWritten\_Character Dataset} downloaded from the \href{https://www.kaggle.com}{Kaggle} platform.
+The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{HandWritten\_Character Dataset} downloaded from \href{https://www.kaggle.com}{Kaggle}.As mentioned in the section \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} above, the dedicated script \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} (described below in \hyperref[appndx_b]{Appendix B}) is used for that purpose. The result of its execution is a folder structure (identical to one shown on the dataset's webpage) containing the raw image data, as shown below:
 
-As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{landing web-page}, the \emph{context} of the dataset is as follows:
+\begin{verbatim}
+## *** Dataset Raw Data Local Directory Structure ***
+\end{verbatim}
+
+\begin{verbatim}
+## ../../data/raw/Vaibs.HW-Chars
+## +-- Train
+## |   +-- #
+## |   +-- $
+## |   +-- &
+## |   +-- 0
+## |   +-- 1
+## |   +-- 2
+## |   +-- 3
+## |   +-- 4
+## |   +-- 5
+## |   +-- 6
+## |   +-- 7
+## |   +-- 8
+## |   +-- 9
+## |   +-- @
+## |   +-- A
+## |   +-- B
+## |   +-- C
+## |   +-- D
+## |   +-- E
+## |   +-- F
+## |   +-- G
+## |   +-- H
+## |   +-- I
+## |   +-- J
+## |   +-- K
+## |   +-- L
+## |   +-- M
+## |   +-- N
+## |   +-- P
+## |   +-- Q
+## |   +-- R
+## |   +-- S
+## |   +-- T
+## |   +-- U
+## |   +-- V
+## |   +-- W
+## |   +-- X
+## |   +-- Y
+## |   \-- Z
+## \-- Validation
+##     +-- #
+##     +-- $
+##     +-- &
+##     +-- 0
+##     +-- 1
+##     +-- 2
+##     +-- 3
+##     +-- 4
+##     +-- 5
+##     +-- 6
+##     +-- 7
+##     +-- 8
+##     +-- 9
+##     +-- @
+##     +-- A
+##     +-- B
+##     +-- C
+##     +-- D
+##     +-- E
+##     +-- F
+##     +-- G
+##     +-- H
+##     +-- I
+##     +-- J
+##     +-- K
+##     +-- L
+##     +-- M
+##     +-- N
+##     +-- P
+##     +-- Q
+##     +-- R
+##     +-- S
+##     +-- T
+##     +-- U
+##     +-- V
+##     +-- W
+##     +-- X
+##     +-- Y
+##     \-- Z
+\end{verbatim}
+
+As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{dataset's landing page}, the \emph{context} of the dataset is as follows:
+
+\begin{accentquote}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -534,6 +658,37 @@ As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-ch
 \item
   Total 39 Categories in Train and Validation set
 \end{enumerate}
+
+\end{accentquote}
+
+However, although the \href{https://www.kaggle.com/vaibhao}{dataset author} claims that the images were transformed into 32x32-pixel grayscale images, a quick analysis of the raw data showed that at least some images have different sizes.
+
+So the author of \emph{this Report} has decided to standardize the images by resizing them to the smallest image size found in the dataset.
+
+This functionality has been implemented in the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} support script described below in \hyperref[appndx_b]{Appendix B: Support Scripts}.
+
+First, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L30-L73}{Define the Standard Image Size Geometry} section of the script implements the \emph{Dynamic Geometry Determination} feature, which determines the geometry parameters for the image standardization..
+
+Execution of this section yields the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L70}{following result}:
+
+\begin{verbatim}
+## The geometry for standardizing images to a uniform size, 
+## based on the smallest existing image in the Training Set, is as follows: 
+## 28x28!
+\end{verbatim}
+
+Meaning that the smallest image size is 28x28 pixels.
+
+Below are shown a few samples of 28x28-pixel size images:
+
+\begin{verbatim}
+## # A tibble: 1 x 7
+##   format width height colorspace matte filesize density
+##   <chr>  <int>  <int> <chr>      <lgl>    <int> <chr>  
+## 1 ""       768    504 sRGB       FALSE        0 72x72
+\end{verbatim}
+
+\includegraphics[width=10.67in]{capstone-CYO.report_files/figure-latex/intro.datasets-overview@28x28samples-2}
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
@@ -580,7 +735,7 @@ The complete source code of the functions described in this Section is available
 
 \hfill\break
 
-Automates downloading datasets directly from \href{https://www.kaggle.com/datasets}{Kaggle} into a specified local directory using the \href{https://github.com/Kaggle/kaggle-cli/blob/main/docs/datasets.md\#kaggle-datasets-download}{Kaggle command-line interface* (\emph{CLI})}.
+Downloads datasets from \href{https://www.kaggle.com/datasets}{Kaggle} into a specified local directory using the \href{https://github.com/Kaggle/kaggle-cli/blob/main/docs/datasets.md\#kaggle-datasets-download}{Kaggle command-line interface* (CLI)}.
 
 \newpage
 
@@ -697,21 +852,21 @@ Automates downloading datasets directly from \href{https://www.kaggle.com/datase
 
 \hfill\break
 
-\protect\phantomsection\label{func.kaggle_cli.download.args.arg1}
+\protect\phantomsection\label{func.kaggle_cli.download.args.dataset.dir}
 \begin{itemize}
 \tightlist
 \item
   \textbf{dataset.dir:} \emph{Remote path} to the \href{https://www.kaggle.com/datasets}{Kaggle dataset};
 \end{itemize}
 
-\protect\phantomsection\label{func.kaggle_cli.download.args.arg2}
+\protect\phantomsection\label{func.kaggle_cli.download.args.data.local_path}
 \begin{itemize}
 \tightlist
 \item
   \textbf{data.local\_path:} \emph{Local directory path} where the dataset files are saved;
 \end{itemize}
 
-\protect\phantomsection\label{func.kaggle_cli.download.args.arg5}
+\protect\phantomsection\label{func.kaggle_cli.download.args.unzip}
 \begin{itemize}
 \tightlist
 \item
@@ -2091,6 +2246,19 @@ The code in this Section automatically checks for required \texttt{R} packages a
 \section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R}{ds.kaggle.download.R} Script}{ds.kaggle.download.R Script}}\label{appndx_b.ds.kaggle.download}
 
 \hfill\break
+
+The script automates downloading and unpacking the \emph{39-class Handwritten Characters (HWC)} dataset from \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle} directly into the project's \texttt{R} \emph{Environment Workspace}.
+
+The download process consists of the following two steps:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R\#L14-L26}{Conditionally downloads and unzips} the \emph{Kaggle Dataset (KDS)} using the user-defined helper function \hyperref[func.kaggle_cli.download]{kaggle\_cli.download} described above in \hyperref[appndx_a]{Appendix A}, if the local directory, whose path is passed to the function in the \hyperref[func.kaggle_cli.download.args.data.local_path]{data.local\_path} argument, does not exist.
+\item
+  \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R\#L29-L41}{Conditionally cleans up} the local dataset directory structure by safely deleting the duplicated subdirectory, if it exists.
+\end{enumerate}
 
 \section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} Script}{load-raw-image-data.R Script}}\label{appndx_b.load_raw_image_data}
 
