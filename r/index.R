@@ -1082,6 +1082,8 @@ source(model_visualization.shared.script.path,
        keep.source = TRUE)
 
 ##### Reviewing the Most Frequent Error Results --------------------------------
+x_test.files <- tcnn_mcc.final.eval.result$img_files
+
 ###### Target Value `1`--------------------------------------------------------
 
 # Mistakenly predicted as `I` (47 cases of misclassification)

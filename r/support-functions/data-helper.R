@@ -419,7 +419,8 @@ print.image_grid <- function(img.info,
                              font.color = "red4",
                              box.color = colors()[492], #"#F5F5DC",
                              tile = NULL,
-                             geometry = NULL) {
+                             geometry = NULL,
+                             gravity = "Center") {
   if(is.null(index.range))
     index.range <- 1:length(img.info$file)
   
@@ -438,11 +439,13 @@ print.image_grid <- function(img.info,
     img
   }) |> 
     image_join() |>
-    image_montage(tile = tile, geometry = geometry)
+    image_montage(tile = tile, 
+                  geometry = geometry,
+                  gravity = gravity)
   
   image_info(img_grid)
   
-  print(img_grid)
+  # print(img_grid)
   # dev.off()
   img_grid
 }
@@ -455,7 +458,7 @@ print.missclass_image.grid <- function(missclass.dat,
                              box.color = colors()[492], #"#F5F5DC",
                              tile = NULL,
                              geometry = NULL,
-                             image.annotate = F
+                             image.annotate = T
                              ) {
   
   img.annotation <- NULL
@@ -479,8 +482,7 @@ print.missclass_image.grid <- function(missclass.dat,
                    font.color,
                    box.color,
                    tile,
-                   geometry,
-                   image_caption)
+                   geometry)
 }
 
 plot_image <- function(image_file) {

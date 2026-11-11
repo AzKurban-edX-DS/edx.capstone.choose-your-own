@@ -262,11 +262,14 @@ based on the smallest existing image in the Training Set, is as follows:
 
 Meaning that the smallest image size is 28x28 pixels.
 
-Below are shown a few samples of 28x28-pixel size images:
+Figure \@ref(fig:intro-ds-overview-img-diff-size) below shows a few sample images, both 28x28 and 32x32 pixels.
 
-```{r intro.datasets-overview@28x28samples, echo=FALSE}
+```{r intro-ds-overview-img-diff-size, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
 
-chr_set <- c('#', '$', '&', '@')
+chr_set <- c('#', '$', '&', '@', 
+             '1', 'L', 'I', 'J',
+             '6', 'B', 'D', '5',
+             '9', 'G', 'Q', 'S' )
 
 img.files <- sapply(chr_set, function(chr) {
   dir_path <- file.path(ds.train.root, chr)
@@ -279,11 +282,11 @@ img.annotation <- sapply(seq_len(length(img.files)), function(i){
   img.dat <- image_data(img)
   img.dim <- dim(img.dat)
   
-  img.size <- paste0(img.dim[2], 'x', img.dim[3])
+  img.size <- paste0(img.dim[2], 'x', img.dim[3], 'px')
 #   print_log("`%1` character Image size is:
 # %2", chr_set[i], img.size)
   
-  paste("Image size:", img.size)
+  paste0(chr_set[i],": ", img.size)
 })
 
 img.dat <- data.frame(file = img.files,
@@ -292,12 +295,11 @@ img.dat <- data.frame(file = img.files,
 # print.image_grid(img.dat) 
 print.image_grid(img.dat,
                  # font.size = 20,
-                 image.scale = "75")
-
+                 # image.scale = "50",
+                 geometry = '100x',
+                 tile = '4x4'
+                 )
 ```
-
-
-
 ```{r intro.datasets-overview@close-log, include=FALSE}
 log_close()
 ```
