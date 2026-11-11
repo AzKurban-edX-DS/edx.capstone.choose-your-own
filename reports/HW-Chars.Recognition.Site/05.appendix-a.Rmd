@@ -11,7 +11,7 @@ The complete source code of the functions described in this Section is available
 #### [kaggle_cli.download](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.kaggle_cli.download}
 \
 
-Automates downloading datasets directly from [Kaggle](https://www.kaggle.com/datasets) into a specified local directory using the [Kaggle command-line interface* (*CLI*)](https://github.com/Kaggle/kaggle-cli/blob/main/docs/datasets.md#kaggle-datasets-download).
+Downloads datasets from [Kaggle](https://www.kaggle.com/datasets) into a specified local directory using the [Kaggle command-line interface* (CLI)](https://github.com/Kaggle/kaggle-cli/blob/main/docs/datasets.md#kaggle-datasets-download).
 
 \newpage
 
@@ -49,15 +49,15 @@ log_close()
 ##### Arguments
 \
 
-::: { #func.kaggle_cli.download.args.arg1 .sidebar }
+::: { #func.kaggle_cli.download.args.dataset.dir .sidebar }
 - **dataset.dir:** *Remote path* to the [Kaggle dataset](https://www.kaggle.com/datasets); 
 
 :::
-::: { #func.kaggle_cli.download.args.arg2 .sidebar }
+::: { #func.kaggle_cli.download.args.data.local_path .sidebar }
 - **data.local_path:** *Local directory path* where the dataset files are saved;
 
 :::
-::: { #func.kaggle_cli.download.args.arg5 .sidebar }
+::: { #func.kaggle_cli.download.args.unzip .sidebar }
 - **unzip:**  (Optional, *Boolean*, $FALSE$ by default) Logical flag indicating whether the *downloaded archive* should be automatically unzipped.
 
 :::

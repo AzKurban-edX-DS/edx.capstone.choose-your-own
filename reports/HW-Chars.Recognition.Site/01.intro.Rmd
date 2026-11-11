@@ -217,17 +217,91 @@ The [The Most Confusing Characters for Recognition] section below provides the d
 
 ## Datasets Overview
 
-The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from the  [Kaggle](https://www.kaggle.com) platform.
+```{r intro.datasets-overview$open-log, include=FALSE}
+open_logfile(".intro.chunks.datasets-overview")
+ds.path <- file.path(knitr.proj_root, raw_data.chars.dir)
+ds.train.root <- file.path(knitr.proj_root, img.train_root.dir)
 
-As described on the [landing web-page](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), the *context* of the dataset is as follows:
+```
 
+The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from [Kaggle](https://www.kaggle.com).As mentioned in the section [Downloading & Preprocessing Input Datasets] above, the dedicated script [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) (described below in [Appendix B](#appndx_b)) is used for that purpose. The result of its execution is a folder structure (identical to one shown on the dataset's webpage) containing the raw image data, as shown below:
+
+```{r intro.datasets-overview.downloading@dir_tree, echo=FALSE}
+
+writeLines("*** Dataset Raw Data Local Directory Structure ***")
+dir_tree(ds.path, type = 'directory')
+```
+
+
+As described on the [dataset's landing page](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), the *context* of the dataset is as follows:
+
+::: {.accentquote data-latex=""}
 1. Used *EMNIST* data for Alphabets and Digits.
 2. Transformed the Data using some image processing techniques and convert it to 32,32 pixel black and white images.
 3. Created the Data set for special character ( @, #, $, & )
 3. Merged the Categories to avoid the misclassification
 4. Total 39 Categories in Train and Validation set
 
+:::
 
+However, although the [dataset author](https://www.kaggle.com/vaibhao) claims that the images were transformed into 32x32-pixel grayscale images, a quick analysis of the raw data showed that at least some images have different sizes. 
 
+So the author of *this Report* has decided to standardize the images by resizing them to the smallest image size found in the dataset.
+
+This functionality has been implemented in the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) support script described below in [Appendix B: Support Scripts].
+
+First, the [Define the Standard Image Size Geometry](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R#L30-L73) section of the script implements the *Dynamic Geometry Determination* feature, which determines the geometry parameters for the image standardization..
+
+Execution of this section yields the [following result](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R#L70):
+
+```{r intro.datasets-overview@uniform-size, echo=FALSE}
+put_log("The geometry for standardizing images to a uniform size, 
+based on the smallest existing image in the Training Set, is as follows: 
+%1", ds.img_min.geometry)
+```
+
+Meaning that the smallest image size is 28x28 pixels.
+
+Figure \@ref(fig:intro-ds-overview-img-diff-size) below shows a few sample images, both 28x28 and 32x32 pixels.
+
+```{r intro-ds-overview-img-diff-size, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
+
+chr_set <- c('#', '$', '&', '@', 
+             '1', 'L', 'I', 'J',
+             '6', 'B', 'D', '5',
+             '9', 'G', 'Q', 'S' )
+
+img.files <- sapply(chr_set, function(chr) {
+  dir_path <- file.path(ds.train.root, chr)
+  file.path(dir_path, dir(dir_path)[1])
+  
+})
+
+img.annotation <- sapply(seq_len(length(img.files)), function(i){
+  img <- magick::image_read(img.files[i])
+  img.dat <- image_data(img)
+  img.dim <- dim(img.dat)
+  
+  img.size <- paste0(img.dim[2], 'x', img.dim[3], 'px')
+#   print_log("`%1` character Image size is:
+# %2", chr_set[i], img.size)
+  
+  paste0(chr_set[i],": ", img.size)
+})
+
+img.dat <- data.frame(file = img.files,
+                      annotation = img.annotation)
+
+# print.image_grid(img.dat) 
+print.image_grid(img.dat,
+                 # font.size = 20,
+                 # image.scale = "50",
+                 geometry = '100x',
+                 tile = '4x4'
+                 )
+```
+```{r intro.datasets-overview@close-log, include=FALSE}
+log_close()
+```
 
 

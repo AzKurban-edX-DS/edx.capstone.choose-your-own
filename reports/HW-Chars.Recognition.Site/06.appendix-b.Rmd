@@ -77,6 +77,12 @@ The code in this Section automatically checks for required `R` packages across m
 ## [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) Script {#appndx_b.ds.kaggle.download}
 \
 
+The script automates downloading and unpacking the *39-class Handwritten Characters (HWC)* dataset from [Kaggle](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) directly into the project's `R` *Environment Workspace*.
+
+The download process consists of the following two steps:
+
+1. [Conditionally downloads and unzips](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R#L14-L26) the *Kaggle Dataset (KDS)* using the user-defined helper function [kaggle_cli.download](#func.kaggle_cli.download) described above in [Appendix A](#appndx_a), if the local directory, whose path is passed to the function in the [data.local_path](#func.kaggle_cli.download.args.data.local_path) argument, does not exist. 
+2. [Conditionally cleans up](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R#L29-L41) the local dataset directory structure by safely deleting the duplicated subdirectory, if it exists.
 
 ## [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) Script {#appndx_b.load_raw_image_data}
 \
