@@ -44,11 +44,14 @@ open_logfile(".setup-project")
 ## Install Other Packages ------------------------------------------------------------
 #> Reference: Some ideas and code snippers were used from the following GitHub repository:
 #> https://github.com/AzKurban-edX-DS/harvardx-movielens
+if(!require(dslabs))
+  install.packages("dslabs")
+
 if(!require(matrixStats))
   install.packages("matrixStats")
 
-if(!require(dslabs))
-  install.packages("dslabs")
+if(!require(gridExtra))
+  install.packages("gridExtra")
 
 if(!require(prodlim))
   install.packages("prodlim")
@@ -144,6 +147,10 @@ library(caret)
 library(randomForest)
 library(kernlab)
 library(ggplot2)
+
+library(gridExtra)
+library(grid)
+library(gridGraphics)
 
 library(utils)
 library(fs)
