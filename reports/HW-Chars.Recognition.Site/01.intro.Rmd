@@ -262,9 +262,10 @@ based on the smallest existing image in the Training Set, is as follows:
 
 Meaning that the smallest image size is 28x28 pixels.
 
-Figure \@ref(fig:intro-ds-overview-img-diff-size) below shows a few sample images, both 28x28 and 32x32 pixels.
+We can use the following code snippet to prepare a few sample images, both 28x28 and 32x32 pixels in size, for visual presentation:
 
-```{r intro-ds-overview-img-diff-size, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
+```{r intro.ds-overview@img.diff-size$data }
+print(paste("Kaggle Dataset Root Directory:", ds.train.root))
 
 chr_set <- c('#', '$', '&', '@', 
              '1', 'L', 'I', 'J',
@@ -292,6 +293,11 @@ img.annotation <- sapply(seq_len(length(img.files)), function(i){
 img.dat <- data.frame(file = img.files,
                       annotation = img.annotation)
 
+print(img.dat$annotation)
+```
+Figure \@ref(fig:intro-ds-overview-img-diff-size) below shows shows what these images look like.
+
+```{r intro-ds-overview-img-diff-size, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
 # print.image_grid(img.dat) 
 print.image_grid(img.dat,
                  # font.size = 20,
@@ -303,5 +309,55 @@ print.image_grid(img.dat,
 ```{r intro.datasets-overview@close-log, include=FALSE}
 log_close()
 ```
+
+\newpage
+
+Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in [Section 21.3 Matrix Operations in R / Binarize the data](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data) of the *Course Textbook (New Edition)*[@IDS2_21.5_BD].
+
+
+```{r intro.ds-overview@img.diff-size$hist }
+hist.grobs <- lapply(chr_set, function(chr) {
+  dir_path <- file.path(ds.train.root, chr)
+  file <- file.path(dir_path, dir(dir_path)[1])
+
+  img <- image_read(file)
+  img.mx <- magick_img2matrix(img)
+  img.df <- data.frame(pi <- as.vector(img.mx))
+  h.title <- paste("Character", chr)
+  
+  ggplot(img.df, aes(x = pi)) +
+    geom_histogram(bins = 30,
+                   fill = "steelblue",
+                   colour = "white") +
+    labs(title = h.title,
+         x = "Intensity",
+         y = "Frequency") +
+    theme_minimal()
+})
+
+marrangeGrob(grobs = hist.grobs[1:6], ncol = 3, nrow = 2,  top = NULL, bottom = NULL)
+marrangeGrob(hist.grobs[7:16], ncol = 3, nrow = 3, top = NULL, bottom = NULL, padding = unit(0, "line"))
+
+```
+
+As already mentioned above in the [Downloading & Preprocessing Input Datasets] section, the *raw image data* undergoes preprocessing via the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script (described below in [Appendix B](#appndx_b)), which includes *resizing the images to a uniform dimension* (`28x28` in our case) and *binarizing* them.
+
+Additionally, the images are trimmed during preprocessing to remove noninformative spatial data from their edges.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

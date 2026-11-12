@@ -13,6 +13,22 @@
                   data analysis challenges. },
 }
 
+@book{IDS1_33,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, First Edition, Chapter 33 Large datasets},
+  date         = {2019-10-24},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook/large-datasets.html},
+  subtitle     = {Data Analysis and Prediction Algorithms with R},
+  urldate      = {2019-10-24},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {In this chapter we scratch the surface of a variety of computational techniques 
+                  and statistical concepts that are useful for the analysis of large datasets 
+                  by describing matrix algebra, dimension reduction, regularization, and matrix factorization.},
+}
+
+
+
 @book{IDS2,
   author       = {Rafael A. Irizarry},
   title        = {Introduction to Data Science, Part II},
@@ -29,10 +45,75 @@
                   linear regression and machine learning.},
 }
 
-@book{IDS2_23_5_PCA,
+@book{IDS2_21,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II},
-  url          = {Random Forest},
+  title        = {Introduction to Data Science, Part II, Chapter 21 Working with Matrices in R },
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {When the number of variables associated with each observation is large, 
+                  and they can all be represented as numbers, it is often more convenient 
+                  to store the data in a matrix and perform the analysis using linear algebra, 
+                  rather than storing the data in a data frame and using tidyverse or data.table functions. 
+                  Matrix operations form the computational foundation for many applications 
+                  of linear algebra in data analysis.},
+}
+
+@book{IDS2_21.3,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 21.3 Matrix Operations in R },
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#matrix-operations-in-r},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {Before we define and work through the tasks designed to teach matrix operations, 
+                  we begin by reviewing some basic matrix functionality in R.},
+}
+
+@book{IDS2_21.3.5,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 21.5 Motivating tasks},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#sec-motivating-tasks},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {To motivate the use of matrices in R, we will pose six tasks 
+                  that illustrate how matrix operations can help with data exploration of the handwritten digits dataset. 
+                  Each task highlights a basic matrix operation that is commonly used in R. },
+}
+
+
+
+@book{IDS2_21.5_BD,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 21.3 Matrix Operations in R / Binarize the data },
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {If we look at the distribution of all pixel values, we will see a clear dichotomy, 
+                  which is explained as parts of the image with ink and parts without. 
+                  This seems to suggest that this data is mostly binary. A pixel either has ink or does not.
+                  Applying what we learned in Section 21.3.7, we can binarize the data using just matrix operations.},
+}
+
+
+@book{IDS2_23,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 23 Dimention Reduction},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {In this chapter, we introduce a powerful set of techniques known collectively as dimension reduction.
+                  With fewer dimensions, visualization becomes more feasible, and patterns in the data become easier to detect.},
+}
+@book{IDS2_23.5,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 23.5 Principal Component Analysis (PCA)},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html#sec-pca},
   langid       = {english},
   langidopts   = {variant=american},
   annotation   = {The main idea behind Principal Component Analysis (PCA) is to find an orthogonal transformation 
@@ -41,9 +122,81 @@
                   that capture most of the variation in the data.},
 }
 
+
+
+@book{IDS2_27_3_CM,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 27.3 The confusion matrix},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#the-confusion-matrix},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {Generally speaking, overall accuracy can be misleading. 
+                  To understand why, we begin by constructing a confusion matrix, 
+                  a table that counts how often each combination of prediction and true outcome occurs.},
+}
+
+
+@book{IDS2_29,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 29 Resampling methods},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {In this chapter, we introduce resampling, one of the most important ideas in machine learning. 
+                  Here we focus on the conceptual and mathematical aspects. 
+                  We will describe how to implement resampling methods in practice 
+                  with the caret package later in Section 31.1.3.},
+}
+
+@book{IDS2_29.6_KFCV,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 29.6 Cross validation / K-fold cross validation},
+  date         = {2025-10-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation},
+  urldate      = {2025-10-27},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {We want to generate a dataset that can be thought of as independent random sample, and do this `B`times. 
+                  The K in K-fold cross validation, represents the number of time `B`. 
+                  In the illustrations below we show an example that uses `B = 5`.},
+}
+
+
+@book{IDS2_31_3,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.3 Preprocessing},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {We often transform predictors before running machine learning algorithms. 
+                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
+}
+
+@book{IDS2_31_3_PCA,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.3 Preprocessing / Dimension reduction with PCA},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {We often transform predictors before running machine learning algorithms. 
+                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
+}
+
+
 @book{IDS2_29_1_kNN,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 29: Resampling methods, Section 29.1: Motivation with k-nearest neighbors},
+  title        = {Introduction to Data Science, Part II, Section 29.1 Motivation with k-nearest neighbors},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro},
   langid       = {english},
   langidopts   = {variant=american},
@@ -56,7 +209,7 @@
 
 @book{IDS2_30_5_RF,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 30, Section 30.5: Random forests},
+  title        = {Introduction to Data Science, Part II, Section 30.5 Random forests},
   date         = {2024-12-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests},
   subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
@@ -595,93 +748,6 @@ pages = {223},
 isbn  = {9781633439849},
 annotation = {}
 }
-
-
-
-@book{IDS2_23,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 23: Dimention Reduction},
-  date         = {2024-12-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html},
-  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
-  langid       = {english},
-  langidopts   = {variant=american},
-  sorttitle    = {Introduction to Data Science, Part II},
-  annotation   = {In this chapter, we introduce a powerful set of techniques known collectively as dimension reduction.
-                  With fewer dimensions, visualization becomes more feasible, and patterns in the data become easier to detect.},
-}
-
-
-@book{IDS2_27_3_CM,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 27, Section 27.3: The confusion matrix},
-  date         = {2024-12-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#the-confusion-matrix},
-  langid       = {english},
-  langidopts   = {variant=american},
-  annotation   = {Generally speaking, overall accuracy can be misleading. 
-                  To understand why, we begin by constructing a confusion matrix, 
-                  a table that counts how often each combination of prediction and true outcome occurs.},
-}
-
-
-@book{IDS2_29,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 29: Resampling methods},
-  date         = {2024-12-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html},
-  urldate      = {2025-02-18},
-  langid       = {english},
-  langidopts   = {variant=american},
-  annotation   = {In this chapter, we introduce resampling, one of the most important ideas in machine learning. 
-                  Here we focus on the conceptual and mathematical aspects. 
-                  We will describe how to implement resampling methods in practice 
-                  with the caret package later in Section 31.1.3.},
-}
-
-@book{IDS2_29_6_KFCV,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 29, Section 29.6: Cross validation / K-fold cross validation},
-  date         = {2025-10-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation},
-  urldate      = {2025-10-27},
-  langid       = {english},
-  langidopts   = {variant=american},
-  annotation   = {We want to generate a dataset that can be thought of as independent random sample, and do this `B`times. 
-                  The K in K-fold cross validation, represents the number of time `B`. 
-                  In the illustrations below we show an example that uses `B = 5`.},
-}
-
-
-@book{IDS2_31_3,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 31, Section 31.3: Preprocessing},
-  date         = {2024-12-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing},
-  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
-  urldate      = {2025-02-18},
-  langid       = {english},
-  langidopts   = {variant=american},
-  sorttitle    = {Introduction to Data Science, Part II},
-  annotation   = {We often transform predictors before running machine learning algorithms. 
-                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
-}
-
-
-@book{IDS_E1_33,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, First Edition, Chapter 33: Large datasets},
-  date         = {2019-10-24},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook/large-datasets.html},
-  subtitle     = {Data Analysis and Prediction Algorithms with R},
-  urldate      = {2019-10-24},
-  langid       = {english},
-  langidopts   = {variant=american},
-  annotation   = {In this chapter we scratch the surface of a variety of computational techniques 
-                  and statistical concepts that are useful for the analysis of large datasets 
-                  by describing matrix algebra, dimension reduction, regularization, and matrix factorization.},
-}
-
 
 @online{TMPL1,
   author       = {},

@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-11}
+\date{2026-11-12}
 
 \begin{document}
 \maketitle
@@ -679,11 +679,105 @@ Execution of this section yields the \href{https://github.com/AzKurban-edX-DS/ed
 
 Meaning that the smallest image size is 28x28 pixels.
 
-Figure \ref{fig:intro-ds-overview-img-diff-size} below shows a few sample images, both 28x28 and 32x32 pixels.
+We can use the following code snippet to prepare a few sample images, both 28x28 and 32x32 pixels in size, for visual presentation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Kaggle Dataset Root Directory:"}\NormalTok{, ds.train.root))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Kaggle Dataset Root Directory: ../../data/raw/Vaibs.HW-Chars/Train"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{chr\_set }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}\#\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}$\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}\&\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}@\textquotesingle{}}\NormalTok{, }
+             \StringTok{\textquotesingle{}1\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}L\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}I\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}J\textquotesingle{}}\NormalTok{,}
+             \StringTok{\textquotesingle{}6\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}B\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}D\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}5\textquotesingle{}}\NormalTok{,}
+             \StringTok{\textquotesingle{}9\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}G\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Q\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}S\textquotesingle{}}\NormalTok{ )}
+
+\NormalTok{img.files }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
+\NormalTok{  dir\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(ds.train.root, chr)}
+  \FunctionTok{file.path}\NormalTok{(dir\_path, }\FunctionTok{dir}\NormalTok{(dir\_path)[}\DecValTok{1}\NormalTok{])}
+  
+\NormalTok{\})}
+
+\NormalTok{img.annotation }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{length}\NormalTok{(img.files)), }\ControlFlowTok{function}\NormalTok{(i)\{}
+\NormalTok{  img }\OtherTok{\textless{}{-}}\NormalTok{ magick}\SpecialCharTok{::}\FunctionTok{image\_read}\NormalTok{(img.files[i])}
+\NormalTok{  img.dat }\OtherTok{\textless{}{-}} \FunctionTok{image\_data}\NormalTok{(img)}
+\NormalTok{  img.dim }\OtherTok{\textless{}{-}} \FunctionTok{dim}\NormalTok{(img.dat)}
+  
+\NormalTok{  img.size }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(img.dim[}\DecValTok{2}\NormalTok{], }\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{, img.dim[}\DecValTok{3}\NormalTok{], }\StringTok{\textquotesingle{}px\textquotesingle{}}\NormalTok{)}
+\CommentTok{\#   print\_log("\textasciigrave{}\%1\textasciigrave{} character Image size is:}
+\CommentTok{\# \%2", chr\_set[i], img.size)}
+  
+  \FunctionTok{paste0}\NormalTok{(chr\_set[i],}\StringTok{": "}\NormalTok{, img.size)}
+\NormalTok{\})}
+
+\NormalTok{img.dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{file =}\NormalTok{ img.files,}
+                      \AttributeTok{annotation =}\NormalTok{ img.annotation)}
+
+\FunctionTok{print}\NormalTok{(img.dat}\SpecialCharTok{$}\NormalTok{annotation)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px"
+##  [6] "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
+## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px"
+## [16] "S: 32x32px"
+\end{verbatim}
+
+Figure \ref{fig:intro-ds-overview-img-diff-size} below shows shows what these images look like.
 
 \begin{figure}
 \includegraphics[width=5.56in]{capstone-CYO.report_files/figure-latex/intro-ds-overview-img-diff-size-1} \caption{Example images, both 28x28 and 32x32 pixels.}\label{fig:intro-ds-overview-img-diff-size}
 \end{figure}
+
+\newpage
+
+Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html\#binarize-the-data}{Section 21.3 Matrix Operations in R / Binarize the data} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_21.5_BD}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hist.grobs }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
+\NormalTok{  dir\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(ds.train.root, chr)}
+\NormalTok{  file }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(dir\_path, }\FunctionTok{dir}\NormalTok{(dir\_path)[}\DecValTok{1}\NormalTok{])}
+
+\NormalTok{  img }\OtherTok{\textless{}{-}} \FunctionTok{image\_read}\NormalTok{(file)}
+\NormalTok{  img.mx }\OtherTok{\textless{}{-}} \FunctionTok{magick\_img2matrix}\NormalTok{(img)}
+\NormalTok{  img.df }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(pi }\OtherTok{\textless{}{-}} \FunctionTok{as.vector}\NormalTok{(img.mx))}
+\NormalTok{  h.title }\OtherTok{\textless{}{-}} \FunctionTok{paste}\NormalTok{(}\StringTok{"Character"}\NormalTok{, chr)}
+  
+  \FunctionTok{ggplot}\NormalTok{(img.df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ pi)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_histogram}\NormalTok{(}\AttributeTok{bins =} \DecValTok{30}\NormalTok{,}
+                   \AttributeTok{fill =} \StringTok{"steelblue"}\NormalTok{,}
+                   \AttributeTok{colour =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =}\NormalTok{ h.title,}
+         \AttributeTok{x =} \StringTok{"Intensity"}\NormalTok{,}
+         \AttributeTok{y =} \StringTok{"Frequency"}\NormalTok{) }\SpecialCharTok{+}
+    \FunctionTok{theme\_minimal}\NormalTok{()}
+\NormalTok{\})}
+
+\FunctionTok{marrangeGrob}\NormalTok{(}\AttributeTok{grobs =}\NormalTok{ hist.grobs[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{6}\NormalTok{], }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{2}\NormalTok{,  }\AttributeTok{top =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{bottom =} \ConstantTok{NULL}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{marrangeGrob}\NormalTok{(hist.grobs[}\DecValTok{7}\SpecialCharTok{:}\DecValTok{16}\NormalTok{], }\AttributeTok{ncol =} \DecValTok{3}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{3}\NormalTok{, }\AttributeTok{top =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{bottom =} \ConstantTok{NULL}\NormalTok{, }\AttributeTok{padding =} \FunctionTok{unit}\NormalTok{(}\DecValTok{0}\NormalTok{, }\StringTok{"line"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-2.pdf}} \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-3.pdf}}
+
+As already mentioned above in the \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} section, the \emph{raw image data} undergoes preprocessing via the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script (described below in \hyperref[appndx_b]{Appendix B}), which includes \emph{resizing the images to a uniform dimension} (\texttt{28x28} in our case) and \emph{binarizing} them.
+
+Additionally, the images are trimmed during preprocessing to remove noninformative spatial data from their edges.
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
@@ -960,8 +1054,9 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 
 \begin{verbatim}
 ## Class Labels:
-##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
-## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V
+## [36] W X Y Z
+## 39 Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N ... Z
 \end{verbatim}
 
 \begin{verbatim}
