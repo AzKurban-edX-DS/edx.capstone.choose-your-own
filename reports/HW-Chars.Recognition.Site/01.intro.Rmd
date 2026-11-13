@@ -1,3 +1,9 @@
+---
+title: "Intro"
+envir:
+  .GlobalEnv
+---
+
 # Preface {-}
 
 This project is the second assignment of the ‘Data Science: Capstone’ course (PH125.9x), offered by edX HarvardX. The project aims to build and compare different Handwritten Character Recognition (HCR) models, applying different Machine Learning (ML) techniques, and using a publicly available dataset for training and validation.
@@ -217,10 +223,30 @@ The [The Most Confusing Characters for Recognition] section below provides the d
 
 ## Datasets Overview
 
+```{r test-intto, include=FALSE}
+#opts_chunk$get("root.dir")
+opts_knit$get("root.dir")
+getwd()
+dir()
+# knitr::opts_knit$get("root.dir")
+# here()
+```
+
+
 ```{r intro.datasets-overview$open-log, include=FALSE}
+
+
+
 open_logfile(".intro.chunks.datasets-overview")
-ds.path <- file.path(knitr.proj_root, raw_data.chars.dir)
-ds.train.root <- file.path(knitr.proj_root, img.train_root.dir)
+
+
+# ds.path <- file.path(knitr.proj_root, raw_data.chars.dir)
+# ds.train.root <- file.path(knitr.proj_root, img.train_root.dir)
+# normalizePath(knitr.proj_root)
+
+
+
+train.img.std_bin.ls.nested <- readRDS(here(train.img.std_bin.ls.nested.file))
 
 ```
 
@@ -229,7 +255,7 @@ The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/data
 ```{r intro.datasets-overview.downloading@dir_tree, echo=FALSE}
 
 writeLines("*** Dataset Raw Data Local Directory Structure ***")
-dir_tree(ds.path, type = 'directory')
+dir_tree(raw_data.chars.dir, type = 'directory')
 ```
 
 
@@ -265,7 +291,7 @@ Meaning that the smallest image size is 28x28 pixels.
 We can use the following code snippet to prepare a few sample images, both 28x28 and 32x32 pixels in size, for visual presentation:
 
 ```{r intro.ds-overview@img.diff-size$data }
-print(paste("Kaggle Dataset Root Directory:", ds.train.root))
+print(paste("Kaggle Dataset Root Directory:", img.train_root.dir))
 
 chr_set <- c('#', '$', '&', '@', 
              '1', 'L', 'I', 'J',
@@ -273,7 +299,7 @@ chr_set <- c('#', '$', '&', '@',
              '9', 'G', 'Q', 'S' )
 
 img.files <- sapply(chr_set, function(chr) {
-  dir_path <- file.path(ds.train.root, chr)
+  dir_path <- file.path(img.train_root.dir, chr)
   file.path(dir_path, dir(dir_path)[1])
   
 })
@@ -317,7 +343,7 @@ Also, given the linear nature of the black-and-white character images in the dat
 
 ```{r intro.ds-overview@img.diff-size$hist }
 hist.grobs <- lapply(chr_set, function(chr) {
-  dir_path <- file.path(ds.train.root, chr)
+  dir_path <- file.path(img.train_root.dir, chr)
   file <- file.path(dir_path, dir(dir_path)[1])
 
   img <- image_read(file)
@@ -344,16 +370,26 @@ As already mentioned above in the [Downloading & Preprocessing Input Datasets] s
 
 Additionally, the images are trimmed during preprocessing to remove noninformative spatial data from their edges.
 
+The task runs only once. By the end of execution, it caches the results in a backup file on the local disk. On follow-up calls, it first checks whether the cache exists. If found, it just shows a warning that the results have already been constructed and cached on disk.
 
+::: {.noteblock data-latex=""}
+Most of the scripts in *this Project* follow the same pattern: they cache the results on disk upon completion and check the cache on subsequent calls. If found, they either load the results from the cache or merely show a warning message (the former is implemented in the model training scripts; the latter describes how the data processing scripts work).
+:::
 
+The result of the script execution consists of the *label list* of the *character classes* and the nested list of *preprocessed character image data*, along with their file paths, grouped by *character class*.
 
+The *label list* is as follows:
 
+```{r intro.ds-overview@ }
+print(train.img.std_bin.ls.nested$label.list)
+```
 
+And the nested list of *preprocessed character image data* has the following structure:
 
+```{r intro.ds-overview@img.std_bin.ls.nested$structure }
+str(train.img.std_bin.ls.nested, list.len = 39, max.level = 3)
 
-
-
-
+```
 
 
 

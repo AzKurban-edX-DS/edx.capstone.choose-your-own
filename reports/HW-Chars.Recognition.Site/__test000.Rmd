@@ -1,0 +1,123 @@
+---
+title: "Choose Your Own Project: Handwritten Character Recognition"
+subtitle: "edX HarvardX: PH125.9x - Data Science: Capstone"
+site: bookdown::bookdown_site
+author: "Azamat Kurbanaev"
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+csl: bit-numerical-mathematics.csl 
+envir:
+  .GlobalEnv
+output: 
+  bookdown::pdf_document2: 
+    df_print: paged
+    toc: true
+    toc_depth: 4
+    fig_caption: true
+    keep_tex: true
+    css: custom.css
+    citation_package: biblatex
+    delete_merged_file: true
+documentclass: report
+biblatexoptions:
+  - backend=biber
+  - natbib=true 
+  - style=numeric
+  - backref=true
+  - sorting=none
+colorlinks: true
+linkcolor: red
+citecolor: blue
+header-includes:
+  - \usepackage{awesomebox}
+  - \usepackage{hyperref}
+  - \usepackage{amsmath}
+  - \hypersetup{backref,
+        pdfpagemode=Normal,
+        colorlinks=true,
+        implicit=false}
+  - \usepackage{tcolorbox}
+  - \usepackage{xcolor}
+  - \tcbuselibrary{skins}
+  - |
+    % 1. Environment with a thick colored left accent bar
+    \newtcolorbox{accentquote}{
+      enhanced,
+      colback=gray!5!white,     % Light background
+      colframe=gray!20!white,   % Subtle outer border (or make transparent)
+      borderline west={4pt}{0pt}{blue!60!black}, % Thick left accent bar
+      boxrule=0pt,
+      left=12pt,
+      right=12pt,
+      top=8pt,
+      bottom=8pt,
+      before skip=10pt,
+      after skip=10pt
+    }
+
+    % 2. Environment with a left icon/title banner
+    \newtcolorbox{iconquote}{
+      enhanced,
+      colback=blue!3!white,
+      colframe=blue!30!black,
+      boxrule=0.5pt,
+      left=10pt,
+      right=10pt,
+      top=8pt,
+      bottom=8pt,
+      before skip=10pt,
+      after skip=10pt,
+      fonttitle=\bfseries,
+      title=💡 Note
+    }
+  
+vignette: >
+  %\VignetteIndexEntry{RMarkdown Citations - Numeric Style}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::knitr}
+
+---
+
+\newenvironment{infobox}[1]
+  {
+  \begin{itemize}
+  \renewcommand{\labelitemi}{
+    \raisebox{-.7\height}[0pt][0pt]{
+      {\setkeys{Gin}{width=3em,keepaspectratio}
+        \includegraphics{images/#1}}
+    }
+  }
+  \setlength{\fboxsep}{1em}
+  \begin{blackbox}
+  \item
+  }
+  {
+  \end{blackbox}
+  \end{itemize}
+  }
+
+
+```{r setup-intro, include=FALSE, eval=FALSE}
+# 
+# library(knitr)
+# library(here)
+ 
+# knitr::opts_knit$set(root.dir = here())
+# knitr::opts_chunk$set(root.dir = here())
+# knitr::opts_knit$set(root.dir = normalizePath(knitr.proj_root))
+# knitr::opts_chunk$set(root.dir = normalizePath(knitr.proj_root))
+
+# knitr::opts_knit$set(root.dir = normalizePath(here()))
+# knitr::opts_knit$set(root.dir = normalizePath(knitr.proj_root))
+# knitr::opts_chunk$set(root.dir = normalizePath(knitr.proj_root))
+
+```
+
+```{r test-intto, include=TRUE}
+#opts_chunk$get("root.dir")
+opts_knit$get("root.dir")
+getwd()
+dir()
+# knitr::opts_knit$get("root.dir")
+# here()
+```

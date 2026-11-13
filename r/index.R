@@ -56,25 +56,33 @@ log_close()
 # Log Elapsed Time: 0 00:41:23
 # *************************************************************************
 
-#### Training Set: Prepare Standardized Binary Image Data -----------------------
+#### Training Set: Prepare Standardized Binary Image Data ----------------------
 open_logfile(".ds.train.raw-dat2std-bin.array")
 
 stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
+##### Init ---------------------------------------------------------------------
 ds.img_min.geometry <- NULL
 Y.Labels <- NULL
 N.classes <- NULL
 std_img.side <- NULL
 
 
-img.std_bin.ls.nested.file <- file.path(train.data.dir, 
-                                      "train.img.std_bin.ls-nested.rds")
+train.img.std_bin.ls.nested.file <- 
+  file.path(train.data.dir, 
+            "train.img.std_bin.ls-nested.rds")
+
+train.img.std_bin.array.file <- file.path(train.data.dir, 
+                                    "train.img.std_bin.array.rds")
+
+img.std_bin.ls.nested.file <- train.img.std_bin.ls.nested.file
 
 img.std_bin.array.ls.file <- file.path(train.data.dir, 
                                   "train.img.std_bin.array.ls.rds")
 
-img.std_bin.array.file <- file.path(train.data.dir, 
-                                    "train.img.std_bin.array.rds")
+img.std_bin.array.file <- train.img.std_bin.array.file
+
+##### Run Script ---------------------------------------------------------------
 
 source(raw_img.dat2std_bin.script.path, 
        catch.aborts = TRUE,
@@ -88,8 +96,6 @@ stopifnot(!is.null(Y.Labels),
           !is.null(std_img.side))
 
 N.classes <- length(Y.Labels)
-train.img.std_bin.array.file <- img.std_bin.array.file
-train.img.std_bin.ls.nested.file <- img.std_bin.ls.nested.file
 
 log_close()
 # *************************************************************************

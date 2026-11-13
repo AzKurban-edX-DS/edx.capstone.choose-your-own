@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-12}
+\date{2026-11-13}
 
 \begin{document}
 \maketitle
@@ -557,7 +557,7 @@ The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-c
 \end{verbatim}
 
 \begin{verbatim}
-## ../../data/raw/Vaibs.HW-Chars
+## data/raw/Vaibs.HW-Chars
 ## +-- Train
 ## |   +-- #
 ## |   +-- $
@@ -683,12 +683,12 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Kaggle Dataset Root Directory:"}\NormalTok{, ds.train.root))}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{paste}\NormalTok{(}\StringTok{"Kaggle Dataset Root Directory:"}\NormalTok{, img.train\_root.dir))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Kaggle Dataset Root Directory: ../../data/raw/Vaibs.HW-Chars/Train"
+## [1] "Kaggle Dataset Root Directory: data/raw/Vaibs.HW-Chars/Train"
 \end{verbatim}
 
 \begin{Shaded}
@@ -699,7 +699,7 @@ We can use the following code snippet to prepare a few sample images, both 28x28
              \StringTok{\textquotesingle{}9\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}G\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Q\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}S\textquotesingle{}}\NormalTok{ )}
 
 \NormalTok{img.files }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
-\NormalTok{  dir\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(ds.train.root, chr)}
+\NormalTok{  dir\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(img.train\_root.dir, chr)}
   \FunctionTok{file.path}\NormalTok{(dir\_path, }\FunctionTok{dir}\NormalTok{(dir\_path)[}\DecValTok{1}\NormalTok{])}
   
 \NormalTok{\})}
@@ -724,10 +724,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px"
-##  [6] "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
-## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px"
-## [16] "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
+## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 Figure \ref{fig:intro-ds-overview-img-diff-size} below shows shows what these images look like.
@@ -743,7 +741,7 @@ Also, given the linear nature of the black-and-white character images in the dat
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{hist.grobs }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
-\NormalTok{  dir\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(ds.train.root, chr)}
+\NormalTok{  dir\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(img.train\_root.dir, chr)}
 \NormalTok{  file }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(dir\_path, }\FunctionTok{dir}\NormalTok{(dir\_path)[}\DecValTok{1}\NormalTok{])}
 
 \NormalTok{  img }\OtherTok{\textless{}{-}} \FunctionTok{image\_read}\NormalTok{(file)}
@@ -765,7 +763,7 @@ Also, given the linear nature of the black-and-white character images in the dat
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-1.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -773,11 +771,164 @@ Also, given the linear nature of the black-and-white character images in the dat
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-2.pdf}} \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-2.pdf}} \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-3.pdf}}
 
 As already mentioned above in the \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} section, the \emph{raw image data} undergoes preprocessing via the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script (described below in \hyperref[appndx_b]{Appendix B}), which includes \emph{resizing the images to a uniform dimension} (\texttt{28x28} in our case) and \emph{binarizing} them.
 
 Additionally, the images are trimmed during preprocessing to remove noninformative spatial data from their edges.
+
+The task runs only once. By the end of execution, it caches the results in a backup file on the local disk. On follow-up calls, it first checks whether the cache exists. If found, it just shows a warning that the results have already been constructed and cached on disk.
+
+\begin{noteblock}
+Most of the scripts in \emph{this Project} follow the same pattern: they cache the results on disk upon completion and check the cache on subsequent calls. If found, they either load the results from the cache or merely show a warning message (the former is implemented in the model training scripts; the latter describes how the data processing scripts work).
+
+\end{noteblock}
+
+The result of the script execution consists of the \emph{label list} of the \emph{character classes} and the nested list of \emph{preprocessed character image data}, along with their file paths, grouped by \emph{character class}.
+
+The \emph{label list} is as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{label.list)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+\end{verbatim}
+
+And the nested list of \emph{preprocessed character image data} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(train.img.std\_bin.ls.nested, }\AttributeTok{list.len =} \DecValTok{39}\NormalTok{, }\AttributeTok{max.level =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ label.list: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ img.list  :List of 39
+##   ..$ #:List of 2
+##   .. ..$ img.list  :List of 15600
+##   .. ..$ fpath.list: chr [1:15600] "data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1022082.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1042459.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1055444.png" ...
+##   ..$ $:List of 2
+##   .. ..$ img.list  :List of 16199
+##   .. ..$ fpath.list: chr [1:16199] "data/raw/Vaibs.HW-Chars/Train/$/__0_1011576.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1013377.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1015758.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1020270.png" ...
+##   ..$ &:List of 2
+##   .. ..$ img.list  :List of 13000
+##   .. ..$ fpath.list: chr [1:13000] "data/raw/Vaibs.HW-Chars/Train/&/__0_1027442.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_1047262.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_1052515.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_106188.png" ...
+##   ..$ @:List of 2
+##   .. ..$ img.list  :List of 38009
+##   .. ..$ fpath.list: chr [1:38009] "data/raw/Vaibs.HW-Chars/Train/@/___0_2818202.png" "data/raw/Vaibs.HW-Chars/Train/@/___0_3481265.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_3707877.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_8467948.png" ...
+##   ..$ 0:List of 2
+##   .. ..$ img.list  :List of 65504
+##   .. ..$ fpath.list: chr [1:65504] "data/raw/Vaibs.HW-Chars/Train/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_100.jpg" ...
+##   ..$ 1:List of 2
+##   .. ..$ img.list  :List of 43773
+##   .. ..$ fpath.list: chr [1:43773] "data/raw/Vaibs.HW-Chars/Train/1/0.jpg" "data/raw/Vaibs.HW-Chars/Train/1/1.jpg" "data/raw/Vaibs.HW-Chars/Train/1/10.jpg" "data/raw/Vaibs.HW-Chars/Train/1/100.jpg" ...
+##   ..$ 2:List of 2
+##   .. ..$ img.list  :List of 39351
+##   .. ..$ fpath.list: chr [1:39351] "data/raw/Vaibs.HW-Chars/Train/2/0.jpg" "data/raw/Vaibs.HW-Chars/Train/2/1.jpg" "data/raw/Vaibs.HW-Chars/Train/2/10.jpg" "data/raw/Vaibs.HW-Chars/Train/2/100.jpg" ...
+##   ..$ 3:List of 2
+##   .. ..$ img.list  :List of 39996
+##   .. ..$ fpath.list: chr [1:39996] "data/raw/Vaibs.HW-Chars/Train/3/0.jpg" "data/raw/Vaibs.HW-Chars/Train/3/1.jpg" "data/raw/Vaibs.HW-Chars/Train/3/10.jpg" "data/raw/Vaibs.HW-Chars/Train/3/100.jpg" ...
+##   ..$ 4:List of 2
+##   .. ..$ img.list  :List of 38112
+##   .. ..$ fpath.list: chr [1:38112] "data/raw/Vaibs.HW-Chars/Train/4/0.jpg" "data/raw/Vaibs.HW-Chars/Train/4/10.jpg" "data/raw/Vaibs.HW-Chars/Train/4/100.jpg" "data/raw/Vaibs.HW-Chars/Train/4/1000.jpg" ...
+##   ..$ 5:List of 2
+##   .. ..$ img.list  :List of 32317
+##   .. ..$ fpath.list: chr [1:32317] "data/raw/Vaibs.HW-Chars/Train/5/0.jpg" "data/raw/Vaibs.HW-Chars/Train/5/1.jpg" "data/raw/Vaibs.HW-Chars/Train/5/10.jpg" "data/raw/Vaibs.HW-Chars/Train/5/100.jpg" ...
+##   ..$ 6:List of 2
+##   .. ..$ img.list  :List of 38879
+##   .. ..$ fpath.list: chr [1:38879] "data/raw/Vaibs.HW-Chars/Train/6/0.jpg" "data/raw/Vaibs.HW-Chars/Train/6/1.jpg" "data/raw/Vaibs.HW-Chars/Train/6/10.jpg" "data/raw/Vaibs.HW-Chars/Train/6/100.jpg" ...
+##   ..$ 7:List of 2
+##   .. ..$ img.list  :List of 41080
+##   .. ..$ fpath.list: chr [1:41080] "data/raw/Vaibs.HW-Chars/Train/7/0.jpg" "data/raw/Vaibs.HW-Chars/Train/7/1.jpg" "data/raw/Vaibs.HW-Chars/Train/7/10.jpg" "data/raw/Vaibs.HW-Chars/Train/7/100.jpg" ...
+##   ..$ 8:List of 2
+##   .. ..$ img.list  :List of 38795
+##   .. ..$ fpath.list: chr [1:38795] "data/raw/Vaibs.HW-Chars/Train/8/0.jpg" "data/raw/Vaibs.HW-Chars/Train/8/1.jpg" "data/raw/Vaibs.HW-Chars/Train/8/10.jpg" "data/raw/Vaibs.HW-Chars/Train/8/100.jpg" ...
+##   ..$ 9:List of 2
+##   .. ..$ img.list  :List of 38319
+##   .. ..$ fpath.list: chr [1:38319] "data/raw/Vaibs.HW-Chars/Train/9/0.jpg" "data/raw/Vaibs.HW-Chars/Train/9/1.jpg" "data/raw/Vaibs.HW-Chars/Train/9/10.jpg" "data/raw/Vaibs.HW-Chars/Train/9/100.jpg" ...
+##   ..$ A:List of 2
+##   .. ..$ img.list  :List of 17205
+##   .. ..$ fpath.list: chr [1:17205] "data/raw/Vaibs.HW-Chars/Train/A/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_100.jpg" ...
+##   ..$ B:List of 2
+##   .. ..$ img.list  :List of 8666
+##   .. ..$ fpath.list: chr [1:8666] "data/raw/Vaibs.HW-Chars/Train/B/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_100.jpg" ...
+##   ..$ C:List of 2
+##   .. ..$ img.list  :List of 13560
+##   .. ..$ fpath.list: chr [1:13560] "data/raw/Vaibs.HW-Chars/Train/C/0.jpg" "data/raw/Vaibs.HW-Chars/Train/C/1.jpg" "data/raw/Vaibs.HW-Chars/Train/C/10.jpg" "data/raw/Vaibs.HW-Chars/Train/C/100.jpg" ...
+##   ..$ D:List of 2
+##   .. ..$ img.list  :List of 15509
+##   .. ..$ fpath.list: chr [1:15509] "data/raw/Vaibs.HW-Chars/Train/D/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/D/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/D/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/D/_1_100.jpg" ...
+##   ..$ E:List of 2
+##   .. ..$ img.list  :List of 32627
+##   .. ..$ fpath.list: chr [1:32627] "data/raw/Vaibs.HW-Chars/Train/E/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/E/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/E/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/E/_1_100.jpg" ...
+##   ..$ F:List of 2
+##   .. ..$ img.list  :List of 11635
+##   .. ..$ fpath.list: chr [1:11635] "data/raw/Vaibs.HW-Chars/Train/F/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/F/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/F/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/F/_1_100.jpg" ...
+##   ..$ G:List of 2
+##   .. ..$ img.list  :List of 5443
+##   .. ..$ fpath.list: chr [1:5443] "data/raw/Vaibs.HW-Chars/Train/G/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/G/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/G/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/G/_1_100.jpg" ...
+##   ..$ H:List of 2
+##   .. ..$ img.list  :List of 12133
+##   .. ..$ fpath.list: chr [1:12133] "data/raw/Vaibs.HW-Chars/Train/H/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/H/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/H/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/H/_1_100.jpg" ...
+##   ..$ I:List of 2
+##   .. ..$ img.list  :List of 13873
+##   .. ..$ fpath.list: chr [1:13873] "data/raw/Vaibs.HW-Chars/Train/I/_1_1000.jpg" "data/raw/Vaibs.HW-Chars/Train/I/_1_1003.jpg" "data/raw/Vaibs.HW-Chars/Train/I/_1_1004.jpg" "data/raw/Vaibs.HW-Chars/Train/I/_1_1008.jpg" ...
+##   ..$ J:List of 2
+##   .. ..$ img.list  :List of 4261
+##   .. ..$ fpath.list: chr [1:4261] "data/raw/Vaibs.HW-Chars/Train/J/0.jpg" "data/raw/Vaibs.HW-Chars/Train/J/1.jpg" "data/raw/Vaibs.HW-Chars/Train/J/10.jpg" "data/raw/Vaibs.HW-Chars/Train/J/100.jpg" ...
+##   ..$ K:List of 2
+##   .. ..$ img.list  :List of 4334
+##   .. ..$ fpath.list: chr [1:4334] "data/raw/Vaibs.HW-Chars/Train/K/0.jpg" "data/raw/Vaibs.HW-Chars/Train/K/1.jpg" "data/raw/Vaibs.HW-Chars/Train/K/10.jpg" "data/raw/Vaibs.HW-Chars/Train/K/100.jpg" ...
+##   ..$ L:List of 2
+##   .. ..$ img.list  :List of 21648
+##   .. ..$ fpath.list: chr [1:21648] "data/raw/Vaibs.HW-Chars/Train/L/0.jpg" "data/raw/Vaibs.HW-Chars/Train/L/1.jpg" "data/raw/Vaibs.HW-Chars/Train/L/10.jpg" "data/raw/Vaibs.HW-Chars/Train/L/100.jpg" ...
+##   ..$ M:List of 2
+##   .. ..$ img.list  :List of 12089
+##   .. ..$ fpath.list: chr [1:12089] "data/raw/Vaibs.HW-Chars/Train/M/0.jpg" "data/raw/Vaibs.HW-Chars/Train/M/1.jpg" "data/raw/Vaibs.HW-Chars/Train/M/10.jpg" "data/raw/Vaibs.HW-Chars/Train/M/100.jpg" ...
+##   ..$ N:List of 2
+##   .. ..$ img.list  :List of 21421
+##   .. ..$ fpath.list: chr [1:21421] "data/raw/Vaibs.HW-Chars/Train/N/0.jpg" "data/raw/Vaibs.HW-Chars/Train/N/1.jpg" "data/raw/Vaibs.HW-Chars/Train/N/10.jpg" "data/raw/Vaibs.HW-Chars/Train/N/100.jpg" ...
+##   ..$ P:List of 2
+##   .. ..$ img.list  :List of 11095
+##   .. ..$ fpath.list: chr [1:11095] "data/raw/Vaibs.HW-Chars/Train/P/0.jpg" "data/raw/Vaibs.HW-Chars/Train/P/1.jpg" "data/raw/Vaibs.HW-Chars/Train/P/10.jpg" "data/raw/Vaibs.HW-Chars/Train/P/100.jpg" ...
+##   ..$ Q:List of 2
+##   .. ..$ img.list  :List of 4707
+##   .. ..$ fpath.list: chr [1:4707] "data/raw/Vaibs.HW-Chars/Train/Q/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/Q/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/Q/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/Q/_1_100.jpg" ...
+##   ..$ R:List of 2
+##   .. ..$ img.list  :List of 20498
+##   .. ..$ fpath.list: chr [1:20498] "data/raw/Vaibs.HW-Chars/Train/R/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/R/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/R/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/R/_1_100.jpg" ...
+##   ..$ S:List of 2
+##   .. ..$ img.list  :List of 25910
+##   .. ..$ fpath.list: chr [1:25910] "data/raw/Vaibs.HW-Chars/Train/S/0.jpg" "data/raw/Vaibs.HW-Chars/Train/S/1.jpg" "data/raw/Vaibs.HW-Chars/Train/S/10.jpg" "data/raw/Vaibs.HW-Chars/Train/S/100.jpg" ...
+##   ..$ T:List of 2
+##   .. ..$ img.list  :List of 30853
+##   .. ..$ fpath.list: chr [1:30853] "data/raw/Vaibs.HW-Chars/Train/T/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/T/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/T/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/T/_1_100.jpg" ...
+##   ..$ U:List of 2
+##   .. ..$ img.list  :List of 16385
+##   .. ..$ fpath.list: chr [1:16385] "data/raw/Vaibs.HW-Chars/Train/U/0.jpg" "data/raw/Vaibs.HW-Chars/Train/U/1.jpg" "data/raw/Vaibs.HW-Chars/Train/U/10.jpg" "data/raw/Vaibs.HW-Chars/Train/U/100.jpg" ...
+##   ..$ V:List of 2
+##   .. ..$ img.list  :List of 7246
+##   .. ..$ fpath.list: chr [1:7246] "data/raw/Vaibs.HW-Chars/Train/V/0.jpg" "data/raw/Vaibs.HW-Chars/Train/V/1.jpg" "data/raw/Vaibs.HW-Chars/Train/V/10.jpg" "data/raw/Vaibs.HW-Chars/Train/V/100.jpg" ...
+##   ..$ W:List of 2
+##   .. ..$ img.list  :List of 7266
+##   .. ..$ fpath.list: chr [1:7266] "data/raw/Vaibs.HW-Chars/Train/W/0.jpg" "data/raw/Vaibs.HW-Chars/Train/W/1.jpg" "data/raw/Vaibs.HW-Chars/Train/W/10.jpg" "data/raw/Vaibs.HW-Chars/Train/W/100.jpg" ...
+##   ..$ X:List of 2
+##   .. ..$ img.list  :List of 5106
+##   .. ..$ fpath.list: chr [1:5106] "data/raw/Vaibs.HW-Chars/Train/X/0.jpg" "data/raw/Vaibs.HW-Chars/Train/X/1.jpg" "data/raw/Vaibs.HW-Chars/Train/X/10.jpg" "data/raw/Vaibs.HW-Chars/Train/X/100.jpg" ...
+##   ..$ Y:List of 2
+##   .. ..$ img.list  :List of 6762
+##   .. ..$ fpath.list: chr [1:6762] "data/raw/Vaibs.HW-Chars/Train/Y/0.jpg" "data/raw/Vaibs.HW-Chars/Train/Y/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Y/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Y/100.jpg" ...
+##   ..$ Z:List of 2
+##   .. ..$ img.list  :List of 4866
+##   .. ..$ fpath.list: chr [1:4866] "data/raw/Vaibs.HW-Chars/Train/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/100.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/1000.jpg" ...
+\end{verbatim}
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
@@ -845,7 +996,7 @@ Downloads datasets from \href{https://www.kaggle.com/datasets}{Kaggle} into a sp
 \begin{verbatim}
 ## The Kaggle image files have been downloaded 
 ## and unziped to the following directory: 
-## `../../data/raw/Vaibs.HW-Chars`
+## `data/raw/Vaibs.HW-Chars`
 \end{verbatim}
 
 \begin{verbatim}
@@ -853,7 +1004,7 @@ Downloads datasets from \href{https://www.kaggle.com/datasets}{Kaggle} into a sp
 \end{verbatim}
 
 \begin{verbatim}
-## ../../data/raw/Vaibs.HW-Chars
+## data/raw/Vaibs.HW-Chars
 ## +-- Train
 ## |   +-- #
 ## |   +-- $
@@ -1054,9 +1205,8 @@ In the \emph{code snippet} below, a pointer to the auxiliary function \hyperref[
 
 \begin{verbatim}
 ## Class Labels:
-##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V
-## [36] W X Y Z
-## 39 Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N ... Z
+##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 \end{verbatim}
 
 \begin{verbatim}
@@ -1515,14 +1665,14 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \begin{Highlighting}[]
 \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}load\_image.list\textasciigrave{}:}
 \StringTok{Getting file path lists from the following Root Path:}
-\StringTok{\%1"}\NormalTok{, root\_path)}
+\StringTok{\%1"}\NormalTok{, img.train\_root.dir)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ## Function `load_image.list`:
 ## Getting file path lists from the following Root Path:
-## ../../data/raw/Vaibs.HW-Chars/Train
+## data/raw/Vaibs.HW-Chars/Train
 \end{verbatim}
 
 \begin{Shaded}
@@ -1535,7 +1685,7 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 
 \CommentTok{\#\textquotesingle{}Gather a structured list of file paths from each target subfolder, }
 \CommentTok{\#\textquotesingle{}applying optional maximum limits, random sampling, and seed generation. }
-\NormalTok{img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file.get\_list}\NormalTok{(root\_path, }
+\NormalTok{img.file\_list }\OtherTok{\textless{}{-}} \FunctionTok{img.file.get\_list}\NormalTok{(img.train\_root.dir, }
 \NormalTok{                                        folder.list,}
 \NormalTok{                                        char\_files.max,}
 \NormalTok{                                        seed,}
@@ -1546,197 +1696,197 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \begin{verbatim}
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/#
+## data/raw/Vaibs.HW-Chars/Train/#
 ## Function: `img.file.get_list`:
 ## 15600 files in folder: #
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/$
+## data/raw/Vaibs.HW-Chars/Train/$
 ## Function: `img.file.get_list`:
 ## 16199 files in folder: $
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/&
+## data/raw/Vaibs.HW-Chars/Train/&
 ## Function: `img.file.get_list`:
 ## 13000 files in folder: &
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/@
+## data/raw/Vaibs.HW-Chars/Train/@
 ## Function: `img.file.get_list`:
 ## 38009 files in folder: @
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/0
+## data/raw/Vaibs.HW-Chars/Train/0
 ## Function: `img.file.get_list`:
 ## 65504 files in folder: 0
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/1
+## data/raw/Vaibs.HW-Chars/Train/1
 ## Function: `img.file.get_list`:
 ## 43773 files in folder: 1
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/2
+## data/raw/Vaibs.HW-Chars/Train/2
 ## Function: `img.file.get_list`:
 ## 39351 files in folder: 2
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/3
+## data/raw/Vaibs.HW-Chars/Train/3
 ## Function: `img.file.get_list`:
 ## 39996 files in folder: 3
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/4
+## data/raw/Vaibs.HW-Chars/Train/4
 ## Function: `img.file.get_list`:
 ## 38112 files in folder: 4
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/5
+## data/raw/Vaibs.HW-Chars/Train/5
 ## Function: `img.file.get_list`:
 ## 32317 files in folder: 5
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/6
+## data/raw/Vaibs.HW-Chars/Train/6
 ## Function: `img.file.get_list`:
 ## 38879 files in folder: 6
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/7
+## data/raw/Vaibs.HW-Chars/Train/7
 ## Function: `img.file.get_list`:
 ## 41080 files in folder: 7
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/8
+## data/raw/Vaibs.HW-Chars/Train/8
 ## Function: `img.file.get_list`:
 ## 38795 files in folder: 8
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/9
+## data/raw/Vaibs.HW-Chars/Train/9
 ## Function: `img.file.get_list`:
 ## 38319 files in folder: 9
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/A
+## data/raw/Vaibs.HW-Chars/Train/A
 ## Function: `img.file.get_list`:
 ## 17205 files in folder: A
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/B
+## data/raw/Vaibs.HW-Chars/Train/B
 ## Function: `img.file.get_list`:
 ## 8666 files in folder: B
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/C
+## data/raw/Vaibs.HW-Chars/Train/C
 ## Function: `img.file.get_list`:
 ## 13560 files in folder: C
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/D
+## data/raw/Vaibs.HW-Chars/Train/D
 ## Function: `img.file.get_list`:
 ## 15509 files in folder: D
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/E
+## data/raw/Vaibs.HW-Chars/Train/E
 ## Function: `img.file.get_list`:
 ## 32627 files in folder: E
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/F
+## data/raw/Vaibs.HW-Chars/Train/F
 ## Function: `img.file.get_list`:
 ## 11636 files in folder: F
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/G
+## data/raw/Vaibs.HW-Chars/Train/G
 ## Function: `img.file.get_list`:
 ## 5443 files in folder: G
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/H
+## data/raw/Vaibs.HW-Chars/Train/H
 ## Function: `img.file.get_list`:
 ## 12134 files in folder: H
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/I
+## data/raw/Vaibs.HW-Chars/Train/I
 ## Function: `img.file.get_list`:
 ## 13873 files in folder: I
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/J
+## data/raw/Vaibs.HW-Chars/Train/J
 ## Function: `img.file.get_list`:
 ## 4261 files in folder: J
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/K
+## data/raw/Vaibs.HW-Chars/Train/K
 ## Function: `img.file.get_list`:
 ## 4334 files in folder: K
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/L
+## data/raw/Vaibs.HW-Chars/Train/L
 ## Function: `img.file.get_list`:
 ## 21648 files in folder: L
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/M
+## data/raw/Vaibs.HW-Chars/Train/M
 ## Function: `img.file.get_list`:
 ## 12089 files in folder: M
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/N
+## data/raw/Vaibs.HW-Chars/Train/N
 ## Function: `img.file.get_list`:
 ## 21421 files in folder: N
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/P
+## data/raw/Vaibs.HW-Chars/Train/P
 ## Function: `img.file.get_list`:
 ## 11095 files in folder: P
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/Q
+## data/raw/Vaibs.HW-Chars/Train/Q
 ## Function: `img.file.get_list`:
 ## 4707 files in folder: Q
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/R
+## data/raw/Vaibs.HW-Chars/Train/R
 ## Function: `img.file.get_list`:
 ## 20498 files in folder: R
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/S
+## data/raw/Vaibs.HW-Chars/Train/S
 ## Function: `img.file.get_list`:
 ## 25911 files in folder: S
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/T
+## data/raw/Vaibs.HW-Chars/Train/T
 ## Function: `img.file.get_list`:
 ## 30853 files in folder: T
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/U
+## data/raw/Vaibs.HW-Chars/Train/U
 ## Function: `img.file.get_list`:
 ## 16385 files in folder: U
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/V
+## data/raw/Vaibs.HW-Chars/Train/V
 ## Function: `img.file.get_list`:
 ## 7246 files in folder: V
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/W
+## data/raw/Vaibs.HW-Chars/Train/W
 ## Function: `img.file.get_list`:
 ## 7266 files in folder: W
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/X
+## data/raw/Vaibs.HW-Chars/Train/X
 ## Function: `img.file.get_list`:
 ## 5106 files in folder: X
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/Y
+## data/raw/Vaibs.HW-Chars/Train/Y
 ## Function: `img.file.get_list`:
 ## 6762 files in folder: Y
 ## Function: `img.file.get_list`:
 ## Getting file path list from the following char's root folders:
-## ../../data/raw/Vaibs.HW-Chars/Train/Z
+## data/raw/Vaibs.HW-Chars/Train/Z
 ## Function: `img.file.get_list`:
 ## 4867 files in folder: Z
 \end{verbatim}
@@ -1829,20 +1979,20 @@ The slightly simplified version of the function's source code is shown below:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{img.file.get\_list }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(root\_path, }
+\NormalTok{img.file.get\_list }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(img.train\_root.dir, }
                                    \AttributeTok{folder.list =} \ConstantTok{NULL}\NormalTok{, }
                                    \AttributeTok{char\_files.max =} \ConstantTok{NA}\NormalTok{,}
                                    \AttributeTok{seed =} \ConstantTok{NA}\NormalTok{,}
                                    \AttributeTok{random\_sample =} \ConstantTok{FALSE}\NormalTok{) \{}
   \ControlFlowTok{if}\NormalTok{(}\FunctionTok{is.null}\NormalTok{(folder.list))}
     \CommentTok{\# Scans the root path to find all available subfolders.}
-\NormalTok{    folder.list }\OtherTok{\textless{}{-}} \FunctionTok{dir}\NormalTok{(root\_path)}
+\NormalTok{    folder.list }\OtherTok{\textless{}{-}} \FunctionTok{dir}\NormalTok{(img.train\_root.dir)}
 
   \CommentTok{\# Generates a file path list}
 \NormalTok{  path\_list }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(folder.list, }\ControlFlowTok{function}\NormalTok{(folder\_name)\{}
     \CommentTok{\#\textquotesingle{} Constructs the full path and retrieves all file paths }
     \CommentTok{\#\textquotesingle{} for the given folder name.}
-\NormalTok{    file.root\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(root\_path, folder\_name)}
+\NormalTok{    file.root\_path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(img.train\_root.dir, folder\_name)}
 \NormalTok{    folder.idx }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(folder.list }\SpecialCharTok{==}\NormalTok{ folder\_name)}
     
 \NormalTok{    fpath.list }\OtherTok{\textless{}{-}} \FunctionTok{list.files}\NormalTok{(file.root\_path, }
@@ -2024,7 +2174,7 @@ This is a lightweight utility that converts a \href{https://docs.ropensci.org/ma
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Sample image file:}
-\NormalTok{file\_path }\OtherTok{\textless{}{-}} \StringTok{"../../data/raw/Vaibs.HW{-}Chars/Train/W/0.jpg"}
+\NormalTok{file\_path }\OtherTok{\textless{}{-}} \StringTok{"data/raw/Vaibs.HW{-}Chars/Train/W/0.jpg"}
 \NormalTok{img }\OtherTok{\textless{}{-}}\NormalTok{ magick}\SpecialCharTok{::}\FunctionTok{image\_read}\NormalTok{(file\_path)}
 \end{Highlighting}
 \end{Shaded}
@@ -2040,7 +2190,7 @@ This is a lightweight utility that converts a \href{https://docs.ropensci.org/ma
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
 
 \begin{noteblock}
 In the \emph{code snippet} below, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in Section \hyperref[appndx_a.data_helper.loading]{Data Loading}.
@@ -2074,7 +2224,7 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.data_view-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.data_view-1.pdf}}
 
 \protect\phantomsection\label{func.magick_img2matrix.args}
 \paragraph{Arguments}\label{arguments-4}

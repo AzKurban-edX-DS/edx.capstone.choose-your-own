@@ -95,10 +95,36 @@ vignette: >
   \end{itemize}
   }
 
+
+
 ```{css style settings, echo = FALSE}
 ```
 
+```{r, setup, include=FALSE }
+
+library(knitr)
+library(here)
+
+site_root <- file.path(here(), "reports/HW-Chars.Recognition.Site")
+# knitr::opts_knit$set(root.dir = here())
+```
+
 ```{r env_test, include=FALSE}
+#opts_chunk$get("root.dir")
+opts_knit$get("root.dir")
+getwd()
+site_root
+
+# dir()
+
+# dir(".")
+
+# train.img.std_bin.ls.nested.file
+# normalizePath(train.img.std_bin.ls.nested.file)
+# 
+# 
+# dir(here())
+
 # str(edx)
 ```
 
@@ -116,50 +142,50 @@ stopifnot(dir.exists(support_functions.dir))
 setup_script.path <- file.path(support_scripts.dir, "setup.R")
 stopifnot(file.exists(setup_script.path))
 
-source(setup_script.path, 
-       local = knitr::knit_global())
+# source(setup_script.path, 
+#        local = knitr::knit_global())
 # or sys.source("your-script.R", envir = knitr::knit_global())
 ```
 
 \newpage
 
-```{r child = '01.intro.Rmd'}
+```{r child = file.path(site_root, '01.intro.Rmd') }
 ```
 
-```{r child = '02.0-1.methods.Rmd'}
+```{r child = file.path(site_root, '02.0-1.methods.Rmd')}
 ```
 
-```{r child = '02.2.kNN+PCA.MCC.Rmd'}
+```{r child = file.path(site_root, '02.2.kNN+PCA.MCC.Rmd')}
 ```
 
-```{r child = '02.3.RF.MCC.Rmd'}
+```{r child = file.path(site_root, '02.3.RF.MCC.Rmd')}
 ```
 
-```{r child = '02.4(1)DNNB-MCC.Rmd'}
+```{r child = file.path(site_root, '02.4(1)DNNB-MCC.Rmd')}
 ```
 
-```{r child = '02.4.2.TDNN-MCC.Rmd'}
+```{r child = file.path(site_root, '02.4.2.TDNN-MCC.Rmd')}
 ```
 
-```{r child = '02.5(1)CNNB-MCC.model.Rmd'}
+```{r child = file.path(site_root, '02.5(1)CNNB-MCC.model.Rmd')}
 ```
 
-```{r child = '02.5.2.TCNN-MCC.model.Rmd'}
+```{r child = file.path(site_root, '02.5.2.TCNN-MCC.model.Rmd')}
 ```
 
-```{r child = '03.results.Rmd'}
+```{r child = file.path(site_root, '03.results.Rmd')}
 ```
 
-```{r child = '04.conclusion.Rmd'}
+```{r child = file.path(site_root, '04.conclusion.Rmd')}
 ```
 
-```{r child = '05.appendix-a.Rmd'}
+```{r child = file.path(site_root, '05.appendix-a.Rmd')}
 ```
 
-```{r child = '06.appendix-b.Rmd'}
+```{r child = file.path(site_root, '06.appendix-b.Rmd')}
 ```
 
-```{r child = '07.appendix-c.Rmd'}
+```{r child = file.path(site_root, '07.appendix-c.Rmd')}
 ```
 
 
