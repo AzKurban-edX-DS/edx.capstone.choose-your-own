@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-13}
+\date{2026-11-15}
 
 \begin{document}
 \maketitle
@@ -724,14 +724,15 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
-## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px"
+##  [8] "J: 32x32px" "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px"
+## [15] "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
-Figure \ref{fig:intro-ds-overview-img-diff-size} below shows shows what these images look like.
+Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
 
 \begin{figure}
-\includegraphics[width=5.56in]{capstone-CYO.report_files/figure-latex/intro-ds-overview-img-diff-size-1} \caption{Example images, both 28x28 and 32x32 pixels.}\label{fig:intro-ds-overview-img-diff-size}
+\includegraphics[width=5.56in]{index_files/figure-latex/intro-ds-overview-img-diff-size-sample-1} \caption{Example images, both 28x28 and 32x32 pixels.}\label{fig:intro-ds-overview-img-diff-size-sample}
 \end{figure}
 
 \newpage
@@ -763,7 +764,7 @@ Also, given the linear nature of the black-and-white character images in the dat
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/intro.ds-overview@img.diff-size$hist-1.pdf}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -771,7 +772,7 @@ Also, given the linear nature of the black-and-white character images in the dat
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-2.pdf}} \pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/intro.ds-overview@img.diff-size$hist-3.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/intro.ds-overview@img.diff-size$hist-2.pdf}} \pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/intro.ds-overview@img.diff-size$hist-3.pdf}}
 
 As already mentioned above in the \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} section, the \emph{raw image data} undergoes preprocessing via the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script (described below in \hyperref[appndx_b]{Appendix B}), which includes \emph{resizing the images to a uniform dimension} (\texttt{28x28} in our case) and \emph{binarizing} them.
 
@@ -799,7 +800,7 @@ The \emph{label list} is as follows:
 ## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 \end{verbatim}
 
-And the nested list of \emph{preprocessed character image data} has the following structure:
+And the \emph{nested list} of preprocessed character image data of the \emph{Training Set} has the following structure:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -929,6 +930,269 @@ And the nested list of \emph{preprocessed character image data} has the followin
 ##   .. ..$ img.list  :List of 4866
 ##   .. ..$ fpath.list: chr [1:4866] "data/raw/Vaibs.HW-Chars/Train/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/100.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/1000.jpg" ...
 \end{verbatim}
+
+The \emph{nested list} of the preprocessed \emph{Validation Set} data (created by the same script and used for the \emph{Final Test} of the \emph{best model} developed in \emph{this Project}) has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ft.img.std\_bin.ls.nested, }\AttributeTok{list.len =} \DecValTok{39}\NormalTok{, }\AttributeTok{max.level =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ label.list: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
+##  $ img.list  :List of 39
+##   ..$ #:List of 2
+##   .. ..$ img.list  :List of 1300
+##   .. ..$ fpath.list: chr [1:1300] "data/raw/Vaibs.HW-Chars/Validation/#/__0_1118489.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_121440.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_1274730.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_142135.png" ...
+##   ..$ $:List of 2
+##   .. ..$ img.list  :List of 1350
+##   .. ..$ fpath.list: chr [1:1350] "data/raw/Vaibs.HW-Chars/Validation/$/__0_1008345.png" "data/raw/Vaibs.HW-Chars/Validation/$/__0_1013630.png" "data/raw/Vaibs.HW-Chars/Validation/$/__0_1072662.png" "data/raw/Vaibs.HW-Chars/Validation/$/__0_1299347.png" ...
+##   ..$ &:List of 2
+##   .. ..$ img.list  :List of 520
+##   .. ..$ fpath.list: chr [1:520] "data/raw/Vaibs.HW-Chars/Validation/&/__0_1218973.png" "data/raw/Vaibs.HW-Chars/Validation/&/__0_1394069.png" "data/raw/Vaibs.HW-Chars/Validation/&/__0_1751754.png" "data/raw/Vaibs.HW-Chars/Validation/&/__0_1837807.png" ...
+##   ..$ @:List of 2
+##   .. ..$ img.list  :List of 1250
+##   .. ..$ fpath.list: chr [1:1250] "data/raw/Vaibs.HW-Chars/Validation/@/__0_1053738.png" "data/raw/Vaibs.HW-Chars/Validation/@/__0_1283789.png" "data/raw/Vaibs.HW-Chars/Validation/@/__0_1364295.png" "data/raw/Vaibs.HW-Chars/Validation/@/__0_1369539.png" ...
+##   ..$ 0:List of 2
+##   .. ..$ img.list  :List of 368
+##   .. ..$ fpath.list: chr [1:368] "data/raw/Vaibs.HW-Chars/Validation/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_100.jpg" ...
+##   ..$ 1:List of 2
+##   .. ..$ img.list  :List of 1675
+##   .. ..$ fpath.list: chr [1:1675] "data/raw/Vaibs.HW-Chars/Validation/1/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/1/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/1/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/1/100.jpg" ...
+##   ..$ 2:List of 2
+##   .. ..$ img.list  :List of 1267
+##   .. ..$ fpath.list: chr [1:1267] "data/raw/Vaibs.HW-Chars/Validation/2/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/2/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/2/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/2/100.jpg" ...
+##   ..$ 3:List of 2
+##   .. ..$ img.list  :List of 1301
+##   .. ..$ fpath.list: chr [1:1301] "data/raw/Vaibs.HW-Chars/Validation/3/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/3/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/3/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/3/100.jpg" ...
+##   ..$ 4:List of 2
+##   .. ..$ img.list  :List of 1277
+##   .. ..$ fpath.list: chr [1:1277] "data/raw/Vaibs.HW-Chars/Validation/4/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/4/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/4/100.jpg" "data/raw/Vaibs.HW-Chars/Validation/4/1000.jpg" ...
+##   ..$ 5:List of 2
+##   .. ..$ img.list  :List of 1388
+##   .. ..$ fpath.list: chr [1:1388] "data/raw/Vaibs.HW-Chars/Validation/5/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/5/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/5/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/5/100.jpg" ...
+##   ..$ 6:List of 2
+##   .. ..$ img.list  :List of 1594
+##   .. ..$ fpath.list: chr [1:1594] "data/raw/Vaibs.HW-Chars/Validation/6/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/6/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/6/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/6/100.jpg" ...
+##   ..$ 7:List of 2
+##   .. ..$ img.list  :List of 190
+##   .. ..$ fpath.list: chr [1:190] "data/raw/Vaibs.HW-Chars/Validation/7/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/7/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/7/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/7/100.jpg" ...
+##   ..$ 8:List of 2
+##   .. ..$ img.list  :List of 1198
+##   .. ..$ fpath.list: chr [1:1198] "data/raw/Vaibs.HW-Chars/Validation/8/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/8/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/8/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/8/100.jpg" ...
+##   ..$ 9:List of 2
+##   .. ..$ img.list  :List of 1195
+##   .. ..$ fpath.list: chr [1:1195] "data/raw/Vaibs.HW-Chars/Validation/9/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/9/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/9/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/9/100.jpg" ...
+##   ..$ A:List of 2
+##   .. ..$ img.list  :List of 392
+##   .. ..$ fpath.list: chr [1:392] "data/raw/Vaibs.HW-Chars/Validation/A/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_100.jpg" ...
+##   ..$ B:List of 2
+##   .. ..$ img.list  :List of 385
+##   .. ..$ fpath.list: chr [1:385] "data/raw/Vaibs.HW-Chars/Validation/B/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/B/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/B/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/B/_1_100.jpg" ...
+##   ..$ C:List of 2
+##   .. ..$ img.list  :List of 168
+##   .. ..$ fpath.list: chr [1:168] "data/raw/Vaibs.HW-Chars/Validation/C/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/C/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/C/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/C/100.jpg" ...
+##   ..$ D:List of 2
+##   .. ..$ img.list  :List of 322
+##   .. ..$ fpath.list: chr [1:322] "data/raw/Vaibs.HW-Chars/Validation/D/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/D/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/D/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/D/_1_100.jpg" ...
+##   ..$ E:List of 2
+##   .. ..$ img.list  :List of 308
+##   .. ..$ fpath.list: chr [1:308] "data/raw/Vaibs.HW-Chars/Validation/E/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/E/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/E/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/E/_1_100.jpg" ...
+##   ..$ F:List of 2
+##   .. ..$ img.list  :List of 324
+##   .. ..$ fpath.list: chr [1:324] "data/raw/Vaibs.HW-Chars/Validation/F/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/F/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/F/_1_100.jpg" "data/raw/Vaibs.HW-Chars/Validation/F/_1_101.jpg" ...
+##   ..$ G:List of 2
+##   .. ..$ img.list  :List of 363
+##   .. ..$ fpath.list: chr [1:363] "data/raw/Vaibs.HW-Chars/Validation/G/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/G/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/G/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/G/_1_100.jpg" ...
+##   ..$ H:List of 2
+##   .. ..$ img.list  :List of 343
+##   .. ..$ fpath.list: chr [1:343] "data/raw/Vaibs.HW-Chars/Validation/H/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/H/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/H/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/H/_1_100.jpg" ...
+##   ..$ I:List of 2
+##   .. ..$ img.list  :List of 381
+##   .. ..$ fpath.list: chr [1:381] "data/raw/Vaibs.HW-Chars/Validation/I/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/I/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/I/_1_100.jpg" "data/raw/Vaibs.HW-Chars/Validation/I/_1_104.jpg" ...
+##   ..$ J:List of 2
+##   .. ..$ img.list  :List of 126
+##   .. ..$ fpath.list: chr [1:126] "data/raw/Vaibs.HW-Chars/Validation/J/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/J/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/J/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/J/100.jpg" ...
+##   ..$ K:List of 2
+##   .. ..$ img.list  :List of 240
+##   .. ..$ fpath.list: chr [1:240] "data/raw/Vaibs.HW-Chars/Validation/K/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/K/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/K/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/K/100.jpg" ...
+##   ..$ L:List of 2
+##   .. ..$ img.list  :List of 210
+##   .. ..$ fpath.list: chr [1:210] "data/raw/Vaibs.HW-Chars/Validation/L/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/L/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/L/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/L/100.jpg" ...
+##   ..$ M:List of 2
+##   .. ..$ img.list  :List of 251
+##   .. ..$ fpath.list: chr [1:251] "data/raw/Vaibs.HW-Chars/Validation/M/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/M/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/M/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/M/100.jpg" ...
+##   ..$ N:List of 2
+##   .. ..$ img.list  :List of 235
+##   .. ..$ fpath.list: chr [1:235] "data/raw/Vaibs.HW-Chars/Validation/N/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/N/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/N/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/N/100.jpg" ...
+##   ..$ P:List of 2
+##   .. ..$ img.list  :List of 175
+##   .. ..$ fpath.list: chr [1:175] "data/raw/Vaibs.HW-Chars/Validation/P/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/P/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/P/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/P/100.jpg" ...
+##   ..$ Q:List of 2
+##   .. ..$ img.list  :List of 405
+##   .. ..$ fpath.list: chr [1:405] "data/raw/Vaibs.HW-Chars/Validation/Q/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Q/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Q/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Q/_1_100.jpg" ...
+##   ..$ R:List of 2
+##   .. ..$ img.list  :List of 366
+##   .. ..$ fpath.list: chr [1:366] "data/raw/Vaibs.HW-Chars/Validation/R/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/R/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/R/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/R/_1_100.jpg" ...
+##   ..$ S:List of 2
+##   .. ..$ img.list  :List of 168
+##   .. ..$ fpath.list: chr [1:168] "data/raw/Vaibs.HW-Chars/Validation/S/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/S/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/S/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/S/100.jpg" ...
+##   ..$ T:List of 2
+##   .. ..$ img.list  :List of 384
+##   .. ..$ fpath.list: chr [1:384] "data/raw/Vaibs.HW-Chars/Validation/T/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/T/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/T/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/T/_1_100.jpg" ...
+##   ..$ U:List of 2
+##   .. ..$ img.list  :List of 210
+##   .. ..$ fpath.list: chr [1:210] "data/raw/Vaibs.HW-Chars/Validation/U/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/U/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/U/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/U/100.jpg" ...
+##   ..$ V:List of 2
+##   .. ..$ img.list  :List of 224
+##   .. ..$ fpath.list: chr [1:224] "data/raw/Vaibs.HW-Chars/Validation/V/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/V/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/V/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/V/100.jpg" ...
+##   ..$ W:List of 2
+##   .. ..$ img.list  :List of 182
+##   .. ..$ fpath.list: chr [1:182] "data/raw/Vaibs.HW-Chars/Validation/W/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/W/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/W/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/W/100.jpg" ...
+##   ..$ X:List of 2
+##   .. ..$ img.list  :List of 119
+##   .. ..$ fpath.list: chr [1:119] "data/raw/Vaibs.HW-Chars/Validation/X/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/X/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/X/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/X/100.jpg" ...
+##   ..$ Y:List of 2
+##   .. ..$ img.list  :List of 189
+##   .. ..$ fpath.list: chr [1:189] "data/raw/Vaibs.HW-Chars/Validation/Y/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Y/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Y/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Y/100.jpg" ...
+##   ..$ Z:List of 2
+##   .. ..$ img.list  :List of 181
+##   .. ..$ fpath.list: chr [1:181] "data/raw/Vaibs.HW-Chars/Validation/Z/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/100.jpg" ...
+\end{verbatim}
+
+We can immediately observe that both the \emph{Training Set} and \emph{Validation Set} data are considerably imbalanced. Since we are going to use the \emph{accuracy metric} to evaluate our models during the \emph{training stage}, we will need to balance our \emph{training set}.
+
+\begin{noteblock}
+We \textbf{will not balance} our \emph{Validation Set}, so we can use \textbf{\underline{ALL AVAILABLE DATA}} for the \emph{Final Test}.
+We will keep in mind, though, that plain accuracy is not the most appropriate metric for evaluating the test results in this case.
+As explained in section ``4 ASSESSMENT METRICS
+FOR IMBALANCED LEARNING'' of the article \href{https://www.academia.edu/86894835/Learning_from_Imbalanced_Data}{Learning from Imbalanced Data}, the \emph{F-Measure metric} and the \emph{Receiver Operating Characteristic (ROC) Curves} will provide better results when dealing with \emph{imbalanced data}.\autocite{LFID_HHGE5128907}
+We will use the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#balanced-accuracy-and-f_1-score}{F1-Score metric} in our \emph{Final Test}. We will also use \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#roc-and-precision-recall-curves}{ROC curves} and the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#the-confusion-matrix}{Confusion Matrix} throughout \emph{this Project} to assess our models. Additionally, we will compute accuracy separately for each class (let's call this custom metric \emph{Per-Class Accuracy}, or \emph{PCA} for short). All these additional metrics will give us more insight into our models' performance, especially when testing on the imbalanced dataset.\autocite{IDS2_27}
+
+\end{noteblock}
+
+\subsection{Preparing the Datasets}\label{preparing-the-datasets}
+
+Now, after the first step of raw image data preprocessing, all image data should have the same shape as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{shape}\NormalTok{(train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list}\SpecialCharTok{$}\StringTok{\textasciigrave{}}\AttributeTok{@}\StringTok{\textasciigrave{}}\SpecialCharTok{$}\NormalTok{img.list[[}\DecValTok{1}\NormalTok{]])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## shape(28, 28)
+\end{verbatim}
+
+This means that all the images should have the same size: `28x28'.
+
+Let's check it out. For that purpose, we use a dedicated custom helper function defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L344}{data-helper.R} script:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{img.min\_max.size }\OtherTok{\textless{}{-}} \FunctionTok{calc.min\_max.img\_sizes}\NormalTok{(train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Function `calc.min_max.img_sizes`:
+## Structure of the Image Size Array:
+## 'data.frame':    834032 obs. of  2 variables:
+##  $ width : int  28 28 28 28 28 28 28 28 28 28 ...
+##  $ height: int  28 28 28 28 28 28 28 28 28 28 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(img.min\_max.size)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   width min.height max.height
+##   <int>      <int>      <int>
+## 1    28         28         28
+\end{verbatim}
+
+The result above proves that all the images in the \emph{Training Set} have the same size: \texttt{28x28}.
+
+The same is true for the \emph{Validation Set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{img.min\_max.size }\OtherTok{\textless{}{-}} \FunctionTok{calc.min\_max.img\_sizes}\NormalTok{(ft.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Function `calc.min_max.img_sizes`:
+## Structure of the Image Size Array:
+## 'data.frame':    22524 obs. of  2 variables:
+##  $ width : int  28 28 28 28 28 28 28 28 28 28 ...
+##  $ height: int  28 28 28 28 28 28 28 28 28 28 ...
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(img.min\_max.size)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   width min.height max.height
+##   <int>      <int>      <int>
+## 1    28         28         28
+\end{verbatim}
+
+Let's now see how the sample images shown in Figure above will look.
+
+Now, let's see what the sample images shown in Figure \ref{fig:intro-ds-overview-img-diff-size} above look like after trimming, standardization, and binarization.
+For that purpose, we extract the preprocessed image data of the \emph{Training Set} using the following code snippet:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{img.sample }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
+\NormalTok{  img.mx }\OtherTok{\textless{}{-}}\NormalTok{ train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list[[ch]]}\SpecialCharTok{$}\NormalTok{img.list[[}\DecValTok{1}\NormalTok{]]}
+  \FunctionTok{mode}\NormalTok{(img.mx) }\OtherTok{\textless{}{-}} \StringTok{"numeric"}
+
+\NormalTok{  img.array }\OtherTok{\textless{}{-}} \FunctionTok{array}\NormalTok{(}\FunctionTok{t}\NormalTok{(img.mx), }\AttributeTok{dim =} \FunctionTok{c}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(img.mx), }\FunctionTok{ncol}\NormalTok{(img.mx), }\DecValTok{1}\NormalTok{))}
+\NormalTok{  img }\OtherTok{\textless{}{-}} \FunctionTok{image\_read}\NormalTok{(img.array)}
+  \FunctionTok{image\_data}\NormalTok{(img)}
+\NormalTok{\})}
+
+\NormalTok{img.annotation }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{length}\NormalTok{(img.files)), }\ControlFlowTok{function}\NormalTok{(i)\{}
+\NormalTok{  img.dat }\OtherTok{\textless{}{-}}\NormalTok{ img.sample[[i]]}
+\NormalTok{  img.dim }\OtherTok{\textless{}{-}} \FunctionTok{dim}\NormalTok{(img.dat)}
+  
+\NormalTok{  img.size }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(img.dim[}\DecValTok{2}\NormalTok{], }\StringTok{\textquotesingle{}x\textquotesingle{}}\NormalTok{, img.dim[}\DecValTok{3}\NormalTok{], }\StringTok{\textquotesingle{}px\textquotesingle{}}\NormalTok{)}
+  \FunctionTok{paste0}\NormalTok{(chr\_set[i],}\StringTok{": "}\NormalTok{, img.size)}
+\NormalTok{\})}
+
+\NormalTok{img.dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{file =}\NormalTok{ img.files,}
+                      \AttributeTok{annotation =}\NormalTok{ img.annotation)}
+
+\FunctionTok{print}\NormalTok{(img.dat}\SpecialCharTok{$}\NormalTok{annotation)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px"
+##  [8] "J: 28x28px" "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px"
+## [15] "Q: 28x28px" "S: 28x28px"
+\end{verbatim}
+
+Now, we can see that all the sample images are the same size.
+
+Figure \ref{fig:intro-ds-overview-img-std-bin-sample} below shows shows what these images look like.
+
+\begin{figure}
+\includegraphics[width=5.56in]{index_files/figure-latex/intro-ds-overview-img-std-bin-sample-1} \caption{Example images; all are the same size: 28x28 pixels.}\label{fig:intro-ds-overview-img-std-bin-sample}
+\end{figure}
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
@@ -2190,7 +2454,7 @@ This is a lightweight utility that converts a \href{https://docs.ropensci.org/ma
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/dmagick_img2matrix@usage.plot_before-1.pdf}}
 
 \begin{noteblock}
 In the \emph{code snippet} below, \emph{this function} is called internally from the \hyperref[func.load.img_trimmed.dat]{load.img\_trimmed.dat} function described above in Section \hyperref[appndx_a.data_helper.loading]{Data Loading}.
@@ -2224,7 +2488,7 @@ In the \emph{code snippet} below, \emph{this function} is called internally from
 \end{Highlighting}
 \end{Shaded}
 
-\pandocbounded{\includegraphics[keepaspectratio]{capstone-CYO.report_files/figure-latex/dmagick_img2matrix@usage.data_view-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/dmagick_img2matrix@usage.data_view-1.pdf}}
 
 \protect\phantomsection\label{func.magick_img2matrix.args}
 \paragraph{Arguments}\label{arguments-4}

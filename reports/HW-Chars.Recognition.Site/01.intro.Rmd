@@ -246,8 +246,8 @@ open_logfile(".intro.chunks.datasets-overview")
 
 
 
-train.img.std_bin.ls.nested <- readRDS(here(train.img.std_bin.ls.nested.file))
-
+train.img.std_bin.ls.nested <- readRDS(train.img.std_bin.ls.nested.file)
+ft.img.std_bin.ls.nested <- readRDS(final_test.img.std_bin.ls.nested.file)
 ```
 
 The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from [Kaggle](https://www.kaggle.com).As mentioned in the section [Downloading & Preprocessing Input Datasets] above, the dedicated script [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) (described below in [Appendix B](#appndx_b)) is used for that purpose. The result of its execution is a folder structure (identical to one shown on the dataset's webpage) containing the raw image data, as shown below:
@@ -321,19 +321,15 @@ img.dat <- data.frame(file = img.files,
 
 print(img.dat$annotation)
 ```
-Figure \@ref(fig:intro-ds-overview-img-diff-size) below shows shows what these images look like.
+Figure \@ref(fig:intro-ds-overview-img-diff-size-sample) below shows what these images look like.
 
-```{r intro-ds-overview-img-diff-size, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
-# print.image_grid(img.dat) 
+```{r intro-ds-overview-img-diff-size-sample, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
 print.image_grid(img.dat,
                  # font.size = 20,
                  # image.scale = "50",
                  geometry = '100x',
                  tile = '4x4'
                  )
-```
-```{r intro.datasets-overview@close-log, include=FALSE}
-log_close()
 ```
 
 \newpage
@@ -380,20 +376,127 @@ The result of the script execution consists of the *label list* of the *characte
 
 The *label list* is as follows:
 
-```{r intro.ds-overview@ }
+```{r intro.ds-overview@label-list }
 print(train.img.std_bin.ls.nested$label.list)
 ```
 
-And the nested list of *preprocessed character image data* has the following structure:
+And the *nested list* of preprocessed character image data of the *Training Set* has the following structure:
 
-```{r intro.ds-overview@img.std_bin.ls.nested$structure }
+```{r intro.ds-overview@train.img.std_bin.ls.nested$structure }
 str(train.img.std_bin.ls.nested, list.len = 39, max.level = 3)
 
 ```
 
+The *nested list* of the preprocessed *Validation Set* data (created by the same script and used for the *Final Test* of the *best model* developed in *this Project*) has the following structure:
+
+```{r intro.ds-overview@ft.img.std_bin.ls.nested$structure }
+str(ft.img.std_bin.ls.nested, list.len = 39, max.level = 3)
+
+```
+
+We can immediately observe that both the *Training Set* and *Validation Set* data are considerably imbalanced. Since we are going to use the *accuracy metric* to evaluate our models during the *training stage*, we will need to balance our *training set*.
+
+::: {.noteblock data-latex=""}
+We **will not balance** our *Validation Set*, so we can use **\underline{ALL AVAILABLE DATA}** for the *Final Test*.
+We will keep in mind, though, that plain accuracy is not the most appropriate metric for evaluating the test results in this case. 
+As explained in section "4 ASSESSMENT METRICS
+FOR IMBALANCED LEARNING" of the article [Learning from Imbalanced Data](https://www.academia.edu/86894835/Learning_from_Imbalanced_Data), the *F-Measure metric* and the *Receiver Operating Characteristic (ROC) Curves* will provide better results when dealing with *imbalanced data*.[@LFID_HHGE5128907]
+We will use the [F1-Score metric](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#balanced-accuracy-and-f_1-score) in our *Final Test*. We will also use [ROC curves](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#roc-and-precision-recall-curves) and the [Confusion Matrix](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#the-confusion-matrix) throughout *this Project* to assess our models. Additionally, we will compute accuracy separately for each class (let's call this custom metric *Per-Class Accuracy*, or *PCA* for short). All these additional metrics will give us more insight into our models’ performance, especially when testing on the imbalanced dataset.[@IDS2_27]
+:::
+
+### Preparing the Datasets
+
+Now, after the first step of raw image data preprocessing, all image data should have the same shape as follows:
+
+```{r intro.ds-overview@sample-image-shape}
+shape(train.img.std_bin.ls.nested$img.list$`@`$img.list[[1]])
+```
+This means that all the images should have the same size: '28x28'.
+
+Let's check it out. For that purpose, we use a dedicated custom helper function defined in the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L344) script: 
+```{r intro.ds-overview@train.image-size_28x28}
+img.min_max.size <- calc.min_max.img_sizes(train.img.std_bin.ls.nested$img.list)
+print(img.min_max.size)
+```
+
+The result above proves that all the images in the *Training Set* have the same size: `28x28`.
+
+The same is true for the *Validation Set*:
+
+```{r intro.ds-overview@validation.image-size_28x28}
+img.min_max.size <- calc.min_max.img_sizes(ft.img.std_bin.ls.nested$img.list)
+print(img.min_max.size)
+```
+```{r intro.ds-overview@calc.min_max.img_sizes$cleanup, include=FALSE}
+rm(img.min_max.size,
+   ft.img.std_bin.ls.nested)
+```
+
+Let's now see how the sample images shown in Figure  above will look.
+
+Now, let's see what the sample images shown in Figure \@ref(fig:intro-ds-overview-img-diff-size) above look like after trimming, standardization, and binarization.
+For that purpose, we extract the preprocessed image data of the *Training Set* using the following code snippet:
+```{r intro.ds-overview@img.same-size$dat }
+img.sample <- lapply(chr_set, function(chr) {
+  img.mx <- train.img.std_bin.ls.nested$img.list[[ch]]$img.list[[1]]
+  mode(img.mx) <- "numeric"
+
+  img.array <- array(t(img.mx), dim = c(nrow(img.mx), ncol(img.mx), 1))
+  img <- image_read(img.array)
+  image_data(img)
+})
+
+img.annotation <- sapply(seq_len(length(img.files)), function(i){
+  img.dat <- img.sample[[i]]
+  img.dim <- dim(img.dat)
+  
+  img.size <- paste0(img.dim[2], 'x', img.dim[3], 'px')
+  paste0(chr_set[i],": ", img.size)
+})
+
+img.dat <- data.frame(file = img.files,
+                      annotation = img.annotation)
+
+print(img.dat$annotation)
+```
+
+Now, we can see that all the sample images are the same size.
+
+Figure \@ref(fig:intro-ds-overview-img-std-bin-sample) below shows shows what these images look like.
+
+```{r intro-ds-overview-img-std-bin-sample, echo=FALSE, fig.cap="Example images; all are the same size: 28x28 pixels."}
+print.image_grid(img.dat,
+                 # font.size = 20,
+                 # image.scale = "50",
+                 geometry = '100x',
+                 tile = '4x4'
+                 )
+```
+```{r intro.datasets-overview@image_grid$cleanup, include=FALSE}
+rm(img.dat)
+```
 
 
 
 
 
+
+
+
+
+```{r intro.ds-overview@train.img.std_bin.ls.nested$cleanup, include=FALSE}
+rm(train.img.std_bin.ls.nested)
+```
+
+
+
+
+```{r intro.ds-overview@, include=FALSE}
+```
+
+
+
+```{r intro.datasets-overview@close-log, include=FALSE}
+log_close()
+```
 

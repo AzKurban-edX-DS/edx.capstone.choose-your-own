@@ -58,7 +58,6 @@ log_close()
 
 #### Training Set: Prepare Standardized Binary Image Data ----------------------
 open_logfile(".ds.train.raw-dat2std-bin.array")
-
 stopifnot(file.exists(raw_img.dat2std_bin.script.path))
 
 ##### Init ---------------------------------------------------------------------
@@ -93,7 +92,8 @@ source(raw_img.dat2std_bin.script.path,
 
 stopifnot(!is.null(Y.Labels),
           !is.null(ds.img_min.geometry),
-          !is.null(std_img.side))
+          !is.null(std_img.side),
+          file.exists(train.img.std_bin.array.file))
 
 N.classes <- length(Y.Labels)
 
@@ -139,14 +139,21 @@ log_close()
 #### Final Test set: Prepare Standardize Binary Image Data ---------------------
 open_logfile(".ds.final-test.raw-dat2std-bin.array")
 
-img.std_bin.ls.nested.file <- file.path(final_test.data.dir, 
+##### Init ---------------------------------------------------------------------
+
+final_test.img.std_bin.ls.nested.file <- file.path(final_test.data.dir, 
                                         "final-test.img.std_bin.ls-nested.rds")
 
+final_test.img.std_bin.array.file <- file.path(final_test.data.dir, 
+                                               "final-test.img.std_bin.array.rds")
+
+img.std_bin.ls.nested.file <- final_test.img.std_bin.ls.nested.file
 img.std_bin.array.ls.file <- file.path(final_test.data.dir, 
                                        "final-test.img.std_bin.array.ls.rds")
 
-img.std_bin.array.file <- file.path(final_test.data.dir, 
-                                    "final-test.img.std_bin.array.rds")
+img.std_bin.array.file <- final_test.img.std_bin.array.file
+
+##### Run Script ---------------------------------------------------------------
 
 source(raw_img.dat2std_bin.script.path, 
        catch.aborts = TRUE,
@@ -155,8 +162,8 @@ source(raw_img.dat2std_bin.script.path,
        verbose = TRUE,
        keep.source = TRUE)
 
-final_test.img.std_bin.array.file <- img.std_bin.array.file
-stopifnot(file.exists(final_test.img.std_bin.array.file))
+stopifnot(file.exists(final_test.img.std_bin.ls.nested.file,
+                      final_test.img.std_bin.array.file))
 
 log_close()
 # *************************************************************************

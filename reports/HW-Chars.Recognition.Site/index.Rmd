@@ -105,8 +105,17 @@ vignette: >
 library(knitr)
 library(here)
 
-site_root <- file.path(here(), "reports/HW-Chars.Recognition.Site")
+# site_root <- file.path(here(), "reports/HW-Chars.Recognition.Site")
 # knitr::opts_knit$set(root.dir = here())
+
+# Get the directory where this .Rmd file is located
+doc_dir <- dirname(knitr::current_input(dir = TRUE))
+
+# Construct the standard R Markdown figure directory path inside the document folder
+doc_name <- tools::file_path_sans_ext(basename(knitr::current_input()))
+fig_dir  <- file.path(doc_dir, paste0(doc_name, "_files"), "figure-latex", "/")
+
+knitr::opts_chunk$set(fig.path = fig_dir)
 ```
 
 ```{r env_test, include=FALSE}
