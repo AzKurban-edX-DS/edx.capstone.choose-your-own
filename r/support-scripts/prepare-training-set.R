@@ -4,7 +4,6 @@
 
 ## Prepare Training Datasets ---------------------------------------------------
 open_logfile(".prepare-train-set")
-stopifnot(file.exists(train.img.std_bin.ls.nested.file))
 
 ### Preparing Default Split Datasets (of 80%-size Training Set) for NN-Based Models ----
 

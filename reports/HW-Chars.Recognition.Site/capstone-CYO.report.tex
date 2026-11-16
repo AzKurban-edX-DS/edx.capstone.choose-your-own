@@ -224,9 +224,9 @@ All the source files for \emph{this Project} are available in the \emph{Project}
 
 \end{noteblock}
 
-In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
+In this project, we will develop and explore several HCR Multiclass Classifier (MCC) models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections {[}k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model{]} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
 
 Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
 
@@ -237,7 +237,7 @@ The \textbf{\emph{DNN-Based}} models are as follows:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section {[}Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model{]};
+  \textbf{\emph{Dense Neural Network-Based Basic (DNNB) MCC Model:}} described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
 \item
   \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
 \end{itemize}
@@ -247,7 +247,7 @@ The last models we will build and explore, the \textbf{\emph{CNN-Based}} models,
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section {[}Convolutional Neural Network-Based Basic (CNNB) MCC Model{]};
+  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section \hyperref[cnn-based-basic-cnnb-mcc-model]{CNN-Based Basic (CNNB) MCC Model};
 \item
   \textbf{\emph{Tuned CNN-Based MCC Model:}} described in Section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
 \end{itemize}
@@ -724,8 +724,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
-##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
+## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
@@ -1072,8 +1072,6 @@ We will use the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluati
 
 \end{noteblock}
 
-\subsection{Preparing the Datasets}\label{preparing-the-datasets}
-
 Now, after the first step of raw image data preprocessing, all image data should have the same shape as follows:
 
 \begin{Shaded}
@@ -1156,7 +1154,7 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{img.sample }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
-\NormalTok{  img.mx }\OtherTok{\textless{}{-}}\NormalTok{ train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list[[ch]]}\SpecialCharTok{$}\NormalTok{img.list[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  img.mx }\OtherTok{\textless{}{-}}\NormalTok{ train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list[[chr]]}\SpecialCharTok{$}\NormalTok{img.list[[}\DecValTok{1}\NormalTok{]]}
   \FunctionTok{mode}\NormalTok{(img.mx) }\OtherTok{\textless{}{-}} \StringTok{"numeric"}
 
 \NormalTok{  img.array }\OtherTok{\textless{}{-}} \FunctionTok{array}\NormalTok{(}\FunctionTok{t}\NormalTok{(img.mx), }\AttributeTok{dim =} \FunctionTok{c}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(img.mx), }\FunctionTok{ncol}\NormalTok{(img.mx), }\DecValTok{1}\NormalTok{))}
@@ -1180,8 +1178,8 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
-##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px" "6: 28x28px" "B: 28x28px"
+## [11] "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 Now, we can see that all the sample images are the same size.
@@ -1198,6 +1196,58 @@ We can't even see any noticeable differences in the sample images after preproce
 
 So, we can be pretty sure these changes will not affect the models' recognition ability.
 At the same time, it is quite clear that this preprocessing can significantly speed up the training process and substantially reduce computational resource consumption.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ds.std\_img.mx }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(train.img.std\_bin.array.file)}
+\FunctionTok{str}\NormalTok{(ds.std\_img.mx)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ img_dat.array  : logi [1:834032, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   ..- attr(*, "dimnames")=List of 3
+##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
+##   .. ..$ : NULL
+##   .. ..$ : NULL
+##  $ file_path.array: chr [1:834032(1d)] "data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1022082.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1042459.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1055444.png" ...
+##   ..- attr(*, "dimnames")=List of 1
+##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
+\end{verbatim}
+
+\subsection{Preparing the Datasets}\label{preparing-the-datasets}
+
+\subsubsection{The Train/Test Split Datasets}\label{the-traintest-split-datasets}
+
+These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script, which splits the standardized binary \emph{Train Set} described above into the following training and test subsets:
+
+\begin{itemize}
+\item
+  \textbf{Image Data Array Splits} for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{\emph{Fine-Tuned DNN-Based (TDNN) MCC}} (described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model});
+  \item
+    \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
+  \end{itemize}
+\item
+  \textbf{Flattened Matrix Splits} for the following \emph{Shallow Learning} and \emph{Deep Learning} DNN-based basic models:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{\emph{k-Nearest Neighbors (kNN) MCC}} model (described in Section \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model});
+  \item
+    \textbf{\emph{Random Forest (RF) MCC}} model (described in Section \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model});
+  \item
+    \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model}).
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Image Data Array Splits}\label{image-data-array-splits}
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
@@ -1217,9 +1267,9 @@ At the same time, it is quite clear that this preprocessing can significantly sp
 
 \subsection{CNN-Based Basic (CNNB) MCC Model}\label{cnn-based-basic-cnnb-mcc-model}
 
-\section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
+\subsection{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
 
-\subsection{TCNN MCC: Final Test}\label{tcnn-mcc-final-test}
+\subsubsection{TCNN MCC: Final Test}\label{tcnn-mcc-final-test}
 
 \chapter{Results}\label{results}
 
