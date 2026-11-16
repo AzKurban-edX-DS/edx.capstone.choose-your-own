@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-15}
+\date{2026-11-16}
 
 \begin{document}
 \maketitle
@@ -724,9 +724,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px"
-##  [8] "J: 32x32px" "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px"
-## [15] "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
+##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
@@ -1066,9 +1065,9 @@ We can immediately observe that both the \emph{Training Set} and \emph{Validatio
 
 \begin{noteblock}
 We \textbf{will not balance} our \emph{Validation Set}, so we can use \textbf{\underline{ALL AVAILABLE DATA}} for the \emph{Final Test}.
-We will keep in mind, though, that plain accuracy is not the most appropriate metric for evaluating the test results in this case.
-As explained in section ``4 ASSESSMENT METRICS
-FOR IMBALANCED LEARNING'' of the article \href{https://www.academia.edu/86894835/Learning_from_Imbalanced_Data}{Learning from Imbalanced Data}, the \emph{F-Measure metric} and the \emph{Receiver Operating Characteristic (ROC) Curves} will provide better results when dealing with \emph{imbalanced data}.\autocite{LFID_HHGE5128907}
+We will also deliberately refrain from balancing the Train/Test split dataset when retraining the \emph{best final model} we manage to develop, thereby ensuring that the largest possible amount of available data is used for training.
+We will keep in mind, though, that plain accuracy is not the most appropriate metric for evaluating test results when dealing with imbalanced datasets.
+As explained in section ``4 ASSESSMENT METRICS FOR IMBALANCED LEARNING'' of the article \href{https://www.academia.edu/86894835/Learning_from_Imbalanced_Data}{Learning from Imbalanced Data}, the \emph{F-Measure metric} and the \emph{Receiver Operating Characteristic (ROC) Curves} will provide better results when dealing with \emph{imbalanced data}.\autocite{LFID_HHGE5128907}
 We will use the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#balanced-accuracy-and-f_1-score}{F1-Score metric} in our \emph{Final Test}. We will also use \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#roc-and-precision-recall-curves}{ROC curves} and the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#the-confusion-matrix}{Confusion Matrix} throughout \emph{this Project} to assess our models. Additionally, we will compute accuracy separately for each class (let's call this custom metric \emph{Per-Class Accuracy}, or \emph{PCA} for short). All these additional metrics will give us more insight into our models' performance, especially when testing on the imbalanced dataset.\autocite{IDS2_27}
 
 \end{noteblock}
@@ -1181,18 +1180,24 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px"
-##  [8] "J: 28x28px" "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px"
-## [15] "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
+##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 Now, we can see that all the sample images are the same size.
 
-Figure \ref{fig:intro-ds-overview-img-std-bin-sample} below shows shows what these images look like.
+Figure \ref{fig:intro-ds-overview-img-std-bin-sample} below shows what these images look like.
 
 \begin{figure}
 \includegraphics[width=5.56in]{index_files/figure-latex/intro-ds-overview-img-std-bin-sample-1} \caption{Example images; all are the same size: 28x28 pixels.}\label{fig:intro-ds-overview-img-std-bin-sample}
 \end{figure}
+
+\newpage
+
+We can't even see any noticeable differences in the sample images after preprocessing, can we? (See Figure \ref{fig:intro-ds-overview-img-diff-size-sample} above for comparison.)
+
+So, we can be pretty sure these changes will not affect the models' recognition ability.
+At the same time, it is quite clear that this preprocessing can significantly speed up the training process and substantially reduce computational resource consumption.
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
