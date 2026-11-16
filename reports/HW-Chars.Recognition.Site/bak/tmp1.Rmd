@@ -40,9 +40,23 @@ header-includes:
       title=💡 Note
     }
 ---
+```{r intro.ds-overview@tmp-setup }
+
+library(knitr)
+library(here)
+
+# knitr::opts_knit$set(root.dir = here())
+```
+
+```{r intro.ds-overview@tmp$test }
+opts_knit$get("root.dir")
+getwd()
+dir()
+```
 
 
-
+```{r intro.ds-overview@tmp$ }
+```
 
 [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/)
 

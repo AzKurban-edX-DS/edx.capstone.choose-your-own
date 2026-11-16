@@ -21,7 +21,7 @@ Downloads datasets from [Kaggle](https://www.kaggle.com/datasets) into a specifi
 
 ```{r kaggle_cli.download@kaggle_cli.download, include=FALSE}
 open_logfile(".report.appx_a.kaggle_cli.download")
-path <- file.path(knitr.proj_root, raw_data.chars.dir)
+# path <- file.path(knitr.proj_root, raw_data.chars.dir)
 
 ```
 ```{r kaggle_cli.download@usage, eval=FALSE}
@@ -34,14 +34,14 @@ kaggle_dataset <- "vaibhao/handwritten-characters"
   
   put_log("The Kaggle image files have been downloaded 
 and unziped to the following directory: 
-`%1`", path)
+`%1`", raw_data.chars.dir)
 
 writeLines("*** Dataset Raw Data Local Directory Structure ***")
-dir_tree(path, type = 'directory')
+dir_tree(raw_data.chars.dir, type = 'directory')
 
 ```
 ```{r kaggle_cli.download@usage.finalize, include=FALSE}
-rm(path)
+# rm(path)
 log_close()
 ```
 
@@ -122,9 +122,9 @@ In the *code snippet* below, a pointer to the auxiliary function [load.img_trimm
 :::
 
 ```{r load_image.list@usage.setup, include=FALSE}
-path <- file.path(knitr.proj_root, train.raw_img.dat.file)
-stopifnot(file.exists(path))
-train.raw_img.dat.ls <- readRDS(path)
+# path <- file.path(knitr.proj_root, train.raw_img.dat.file)
+stopifnot(file.exists(train.raw_img.dat.file))
+train.raw_img.dat.ls <- readRDS(train.raw_img.dat.file)
 
 ```
 ```{r load_image.list@usage, eval=FALSE}
@@ -175,8 +175,7 @@ for (class_name in class_names) {
 
 ```
 ```{r load_image.list@cleanup, include=FALSE}
-rm(path,
-   train.raw_img.dat.ls)
+rm(train.raw_img.dat.ls)
 ```
 
 :::
@@ -322,14 +321,14 @@ In the *code snippet* below, *this function* is called internally from the [load
 
 ``` {r img.file.get_list@usage.setup, include=FALSE}
 open_logfile(".chunk.img.file.get_list@usage")
-root_path <- file.path(knitr.proj_root, img.train_root.dir)
+#root_path <- file.path(knitr.proj_root, img.train_root.dir)
 # dir(root_path)
 ```
 ``` {r img.file.get_list@usage_log, echo=TRUE}
 
 put_log("Function `load_image.list`:
 Getting file path lists from the following Root Path:
-%1", root_path)
+%1", img.train_root.dir)
 
 folder.list <- NULL 
 char_files.max <- NA
@@ -339,7 +338,7 @@ random_sample <- FALSE
 
 #'Gather a structured list of file paths from each target subfolder, 
 #'applying optional maximum limits, random sampling, and seed generation. 
-img.file_list <- img.file.get_list(root_path, 
+img.file_list <- img.file.get_list(img.train_root.dir, 
                                         folder.list,
                                         char_files.max,
                                         seed,
@@ -347,8 +346,7 @@ img.file_list <- img.file.get_list(root_path,
 
 ```
 ``` {r img.file.get_list@usage_cleanup, include=FALSE}
-rm(root_path,
-   char_files.max,
+rm(char_files.max,
    seed,
    random_sample)
 log_close()
@@ -412,20 +410,20 @@ A *named nested list* where each element represents a *subfolder*, containing it
 
 The slightly simplified version of the function's source code is shown below:
 ```{r src@img.file.get_list, eval=FALSE}
-img.file.get_list <- function(root_path, 
+img.file.get_list <- function(img.train_root.dir, 
                                    folder.list = NULL, 
                                    char_files.max = NA,
                                    seed = NA,
                                    random_sample = FALSE) {
   if(is.null(folder.list))
     # Scans the root path to find all available subfolders.
-    folder.list <- dir(root_path)
+    folder.list <- dir(img.train_root.dir)
 
   # Generates a file path list
   path_list <- lapply(folder.list, function(folder_name){
     #' Constructs the full path and retrieves all file paths 
     #' for the given folder name.
-    file.root_path <- file.path(root_path, folder_name)
+    file.root_path <- file.path(img.train_root.dir, folder_name)
     folder.idx <- which(folder.list == folder_name)
     
     fpath.list <- list.files(file.root_path, 
@@ -592,7 +590,7 @@ This is a lightweight utility that converts a [***magick** image* object](https:
 
 ```{r dmagick_img2matrix@usage.setup, eval=TRUE}
 # Sample image file:
-file_path <- "../../data/raw/Vaibs.HW-Chars/Train/W/0.jpg"
+file_path <- "data/raw/Vaibs.HW-Chars/Train/W/0.jpg"
 img <- magick::image_read(file_path)
 ```
 ```{r dmagick_img2matrix@usage.before_proc, echo=FALSE}

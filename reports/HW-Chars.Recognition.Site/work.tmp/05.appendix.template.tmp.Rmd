@@ -111,7 +111,7 @@ The complete source code of the functions described in this Section is available
 
 
 ```{r foo@usage.setup, include=FALSE}
-path <- file.path(knitr.proj_root, proj_path)
+# path <- file.path(knitr.proj_root, proj_path)
 
 ```
 ```{r foo@usage, eval=FALSE}

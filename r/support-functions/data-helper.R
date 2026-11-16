@@ -341,6 +341,31 @@ image.dat2bin_mx <- function(image.dat,
   img.bin
 }
 
+calc.min_max.img_sizes <- function(img.list) {
+  
+  x <- lapply(img.list, function(ch.class) {
+    img_dat.ls <- ch.class$img.list
+    x <- lapply(img_dat.ls, function(img_dat) {
+      dim(img_dat)
+    })
+  }) |> unlist() |>
+    matrix(ncol = 2, 
+           byrow = T, 
+           dimnames = list(NULL, 
+                           c('width', 'height'))) |>
+    as.data.frame()
+  
+  # Find the smallest existing image in the dataset. 
+  put_log("Function `calc.min_max.img_sizes`:
+Structure of the Image Size Array:
+%1", capture.output(str(x)))
+  
+
+  x |> group_by(width) |>
+    summarise(min.height = min(height),
+              max.height = max(height))
+}
+
 ## Data Visualization ---------------------------------
 image.mx <- function(mx) {
   image(mx[, seq(ncol(mx), 1)])

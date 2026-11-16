@@ -169,6 +169,9 @@ library(ggimage)
 
 library(doParallel)
 
+library(knitr)
+library(here)
+
 # Importing sqldf
 #library(sqldf)
 
@@ -196,7 +199,8 @@ N_pcCores <- detectCores() - 1   # it is convention to leave 1 core for the OS
 N_pcCores
 
 ## Init Project Directories ----------------------------------------------------
-knitr.proj_root <- '../..' 
+# knitr.proj_root <- '../..'
+
 ### `R` Script Directories -----------------------------------------------------
 
 put_log("Root directory for the `R` scripts:

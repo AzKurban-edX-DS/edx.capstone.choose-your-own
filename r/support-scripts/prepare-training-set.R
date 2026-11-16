@@ -141,7 +141,11 @@ put_log("The path for the backup file to save the Flattened EMNIST-Like Dataset:
 if(!file.exists(ds.train.flatten.file)){
   stopifnot(file.exists(train.img.std_bin.ls.nested.file))
   
+  put_log("Loading Standardized Image Binary Data list from the backup file...")
   img.std_bin.ls.nested <- readRDS(train.img.std_bin.ls.nested.file)
+  
+  put_log("Standardized Image Binary Data list has been loaded from the following file:
+%1", train.img.std_bin.ls.nested.file)
 
   put_log("Building flatten (`EMNIST`-like) dataset...")
   
