@@ -70,6 +70,9 @@ dir()
 
 [Convolutional Neural Network (CNN)](https://smltar.com/dlcnn#what-are-cnns) 
 
+	- [raw-img.dat2std_bin.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R) (for the *Training Set*, about *half an hour*): prepares *standardized binary* image data;
+
+
 --------------------
 The ***DNN-Based*** models are as follows:
 

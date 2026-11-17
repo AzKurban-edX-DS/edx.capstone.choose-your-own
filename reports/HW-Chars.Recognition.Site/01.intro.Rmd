@@ -470,11 +470,8 @@ print.image_grid(img.dat,
                  tile = '4x4'
                  )
 ```
-```{r intro.datasets-overview@image_grid$cleanup, include=FALSE}
-rm(img.dat)
-```
 ```{r intro.ds-overview@train.img.std_bin.ls.nested$cleanup, include=FALSE}
-rm(train.img.std_bin.ls.nested)
+rm(train.img.std_bin.ls.nested, img.dat)
 ```
 
 \newpage
@@ -484,13 +481,117 @@ We can't even see any noticeable differences in the sample images after preproce
 So, we can be pretty sure these changes will not affect the models' recognition ability.
 At the same time, it is quite clear that this preprocessing can significantly speed up the training process and substantially reduce computational resource consumption.
 
-```{r intro.ds-overview@train.mx_array}
-ds.std_img.mx <- readRDS(train.img.std_bin.array.file)
-str(ds.std_img.mx)
+The next step in *image data preprocessing* performed by the code in [Preparing a List of Image Data Matrix Arrays](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R#L141-L203) of the script is binding the *image data matrices* in the nested list into a single *array of matrices* for each *character class* for both the *Training Set* and the *Validation Set*. 
+```{r intro.datasets-overview@img-dat.mx-array-list$init, include=FALSE}
+train.img.std_bin.array.ls <- readRDS(train.img.std_bin.array.ls.file)
+final_test.img.std_bin.array.ls <- readRDS(final_test.img.std_bin.array.ls.file)
+
+str.inner_list <- function(i, ls) {
+  print_log("$ %1:%2", Y.Labels[i], capture.output(str(ls[[i]])))
+}
+
+str.img.std_bin.array.ls <- function(ls, 
+                                     .range, 
+                                     etc_line = FALSE, 
+                                     outer_list = FALSE) {
+
+  if(outer_list)
+    str(ls, max.level = 0)
+  
+  for(i in .range) {
+    str.inner_list(i,ls)
+  }
+  
+  if(etc_line) {
+    writeLines("
+    ...............................................
+    ")
+  }
+}
+```
+
+The structure of the result data object for the *Training Set* is as follows:
+```{r intro.ds-overview@str$train.img.std_bin.array.ls$no-eval, eval=FALSE}
+str(train.img.std_bin.array.ls)
+```
+```{r intro.ds-overview@str$train.img.std_bin.array.ls1_4, echo=FALSE}
+str.img.std_bin.array.ls(train.img.std_bin.array.ls,
+                         .range = 1:4,
+                         outer_list = T)
+```
+
+\newpage
+
+```{r intro.ds-overview@str$train.img.std_bin.array.ls5_6, echo=FALSE}
+str.img.std_bin.array.ls(train.img.std_bin.array.ls,
+                         .range = 5:6,
+                         etc_line = T)
+```
+```{r intro.ds-overview@str$train.img.std_bin.array.ls15_16, echo=FALSE}
+str.img.std_bin.array.ls(train.img.std_bin.array.ls,
+                         .range = 15:16,
+                         etc_line = T)
+```
+```{r intro.ds-overview@str$train.img.std_bin.array.ls38_39, echo=FALSE}
+str.img.std_bin.array.ls(train.img.std_bin.array.ls,
+                         .range = 39)
+```
+
+\newpage
+
+And the same structure for the *Validation Set*:
+```{r intro.ds-overview@str$final_test.img.std_bin.array.ls$no-eval, eval=FALSE}
+str(final_test.img.std_bin.array.ls)
+```
+```{r intro.ds-overview@str$final_test.img.std_bin.array.ls1, echo=FALSE}
+str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
+                         .range = 1,
+                         outer_list = T,
+                         etc_line = T)
+```
+```{r intro.ds-overview@str$final_test.img.std_bin.array.ls5, echo=FALSE}
+str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
+                         .range = 5,
+                         etc_line = T)
+```
+```{r intro.ds-overview@str$final_test.img.std_bin.array.ls15, echo=FALSE}
+str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
+                         .range = 15,
+                         etc_line = T)
+```
+```{r intro.ds-overview@str$final_test.img.std_bin.array.ls39, echo=FALSE}
+str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
+                         .range = 39)
+```
+
+\newpage
+
+```{r intro.datasets-overview@image_grid@img-dat.mx-array$cleanup, include=FALSE}
+rm(train.img.std_bin.array.ls, final_test.img.std_bin.array.ls)
+```
+
+Finally, in the section [Flatten the List of Image Data Matrix Arrays](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R#L204-L269), the list items are merged into a single array that includes all the matrices contained in the *image data arrays* included in the original list.
+
+```{r intro.datasets-overview@img-dat.mx-array$init, include=FALSE}
+train.img.std_bin.array <- readRDS(train.img.std_bin.array.file)
+final_test.img.std_bin.array <- readRDS(final_test.img.std_bin.array.file)
 ```
 
 
-### Preparing the Datasets
+Ultimately, as a result of the current stage of *image data preprocessing*, the *standardized binary datasets* so far have the following structure:
+
+- For the *Training set*:
+```{r intro.ds-overview@train.mx_array}
+str(train.img.std_bin.array)
+```
+
+- For the *Validation set*:
+```{r intro.ds-overview@ft.mx_array}
+str(final_test.img.std_bin.array)
+```
+\newpage
+
+### Preparing the Model-Specific Datasets
 
 
 

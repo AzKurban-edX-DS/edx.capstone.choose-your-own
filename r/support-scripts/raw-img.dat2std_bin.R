@@ -138,7 +138,7 @@ and backed up to the following file:
 # Log Elapsed Time: 0 00:21:09
 # =========================================================================
 
-### Preparing a List of Standardized Image Binary Data Matrices ----------------
+### Preparing a List of Image Data Matrix Arrays -------------------------------
 
 put_log("Preparing a List of the Standardized Binary Image  Matrix...")
 
@@ -146,6 +146,7 @@ put_log("The path for the backup file to save the Standardized Binary Image  Mat
 %1", img.std_bin.array.ls.file)
 
 if(!file.exists(img.std_bin.array.ls.file)){
+  # Building an Image Data Array List Object -----------------------------------  
   stopifnot(file.exists(img.std_bin.ls.nested.file))
   
   put_log("Loading Standardized Image Binary Data list...")
@@ -182,7 +183,7 @@ if(!file.exists(img.std_bin.array.ls.file)){
   %1", capture.output(str(img.std_bin.array.ls)))
   put_end_date(start)
   
-  ## Saving the Image Data Array List Object -----------------------------------  
+  # Saving the Image Data Array List Object -----------------------------------  
   
   
   put_log("Saving Standardized Image Binary Data Matrix list to the backup file...")
@@ -200,7 +201,7 @@ and backed up to the following file:
 %1", img.std_bin.array.ls.file)
 }
 
-### Preparing an Array of the Standardized Binary Image  Matrices --------------
+### Flatten the List of Image Data Matrix Arrays -------------------------------
 
 
 put_log("Preparing an Array of the Standardized Binary Image  Matrices...")
@@ -266,4 +267,3 @@ and backed up to the following file:
 }
 
 if (exists("img.std_bin.array.ls")) rm(img.std_bin.array.ls)
-

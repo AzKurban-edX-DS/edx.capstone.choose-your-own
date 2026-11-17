@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-16}
+\date{2026-11-17}
 
 \begin{document}
 \maketitle
@@ -1197,10 +1197,175 @@ We can't even see any noticeable differences in the sample images after preproce
 So, we can be pretty sure these changes will not affect the models' recognition ability.
 At the same time, it is quite clear that this preprocessing can significantly speed up the training process and substantially reduce computational resource consumption.
 
+The next step in \emph{image data preprocessing} performed by the code in \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L141-L203}{Preparing a List of Image Data Matrix Arrays} of the script is binding the \emph{image data matrices} in the nested list into a single \emph{array of matrices} for each \emph{character class} for both the \emph{Training Set} and the \emph{Validation Set}.
+
+The structure of the result data object for the \emph{Training Set} is as follows:
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{ds.std\_img.mx }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(train.img.std\_bin.array.file)}
-\FunctionTok{str}\NormalTok{(ds.std\_img.mx)}
+\FunctionTok{str}\NormalTok{(train.img.std\_bin.array.ls)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 39
+## $ #:List of 2
+## $ img.array: logi [1:15600, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:15600] "#" "#" "#" "#" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:15600] "data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1022082.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1042459.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1055444.png" ...
+## $ $:List of 2
+## $ img.array: logi [1:16199, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:16199] "$" "$" "$" "$" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:16199] "data/raw/Vaibs.HW-Chars/Train/$/__0_1011576.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1013377.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1015758.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1020270.png" ...
+## $ &:List of 2
+## $ img.array: logi [1:13000, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:13000] "&" "&" "&" "&" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:13000] "data/raw/Vaibs.HW-Chars/Train/&/__0_1027442.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_1047262.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_1052515.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_106188.png" ...
+## $ @:List of 2
+## $ img.array: logi [1:38009, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:38009] "@" "@" "@" "@" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:38009] "data/raw/Vaibs.HW-Chars/Train/@/___0_2818202.png" "data/raw/Vaibs.HW-Chars/Train/@/___0_3481265.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_3707877.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_8467948.png" ...
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+## $ 0:List of 2
+## $ img.array: logi [1:65504, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:65504] "0" "0" "0" "0" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:65504] "data/raw/Vaibs.HW-Chars/Train/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_100.jpg" ...
+## $ 1:List of 2
+## $ img.array: logi [1:43773, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:43773] "1" "1" "1" "1" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:43773] "data/raw/Vaibs.HW-Chars/Train/1/0.jpg" "data/raw/Vaibs.HW-Chars/Train/1/1.jpg" "data/raw/Vaibs.HW-Chars/Train/1/10.jpg" "data/raw/Vaibs.HW-Chars/Train/1/100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ A:List of 2
+## $ img.array: logi [1:17205, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:17205] "A" "A" "A" "A" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:17205] "data/raw/Vaibs.HW-Chars/Train/A/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_100.jpg" ...
+## $ B:List of 2
+## $ img.array: logi [1:8666, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:8666] "B" "B" "B" "B" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:8666] "data/raw/Vaibs.HW-Chars/Train/B/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ Z:List of 2
+## $ img.array: logi [1:4866, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:4866] "Z" "Z" "Z" "Z" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:4866] "data/raw/Vaibs.HW-Chars/Train/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/100.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/1000.jpg" ...
+\end{verbatim}
+
+\newpage
+
+And the same structure for the \emph{Validation Set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(final\_test.img.std\_bin.array.ls)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 39
+## $ #:List of 2
+## $ img.array: logi [1:1300, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:1300] "#" "#" "#" "#" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:1300] "data/raw/Vaibs.HW-Chars/Validation/#/__0_1118489.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_121440.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_1274730.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_142135.png" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ 0:List of 2
+## $ img.array: logi [1:368, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:368] "0" "0" "0" "0" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:368] "data/raw/Vaibs.HW-Chars/Validation/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ A:List of 2
+## $ img.array: logi [1:392, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:392] "A" "A" "A" "A" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:392] "data/raw/Vaibs.HW-Chars/Validation/A/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ Z:List of 2
+## $ img.array: logi [1:181, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:181] "Z" "Z" "Z" "Z" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:181] "data/raw/Vaibs.HW-Chars/Validation/Z/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/100.jpg" ...
+\end{verbatim}
+
+\newpage
+
+Finally, in the section \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L204-L269}{Flatten the List of Image Data Matrix Arrays}, the list items are merged into a single array that includes all the matrices contained in the \emph{image data arrays} included in the original list.
+
+Ultimately, as a result of the current stage of \emph{image data preprocessing}, the \emph{standardized binary datasets} so far have the following structure:
+
+\begin{itemize}
+\tightlist
+\item
+  For the \emph{Training set}:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(train.img.std\_bin.array)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1216,7 +1381,33 @@ At the same time, it is quite clear that this preprocessing can significantly sp
 ##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
 \end{verbatim}
 
-\subsection{Preparing the Datasets}\label{preparing-the-datasets}
+\begin{itemize}
+\tightlist
+\item
+  For the \emph{Validation set}:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(final\_test.img.std\_bin.array)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ img_dat.array  : logi [1:22524, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   ..- attr(*, "dimnames")=List of 3
+##   .. ..$ : chr [1:22524] "#" "#" "#" "#" ...
+##   .. ..$ : NULL
+##   .. ..$ : NULL
+##  $ file_path.array: chr [1:22524(1d)] "data/raw/Vaibs.HW-Chars/Validation/#/__0_1118489.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_121440.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_1274730.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_142135.png" ...
+##   ..- attr(*, "dimnames")=List of 1
+##   .. ..$ : chr [1:22524] "#" "#" "#" "#" ...
+\end{verbatim}
+
+\newpage
+
+\subsection{Preparing the Model-Specific Datasets}\label{preparing-the-model-specific-datasets}
 
 \subsubsection{The Train/Test Split Datasets}\label{the-traintest-split-datasets}
 
