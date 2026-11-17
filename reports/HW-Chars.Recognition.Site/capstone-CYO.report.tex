@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-16}
+\date{2026-11-17}
 
 \begin{document}
 \maketitle
@@ -224,9 +224,9 @@ All the source files for \emph{this Project} are available in the \emph{Project}
 
 \end{noteblock}
 
-In this project, we will develop and explore several HCR models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
+In this project, we will develop and explore several HCR Multiclass Classifier (MCC) models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections {[}k-Nearest Neighbors + Principal Component Analysis (kNN+PCA) Multiclass Classifier (MCC) Model{]} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
 
 Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
 
@@ -237,7 +237,7 @@ The \textbf{\emph{DNN-Based}} models are as follows:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{DNN-Based Basic MCC Model:}} described in Section {[}Dense Neural Network-Based Basic Multiclass Classifier (DNNB MCC) Model{]};
+  \textbf{\emph{Dense Neural Network-Based Basic (DNNB) MCC Model:}} described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
 \item
   \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
 \end{itemize}
@@ -247,7 +247,7 @@ The last models we will build and explore, the \textbf{\emph{CNN-Based}} models,
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section {[}Convolutional Neural Network-Based Basic (CNNB) MCC Model{]};
+  \textbf{\emph{CNN-Based Basic MCC Model:}} described in Section \hyperref[cnn-based-basic-cnnb-mcc-model]{CNN-Based Basic (CNNB) MCC Model};
 \item
   \textbf{\emph{Tuned CNN-Based MCC Model:}} described in Section \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
 \end{itemize}
@@ -724,8 +724,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
-##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
+## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
@@ -1072,8 +1072,6 @@ We will use the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluati
 
 \end{noteblock}
 
-\subsection{Preparing the Datasets}\label{preparing-the-datasets}
-
 Now, after the first step of raw image data preprocessing, all image data should have the same shape as follows:
 
 \begin{Shaded}
@@ -1156,7 +1154,7 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{img.sample }\OtherTok{\textless{}{-}} \FunctionTok{lapply}\NormalTok{(chr\_set, }\ControlFlowTok{function}\NormalTok{(chr) \{}
-\NormalTok{  img.mx }\OtherTok{\textless{}{-}}\NormalTok{ train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list[[ch]]}\SpecialCharTok{$}\NormalTok{img.list[[}\DecValTok{1}\NormalTok{]]}
+\NormalTok{  img.mx }\OtherTok{\textless{}{-}}\NormalTok{ train.img.std\_bin.ls.nested}\SpecialCharTok{$}\NormalTok{img.list[[chr]]}\SpecialCharTok{$}\NormalTok{img.list[[}\DecValTok{1}\NormalTok{]]}
   \FunctionTok{mode}\NormalTok{(img.mx) }\OtherTok{\textless{}{-}} \StringTok{"numeric"}
 
 \NormalTok{  img.array }\OtherTok{\textless{}{-}} \FunctionTok{array}\NormalTok{(}\FunctionTok{t}\NormalTok{(img.mx), }\AttributeTok{dim =} \FunctionTok{c}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(img.mx), }\FunctionTok{ncol}\NormalTok{(img.mx), }\DecValTok{1}\NormalTok{))}
@@ -1180,8 +1178,8 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
-##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px" "6: 28x28px" "B: 28x28px"
+## [11] "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 Now, we can see that all the sample images are the same size.
@@ -1198,6 +1196,249 @@ We can't even see any noticeable differences in the sample images after preproce
 
 So, we can be pretty sure these changes will not affect the models' recognition ability.
 At the same time, it is quite clear that this preprocessing can significantly speed up the training process and substantially reduce computational resource consumption.
+
+The next step in \emph{image data preprocessing} performed by the code in \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L141-L203}{Preparing a List of Image Data Matrix Arrays} of the script is binding the \emph{image data matrices} in the nested list into a single \emph{array of matrices} for each \emph{character class} for both the \emph{Training Set} and the \emph{Validation Set}.
+
+The structure of the result data object for the \emph{Training Set} is as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(train.img.std\_bin.array.ls)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 39
+## $ #:List of 2
+## $ img.array: logi [1:15600, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:15600] "#" "#" "#" "#" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:15600] "data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1022082.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1042459.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1055444.png" ...
+## $ $:List of 2
+## $ img.array: logi [1:16199, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:16199] "$" "$" "$" "$" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:16199] "data/raw/Vaibs.HW-Chars/Train/$/__0_1011576.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1013377.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1015758.png" "data/raw/Vaibs.HW-Chars/Train/$/__0_1020270.png" ...
+## $ &:List of 2
+## $ img.array: logi [1:13000, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:13000] "&" "&" "&" "&" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:13000] "data/raw/Vaibs.HW-Chars/Train/&/__0_1027442.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_1047262.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_1052515.png" "data/raw/Vaibs.HW-Chars/Train/&/__0_106188.png" ...
+## $ @:List of 2
+## $ img.array: logi [1:38009, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:38009] "@" "@" "@" "@" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:38009] "data/raw/Vaibs.HW-Chars/Train/@/___0_2818202.png" "data/raw/Vaibs.HW-Chars/Train/@/___0_3481265.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_3707877.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_8467948.png" ...
+\end{verbatim}
+
+\newpage
+
+\begin{verbatim}
+## $ 0:List of 2
+## $ img.array: logi [1:65504, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:65504] "0" "0" "0" "0" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:65504] "data/raw/Vaibs.HW-Chars/Train/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_100.jpg" ...
+## $ 1:List of 2
+## $ img.array: logi [1:43773, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:43773] "1" "1" "1" "1" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:43773] "data/raw/Vaibs.HW-Chars/Train/1/0.jpg" "data/raw/Vaibs.HW-Chars/Train/1/1.jpg" "data/raw/Vaibs.HW-Chars/Train/1/10.jpg" "data/raw/Vaibs.HW-Chars/Train/1/100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ A:List of 2
+## $ img.array: logi [1:17205, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:17205] "A" "A" "A" "A" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:17205] "data/raw/Vaibs.HW-Chars/Train/A/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/A/_1_100.jpg" ...
+## $ B:List of 2
+## $ img.array: logi [1:8666, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:8666] "B" "B" "B" "B" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:8666] "data/raw/Vaibs.HW-Chars/Train/B/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ Z:List of 2
+## $ img.array: logi [1:4866, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:4866] "Z" "Z" "Z" "Z" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:4866] "data/raw/Vaibs.HW-Chars/Train/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/100.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/1000.jpg" ...
+\end{verbatim}
+
+\newpage
+
+And the same structure for the \emph{Validation Set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(final\_test.img.std\_bin.array.ls)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 39
+## $ #:List of 2
+## $ img.array: logi [1:1300, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:1300] "#" "#" "#" "#" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:1300] "data/raw/Vaibs.HW-Chars/Validation/#/__0_1118489.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_121440.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_1274730.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_142135.png" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ 0:List of 2
+## $ img.array: logi [1:368, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:368] "0" "0" "0" "0" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:368] "data/raw/Vaibs.HW-Chars/Validation/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/0/_1_100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ A:List of 2
+## $ img.array: logi [1:392, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:392] "A" "A" "A" "A" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:392] "data/raw/Vaibs.HW-Chars/Validation/A/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Validation/A/_1_100.jpg" ...
+## 
+##     ...............................................
+## 
+\end{verbatim}
+
+\begin{verbatim}
+## $ Z:List of 2
+## $ img.array: logi [1:181, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:181] "Z" "Z" "Z" "Z" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:181] "data/raw/Vaibs.HW-Chars/Validation/Z/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/100.jpg" ...
+\end{verbatim}
+
+\newpage
+
+Finally, in the section \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L204-L269}{Flatten the List of Image Data Matrix Arrays}, the list items are merged into a single array that includes all the matrices contained in the \emph{image data arrays} included in the original list.
+
+Ultimately, as a result of the current stage of \emph{image data preprocessing}, the \emph{standardized binary datasets} so far have the following structure:
+
+\begin{itemize}
+\tightlist
+\item
+  For the \emph{Training set}:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(train.img.std\_bin.array)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ img_dat.array  : logi [1:834032, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   ..- attr(*, "dimnames")=List of 3
+##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
+##   .. ..$ : NULL
+##   .. ..$ : NULL
+##  $ file_path.array: chr [1:834032(1d)] "data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1022082.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1042459.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1055444.png" ...
+##   ..- attr(*, "dimnames")=List of 1
+##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
+\end{verbatim}
+
+\begin{itemize}
+\tightlist
+\item
+  For the \emph{Validation set}:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(final\_test.img.std\_bin.array)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ img_dat.array  : logi [1:22524, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   ..- attr(*, "dimnames")=List of 3
+##   .. ..$ : chr [1:22524] "#" "#" "#" "#" ...
+##   .. ..$ : NULL
+##   .. ..$ : NULL
+##  $ file_path.array: chr [1:22524(1d)] "data/raw/Vaibs.HW-Chars/Validation/#/__0_1118489.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_121440.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_1274730.png" "data/raw/Vaibs.HW-Chars/Validation/#/__0_142135.png" ...
+##   ..- attr(*, "dimnames")=List of 1
+##   .. ..$ : chr [1:22524] "#" "#" "#" "#" ...
+\end{verbatim}
+
+\newpage
+
+\subsection{Preparing the Model-Specific Datasets}\label{preparing-the-model-specific-datasets}
+
+\subsubsection{The Train/Test Split Datasets}\label{the-traintest-split-datasets}
+
+These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script, which splits the standardized binary \emph{Train Set} described above into the following training and test subsets:
+
+\begin{itemize}
+\item
+  \textbf{Image Data Array Splits} for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{\emph{Fine-Tuned DNN-Based (TDNN) MCC}} (described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model});
+  \item
+    \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
+  \end{itemize}
+\item
+  \textbf{Flattened Matrix Splits} for the following \emph{Shallow Learning} and \emph{Deep Learning} DNN-based basic models:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{\emph{k-Nearest Neighbors (kNN) MCC}} model (described in Section \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model});
+  \item
+    \textbf{\emph{Random Forest (RF) MCC}} model (described in Section \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model});
+  \item
+    \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model}).
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Image Data Array Splits}\label{image-data-array-splits}
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
@@ -1217,9 +1458,9 @@ At the same time, it is quite clear that this preprocessing can significantly sp
 
 \subsection{CNN-Based Basic (CNNB) MCC Model}\label{cnn-based-basic-cnnb-mcc-model}
 
-\section{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
+\subsection{Tuned CNN-Based (TCNN) MCC Model}\label{tuned-cnn-based-tcnn-mcc-model}
 
-\subsection{TCNN MCC: Final Test}\label{tcnn-mcc-final-test}
+\subsubsection{TCNN MCC: Final Test}\label{tcnn-mcc-final-test}
 
 \chapter{Results}\label{results}
 

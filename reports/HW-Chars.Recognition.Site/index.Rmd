@@ -122,7 +122,7 @@ knitr::opts_chunk$set(fig.path = fig_dir)
 #opts_chunk$get("root.dir")
 opts_knit$get("root.dir")
 getwd()
-site_root
+# site_root
 
 # dir()
 
@@ -139,17 +139,17 @@ site_root
 
 ```{r, setup0, eval=FALSE, include=FALSE }
 ## Setup
-r_scripts.dir <- "../../r"
-stopifnot(dir.exists(r_scripts.dir))
-
-support_scripts.dir <-  file.path(r_scripts.dir, "support-scripts")
-stopifnot(dir.exists(support_scripts.dir))
-
-support_functions.dir <- file.path(r_scripts.dir, "support-functions")
-stopifnot(dir.exists(support_functions.dir))
-
-setup_script.path <- file.path(support_scripts.dir, "setup.R")
-stopifnot(file.exists(setup_script.path))
+# r_scripts.dir <- "../../r"
+# stopifnot(dir.exists(r_scripts.dir))
+# 
+# support_scripts.dir <-  file.path(r_scripts.dir, "support-scripts")
+# stopifnot(dir.exists(support_scripts.dir))
+# 
+# support_functions.dir <- file.path(r_scripts.dir, "support-functions")
+# stopifnot(dir.exists(support_functions.dir))
+# 
+# setup_script.path <- file.path(support_scripts.dir, "setup.R")
+# stopifnot(file.exists(setup_script.path))
 
 # source(setup_script.path, 
 #        local = knitr::knit_global())
@@ -158,43 +158,43 @@ stopifnot(file.exists(setup_script.path))
 
 \newpage
 
-```{r child = file.path(site_root, '01.intro.Rmd') }
+```{r child = file.path(doc_dir, '01.intro.Rmd') }
 ```
 
-```{r child = file.path(site_root, '02.0-1.methods.Rmd')}
+```{r child = file.path(doc_dir, '02.0-1.methods.Rmd')}
 ```
 
-```{r child = file.path(site_root, '02.2.kNN+PCA.MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.2.kNN+PCA.MCC.Rmd')}
 ```
 
-```{r child = file.path(site_root, '02.3.RF.MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.3.RF.MCC.Rmd')}
 ```
 
-```{r child = file.path(site_root, '02.4(1)DNNB-MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.4(1)DNNB-MCC.Rmd')}
 ```
 
-```{r child = file.path(site_root, '02.4.2.TDNN-MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.4.2.TDNN-MCC.Rmd')}
 ```
 
-```{r child = file.path(site_root, '02.5(1)CNNB-MCC.model.Rmd')}
+```{r child = file.path(doc_dir, '02.5(1)CNNB-MCC.model.Rmd')}
 ```
 
-```{r child = file.path(site_root, '02.5.2.TCNN-MCC.model.Rmd')}
+```{r child = file.path(doc_dir, '02.5.2.TCNN-MCC.model.Rmd')}
 ```
 
-```{r child = file.path(site_root, '03.results.Rmd')}
+```{r child = file.path(doc_dir, '03.results.Rmd')}
 ```
 
-```{r child = file.path(site_root, '04.conclusion.Rmd')}
+```{r child = file.path(doc_dir, '04.conclusion.Rmd')}
 ```
 
-```{r child = file.path(site_root, '05.appendix-a.Rmd')}
+```{r child = file.path(doc_dir, '05.appendix-a.Rmd')}
 ```
 
-```{r child = file.path(site_root, '06.appendix-b.Rmd')}
+```{r child = file.path(doc_dir, '06.appendix-b.Rmd')}
 ```
 
-```{r child = file.path(site_root, '07.appendix-c.Rmd')}
+```{r child = file.path(doc_dir, '07.appendix-c.Rmd')}
 ```
 
 

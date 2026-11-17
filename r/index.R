@@ -71,14 +71,14 @@ train.img.std_bin.ls.nested.file <-
   file.path(train.data.dir, 
             "train.img.std_bin.ls-nested.rds")
 
+train.img.std_bin.array.ls.file <- file.path(train.data.dir, 
+                                  "train.img.std_bin.array.ls.rds")
+
 train.img.std_bin.array.file <- file.path(train.data.dir, 
                                     "train.img.std_bin.array.rds")
 
 img.std_bin.ls.nested.file <- train.img.std_bin.ls.nested.file
-
-img.std_bin.array.ls.file <- file.path(train.data.dir, 
-                                  "train.img.std_bin.array.ls.rds")
-
+img.std_bin.array.ls.file <- train.img.std_bin.array.ls.file
 img.std_bin.array.file <- train.img.std_bin.array.file
 
 ##### Run Script ---------------------------------------------------------------
@@ -144,13 +144,14 @@ open_logfile(".ds.final-test.raw-dat2std-bin.array")
 final_test.img.std_bin.ls.nested.file <- file.path(final_test.data.dir, 
                                         "final-test.img.std_bin.ls-nested.rds")
 
+final_test.img.std_bin.array.ls.file <- file.path(final_test.data.dir, 
+                                       "final-test.img.std_bin.array.ls.rds")
+
 final_test.img.std_bin.array.file <- file.path(final_test.data.dir, 
                                                "final-test.img.std_bin.array.rds")
 
 img.std_bin.ls.nested.file <- final_test.img.std_bin.ls.nested.file
-img.std_bin.array.ls.file <- file.path(final_test.data.dir, 
-                                       "final-test.img.std_bin.array.ls.rds")
-
+img.std_bin.array.ls.file <- final_test.img.std_bin.array.ls.file
 img.std_bin.array.file <- final_test.img.std_bin.array.file
 
 ##### Run Script ---------------------------------------------------------------
