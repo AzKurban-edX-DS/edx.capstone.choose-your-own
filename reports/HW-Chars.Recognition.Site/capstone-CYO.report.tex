@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-17}
+\date{2026-11-18}
 
 \begin{document}
 \maketitle
@@ -226,7 +226,7 @@ All the source files for \emph{this Project} are available in the \emph{Project}
 
 In this project, we will develop and explore several HCR Multiclass Classifier (MCC) models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[knn_pca_model]{kNN+PCA MCC Model} and \hyperref[rf_model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
 
 Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
 
@@ -237,7 +237,7 @@ The \textbf{\emph{DNN-Based}} models are as follows:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{Dense Neural Network-Based Basic (DNNB) MCC Model:}} described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
+  \textbf{\emph{Dense Neural Network-Based Basic (DNNB) MCC Model:}} described in Section \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model};
 \item
   \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
 \end{itemize}
@@ -498,9 +498,9 @@ The \emph{SL models} are implemented in the following sections of the script:
 \begin{itemize}
 \tightlist
 \item
-  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L162-L269}{kNN+PCA MCC Model} script section implements a model that combines \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html\#sec-pca}{Principal Component Analysis (PCA)} (for data preprocessing) and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)}. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} section of \emph{this Report}.\\
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L162-L269}{kNN+PCA MCC Model} script section implements a model that combines \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html\#sec-pca}{Principal Component Analysis (PCA)} (for data preprocessing) and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)}. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[knn_pca_model]{kNN+PCA MCC Model} section of \emph{this Report}.\\
 \item
-  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L270-L381}{Random Forest (RF) MCC Model} script section implements the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} algorithm. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} section of \emph{this Report}.
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L270-L381}{Random Forest (RF) MCC Model} script section implements the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} algorithm. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[rf_model]{Random Forest (RF) MCC Model} section of \emph{this Report}.
 \end{itemize}
 
 \newpage
@@ -518,7 +518,7 @@ The \emph{DL models} are implemented in the following sections of the script:
   \begin{itemize}
   \tightlist
   \item
-    \emph{DNN-Based Basic (DNNB) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L383-L519}{DNN-Based Basic MCC Model} and described in subsection \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
+    \emph{DNN-Based Basic (DNNB) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L383-L519}{DNN-Based Basic MCC Model} and described in subsection \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model};
   \item
     \emph{Fine-Tuned DNN (TDNN) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L520-L667}{DNN-Based MCC Model Tuning} and described in subsection \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
   \end{itemize}
@@ -724,8 +724,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
-## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
+##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
@@ -1178,8 +1178,8 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px" "6: 28x28px" "B: 28x28px"
-## [11] "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
+##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 Now, we can see that all the sample images are the same size.
@@ -1407,11 +1407,22 @@ Ultimately, as a result of the current stage of \emph{image data preprocessing},
 
 \newpage
 
-\subsection{Preparing the Model-Specific Datasets}\label{preparing-the-model-specific-datasets}
+\subsection{Preparing the Training Datasets}\label{preparing-the-training-datasets}
 
-\subsubsection{The Train/Test Split Datasets}\label{the-traintest-split-datasets}
+To use the \emph{Training Set} datasets for training our models. we need to split them into \emph{Train/Test} sets as explained in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#cross-validation}{Section 29.6 Cross-validation} of the \emph{Course Textbook}. This is done in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script.
 
-These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script, which splits the standardized binary \emph{Train Set} described above into the following training and test subsets:
+\begin{noteblock}
+The \emph{Validation Set} used in our project plays the role of the \emph{Independent Set} in the terms used in the \emph{Textbook}\autocite{IDS2_29.6}. We can treat it like that because \textbf{\underline {it is completely independent}}, and we use it \textbf{only for the} \underline{***Final Test*** **of our best model**} at the very end of our work.
+
+Also, we split each of our datasets (into the Train/Test sets) only once; we do not use the k-fold cross-validation (described in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#k-fold-cross-validation}{Section 29.6 Cross-validation / K-fold cross-validation} of the \emph{Course Textbook}\autocite{IDS2_29.6_KFCV}) explicitly in our scripts because of the restricted time we have for the models' training, although it is used under the hood in the \href{https://topepo.github.io/caret/model-training-and-tuning.html}{caret::train} function used for the \hyperref[shallow-learning-models]{Shallow Learning Models}, i.e., for the \hyperref[knn_pca_model]{kNN+PCA MCC Model} and \hyperref[rf_model]{Random Forest (RF) MCC Model}.
+
+\end{noteblock}
+
+Before we split our datasets, there is one thing left to do: to train our \hyperref[shallow-learning-models]{Shallow Learning Models} (the \hyperref[knn_pca_model]{kNN+PCA MCC} and \hyperref[rf_model]{Random Forest MCC} ones) and the \hyperref[dnnb_model]{DNN-Based Basic MCC Model}, the training dataset needs to be flattened; that is, our \emph{image data matrices} must be coerced into vectors of \(x*y\) length (the number of pixels: \(28*28\) in our case).
+
+\subsubsection{The Train/Test Model-Specific Split Datasets}\label{the-traintest-model-specific-split-datasets}
+
+, which splits the standardized binary \emph{Train Set} described above into the following training and test subsets:
 
 \begin{itemize}
 \item
@@ -1430,11 +1441,11 @@ These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.
   \begin{itemize}
   \tightlist
   \item
-    \textbf{\emph{k-Nearest Neighbors (kNN) MCC}} model (described in Section \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model});
+    \textbf{\emph{k-Nearest Neighbors (kNN) MCC}} model (described in Section \hyperref[knn_pca_model]{kNN+PCA MCC Model});
   \item
-    \textbf{\emph{Random Forest (RF) MCC}} model (described in Section \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model});
+    \textbf{\emph{Random Forest (RF) MCC}} model (described in Section \hyperref[rf_model]{Random Forest (RF) MCC Model});
   \item
-    \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model}).
+    \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model}).
   \end{itemize}
 \end{itemize}
 
@@ -1442,15 +1453,19 @@ These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
-\section{kNN+PCA MCC Model}\label{knnpca-mcc-model}
+\section{Shallow Learning Models}\label{shallow-learning-models}
 
-\section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model}
+\subsection{kNN+PCA MCC Model}\label{knn_pca_model}
+
+\subsection{Random Forest (RF) MCC Model}\label{rf_model}
 
 \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forests (RF)} approach explained in {[}Section 30.5 Random forests{]} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_30_5_RF}
 
-\section{Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models}\label{dense-neural-network-based-multiclass-classifier-dnn-based-mcc-models}
+\section{Deep Learning Models}\label{deep-learning-models}
 
-\subsection{DNN-Based Basic (DNNB) MCC Model}\label{dnn-based-basic-dnnb-mcc-model}
+\subsection{Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models}\label{dense-neural-network-based-multiclass-classifier-dnn-based-mcc-models}
+
+\subsubsection{DNN-Based Basic (DNNB) MCC Model}\label{dnnb_model}
 
 \section{Tuned DNN-Based (TDNN) MCC Model}\label{tuned-dnn-based-tdnn-mcc-model}
 

@@ -58,6 +58,14 @@ dir()
 ```{r intro.ds-overview@tmp$ }
 ```
 
+::: {.noteblock data-latex=""}
+
+:::
+
+::: {.noteblock data-latex=""}
+We **will not balance** our *Validation Set*, so we can use **\underline{ALL AVAILABLE DATA}** for the *Final Test*.
+:::
+
 [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/)
 
 [k-Nearest Neighbors (kNN)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro) 

@@ -591,13 +591,24 @@ str(final_test.img.std_bin.array)
 ```
 \newpage
 
-### Preparing the Model-Specific Datasets
+### Preparing the Training Datasets
+
+To use the *Training Set* datasets for training our models. we need to split them into *Train/Test* sets as explained in [Section 29.6 Cross-validation](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#cross-validation) of the *Course Textbook*. This is done in the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script.
+
+::: {.noteblock data-latex=""}
+The *Validation Set* used in our project plays the role of the *Independent Set* in the terms used in the *Textbook*[@IDS2_29.6]. We can treat it like that because **\underline {it is completely independent}**, and we use it **only for the** \underline{***Final Test*** **of our best model**} at the very end of our work.
+
+Also, we split each of our datasets (into the *Train/Test* sets) only once; we do not use the *k-fold cross-validation* (described in [Section 29.6 Cross-validation / K-fold cross-validation](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation) of the *Course Textbook*[@IDS2_29.6_KFCV]) explicitly in our scripts because of the restricted time we have for the models’ training, although it is used under the hood in the [caret::train](https://topepo.github.io/caret/model-training-and-tuning.html) function used for the [Shallow Learning Models], i.e., for the [kNN+PCA MCC Model] and [Random Forest (RF) MCC Model].
+:::
+
+Before we split our datasets, there is one thing left to do: to train our [Shallow Learning Models] (the [kNN+PCA MCC](#knn_pca_model) and [Random Forest MCC](#rf_model) ones) and the [DNN-Based Basic MCC Model](#dnnb_model), the training dataset needs to be flattened; that is, our *image data matrices* must be coerced into vectors of $x*y$ length (the number of pixels: $28*28 = 784$ in our case). 
+
+This functionality is implemented in the [Preparing Flattened EMNIST-Like Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L8-L52) section of the script.
 
 
+#### The Train/Test Model-Specific Split Datasets
 
-#### The Train/Test Split Datasets
-
-These datasets are prepared by the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script, which splits the standardized binary *Train Set* described above into the following training and test subsets:
+, which splits the standardized binary *Train Set* described above into the following training and test subsets:
 
 - **Image Data Array Splits** for *Deep Learning MCC* models (based on Neural Networks: *DNN* and *CNN*):
 
