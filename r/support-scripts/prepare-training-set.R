@@ -69,7 +69,7 @@ put_end_date(start)
 log_close()
 
 ## Splitting the Training Dataset (Array of Matrices) --------------------------
-### Splitting by Default (0.8/0.2 Ratio Train/Test Sets) -----------------------------
+### Splitting by Default (0.8/0.2 Ratio Train/Test Sets) -----------------------
 
 put_log("Preparing Default Split Datasets (of 80%-size Training Set) for training 
 the NN-based Multiclass Classifier (MCC) Models...")

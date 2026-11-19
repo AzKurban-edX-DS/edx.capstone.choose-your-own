@@ -163,12 +163,12 @@ The code in the [Preparing Input Data](https://github.com/AzKurban-edX-DS/edx.ca
 
 1. In the [Download the Kaggle Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L22-L32) subsection, it runs the [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) script to retrieve the [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters).
 2. In the [Prepare Training Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L33-L109) subsection, the script prepares the *training datasets* by executing dedicated auxiliary scripts in the following order:
-    1. In the [Training Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L38-L58) subsection, it runs the [load-raw-image-data.R](#appndx_b.load_raw_image_data) script to load the *raw image data* of the *Training Set*.
-    2. In the [Training Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L59-L99) subsection, it runs the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script to *standardize and binarize* the raw image data for the *Training Set*.
+    1. In the [Training Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L38-L58) subsection, it runs the [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) script to load the *raw image data* of the *Training Set*.
+    2. In the [Training Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L59-L99) subsection, it runs the [raw-img.dat2std_bin.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R) script to *standardize and binarize* the raw image data for the *Training Set*.
     3. In the [Prepare Training Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L100-L109) subsection, it runs the [prepare-training-set.R](#appndx_b.prepare_training_set) script to split the data of the *Training Set* and prepare *ready to use* datasets for training the *Handwritten Character Recognition (HCR)* models.
 3. In the [Prepare Final Test Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L110-L160) subsection, the script prepares the *final test datasets* by executing dedicated auxiliary scripts in the following order:
-    1. In the [Final Test Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L114-L132) subsection, it runs the [load-raw-image-data.R](#appndx_b.load_raw_image_data) script to load the *raw image data* of the *Validation Set*.
-    2. In the [Final Test Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L133-L160) subsection, it runs the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script to *standardize and binarize* the raw image data for the *Final Test Set*.
+    1. In the [Final Test Set: Load Raw Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L114-L132) subsection, it runs the [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) script to load the *raw image data* of the *Validation Set*.
+    2. In the [Final Test Set: Prepare Standardized Binary Image Data](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L133-L160) subsection, it runs the [raw-img.dat2std_bin.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R) script to *standardize and binarize* the raw image data for the *Final Test Set*.
 
 #### Machine Learning Model Pipelines
 
@@ -258,8 +258,14 @@ writeLines("*** Dataset Raw Data Local Directory Structure ***")
 dir_tree(raw_data.chars.dir, type = 'directory')
 ```
 
+### Preprocessing Raw Image Data
 
-As described on the [dataset's landing page](https://www.kaggle.com/datasets/vaibhao/handwritten-characters), the *context* of the dataset is as follows:
+To make the downloaded raw image data ready for use in the *Machine Learning Model Pipelines*, it must be properly preprocessed.
+The raw data processing starts by loading it from its storage files into `R` objects for further transformation.
+
+As mentioned in the [Downloading & Preprocessing Input Datasets] section above, this feature is implemented in the [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) script, [which calls](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R#L16) a dedicated custom helper function, [load_image.list](#func.load_image.list), described below in [Appendix A](#appndx_a), to perform the operation. 
+
+The [Kaggle dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters) description provided on the *landing page* describes the *context* of the dataset as follows:
 
 ::: {.accentquote data-latex=""}
 1. Used *EMNIST* data for Alphabets and Digits.
@@ -274,7 +280,7 @@ However, although the [dataset author](https://www.kaggle.com/vaibhao) claims th
 
 So the author of *this Report* has decided to standardize the images by resizing them to the smallest image size found in the dataset.
 
-This functionality has been implemented in the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) support script described below in [Appendix B: Support Scripts].
+This functionality has been implemented in the [raw-img.dat2std_bin.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R) support script described below in [Appendix B: Support Scripts].
 
 First, the [Define the Standard Image Size Geometry](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R#L30-L73) section of the script implements the *Dynamic Geometry Determination* feature, which determines the geometry parameters for the image standardization..
 
@@ -362,6 +368,8 @@ marrangeGrob(hist.grobs[7:16], ncol = 3, nrow = 3, top = NULL, bottom = NULL, pa
 
 ```
 
+#### Standardizing & Binarizing the Image Data
+
 As already mentioned above in the [Downloading & Preprocessing Input Datasets] section, the *raw image data* undergoes preprocessing via the [raw-img.dat2std_bin.R](#appndx_b.raw_img.dat2std_bin) script (described below in [Appendix B](#appndx_b)), which includes *resizing the images to a uniform dimension* (`28x28` in our case) and *binarizing* them.
 
 Additionally, the images are trimmed during preprocessing to remove noninformative spatial data from their edges.
@@ -380,12 +388,13 @@ The *label list* is as follows:
 print(train.img.std_bin.ls.nested$label.list)
 ```
 
+::: { #ds_overview.train.img.std_bin.ls.nested.structure .sidebar }
 And the *nested list* of preprocessed character image data of the *Training Set* has the following structure:
-
 ```{r intro.ds-overview@train.img.std_bin.ls.nested$structure }
 str(train.img.std_bin.ls.nested, list.len = 39, max.level = 3)
 
 ```
+:::
 
 The *nested list* of the preprocessed *Validation Set* data (created by the same script and used for the *Final Test* of the *best model* developed in *this Project*) has the following structure:
 
@@ -591,38 +600,76 @@ str(final_test.img.std_bin.array)
 ```
 \newpage
 
-### Preparing the Training Datasets
+#### Preparing the Training Datasets
 
 To use the *Training Set* datasets for training our models. we need to split them into *Train/Test* sets as explained in [Section 29.6 Cross-validation](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#cross-validation) of the *Course Textbook*. This is done in the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script.
 
 ::: {.noteblock data-latex=""}
-The *Validation Set* used in our project plays the role of the *Independent Set* in the terms used in the *Textbook*[@IDS2_29.6]. We can treat it like that because **\underline {it is completely independent}**, and we use it **only for the** \underline{***Final Test*** **of our best model**} at the very end of our work.
+The *Validation Set* used in our project plays the role of the *Independent Set* in the terms used in the *Textbook*[@IDS2_29.6]. We can treat it this way because \underline{it is entirely independent} of the *Training Set*, and is used **solely to \underline{evaluate our best model}** at the end of the study.
 
 Also, we split each of our datasets (into the *Train/Test* sets) only once; we do not use the *k-fold cross-validation* (described in [Section 29.6 Cross-validation / K-fold cross-validation](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation) of the *Course Textbook*[@IDS2_29.6_KFCV]) explicitly in our scripts because of the restricted time we have for the models’ training, although it is used under the hood in the [caret::train](https://topepo.github.io/caret/model-training-and-tuning.html) function used for the [Shallow Learning Models], i.e., for the [kNN+PCA MCC Model] and [Random Forest (RF) MCC Model].
 :::
 
-Before we split our datasets, there is one thing left to do: to train our [Shallow Learning Models] (the [kNN+PCA MCC](#knn_pca_model) and [Random Forest MCC](#rf_model) ones) and the [DNN-Based Basic MCC Model](#dnnb_model), the training dataset needs to be flattened; that is, our *image data matrices* must be coerced into vectors of $x*y$ length (the number of pixels: $28*28 = 784$ in our case). 
+Before we split our datasets, there is one thing left to do: to train our [Shallow Learning Models] (the [kNN+PCA MCC](#knn_pca_model) and [Random Forest MCC](#rf_model) ones) and the [DNN-Based Basic MCC Model](#dnnb_model), the *training dataset* (let's call it the *Normalized Training Dataset*) needs to be flattened; that is, our *image data matrices* must be coerced into vectors of $x*y$ length (the number of pixels: $28*28 = 784$ in our case). 
 
-This functionality is implemented in the [Preparing Flattened EMNIST-Like Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L8-L52) section of the script.
+This functionality is implemented in the [Preparing Flattened EMNIST-Like Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L8-L52) section of the script, [which calls](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L28) the user-defined helper function [img.list2flatten_matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L557) (defined in the [Data processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L519-L1080) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L557) script) to transform the dataset, consisting of the [nested list of the standardized and binarized data matrices](#ds_overview.train.img.std_bin.ls.nested.structure) we obtained after the very first step of the image data preprocessing described in the [Standardizing & Binarizing the Image Data] section above, into the required format.
+
+Since the result of the transformation is cached on the local disk, we can load the dataset from the backup file:
+
+```{r prep.train_set@ds_flattened$print_backup_flle_name, echo=FALSE}
+print_log("The path to the backup file (stored in the object `ds.train.flatten.file`), 
+where the flattened training dataset was cached, is as follows:
+%1", ds.train.flatten.file)
+```
+
+```{r prep.train_set@ds_flattened$init}
+ds.train.flattened <- readRDS(ds.train.flatten.file)
+```
+
+```{r prep.train_set@ds_flattened$print_log.ds_loaded, echo=FALSE}
+print_log("The flattened dataset was loaded into the following object: `ds.train.flattened`")
+```
 
 
-#### The Train/Test Model-Specific Split Datasets
+The flattened dataset has the following structure:
+```{r prep.train_set@ds_flattened.struct}
 
-, which splits the standardized binary *Train Set* described above into the following training and test subsets:
+str(ds.train.flattened)
+```
 
-- **Image Data Array Splits** for *Deep Learning MCC* models (based on Neural Networks: *DNN* and *CNN*):
+
+
+
+
+```{r prep.train_set@ds_flattened$cleanup, include=FALSE}
+rm(ds.train.flattened)
+```
+
+
+
+
+
+##### The Train/Test Model-Specific Split Datasets
+\
+
+Now, we are ready to split the basically preprocessed *Training Sets* into the following *training and test subsets*:
+
+- **Normalized Training Dataset** splits for *Deep Learning MCC* models (based on Neural Networks: *DNN* and *CNN*):
 
   - ***Fine-Tuned DNN-Based (TDNN) MCC*** (described in Section [Tuned DNN-Based (TDNN) MCC Model]);
   - ***CNN-Based MCC*** models (described in Section [Convolutional Neural Network Based (CNN) MCC Models]). 
 
-- **Flattened Matrix Splits** for the following *Shallow Learning* and *Deep Learning* DNN-based basic models:
+- **Flattened Training Dataset** splits for the following *Shallow Learning* and *Deep Learning* DNN-based basic models:
 
   - ***k-Nearest Neighbors (kNN) MCC*** model (described in Section [kNN+PCA MCC Model]);
   - ***Random Forest (RF) MCC*** model (described in Section [Random Forest (RF) MCC Model]);
   - ***Dense Neural Network Basic (DNNB) MCC*** model (described in Section [DNN-Based Basic (DNNB) MCC Model]).
 
-##### Image Data Array Splits
+###### Normalized Training Dataset Splits
+\
 
+###### Flatten Training Dataset Splits
+\
 
   
 ```{r intro.ds-overview@, include=FALSE}
