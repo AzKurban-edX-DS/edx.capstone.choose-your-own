@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-17}
+\date{2026-11-19}
 
 \begin{document}
 \maketitle
@@ -226,7 +226,7 @@ All the source files for \emph{this Project} are available in the \emph{Project}
 
 In this project, we will develop and explore several HCR Multiclass Classifier (MCC) models, based on popular ML algorithms that convert handwritten alphanumeric symbols into a digital, machine-readable form.
 
-We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} and \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
+We will start with \href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} models, using \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} methods. These models development and evaluation are described in detail below in Sections \hyperref[knn_pca_model]{kNN+PCA MCC Model} and \hyperref[rf_model]{Random Forest (RF) MCC Model} of \emph{this Report}, respectively.
 
 Next, we will try \href{https://soulpageit.com/ai-glossary/deep-learning-explained/}{Deep Learning (DL)} models, including \href{https://smltar.com/dldnn}{Dense Neural Network (DNN)} and, finally, \href{https://smltar.com/dlcnn\#what-are-cnns}{Convolutional Neural Network (CNN)} models, as recent research shows that DL performs better at image recognition --- the task addressed by \emph{this Project}.
 
@@ -237,7 +237,7 @@ The \textbf{\emph{DNN-Based}} models are as follows:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\emph{Dense Neural Network-Based Basic (DNNB) MCC Model:}} described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
+  \textbf{\emph{Dense Neural Network-Based Basic (DNNB) MCC Model:}} described in Section \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model};
 \item
   \textbf{\emph{Tuned DNN-Based MCC Model:}} described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
 \end{itemize}
@@ -452,9 +452,9 @@ The code in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-you
   \def\labelenumii{\arabic{enumii}.}
   \tightlist
   \item
-    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L38-L58}{Training Set: Load Raw Image Data} subsection, it runs the \hyperref[appndx_b.load_raw_image_data]{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Training Set}.
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L38-L58}{Training Set: Load Raw Image Data} subsection, it runs the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Training Set}.
   \item
-    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L59-L99}{Training Set: Prepare Standardized Binary Image Data} subsection, it runs the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Training Set}.
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L59-L99}{Training Set: Prepare Standardized Binary Image Data} subsection, it runs the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R}{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Training Set}.
   \item
     In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L100-L109}{Prepare Training Datasets} subsection, it runs the \hyperref[appndx_b.prepare_training_set]{prepare-training-set.R} script to split the data of the \emph{Training Set} and prepare \emph{ready to use} datasets for training the \emph{Handwritten Character Recognition (HCR)} models.
   \end{enumerate}
@@ -465,9 +465,9 @@ The code in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-you
   \def\labelenumii{\arabic{enumii}.}
   \tightlist
   \item
-    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L114-L132}{Final Test Set: Load Raw Image Data} subsection, it runs the \hyperref[appndx_b.load_raw_image_data]{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Validation Set}.
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L114-L132}{Final Test Set: Load Raw Image Data} subsection, it runs the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} script to load the \emph{raw image data} of the \emph{Validation Set}.
   \item
-    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L133-L160}{Final Test Set: Prepare Standardized Binary Image Data} subsection, it runs the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Final Test Set}.
+    In the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L133-L160}{Final Test Set: Prepare Standardized Binary Image Data} subsection, it runs the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R}{raw-img.dat2std\_bin.R} script to \emph{standardize and binarize} the raw image data for the \emph{Final Test Set}.
   \end{enumerate}
 \end{enumerate}
 
@@ -498,9 +498,9 @@ The \emph{SL models} are implemented in the following sections of the script:
 \begin{itemize}
 \tightlist
 \item
-  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L162-L269}{kNN+PCA MCC Model} script section implements a model that combines \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html\#sec-pca}{Principal Component Analysis (PCA)} (for data preprocessing) and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)}. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model} section of \emph{this Report}.\\
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L162-L269}{kNN+PCA MCC Model} script section implements a model that combines \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html\#sec-pca}{Principal Component Analysis (PCA)} (for data preprocessing) and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#sec-knn-cv-intro}{k-Nearest Neighbors (kNN)}. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[knn_pca_model]{kNN+PCA MCC Model} section of \emph{this Report}.\\
 \item
-  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L270-L381}{Random Forest (RF) MCC Model} script section implements the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} algorithm. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model} section of \emph{this Report}.
+  The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L270-L381}{Random Forest (RF) MCC Model} script section implements the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forest (RF)} algorithm. The implementation, which uses the \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} function, is described in detail in the \hyperref[rf_model]{Random Forest (RF) MCC Model} section of \emph{this Report}.
 \end{itemize}
 
 \newpage
@@ -518,7 +518,7 @@ The \emph{DL models} are implemented in the following sections of the script:
   \begin{itemize}
   \tightlist
   \item
-    \emph{DNN-Based Basic (DNNB) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L383-L519}{DNN-Based Basic MCC Model} and described in subsection \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model};
+    \emph{DNN-Based Basic (DNNB) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L383-L519}{DNN-Based Basic MCC Model} and described in subsection \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model};
   \item
     \emph{Fine-Tuned DNN (TDNN) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L520-L667}{DNN-Based MCC Model Tuning} and described in subsection \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model}.
   \end{itemize}
@@ -640,7 +640,14 @@ The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-c
 ##     \-- Z
 \end{verbatim}
 
-As described on the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{dataset's landing page}, the \emph{context} of the dataset is as follows:
+\subsection{Preprocessing Raw Image Data}\label{preprocessing-raw-image-data}
+
+To make the downloaded raw image data ready for use in the \emph{Machine Learning Model Pipelines}, it must be properly preprocessed.
+The raw data processing starts by loading it from its storage files into \texttt{R} objects for further transformation.
+
+As mentioned in the \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} section above, this feature is implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} script, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R\#L16}{which calls} a dedicated custom helper function, \hyperref[func.load_image.list]{load\_image.list}, described below in \hyperref[appndx_a]{Appendix A}, to perform the operation.
+
+The \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{Kaggle dataset} description provided on the \emph{landing page} describes the \emph{context} of the dataset as follows:
 
 \begin{accentquote}
 
@@ -665,7 +672,7 @@ However, although the \href{https://www.kaggle.com/vaibhao}{dataset author} clai
 
 So the author of \emph{this Report} has decided to standardize the images by resizing them to the smallest image size found in the dataset.
 
-This functionality has been implemented in the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} support script described below in \hyperref[appndx_b]{Appendix B: Support Scripts}.
+This functionality has been implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R}{raw-img.dat2std\_bin.R} support script described below in \hyperref[appndx_b]{Appendix B: Support Scripts}.
 
 First, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R\#L30-L73}{Define the Standard Image Size Geometry} section of the script implements the \emph{Dynamic Geometry Determination} feature, which determines the geometry parameters for the image standardization..
 
@@ -724,8 +731,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px" "B: 32x32px"
-## [11] "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
+##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
@@ -773,6 +780,8 @@ Also, given the linear nature of the black-and-white character images in the dat
 
 \pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/intro.ds-overview@img.diff-size$hist-2.pdf}} \pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/intro.ds-overview@img.diff-size$hist-3.pdf}}
 
+\subsubsection{Standardizing \& Binarizing the Image Data}\label{standardizing-binarizing-the-image-data}
+
 As already mentioned above in the \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} section, the \emph{raw image data} undergoes preprocessing via the \hyperref[appndx_b.raw_img.dat2std_bin]{raw-img.dat2std\_bin.R} script (described below in \hyperref[appndx_b]{Appendix B}), which includes \emph{resizing the images to a uniform dimension} (\texttt{28x28} in our case) and \emph{binarizing} them.
 
 Additionally, the images are trimmed during preprocessing to remove noninformative spatial data from their edges.
@@ -799,6 +808,7 @@ The \emph{label list} is as follows:
 ## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 \end{verbatim}
 
+\protect\phantomsection\label{ds_overview.train.img.std_bin.ls.nested.structure}
 And the \emph{nested list} of preprocessed character image data of the \emph{Training Set} has the following structure:
 
 \begin{Shaded}
@@ -1178,8 +1188,8 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px" "6: 28x28px" "B: 28x28px"
-## [11] "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
+##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 Now, we can see that all the sample images are the same size.
@@ -1407,15 +1417,67 @@ Ultimately, as a result of the current stage of \emph{image data preprocessing},
 
 \newpage
 
-\subsection{Preparing the Model-Specific Datasets}\label{preparing-the-model-specific-datasets}
+\subsubsection{Preparing the Training Datasets}\label{preparing-the-training-datasets}
 
-\subsubsection{The Train/Test Split Datasets}\label{the-traintest-split-datasets}
+To use the \emph{Training Set} datasets for training our models. we need to split them into \emph{Train/Test} sets as explained in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#cross-validation}{Section 29.6 Cross-validation} of the \emph{Course Textbook}. This is done in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script.
 
-These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script, which splits the standardized binary \emph{Train Set} described above into the following training and test subsets:
+\begin{noteblock}
+The \emph{Validation Set} used in our project plays the role of the \emph{Independent Set} in the terms used in the \emph{Textbook}\autocite{IDS2_29.6}. We can treat it this way because \underline{it is entirely independent} of the \emph{Training Set}, and is used \textbf{solely to \underline{evaluate our best model}} at the end of the study.
+
+Also, we split each of our datasets (into the \emph{Train/Test} sets) only once; we do not use the \emph{k-fold cross-validation} (described in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#k-fold-cross-validation}{Section 29.6 Cross-validation / K-fold cross-validation} of the \emph{Course Textbook}\autocite{IDS2_29.6_KFCV}) explicitly in our scripts because of the restricted time we have for the models' training, although it is used under the hood in the \href{https://topepo.github.io/caret/model-training-and-tuning.html}{caret::train} function used for the \hyperref[shallow-learning-models]{Shallow Learning Models}, i.e., for the \hyperref[knn_pca_model]{kNN+PCA MCC Model} and \hyperref[rf_model]{Random Forest (RF) MCC Model}.
+
+\end{noteblock}
+
+Before we split our datasets, there is one thing left to do: to train our \hyperref[shallow-learning-models]{Shallow Learning Models} (the \hyperref[knn_pca_model]{kNN+PCA MCC} and \hyperref[rf_model]{Random Forest MCC} ones) and the \hyperref[dnnb_model]{DNN-Based Basic MCC Model}, the \emph{training dataset} (let's call it the \emph{Normalized Training Dataset}) needs to be flattened; that is, our \emph{image data matrices} must be coerced into vectors of \(x*y\) length (the number of pixels: \(28*28 = 784\) in our case).
+
+This functionality is implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L8-L52}{Preparing Flattened EMNIST-Like Dataset} section of the script, \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L28}{which calls} the user-defined helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L557}{img.list2flatten\_matrix} (defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L519-L1080}{Data processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L557}{data-helper.R} script) to transform the dataset, consisting of the \hyperref[ds_overview.train.img.std_bin.ls.nested.structure]{nested list of the standardized and binarized data matrices} we obtained after the very first step of the image data preprocessing described in the \hyperref[standardizing-binarizing-the-image-data]{Standardizing \& Binarizing the Image Data} section above, into the required format.
+
+Since the result of the transformation is cached on the local disk, we can load the dataset from the backup file:
+
+\begin{verbatim}
+## The path to the backup file (stored in the object `ds.train.flatten.file`), 
+## where the flattened training dataset was cached, is as follows:
+## data/dataset/train/ds.flatten.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ds.train.flattened }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.train.flatten.file)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The flattened dataset was loaded into the following object: `ds.train.flattened`
+\end{verbatim}
+
+The flattened dataset has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds.train.flattened)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ img.mx  : logi [1:834032, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   ..- attr(*, "dimnames")=List of 2
+##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
+##   .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##  $ img.file: chr [1:834032(1d)] "data/raw/Vaibs.HW-Chars/Train/#/__0_1004356.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1022082.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1042459.png" "data/raw/Vaibs.HW-Chars/Train/#/__0_1055444.png" ...
+##   ..- attr(*, "dimnames")=List of 1
+##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
+\end{verbatim}
+
+\paragraph{The Train/Test Model-Specific Split Datasets}\label{the-traintest-model-specific-split-datasets}
+
+\hfill\break
+
+Now, we are ready to split the basically preprocessed \emph{Training Sets} into the following \emph{training and test subsets}:
 
 \begin{itemize}
 \item
-  \textbf{Image Data Array Splits} for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
+  \textbf{Normalized Training Dataset} splits for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
 
   \begin{itemize}
   \tightlist
@@ -1425,32 +1487,42 @@ These datasets are prepared by the \href{https://github.com/AzKurban-edX-DS/edx.
     \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
   \end{itemize}
 \item
-  \textbf{Flattened Matrix Splits} for the following \emph{Shallow Learning} and \emph{Deep Learning} DNN-based basic models:
+  \textbf{Flattened Training Dataset} splits for the following \emph{Shallow Learning} and \emph{Deep Learning} DNN-based basic models:
 
   \begin{itemize}
   \tightlist
   \item
-    \textbf{\emph{k-Nearest Neighbors (kNN) MCC}} model (described in Section \hyperref[knnpca-mcc-model]{kNN+PCA MCC Model});
+    \textbf{\emph{k-Nearest Neighbors (kNN) MCC}} model (described in Section \hyperref[knn_pca_model]{kNN+PCA MCC Model});
   \item
-    \textbf{\emph{Random Forest (RF) MCC}} model (described in Section \hyperref[random-forest-rf-mcc-model]{Random Forest (RF) MCC Model});
+    \textbf{\emph{Random Forest (RF) MCC}} model (described in Section \hyperref[rf_model]{Random Forest (RF) MCC Model});
   \item
-    \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnn-based-basic-dnnb-mcc-model]{DNN-Based Basic (DNNB) MCC Model}).
+    \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model}).
   \end{itemize}
 \end{itemize}
 
-\paragraph{Image Data Array Splits}\label{image-data-array-splits}
+\subparagraph{Normalized Training Dataset Splits}\label{normalized-training-dataset-splits}
+
+\hfill\break
+
+\subparagraph{Flatten Training Dataset Splits}\label{flatten-training-dataset-splits}
+
+\hfill\break
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
-\section{kNN+PCA MCC Model}\label{knnpca-mcc-model}
+\section{Shallow Learning Models}\label{shallow-learning-models}
 
-\section{Random Forest (RF) MCC Model}\label{random-forest-rf-mcc-model}
+\subsection{kNN+PCA MCC Model}\label{knn_pca_model}
+
+\subsection{Random Forest (RF) MCC Model}\label{rf_model}
 
 \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forests (RF)} approach explained in {[}Section 30.5 Random forests{]} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_30_5_RF}
 
-\section{Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models}\label{dense-neural-network-based-multiclass-classifier-dnn-based-mcc-models}
+\section{Deep Learning Models}\label{deep-learning-models}
 
-\subsection{DNN-Based Basic (DNNB) MCC Model}\label{dnn-based-basic-dnnb-mcc-model}
+\subsection{Dense Neural Network Based Multiclass Classifier (DNN-Based MCC) Models}\label{dense-neural-network-based-multiclass-classifier-dnn-based-mcc-models}
+
+\subsubsection{DNN-Based Basic (DNNB) MCC Model}\label{dnnb_model}
 
 \section{Tuned DNN-Based (TDNN) MCC Model}\label{tuned-dnn-based-tdnn-mcc-model}
 
@@ -3009,34 +3081,6 @@ The download process consists of the following two steps:
 \item
   \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R\#L29-L41}{Conditionally cleans up} the local dataset directory structure by safely deleting the duplicated subdirectory, if it exists.
 \end{enumerate}
-
-\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R}{load-raw-image-data.R} Script}{load-raw-image-data.R Script}}\label{appndx_b.load_raw_image_data}
-
-\hfill\break
-
-\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R}{raw-img.dat2std\_bin.R} Script}{raw-img.dat2std\_bin.R Script}}\label{appndx_b.raw_img.dat2std_bin}
-
-\hfill\break
-
-\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} Script}{prepare-training-set.R Script}}\label{appndx_b.prepare_training_set}
-
-\hfill\break
-
-\section{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/}{} Script}{ Script}}\label{appndx_b.}
-
-\hfill\break
-
-\section{Script}\label{appndx_b.}
-
-\hfill\break
-
-\section{Script}\label{appndx_b.}
-
-\hfill\break
-
-\section{Script}\label{appndx_b.}
-
-\hfill\break
 
 \chapter{Appendix C: Device (Laptop) Used for Development \& Testing}\label{appndx_c}
 

@@ -14,11 +14,11 @@ Please wait...", root_dir)
   # raw_img.dat.ls <- load_image.list(root_dir,
   #                                 load.img_trimmed.dat)
   raw_img.dat.ls <- load_image.list(root_dir,
-                                  function(file_path) {
-                                    #' Load `magick` image, extracts, and returns 
-                                    #' the underlying raw pixel buffer data.
-                                    image_data(image_read(file_path))
-                                  })
+                                    function(file_path) {
+                                      #' Load `magick` image, extracts, and returns 
+                                      #' the underlying raw pixel buffer data.
+                                      image_data(image_read(file_path))
+                                    })
   
   ## Logging the summary & structure of the Image List -----------------    
   put_log("Summary of the Image list:
