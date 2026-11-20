@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-19}
+\date{2026-11-20}
 
 \begin{document}
 \maketitle
@@ -1473,19 +1473,9 @@ The flattened dataset has the following structure:
 
 \hfill\break
 
-Now, we are ready to split the basically preprocessed \emph{Training Sets} into the following \emph{training and test subsets}:
+Now, we are ready to split the mostly preprocessed \emph{Training Sets} into the following \emph{training and test subsets}:
 
 \begin{itemize}
-\item
-  \textbf{Normalized Training Dataset} splits for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \textbf{\emph{Fine-Tuned DNN-Based (TDNN) MCC}} (described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model});
-  \item
-    \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
-  \end{itemize}
 \item
   \textbf{Flattened Training Dataset} splits for the following \emph{Shallow Learning} and \emph{Deep Learning} DNN-based basic models:
 
@@ -1498,15 +1488,59 @@ Now, we are ready to split the basically preprocessed \emph{Training Sets} into 
   \item
     \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model}).
   \end{itemize}
+\item
+  \textbf{Normalized Training Dataset} splits for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{\emph{Fine-Tuned DNN-Based (TDNN) MCC}} (described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model});
+  \item
+    \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
+  \end{itemize}
 \end{itemize}
+
+We use two types of split sets (both for \emph{Normalized} and \emph{Flattened} datasets):
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{0.8/0.2 ratio split of the \emph{Train/Test} sets:} (\emph{by default}) for preliminary training and retraining the best models after tuning;\\
+\item
+  \textbf{0.1/0.9 ratio split of the \emph{Train/Test} sets:} ``lite'' \emph{Training Set} to use for tuning the models (due to the time-consuming nature of such operations) and ``heavy'' \emph{Test Set} to use the maximum amount of available data for testing to achieve more reliable results.
+\end{itemize}
+
+\subparagraph{Flatten Training Dataset Splits}\label{flatten-training-dataset-splits}
+
+\hfill\break
+
+The feature that creates \emph{balanced split datasets} is implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R}{prepare-flattened-datasets.R} script, which invokes the custom helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L908}{ds.flatten.sample} (defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L519-L1080}{Data processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L908}{data-helper.R} script), which, in fact, performs the actual splitting of the provided data according to the specified proportion.
+
+\begin{noteblock}
+This script itself \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L61}{is invoked} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L53-L70}{Splitting the Flattened Dataset} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L61}{prepare-training-set.R} script, which also implements all other splitting operations listed above in the \hyperref[the-traintest-model-specific-split-datasets]{The Train/Test Model-Specific Split Datasets} section.
+
+\end{noteblock}
 
 \subparagraph{Normalized Training Dataset Splits}\label{normalized-training-dataset-splits}
 
 \hfill\break
 
-\subparagraph{Flatten Training Dataset Splits}\label{flatten-training-dataset-splits}
+For the \emph{Normalized} dataset, the \emph{Balanced Splitting} feature is implemented in the following subsections of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L71-L194}{Splitting the Training Dataset (Array of Matrices)} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script:
 
-\hfill\break
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Default Splitting:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L72-L112}{Splitting by Default (0.8/0.2 Ratio Train/Test Sets)} subsection;
+\item
+  \textbf{Splitting into a 01/0.9 ratio \emph{Train/Test} Sets:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L113-L151}{Splitting into 0.1/0.9 Ratio Train/Test Sets (for the Models' Tuning)} subsection.
+\end{itemize}
+
+Finally, the subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L152-L193}{Splitting by Default Without Balancing (for the Final Retraining of the Best Model)} implements the \emph{Default Non-Balanced Splitting} feature, which splits the dataset into a 0.8/0.2 ratio \emph{\underline{imbalanced} Train/Test Sets} (for retraining the \emph{Final Best Model} that will be developed at the end of the study).
+
+\begin{noteblock}
+All of the \emph{split datasets} listed above in this section are created by the custom helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L520}{ds.split.img\_mx.array} (defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L519-L1080}{Data processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L520}{data-helper.R} script), which is called for each pair of \emph{Train/Test} sets from the corresponding sections of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script.
+
+\end{noteblock}
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 

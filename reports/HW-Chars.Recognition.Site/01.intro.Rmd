@@ -652,12 +652,7 @@ rm(ds.train.flattened)
 ##### The Train/Test Model-Specific Split Datasets
 \
 
-Now, we are ready to split the basically preprocessed *Training Sets* into the following *training and test subsets*:
-
-- **Normalized Training Dataset** splits for *Deep Learning MCC* models (based on Neural Networks: *DNN* and *CNN*):
-
-  - ***Fine-Tuned DNN-Based (TDNN) MCC*** (described in Section [Tuned DNN-Based (TDNN) MCC Model]);
-  - ***CNN-Based MCC*** models (described in Section [Convolutional Neural Network Based (CNN) MCC Models]). 
+Now, we are ready to split the mostly preprocessed *Training Sets* into the following *training and test subsets*:
 
 - **Flattened Training Dataset** splits for the following *Shallow Learning* and *Deep Learning* DNN-based basic models:
 
@@ -665,13 +660,44 @@ Now, we are ready to split the basically preprocessed *Training Sets* into the f
   - ***Random Forest (RF) MCC*** model (described in Section [Random Forest (RF) MCC Model]);
   - ***Dense Neural Network Basic (DNNB) MCC*** model (described in Section [DNN-Based Basic (DNNB) MCC Model]).
 
-###### Normalized Training Dataset Splits
-\
+- **Normalized Training Dataset** splits for *Deep Learning MCC* models (based on Neural Networks: *DNN* and *CNN*):
+
+  - ***Fine-Tuned DNN-Based (TDNN) MCC*** (described in Section [Tuned DNN-Based (TDNN) MCC Model]);
+  - ***CNN-Based MCC*** models (described in Section [Convolutional Neural Network Based (CNN) MCC Models]). 
+
+We use two types of split sets (both for *Normalized* and *Flattened* datasets):
+
+- **0.8/0.2 ratio split of the *Train/Test* sets:** (*by default*) for preliminary training and retraining the best models after tuning;  
+- **0.1/0.9 ratio split of the *Train/Test* sets:** “lite” *Training Set* to use for tuning the models (due to the time-consuming nature of such operations) and “heavy” *Test Set* to use the maximum amount of available data for testing to achieve more reliable results.
 
 ###### Flatten Training Dataset Splits
 \
 
-  
+The feature that creates *balanced split datasets* is implemented in the [prepare-flattened-datasets.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R) script, which invokes the custom helper function [ds.flatten.sample](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L908) (defined in the [Data processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L519-L1080) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L908) script), which, in fact, performs the actual splitting of the provided data according to the specified proportion.
+
+::: {.noteblock data-latex=""}
+This script itself [is invoked](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L61) from the [Splitting the Flattened Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L53-L70) section of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L61) script, which also implements all other splitting operations listed above in the [The Train/Test Model-Specific Split Datasets] section.
+:::
+
+
+
+###### Normalized Training Dataset Splits
+\
+
+For the *Normalized* dataset, the *Balanced Splitting* feature is implemented in the following subsections of the [Splitting the Training Dataset (Array of Matrices)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L71-L194) section of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script:
+
+- **Default Splitting:** implemented in the [Splitting by Default (0.8/0.2 Ratio Train/Test Sets)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L72-L112) subsection;
+- **Splitting into a 01/0.9 ratio *Train/Test* Sets:** implemented in the [Splitting into 0.1/0.9 Ratio Train/Test Sets (for the Models' Tuning)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L113-L151) subsection.
+
+Finally, the subsection [Splitting by Default Without Balancing (for the Final Retraining of the Best Model)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L152-L193) implements the *Default Non-Balanced Splitting* feature, which splits the dataset into a 0.8/0.2 ratio *\underline{imbalanced} Train/Test Sets* (for retraining the *Final Best Model* that will be developed at the end of the study).
+
+::: {.noteblock data-latex=""}
+All of the *split datasets* listed above in this section are created by the custom helper function [ds.split.img_mx.array](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L520) (defined in the [Data processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L519-L1080) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L520) script), which is called for each pair of *Train/Test* sets from the corresponding sections of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script.
+:::
+
+
+
+
 ```{r intro.ds-overview@, include=FALSE}
 ```
 

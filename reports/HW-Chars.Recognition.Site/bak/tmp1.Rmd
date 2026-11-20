@@ -54,6 +54,7 @@ getwd()
 dir()
 ```
 
+[](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions)
 
 ## [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) Script {#appndx_b.load_raw_image_data}
 \
@@ -65,6 +66,7 @@ dir()
 ## [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) Script {#appndx_b.prepare_training_set}
 \
 
+## [prepare-flattened-datasets.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R)
 
 
 ## [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/)  Script {#appndx_b.}
