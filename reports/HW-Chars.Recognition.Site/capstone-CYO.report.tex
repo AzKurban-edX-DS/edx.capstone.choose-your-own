@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-20}
+\date{2026-11-21}
 
 \begin{document}
 \maketitle
@@ -1442,6 +1442,7 @@ Since the result of the transformation is cached on the local disk, we can load 
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.train.flatten.file))}
 \NormalTok{ds.train.flattened }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.train.flatten.file)}
 \end{Highlighting}
 \end{Shaded}
@@ -1521,6 +1522,111 @@ This script itself \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-
 
 \end{noteblock}
 
+As always, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
+
+\begin{verbatim}
+## The path to the backup file (stored in the object `ds.flatten.split.file`), 
+## where the Default Flattened Split Set was cached, is as follows:
+## data/dataset/train/ds.flatten.20%test-split.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.flatten.split.file))}
+\NormalTok{ds.flattened.split }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.flatten.split.file)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The Default Flattened Split Set was loaded into the following object: `ds.flattened.split`
+\end{verbatim}
+
+\begin{verbatim}
+## The path to the backup file (stored in the object `ds.flatten.0.1split.file`), 
+## where the Flattened Split of the 0.1/0.9 ratio Train/Test Set was cached, is as follows:
+## data/dataset/train/ds.flatten-split(10%train-set).rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.flatten.}\FloatTok{0.1}\NormalTok{split.file))}
+\NormalTok{ds\_flattened.}\FloatTok{0.1}\NormalTok{split\_list }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.flatten.}\FloatTok{0.1}\NormalTok{split.file)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The Flattened Split of the 0.1/0.9 ratio Train/Test Set 
+## was loaded into the following object: `ds_flattened.0.1split_list`
+\end{verbatim}
+
+The \emph{Default Flattened Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds.flattened.split)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:132912, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:132912] "B" "D" "Q" "S" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:132912(1d)] "data/raw/Vaibs.HW-Chars/Train/B/_1_4796.jpg" "data/raw/Vaibs.HW-Chars/Train/D/_1_10801.jpg" "data/raw/Vaibs.HW-Chars/Train/Q/_1_2741.jpg" "data/raw/Vaibs.HW-Chars/Train/S/8831.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:132912] "B" "D" "Q" "S" ...
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:33267, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:33267] "B" "W" "B" "G" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:33267(1d)] "data/raw/Vaibs.HW-Chars/Train/B/2306.jpg" "data/raw/Vaibs.HW-Chars/Train/W/6426.jpg" "data/raw/Vaibs.HW-Chars/Train/B/1684.jpg" "data/raw/Vaibs.HW-Chars/Train/G/_1_1686.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:33267] "B" "W" "B" "G" ...
+\end{verbatim}
+
+If we group our splits by \emph{Character Class} we can see that they are properly balanced.
+
+So for the \emph{training set}, we have:
+
+And for the \emph{test set}, we have:
+
+The \emph{Flattened Split of the 0.1/0.9 ratio Train/Test Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_flattened.}\FloatTok{0.1}\NormalTok{split\_list)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:16614, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:16614(1d)] "data/raw/Vaibs.HW-Chars/Train/Z/3405.jpg" "data/raw/Vaibs.HW-Chars/Train/S/10166.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_2054.jpg" "data/raw/Vaibs.HW-Chars/Train/S/24667.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:149565, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:149565(1d)] "data/raw/Vaibs.HW-Chars/Train/S/5303.jpg" "data/raw/Vaibs.HW-Chars/Train/N/20577.jpg" "data/raw/Vaibs.HW-Chars/Train/M/11629.jpg" "data/raw/Vaibs.HW-Chars/Train/9/16969.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+\end{verbatim}
+
+Again, after grouping our splits by \emph{Character Class}, we can see that they are properly balanced.
+
+So, for the \emph{training set}, we have:
+
+And for the \emph{test set}, we have:
+
 \subparagraph{Normalized Training Dataset Splits}\label{normalized-training-dataset-splits}
 
 \hfill\break
@@ -1541,6 +1647,106 @@ Finally, the subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.ch
 All of the \emph{split datasets} listed above in this section are created by the custom helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L520}{ds.split.img\_mx.array} (defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L519-L1080}{Data processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L520}{data-helper.R} script), which is called for each pair of \emph{Train/Test} sets from the corresponding sections of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script.
 
 \end{noteblock}
+
+Again, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
+
+\begin{verbatim}
+## The path to the backup file (stored in the object `ds.split.train_0.8.backup.path`), 
+## where the Default Split Set was cached, is as follows:
+## data/dataset/train/ds.split.train_0.8.backup.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.split.train\_0.}\FloatTok{8.}\NormalTok{backup.path))}
+\NormalTok{ds\_norm.split }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.split.train\_0.}\FloatTok{8.}\NormalTok{backup.path)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The Default Split Set was loaded into the following object: `ds_norm.split`
+\end{verbatim}
+
+The \emph{Default Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_norm.split)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:132912, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:132912] "B" "D" "Q" "S" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:33267, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:33267] "B" "W" "B" "G" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+\end{verbatim}
+
+After grouping our splits by \emph{Character Class}, we can see that they are properly balanced.
+
+So, for the \emph{training set}, we have:
+
+And for the \emph{test set}, we have:
+
+\begin{verbatim}
+## The path to the backup file (stored in the object `ds.split.train_0.1.file`), 
+## where the 0.1/0.9 Ratio Train/Test Split Set was cached, is as follows:
+## data/dataset/train/ds.split.train_0.1.backup.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.split.train\_0.}\FloatTok{1.}\NormalTok{file))}
+\NormalTok{ds\_norm.split0}\FloatTok{.1} \OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.split.train\_0.}\FloatTok{1.}\NormalTok{file)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The 0.1/0.9 Ratio Train/Test Split Set was loaded into the following object: `ds_norm.split0.1`
+\end{verbatim}
+
+The \emph{0.1/0.9 Ratio Train/Test Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_norm.split0}\FloatTok{.1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:16614, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:149565, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+\end{verbatim}
+
+And, finally, after grouping our last balanced splits by \emph{Character Class}, we can see that they are properly balanced, as all the others we have examined so far.
+
+So, for the \emph{training set}, we have:
+
+And for the \emph{test set}, we have:
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 

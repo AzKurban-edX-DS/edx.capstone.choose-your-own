@@ -234,17 +234,10 @@ dir()
 
 
 ```{r intro.datasets-overview$open-log, include=FALSE}
-
-
-
 open_logfile(".intro.chunks.datasets-overview")
 
-
-# ds.path <- file.path(knitr.proj_root, raw_data.chars.dir)
-# ds.train.root <- file.path(knitr.proj_root, img.train_root.dir)
-# normalizePath(knitr.proj_root)
-
-
+stopifnot(file.exists(train.img.std_bin.ls.nested.file,
+                      final_test.img.std_bin.ls.nested.file))
 
 train.img.std_bin.ls.nested <- readRDS(train.img.std_bin.ls.nested.file)
 ft.img.std_bin.ls.nested <- readRDS(final_test.img.std_bin.ls.nested.file)
@@ -582,6 +575,9 @@ rm(train.img.std_bin.array.ls, final_test.img.std_bin.array.ls)
 Finally, in the section [Flatten the List of Image Data Matrix Arrays](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/raw-img.dat2std_bin.R#L204-L269), the list items are merged into a single array that includes all the matrices contained in the *image data arrays* included in the original list.
 
 ```{r intro.datasets-overview@img-dat.mx-array$init, include=FALSE}
+stopifnot(file.exists(train.img.std_bin.array.file,
+                      final_test.img.std_bin.array.file))
+
 train.img.std_bin.array <- readRDS(train.img.std_bin.array.file)
 final_test.img.std_bin.array <- readRDS(final_test.img.std_bin.array.file)
 ```
@@ -621,33 +617,22 @@ print_log("The path to the backup file (stored in the object `ds.train.flatten.f
 where the flattened training dataset was cached, is as follows:
 %1", ds.train.flatten.file)
 ```
-
 ```{r prep.train_set@ds_flattened$init}
+stopifnot(file.exists(ds.train.flatten.file))
 ds.train.flattened <- readRDS(ds.train.flatten.file)
 ```
-
 ```{r prep.train_set@ds_flattened$print_log.ds_loaded, echo=FALSE}
 print_log("The flattened dataset was loaded into the following object: `ds.train.flattened`")
 ```
-
 
 The flattened dataset has the following structure:
 ```{r prep.train_set@ds_flattened.struct}
 
 str(ds.train.flattened)
 ```
-
-
-
-
-
 ```{r prep.train_set@ds_flattened$cleanup, include=FALSE}
 rm(ds.train.flattened)
 ```
-
-
-
-
 
 ##### The Train/Test Model-Specific Split Datasets
 \
@@ -679,6 +664,63 @@ The feature that creates *balanced split datasets* is implemented in the [prepar
 This script itself [is invoked](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L61) from the [Splitting the Flattened Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L53-L70) section of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L61) script, which also implements all other splitting operations listed above in the [The Train/Test Model-Specific Split Datasets] section.
 :::
 
+As always, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
+
+```{r ds.flattened.split@print_backup_flle_name, echo=FALSE}
+print_log("The path to the backup file (stored in the object `ds.flatten.split.file`), 
+where the Default Flattened Split Set was cached, is as follows:
+%1", ds.flatten.split.file)
+```
+```{r ds.flattened.split@init}
+stopifnot(file.exists(ds.flatten.split.file))
+ds.flattened.split <- readRDS(ds.flatten.split.file)
+```
+```{r ds.flattened.split@print_log.ds_loaded, echo=FALSE}
+print_log("The Default Flattened Split Set was loaded into the following object: 
+`ds.flattened.split`")
+```
+```{r ds.flattened0.1split@print_backup_flle_name, echo=FALSE}
+print_log("The path to the backup file (stored in the object `ds.flatten.0.1split.file`), 
+where the Flattened Split of the 0.1/0.9 ratio Train/Test Set was cached, 
+is as follows:
+%1", ds.flatten.0.1split.file)
+```
+```{r ds.flattened0.1split@init}
+stopifnot(file.exists(ds.flatten.0.1split.file))
+ds_flattened.0.1split_list <- readRDS(ds.flatten.0.1split.file)
+```
+```{r ds.flattened0.1split@print_log.ds_loaded, echo=FALSE}
+print_log("The Flattened Split of the 0.1/0.9 ratio Train/Test Set 
+was loaded into the following object: `ds_flattened.0.1split_list`")
+```
+
+The *Default Flattened Split Set* has the following structure:
+```{r ds.flattened.split@struct}
+str(ds.flattened.split)
+```
+
+If we group our splits by *Character Class* we can see that they are properly balanced.
+
+So for the *training set*, we have:
+
+And for the *test set*, we have:
+
+
+The *Flattened Split of the 0.1/0.9 ratio Train/Test Set* has the following structure:
+```{r ds.flattened.split0.1@struct}
+str(ds_flattened.0.1split_list)
+```
+Again, after grouping our splits by *Character Class*, we can see that they are properly balanced.
+
+So, for the *training set*, we have:
+
+And for the *test set*, we have:
+
+
+
+```{r ds.flattened.split@cleanup, include=FALSE}
+rm(ds.flattened.split, ds_flattened.0.1split_list)
+```
 
 
 ###### Normalized Training Dataset Splits
@@ -694,6 +736,84 @@ Finally, the subsection [Splitting by Default Without Balancing (for the Final R
 ::: {.noteblock data-latex=""}
 All of the *split datasets* listed above in this section are created by the custom helper function [ds.split.img_mx.array](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L520) (defined in the [Data processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L519-L1080) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L520) script), which is called for each pair of *Train/Test* sets from the corresponding sections of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script.
 :::
+
+Again, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
+
+```{r ds_norm.split@print_backup_flle_name, echo=FALSE}
+print_log("The path to the backup file (stored in the object `ds.split.train_0.8.backup.path`), 
+where the Default Split Set was cached, is as follows:
+%1", ds.split.train_0.8.backup.path)
+```
+
+```{r ds_norm.split@init}
+stopifnot(file.exists(ds.split.train_0.8.backup.path))
+ds_norm.split <- readRDS(ds.split.train_0.8.backup.path)
+```
+
+```{r ds_norm.split@print_log.ds_loaded, echo=FALSE}
+print_log("The Default Split Set was loaded into the following object: `ds_norm.split`")
+```
+The *Default Split Set* has the following structure:
+```{r ds_norm.split@struct}
+str(ds_norm.split)
+```
+
+After grouping our splits by *Character Class*, we can see that they are properly balanced.
+
+So, for the *training set*, we have:
+
+And for the *test set*, we have:
+
+
+
+
+
+
+
+
+
+
+```{r ds_norm.split@cleanup, include=FALSE}
+rm(ds_norm.split)
+```
+
+
+```{r ds_norm.split0.1@print_backup_flle_name, echo=FALSE}
+print_log("The path to the backup file (stored in the object `ds.split.train_0.1.file`), 
+where the 0.1/0.9 Ratio Train/Test Split Set was cached, is as follows:
+%1", ds.split.train_0.1.file)
+```
+
+```{r ds_norm.split0.1@init}
+stopifnot(file.exists(ds.split.train_0.1.file))
+ds_norm.split0.1 <- readRDS(ds.split.train_0.1.file)
+```
+
+```{r ds_norm.split0.1@print_log.ds_loaded, echo=FALSE}
+print_log("The 0.1/0.9 Ratio Train/Test Split Set was loaded into the following object: 
+`ds_norm.split0.1`")
+```
+
+
+The *0.1/0.9 Ratio Train/Test Split Set* has the following structure:
+```{r ds_norm.split0.1@struct}
+
+str(ds_norm.split0.1)
+```
+And, finally, after grouping our last balanced splits by *Character Class*, we can see that they are properly balanced, as all the others we have examined so far.
+
+So, for the *training set*, we have:
+
+And for the *test set*, we have:
+
+
+
+
+
+
+```{r ds_norm.split0.1@cleanup, include=FALSE}
+rm(ds_norm.split0.1)
+```
 
 
 
