@@ -81,27 +81,60 @@ dir()
 ##  Script {#appndx_b.}
 \
 
+keras3
+
+
+2D convolution layer
+https://keras3.posit.co/reference/layer_conv_2d.html
+
+# --------------------------
+Computer vision with R and keras
+Saif Shabou
+2020-04-21
+https://s-ai-f.github.io/Computer-vision-keras-R/
+# -------------------------
+Chapter4
+https://s-ai-f.github.io/Computer-vision-keras-R/deep-learning-for-computer-vision.html
 
 
 
 
+kerastuneR:
+omalley2019kerastuner
 
 
+#### Standardizing & Binarizing the Image Data
+[F1-Score metric](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#balanced-accuracy-and-f_1-score)
 
-
-
-```{r intro.ds-overview@tmp$ }
+```{r intro.ds-overview@tmp$, output.size="small"  }
 ```
 
 ::: { # .sidebar }
 :::
+
+::: { #validation_set.struct .sidebar }
+- For the *Validation set*:
+```{r intro.ds-overview@ft.mx_array}
+str(final_test.img.std_bin.array)
+```
+:::
+
+::: { #func.ds.group_by_class .sidebar }
+:::
+
+So, we can see that this is true for the *training set*:
+``` {r ds.flattened.split@train$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds.flattened.split$train_set$x.train), 
+      n = N.classes)
+```
+
+
 
 ::: { #func.load.img_trimmed.dat.usage .sidebar }
 :::
 ::: {.noteblock data-latex=""}
 This is an auxiliary function, the pointer to which is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function, as shown above in the [Usage](#func.load.img_trimmed.dat.usage) Section of *this Description*.
 :::
-
 
 ::: {.noteblock data-latex=""}
 

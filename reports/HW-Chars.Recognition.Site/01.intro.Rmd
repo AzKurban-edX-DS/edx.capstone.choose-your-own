@@ -223,16 +223,6 @@ The [The Most Confusing Characters for Recognition] section below provides the d
 
 ## Datasets Overview
 
-```{r test-intto, include=FALSE}
-#opts_chunk$get("root.dir")
-opts_knit$get("root.dir")
-getwd()
-dir()
-# knitr::opts_knit$get("root.dir")
-# here()
-```
-
-
 ```{r intro.datasets-overview$open-log, include=FALSE}
 open_logfile(".intro.chunks.datasets-overview")
 
@@ -245,11 +235,13 @@ ft.img.std_bin.ls.nested <- readRDS(final_test.img.std_bin.ls.nested.file)
 
 The project uses the [HandWritten_Character Dataset](https://www.kaggle.com/datasets/vaibhao/handwritten-characters)  downloaded from [Kaggle](https://www.kaggle.com).As mentioned in the section [Downloading & Preprocessing Input Datasets] above, the dedicated script [ds.kaggle.download.R](#appndx_b.ds.kaggle.download) (described below in [Appendix B](#appndx_b)) is used for that purpose. The result of its execution is a folder structure (identical to one shown on the dataset's webpage) containing the raw image data, as shown below:
 
-```{r intro.datasets-overview.downloading@dir_tree, echo=FALSE}
+```{r intro.datasets-overview.downloading@dir_tree, echo=FALSE, output.size="small"}
 
 writeLines("*** Dataset Raw Data Local Directory Structure ***")
 dir_tree(raw_data.chars.dir, type = 'directory')
 ```
+
+\newpage
 
 ### Preprocessing Raw Image Data
 
@@ -287,9 +279,11 @@ based on the smallest existing image in the Training Set, is as follows:
 
 Meaning that the smallest image size is 28x28 pixels.
 
+\newpage
+
 We can use the following code snippet to prepare a few sample images, both 28x28 and 32x32 pixels in size, for visual presentation:
 
-```{r intro.ds-overview@img.diff-size$data }
+```{r intro.ds-overview@img.diff-size$data, output.size="footnotesize" }
 print(paste("Kaggle Dataset Root Directory:", img.train_root.dir))
 
 chr_set <- c('#', '$', '&', '@', 
@@ -320,6 +314,7 @@ img.dat <- data.frame(file = img.files,
 
 print(img.dat$annotation)
 ```
+
 Figure \@ref(fig:intro-ds-overview-img-diff-size-sample) below shows what these images look like.
 
 ```{r intro-ds-overview-img-diff-size-sample, echo=FALSE, fig.cap="Example images, both 28x28 and 32x32 pixels."}
@@ -377,24 +372,28 @@ The result of the script execution consists of the *label list* of the *characte
 
 The *label list* is as follows:
 
-```{r intro.ds-overview@label-list }
+```{r intro.ds-overview@label-list, output.size="footnotesize" }
 print(train.img.std_bin.ls.nested$label.list)
 ```
 
 ::: { #ds_overview.train.img.std_bin.ls.nested.structure .sidebar }
 And the *nested list* of preprocessed character image data of the *Training Set* has the following structure:
-```{r intro.ds-overview@train.img.std_bin.ls.nested$structure }
+```{r intro.ds-overview@train.img.std_bin.ls.nested$structure, output.size="footnotesize" }
 str(train.img.std_bin.ls.nested, list.len = 39, max.level = 3)
 
 ```
 :::
 
+\newpage
+
 The *nested list* of the preprocessed *Validation Set* data (created by the same script and used for the *Final Test* of the *best model* developed in *this Project*) has the following structure:
 
-```{r intro.ds-overview@ft.img.std_bin.ls.nested$structure }
+```{r intro.ds-overview@ft.img.std_bin.ls.nested$structure, output.size="footnotesize" }
 str(ft.img.std_bin.ls.nested, list.len = 39, max.level = 3)
 
 ```
+
+\newpage
 
 We can immediately observe that both the *Training Set* and *Validation Set* data are considerably imbalanced. Since we are going to use the *accuracy metric* to evaluate our models during the *training stage*, we will need to balance our *training set*.
 
@@ -432,11 +431,11 @@ rm(img.min_max.size,
    ft.img.std_bin.ls.nested)
 ```
 
-Let's now see how the sample images shown in Figure  above will look.
+\newpage
 
-Now, let's see what the sample images shown in Figure \@ref(fig:intro-ds-overview-img-diff-size) above look like after trimming, standardization, and binarization.
+Now, let's see what the sample images shown in the Figure \@ref(fig:intro-ds-overview-img-diff-size-sample) above look like after trimming, standardization, and binarization.
 For that purpose, we extract the preprocessed image data of the *Training Set* using the following code snippet:
-```{r intro.ds-overview@img.same-size$dat }
+```{r intro.ds-overview@img.same-size$dat, output.size="footnotesize" }
 img.sample <- lapply(chr_set, function(chr) {
   img.mx <- train.img.std_bin.ls.nested$img.list[[chr]]$img.list[[1]]
   mode(img.mx) <- "numeric"
@@ -516,27 +515,26 @@ The structure of the result data object for the *Training Set* is as follows:
 ```{r intro.ds-overview@str$train.img.std_bin.array.ls$no-eval, eval=FALSE}
 str(train.img.std_bin.array.ls)
 ```
-```{r intro.ds-overview@str$train.img.std_bin.array.ls1_4, echo=FALSE}
+```{r intro.ds-overview@str$train.img.std_bin.array.ls1_5, echo=FALSE, output.size="footnotesize"}
 str.img.std_bin.array.ls(train.img.std_bin.array.ls,
-                         .range = 1:4,
+                         .range = 1:5,
                          outer_list = T)
 ```
 
 \newpage
 
-```{r intro.ds-overview@str$train.img.std_bin.array.ls5_6, echo=FALSE}
+```{r intro.ds-overview@str$train.img.std_bin.array.ls6_39, echo=FALSE, output.size="footnotesize"}
 str.img.std_bin.array.ls(train.img.std_bin.array.ls,
-                         .range = 5:6,
+                         .range = 6:7,
                          etc_line = T)
-```
-```{r intro.ds-overview@str$train.img.std_bin.array.ls15_16, echo=FALSE}
+
 str.img.std_bin.array.ls(train.img.std_bin.array.ls,
-                         .range = 15:16,
+                         .range = 14:16,
                          etc_line = T)
-```
-```{r intro.ds-overview@str$train.img.std_bin.array.ls38_39, echo=FALSE}
+
 str.img.std_bin.array.ls(train.img.std_bin.array.ls,
-                         .range = 39)
+                         .range = 38:39)
+
 ```
 
 \newpage
@@ -545,23 +543,20 @@ And the same structure for the *Validation Set*:
 ```{r intro.ds-overview@str$final_test.img.std_bin.array.ls$no-eval, eval=FALSE}
 str(final_test.img.std_bin.array.ls)
 ```
-```{r intro.ds-overview@str$final_test.img.std_bin.array.ls1, echo=FALSE}
+```{r intro.ds-overview@str$final_test.img.std_bin.array.ls1, echo=FALSE, output.size="footnotesize"}
 str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
                          .range = 1,
                          outer_list = T,
                          etc_line = T)
-```
-```{r intro.ds-overview@str$final_test.img.std_bin.array.ls5, echo=FALSE}
+
 str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
                          .range = 5,
                          etc_line = T)
-```
-```{r intro.ds-overview@str$final_test.img.std_bin.array.ls15, echo=FALSE}
+
 str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
-                         .range = 15,
+                         .range = 14:15,
                          etc_line = T)
-```
-```{r intro.ds-overview@str$final_test.img.std_bin.array.ls39, echo=FALSE}
+
 str.img.std_bin.array.ls(final_test.img.std_bin.array.ls,
                          .range = 39)
 ```
@@ -590,11 +585,20 @@ Ultimately, as a result of the current stage of *image data preprocessing*, the 
 str(train.img.std_bin.array)
 ```
 
+::: { #validation_set.struct .sidebar }
 - For the *Validation set*:
 ```{r intro.ds-overview@ft.mx_array}
 str(final_test.img.std_bin.array)
 ```
-\newpage
+:::
+
+::: {.noteblock data-latex=""}
+For the *CNN-based models*, we also need to reshape our datasets to meet the requirements of the [2D convolution layer](https://keras3.posit.co/reference/layer_conv_2d.html) in the [Keras 3](https://keras3.posit.co/) package we use. 
+
+To work with these models, we will reshape the *preprocessed image data* (with shape `28x28`) into a *3D tensor* with shape $(28, 28, 1)$, where the last dimension is for the image *grayscale channel*.  
+
+More information and explanation can be found in [Chapter 4: Deep learning for computer vision](https://s-ai-f.github.io/Computer-vision-keras-R/), *Section 4.2 Introduction to Convolution Neural Networks* of the book [Computer vision with R and keras](https://s-ai-f.github.io/Computer-vision-keras-R/).
+:::
 
 #### Preparing the Training Datasets
 
@@ -613,19 +617,17 @@ This functionality is implemented in the [Preparing Flattened EMNIST-Like Datase
 Since the result of the transformation is cached on the local disk, we can load the dataset from the backup file:
 
 ```{r prep.train_set@ds_flattened$print_backup_flle_name, echo=FALSE}
-print_log("The path to the backup file (stored in the object `ds.train.flatten.file`), 
-where the flattened training dataset was cached, is as follows:
+print_log("The Flattened Training set was cached in the following file:
 %1", ds.train.flatten.file)
 ```
 ```{r prep.train_set@ds_flattened$init}
 stopifnot(file.exists(ds.train.flatten.file))
 ds.train.flattened <- readRDS(ds.train.flatten.file)
 ```
-```{r prep.train_set@ds_flattened$print_log.ds_loaded, echo=FALSE}
-print_log("The flattened dataset was loaded into the following object: `ds.train.flattened`")
-```
 
-The flattened dataset has the following structure:
+\newpage
+
+The *Flattened Training Set* has the following structure:
 ```{r prep.train_set@ds_flattened.struct}
 
 str(ds.train.flattened)
@@ -655,7 +657,7 @@ We use two types of split sets (both for *Normalized* and *Flattened* datasets):
 - **0.8/0.2 ratio split of the *Train/Test* sets:** (*by default*) for preliminary training and retraining the best models after tuning;  
 - **0.1/0.9 ratio split of the *Train/Test* sets:** “lite” *Training Set* to use for tuning the models (due to the time-consuming nature of such operations) and “heavy” *Test Set* to use the maximum amount of available data for testing to achieve more reliable results.
 
-###### Flatten Training Dataset Splits
+###### Flatten Training Set Splits
 \
 
 The feature that creates *balanced split datasets* is implemented in the [prepare-flattened-datasets.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R) script, which invokes the custom helper function [ds.flatten.sample](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L908) (defined in the [Data processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L519-L1080) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L908) script), which, in fact, performs the actual splitting of the provided data according to the specified proportion.
@@ -667,63 +669,95 @@ This script itself [is invoked](https://github.com/AzKurban-edX-DS/edx.capstone.
 As always, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
 
 ```{r ds.flattened.split@print_backup_flle_name, echo=FALSE}
-print_log("The path to the backup file (stored in the object `ds.flatten.split.file`), 
-where the Default Flattened Split Set was cached, is as follows:
+print_log("The Default Flattened Split Set was cached in the following file:
 %1", ds.flatten.split.file)
 ```
 ```{r ds.flattened.split@init}
 stopifnot(file.exists(ds.flatten.split.file))
 ds.flattened.split <- readRDS(ds.flatten.split.file)
 ```
-```{r ds.flattened.split@print_log.ds_loaded, echo=FALSE}
-print_log("The Default Flattened Split Set was loaded into the following object: 
-`ds.flattened.split`")
-```
-```{r ds.flattened0.1split@print_backup_flle_name, echo=FALSE}
-print_log("The path to the backup file (stored in the object `ds.flatten.0.1split.file`), 
-where the Flattened Split of the 0.1/0.9 ratio Train/Test Set was cached, 
-is as follows:
-%1", ds.flatten.0.1split.file)
-```
-```{r ds.flattened0.1split@init}
-stopifnot(file.exists(ds.flatten.0.1split.file))
-ds_flattened.0.1split_list <- readRDS(ds.flatten.0.1split.file)
-```
-```{r ds.flattened0.1split@print_log.ds_loaded, echo=FALSE}
-print_log("The Flattened Split of the 0.1/0.9 ratio Train/Test Set 
-was loaded into the following object: `ds_flattened.0.1split_list`")
-```
+
+\newpage
 
 The *Default Flattened Split Set* has the following structure:
 ```{r ds.flattened.split@struct}
 str(ds.flattened.split)
 ```
 
-If we group our splits by *Character Class* we can see that they are properly balanced.
 
-So for the *training set*, we have:
+::: { #func.ds.group_by_class .sidebar }
+Now, let's write a function that groups our *split dataset* by *Character Class* to see whether it is properly balanced:  
+```{r ds.flattened.split@group_by_class}
+ds.group_by_class <- function(x) {
+  y <- as.factor(rownames(x))
 
-And for the *test set*, we have:
+  data.frame(classID = y) |> 
+    group_by(classID) |>
+    summarise(n = n())  
+}
 
+```
+:::
 
-The *Flattened Split of the 0.1/0.9 ratio Train/Test Set* has the following structure:
+\newpage
+
+So, we can see that this is true for the *training set*:
+``` {r ds.flattened.split@train$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds.flattened.split$train_set$x.train), 
+      n = N.classes)
+```
+
+\newpage
+
+As well as for the *test set*:
+``` {r ds.flattened.split@test$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds.flattened.split$test_set$x.test), 
+      n = N.classes)
+```
+
+\newpage
+
+The same is true for the *Flatten 0.1/0.9 Train/Test Split Set*:
+```{r ds.flattened0.1split@print_backup_flle_name, echo=FALSE}
+print_log("The Flattened Split of the 0.1/0.9 Train/Test Set 
+was cached in the following file:
+%1", ds.flatten.0.1split.file)
+```
+```{r ds.flattened0.1split@init}
+stopifnot(file.exists(ds.flatten.0.1split.file))
+ds_flattened.0.1split_list <- readRDS(ds.flatten.0.1split.file)
+```
+
+The *Flattened Split* of the *0.1/0.9 Train/Test Set* has the following structure:
 ```{r ds.flattened.split0.1@struct}
 str(ds_flattened.0.1split_list)
 ```
+
 Again, after grouping our splits by *Character Class*, we can see that they are properly balanced.
 
+\newpage
+
 So, for the *training set*, we have:
-
-And for the *test set*, we have:
-
-
-
-```{r ds.flattened.split@cleanup, include=FALSE}
-rm(ds.flattened.split, ds_flattened.0.1split_list)
+``` {r ds.flattened.split0.1@train$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_flattened.0.1split_list$train_set$x.train),
+      n = N.classes)
 ```
 
+\newpage
 
-###### Normalized Training Dataset Splits
+And for the *test set*, we have:
+``` {r ds.flattened.split0.1@test$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_flattened.0.1split_list$test_set$x.test), 
+      n = N.classes)
+```
+```{r ds.flattened.split0.1@cleanup, include=FALSE}
+rm(ds.flattened.split0.1, 
+   ds_flattened.0.1split_list)
+```
+
+\newpage
+
+###### Normalized Training Set Splits
 \
 
 For the *Normalized* dataset, the *Balanced Splitting* feature is implemented in the following subsections of the [Splitting the Training Dataset (Array of Matrices)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L71-L194) section of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script:
@@ -740,77 +774,77 @@ All of the *split datasets* listed above in this section are created by the cust
 Again, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
 
 ```{r ds_norm.split@print_backup_flle_name, echo=FALSE}
-print_log("The path to the backup file (stored in the object `ds.split.train_0.8.backup.path`), 
-where the Default Split Set was cached, is as follows:
+print_log("The Default Split Set was cached in the following file:
 %1", ds.split.train_0.8.backup.path)
 ```
-
 ```{r ds_norm.split@init}
 stopifnot(file.exists(ds.split.train_0.8.backup.path))
 ds_norm.split <- readRDS(ds.split.train_0.8.backup.path)
 ```
 
-```{r ds_norm.split@print_log.ds_loaded, echo=FALSE}
-print_log("The Default Split Set was loaded into the following object: `ds_norm.split`")
-```
+\newpage
+
 The *Default Split Set* has the following structure:
 ```{r ds_norm.split@struct}
 str(ds_norm.split)
 ```
 
-After grouping our splits by *Character Class*, we can see that they are properly balanced.
+After grouping our splits by *Character Class*, we can see that they are also properly balanced.
+
+\newpage
 
 So, for the *training set*, we have:
+``` {r ds_norm.split@train$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_norm.split$train_set$x.train), 
+      n = N.classes)
+```
+
+\newpage
 
 And for the *test set*, we have:
-
-
-
-
-
-
-
-
-
-
+``` {r ds_norm.split@test$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_norm.split$test_set$x.test), 
+      n = N.classes)
+```
 ```{r ds_norm.split@cleanup, include=FALSE}
 rm(ds_norm.split)
 ```
 
+\newpage
 
+The same is true for the *0.1/0.9 Train/Test Split Set*:
 ```{r ds_norm.split0.1@print_backup_flle_name, echo=FALSE}
-print_log("The path to the backup file (stored in the object `ds.split.train_0.1.file`), 
-where the 0.1/0.9 Ratio Train/Test Split Set was cached, is as follows:
+print_log("The 0.1/0.9 *Train/Test* split set 
+was cached in the following file:
 %1", ds.split.train_0.1.file)
 ```
-
 ```{r ds_norm.split0.1@init}
 stopifnot(file.exists(ds.split.train_0.1.file))
 ds_norm.split0.1 <- readRDS(ds.split.train_0.1.file)
 ```
 
-```{r ds_norm.split0.1@print_log.ds_loaded, echo=FALSE}
-print_log("The 0.1/0.9 Ratio Train/Test Split Set was loaded into the following object: 
-`ds_norm.split0.1`")
-```
-
-
-The *0.1/0.9 Ratio Train/Test Split Set* has the following structure:
+The *0.1/0.9 Train/Test Split Set* has the following structure:
 ```{r ds_norm.split0.1@struct}
-
 str(ds_norm.split0.1)
 ```
+
 And, finally, after grouping our last balanced splits by *Character Class*, we can see that they are properly balanced, as all the others we have examined so far.
 
+\newpage
+
 So, for the *training set*, we have:
+``` {r ds_norm.split0.1@train$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_norm.split0.1$train_set$x.train), 
+      n = N.classes)
+```
+
+\newpage
 
 And for the *test set*, we have:
-
-
-
-
-
-
+``` {r ds_norm.split0.1@test$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_norm.split0.1$test_set$x.test), 
+      n = N.classes)
+```
 ```{r ds_norm.split0.1@cleanup, include=FALSE}
 rm(ds_norm.split0.1)
 ```
@@ -825,5 +859,64 @@ rm(ds_norm.split0.1)
 
 ```{r intro.datasets-overview@close-log, include=FALSE}
 log_close()
+```
+
+\newpage
+
+###### Imbalanced Split Dataset for Retraining the *Best Final Model*
+\
+
+This split is implemented in the section [Splitting by Default Without Balancing (for the Final Retraining of the Best Model)] of the script by executing the custom helper function [ds.split.img_mx.array] mentioned above (the same one used for any other splits described in the [Normalized Training Set Splits] section) with the argument value `balanced = FALSE`.
+
+As before, we can load our *Default Imbalanced Split Sets* from the cache file:
+```{r ds_norm.imbalanced_split@print_backup_flle_name, echo=FALSE}
+print_log("The Default Imbalanced Split Set was cached in the following file:
+%1", ds.imbalanced.final_retraining.file)
+```
+```{r ds_norm.imbalanced_split@init}
+stopifnot(file.exists(ds.imbalanced.final_retraining.file))
+ds_norm.imbalanced_split <- readRDS(ds.imbalanced.final_retraining.file)
+```
+
+The *Default Split Set* has the following structure:
+```{r ds_norm.imbalanced_split@struct}
+str(ds_norm.imbalanced_split)
+```
+
+
+Now, we can assess the degree of imbalance in these samples:
+
+\newpage
+
+For the *training set*:
+``` {r ds_norm.imbalanced_split@train$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_norm.imbalanced_split$train_set$x.train), 
+      n = N.classes)
+```
+
+\newpage
+
+And for the *test set*:
+``` {r ds_norm.imbalanced_split@test$groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(ds_norm.imbalanced_split$test_set$x.test), 
+      n = N.classes)
+```
+```{r ds_norm.imbalanced_split@cleanup, include=FALSE}
+rm(ds_norm.imbalanced_split)
+```
+
+\newpage
+
+#### Validation Dataset for the Final Test 
+\
+
+For the *Final Test*, we will use the *entire preprocessed* [Validation Set](#validation_set.struct) as described in the section [Standardizing & Binarizing the Image Data] above, without any splitting or sampling.
+
+As previously mentioned, to obtain a more accurate assessment of the results, we will additionally employ the [F1-score](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#balanced-accuracy-and-f_1-score) metric, given that the *validation dataset* exhibits a significant class imbalance.
+
+We can observe this using the *custom helper function* [ds.group_by_class](#func.ds.group_by_class) we defined above in the section [Flatten Training Set Splits]:
+``` {r ds.validation_set@groupped_by_class, output.size="footnotesize"}
+print(ds.group_by_class(final_test.img.std_bin.array$img_dat.array), 
+      n = N.classes)
 ```
 
