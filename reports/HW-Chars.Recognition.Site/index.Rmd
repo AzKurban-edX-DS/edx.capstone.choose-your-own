@@ -116,6 +116,34 @@ doc_name <- tools::file_path_sans_ext(basename(knitr::current_input()))
 fig_dir  <- file.path(doc_dir, paste0(doc_name, "_files"), "figure-latex", "/")
 
 knitr::opts_chunk$set(fig.path = fig_dir)
+
+# Save the default output hook
+default_output_hook <- knitr::knit_hooks$get("output")
+
+# Override the output hook to check for a custom 'output.size' chunk option
+knitr::knit_hooks$set(output = function(x, options) {
+  # First, let knitr format the output normally (adds ``` fences)
+  out <- default_output_hook(x, options)
+  
+  # If output.size is specified on the chunk, wrap the output block in LaTeX size commands
+  if (!is.null(options$output.size)) {
+    paste0("\n\\", options$output.size, "\n", out, "\n\\normalsize\n")
+  } else {
+    out
+  }
+})
+
+# def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+# knitr::knit_hooks$set(chunk = function(x, options) {
+#   x <- def.chunk.hook(x, options)
+#   if (!is.null(options$output.size)) {
+#     # Wraps only the console/print output in the chosen LaTeX size
+#     gsub("(\\\\begin\\{verbatim\\})", paste0("\\\\", options$output.size, "\n\\1"), x)
+#   } else {
+#     x
+#   }
+# })
+
 ```
 
 ```{r env_test, include=FALSE}

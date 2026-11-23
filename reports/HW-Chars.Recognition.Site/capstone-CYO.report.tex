@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-19}
+\date{2026-11-23}
 
 \begin{document}
 \maketitle
@@ -552,9 +552,15 @@ The \hyperref[the-most-confusing-characters-for-recognition]{The Most Confusing 
 
 The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-characters}{HandWritten\_Character Dataset} downloaded from \href{https://www.kaggle.com}{Kaggle}.As mentioned in the section \hyperref[downloading-preprocessing-input-datasets]{Downloading \& Preprocessing Input Datasets} above, the dedicated script \hyperref[appndx_b.ds.kaggle.download]{ds.kaggle.download.R} (described below in \hyperref[appndx_b]{Appendix B}) is used for that purpose. The result of its execution is a folder structure (identical to one shown on the dataset's webpage) containing the raw image data, as shown below:
 
+\small
+
 \begin{verbatim}
 ## *** Dataset Raw Data Local Directory Structure ***
 \end{verbatim}
+
+\normalsize
+
+\small
 
 \begin{verbatim}
 ## data/raw/Vaibs.HW-Chars
@@ -640,6 +646,10 @@ The project uses the \href{https://www.kaggle.com/datasets/vaibhao/handwritten-c
 ##     \-- Z
 \end{verbatim}
 
+\normalsize
+
+\newpage
+
 \subsection{Preprocessing Raw Image Data}\label{preprocessing-raw-image-data}
 
 To make the downloaded raw image data ready for use in the \emph{Machine Learning Model Pipelines}, it must be properly preprocessed.
@@ -686,6 +696,8 @@ Execution of this section yields the \href{https://github.com/AzKurban-edX-DS/ed
 
 Meaning that the smallest image size is 28x28 pixels.
 
+\newpage
+
 We can use the following code snippet to prepare a few sample images, both 28x28 and 32x32 pixels in size, for visual presentation:
 
 \begin{Shaded}
@@ -694,9 +706,13 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Highlighting}
 \end{Shaded}
 
+\footnotesize
+
 \begin{verbatim}
 ## [1] "Kaggle Dataset Root Directory: data/raw/Vaibs.HW-Chars/Train"
 \end{verbatim}
+
+\normalsize
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -730,10 +746,15 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \end{Highlighting}
 \end{Shaded}
 
+\footnotesize
+
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
-##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px"
+##  [8] "J: 32x32px" "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px"
+## [15] "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
+
+\normalsize
 
 Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these images look like.
 
@@ -803,10 +824,14 @@ The \emph{label list} is as follows:
 \end{Highlighting}
 \end{Shaded}
 
+\footnotesize
+
 \begin{verbatim}
 ##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 ## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
 \end{verbatim}
+
+\normalsize
 
 \protect\phantomsection\label{ds_overview.train.img.std_bin.ls.nested.structure}
 And the \emph{nested list} of preprocessed character image data of the \emph{Training Set} has the following structure:
@@ -816,6 +841,8 @@ And the \emph{nested list} of preprocessed character image data of the \emph{Tra
 \FunctionTok{str}\NormalTok{(train.img.std\_bin.ls.nested, }\AttributeTok{list.len =} \DecValTok{39}\NormalTok{, }\AttributeTok{max.level =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\footnotesize
 
 \begin{verbatim}
 ## List of 2
@@ -940,6 +967,10 @@ And the \emph{nested list} of preprocessed character image data of the \emph{Tra
 ##   .. ..$ fpath.list: chr [1:4866] "data/raw/Vaibs.HW-Chars/Train/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/100.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/1000.jpg" ...
 \end{verbatim}
 
+\normalsize
+
+\newpage
+
 The \emph{nested list} of the preprocessed \emph{Validation Set} data (created by the same script and used for the \emph{Final Test} of the \emph{best model} developed in \emph{this Project}) has the following structure:
 
 \begin{Shaded}
@@ -947,6 +978,8 @@ The \emph{nested list} of the preprocessed \emph{Validation Set} data (created b
 \FunctionTok{str}\NormalTok{(ft.img.std\_bin.ls.nested, }\AttributeTok{list.len =} \DecValTok{39}\NormalTok{, }\AttributeTok{max.level =} \DecValTok{3}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\footnotesize
 
 \begin{verbatim}
 ## List of 2
@@ -1071,6 +1104,10 @@ The \emph{nested list} of the preprocessed \emph{Validation Set} data (created b
 ##   .. ..$ fpath.list: chr [1:181] "data/raw/Vaibs.HW-Chars/Validation/Z/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/100.jpg" ...
 \end{verbatim}
 
+\normalsize
+
+\newpage
+
 We can immediately observe that both the \emph{Training Set} and \emph{Validation Set} data are considerably imbalanced. Since we are going to use the \emph{accuracy metric} to evaluate our models during the \emph{training stage}, we will need to balance our \emph{training set}.
 
 \begin{noteblock}
@@ -1156,9 +1193,9 @@ The same is true for the \emph{Validation Set}:
 ## 1    28         28         28
 \end{verbatim}
 
-Let's now see how the sample images shown in Figure above will look.
+\newpage
 
-Now, let's see what the sample images shown in Figure \ref{fig:intro-ds-overview-img-diff-size} above look like after trimming, standardization, and binarization.
+Now, let's see what the sample images shown in the Figure \ref{fig:intro-ds-overview-img-diff-size-sample} above look like after trimming, standardization, and binarization.
 For that purpose, we extract the preprocessed image data of the \emph{Training Set} using the following code snippet:
 
 \begin{Shaded}
@@ -1187,10 +1224,15 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \end{Highlighting}
 \end{Shaded}
 
+\footnotesize
+
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
-##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px"
+##  [8] "J: 28x28px" "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px"
+## [15] "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
+
+\normalsize
 
 Now, we can see that all the sample images are the same size.
 
@@ -1216,6 +1258,8 @@ The structure of the result data object for the \emph{Training Set} is as follow
 \FunctionTok{str}\NormalTok{(train.img.std\_bin.array.ls)}
 \end{Highlighting}
 \end{Shaded}
+
+\footnotesize
 
 \begin{verbatim}
 ## List of 39
@@ -1247,11 +1291,6 @@ The structure of the result data object for the \emph{Training Set} is as follow
 ##  .. ..$ : NULL
 ##  .. ..$ : NULL
 ## $ file.path: chr [1:38009] "data/raw/Vaibs.HW-Chars/Train/@/___0_2818202.png" "data/raw/Vaibs.HW-Chars/Train/@/___0_3481265.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_3707877.png" "data/raw/Vaibs.HW-Chars/Train/@/___1_8467948.png" ...
-\end{verbatim}
-
-\newpage
-
-\begin{verbatim}
 ## $ 0:List of 2
 ## $ img.array: logi [1:65504, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
 ##  ..- attr(*, "dimnames")=List of 3
@@ -1259,6 +1298,15 @@ The structure of the result data object for the \emph{Training Set} is as follow
 ##  .. ..$ : NULL
 ##  .. ..$ : NULL
 ## $ file.path: chr [1:65504] "data/raw/Vaibs.HW-Chars/Train/0/_1_0.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_1.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_10.jpg" "data/raw/Vaibs.HW-Chars/Train/0/_1_100.jpg" ...
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+\footnotesize
+
+\begin{verbatim}
 ## $ 1:List of 2
 ## $ img.array: logi [1:43773, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
 ##  ..- attr(*, "dimnames")=List of 3
@@ -1266,12 +1314,30 @@ The structure of the result data object for the \emph{Training Set} is as follow
 ##  .. ..$ : NULL
 ##  .. ..$ : NULL
 ## $ file.path: chr [1:43773] "data/raw/Vaibs.HW-Chars/Train/1/0.jpg" "data/raw/Vaibs.HW-Chars/Train/1/1.jpg" "data/raw/Vaibs.HW-Chars/Train/1/10.jpg" "data/raw/Vaibs.HW-Chars/Train/1/100.jpg" ...
+## $ 2:List of 2
+## $ img.array: logi [1:39351, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:39351] "2" "2" "2" "2" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:39351] "data/raw/Vaibs.HW-Chars/Train/2/0.jpg" "data/raw/Vaibs.HW-Chars/Train/2/1.jpg" "data/raw/Vaibs.HW-Chars/Train/2/10.jpg" "data/raw/Vaibs.HW-Chars/Train/2/100.jpg" ...
 ## 
 ##     ...............................................
 ## 
 \end{verbatim}
 
+\normalsize
+
+\footnotesize
+
 \begin{verbatim}
+## $ 9:List of 2
+## $ img.array: logi [1:38319, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:38319] "9" "9" "9" "9" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:38319] "data/raw/Vaibs.HW-Chars/Train/9/0.jpg" "data/raw/Vaibs.HW-Chars/Train/9/1.jpg" "data/raw/Vaibs.HW-Chars/Train/9/10.jpg" "data/raw/Vaibs.HW-Chars/Train/9/100.jpg" ...
 ## $ A:List of 2
 ## $ img.array: logi [1:17205, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
 ##  ..- attr(*, "dimnames")=List of 3
@@ -1291,7 +1357,18 @@ The structure of the result data object for the \emph{Training Set} is as follow
 ## 
 \end{verbatim}
 
+\normalsize
+
+\footnotesize
+
 \begin{verbatim}
+## $ Y:List of 2
+## $ img.array: logi [1:6762, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:6762] "Y" "Y" "Y" "Y" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:6762] "data/raw/Vaibs.HW-Chars/Train/Y/0.jpg" "data/raw/Vaibs.HW-Chars/Train/Y/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Y/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Y/100.jpg" ...
 ## $ Z:List of 2
 ## $ img.array: logi [1:4866, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
 ##  ..- attr(*, "dimnames")=List of 3
@@ -1300,6 +1377,8 @@ The structure of the result data object for the \emph{Training Set} is as follow
 ##  .. ..$ : NULL
 ## $ file.path: chr [1:4866] "data/raw/Vaibs.HW-Chars/Train/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/100.jpg" "data/raw/Vaibs.HW-Chars/Train/Z/1000.jpg" ...
 \end{verbatim}
+
+\normalsize
 
 \newpage
 
@@ -1310,6 +1389,8 @@ And the same structure for the \emph{Validation Set}:
 \FunctionTok{str}\NormalTok{(final\_test.img.std\_bin.array.ls)}
 \end{Highlighting}
 \end{Shaded}
+
+\footnotesize
 
 \begin{verbatim}
 ## List of 39
@@ -1325,6 +1406,10 @@ And the same structure for the \emph{Validation Set}:
 ## 
 \end{verbatim}
 
+\normalsize
+
+\footnotesize
+
 \begin{verbatim}
 ## $ 0:List of 2
 ## $ img.array: logi [1:368, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
@@ -1338,7 +1423,18 @@ And the same structure for the \emph{Validation Set}:
 ## 
 \end{verbatim}
 
+\normalsize
+
+\footnotesize
+
 \begin{verbatim}
+## $ 9:List of 2
+## $ img.array: logi [1:1195, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##  ..- attr(*, "dimnames")=List of 3
+##  .. ..$ : chr [1:1195] "9" "9" "9" "9" ...
+##  .. ..$ : NULL
+##  .. ..$ : NULL
+## $ file.path: chr [1:1195] "data/raw/Vaibs.HW-Chars/Validation/9/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/9/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/9/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/9/100.jpg" ...
 ## $ A:List of 2
 ## $ img.array: logi [1:392, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
 ##  ..- attr(*, "dimnames")=List of 3
@@ -1351,6 +1447,10 @@ And the same structure for the \emph{Validation Set}:
 ## 
 \end{verbatim}
 
+\normalsize
+
+\footnotesize
+
 \begin{verbatim}
 ## $ Z:List of 2
 ## $ img.array: logi [1:181, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
@@ -1360,6 +1460,8 @@ And the same structure for the \emph{Validation Set}:
 ##  .. ..$ : NULL
 ## $ file.path: chr [1:181] "data/raw/Vaibs.HW-Chars/Validation/Z/0.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/1.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/10.jpg" "data/raw/Vaibs.HW-Chars/Validation/Z/100.jpg" ...
 \end{verbatim}
+
+\normalsize
 
 \newpage
 
@@ -1391,6 +1493,7 @@ Ultimately, as a result of the current stage of \emph{image data preprocessing},
 ##   .. ..$ : chr [1:834032] "#" "#" "#" "#" ...
 \end{verbatim}
 
+\protect\phantomsection\label{validation_set.struct}
 \begin{itemize}
 \tightlist
 \item
@@ -1415,7 +1518,14 @@ Ultimately, as a result of the current stage of \emph{image data preprocessing},
 ##   .. ..$ : chr [1:22524] "#" "#" "#" "#" ...
 \end{verbatim}
 
-\newpage
+\begin{noteblock}
+For the \emph{CNN-based models}, we also need to reshape our datasets to meet the requirements of the \href{https://keras3.posit.co/reference/layer_conv_2d.html}{2D convolution layer} in the \href{https://keras3.posit.co/}{Keras 3} package we use.
+
+To work with these models, we will reshape the \emph{preprocessed image data} (with shape \texttt{28x28}) into a \emph{3D tensor} with shape \((28, 28, 1)\), where the last dimension is for the image \emph{grayscale channel}.
+
+More information and explanation can be found in \href{https://s-ai-f.github.io/Computer-vision-keras-R/}{Chapter 4: Deep learning for computer vision}, \emph{Section 4.2 Introduction to Convolution Neural Networks} of the book \href{https://s-ai-f.github.io/Computer-vision-keras-R/}{Computer vision with R and keras}.
+
+\end{noteblock}
 
 \subsubsection{Preparing the Training Datasets}\label{preparing-the-training-datasets}
 
@@ -1435,22 +1545,20 @@ This functionality is implemented in the \href{https://github.com/AzKurban-edX-D
 Since the result of the transformation is cached on the local disk, we can load the dataset from the backup file:
 
 \begin{verbatim}
-## The path to the backup file (stored in the object `ds.train.flatten.file`), 
-## where the flattened training dataset was cached, is as follows:
+## The Flattened Training set was cached in the following file:
 ## data/dataset/train/ds.flatten.rds
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.train.flatten.file))}
 \NormalTok{ds.train.flattened }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.train.flatten.file)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## The flattened dataset was loaded into the following object: `ds.train.flattened`
-\end{verbatim}
+\newpage
 
-The flattened dataset has the following structure:
+The \emph{Flattened Training Set} has the following structure:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1473,19 +1581,9 @@ The flattened dataset has the following structure:
 
 \hfill\break
 
-Now, we are ready to split the basically preprocessed \emph{Training Sets} into the following \emph{training and test subsets}:
+Now, we are ready to split the mostly preprocessed \emph{Training Sets} into the following \emph{training and test subsets}:
 
 \begin{itemize}
-\item
-  \textbf{Normalized Training Dataset} splits for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
-
-  \begin{itemize}
-  \tightlist
-  \item
-    \textbf{\emph{Fine-Tuned DNN-Based (TDNN) MCC}} (described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model});
-  \item
-    \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
-  \end{itemize}
 \item
   \textbf{Flattened Training Dataset} splits for the following \emph{Shallow Learning} and \emph{Deep Learning} DNN-based basic models:
 
@@ -1498,15 +1596,974 @@ Now, we are ready to split the basically preprocessed \emph{Training Sets} into 
   \item
     \textbf{\emph{Dense Neural Network Basic (DNNB) MCC}} model (described in Section \hyperref[dnnb_model]{DNN-Based Basic (DNNB) MCC Model}).
   \end{itemize}
+\item
+  \textbf{Normalized Training Dataset} splits for \emph{Deep Learning MCC} models (based on Neural Networks: \emph{DNN} and \emph{CNN}):
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{\emph{Fine-Tuned DNN-Based (TDNN) MCC}} (described in Section \hyperref[tuned-dnn-based-tdnn-mcc-model]{Tuned DNN-Based (TDNN) MCC Model});
+  \item
+    \textbf{\emph{CNN-Based MCC}} models (described in Section \hyperref[convolutional-neural-network-based-cnn-mcc-models]{Convolutional Neural Network Based (CNN) MCC Models}).
+  \end{itemize}
 \end{itemize}
 
-\subparagraph{Normalized Training Dataset Splits}\label{normalized-training-dataset-splits}
+We use two types of split sets (both for \emph{Normalized} and \emph{Flattened} datasets):
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{0.8/0.2 ratio split of the \emph{Train/Test} sets:} (\emph{by default}) for preliminary training and retraining the best models after tuning;\\
+\item
+  \textbf{0.1/0.9 ratio split of the \emph{Train/Test} sets:} ``lite'' \emph{Training Set} to use for tuning the models (due to the time-consuming nature of such operations) and ``heavy'' \emph{Test Set} to use the maximum amount of available data for testing to achieve more reliable results.
+\end{itemize}
+
+\subparagraph{Flatten Training Set Splits}\label{flatten-training-set-splits}
 
 \hfill\break
 
-\subparagraph{Flatten Training Dataset Splits}\label{flatten-training-dataset-splits}
+The feature that creates \emph{balanced split datasets} is implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R}{prepare-flattened-datasets.R} script, which invokes the custom helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L908}{ds.flatten.sample} (defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L519-L1080}{Data processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L908}{data-helper.R} script), which, in fact, performs the actual splitting of the provided data according to the specified proportion.
+
+\begin{noteblock}
+This script itself \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L61}{is invoked} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L53-L70}{Splitting the Flattened Dataset} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L61}{prepare-training-set.R} script, which also implements all other splitting operations listed above in the \hyperref[the-traintest-model-specific-split-datasets]{The Train/Test Model-Specific Split Datasets} section.
+
+\end{noteblock}
+
+As always, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
+
+\begin{verbatim}
+## The Default Flattened Split Set was cached in the following file:
+## data/dataset/train/ds.flatten.20%test-split.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.flatten.split.file))}
+\NormalTok{ds.flattened.split }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.flatten.split.file)}
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
+
+The \emph{Default Flattened Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds.flattened.split)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:132912, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:132912] "B" "D" "Q" "S" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:132912(1d)] "data/raw/Vaibs.HW-Chars/Train/B/_1_4796.jpg" "data/raw/Vaibs.HW-Chars/Train/D/_1_10801.jpg" "data/raw/Vaibs.HW-Chars/Train/Q/_1_2741.jpg" "data/raw/Vaibs.HW-Chars/Train/S/8831.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:132912] "B" "D" "Q" "S" ...
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:33267, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:33267] "B" "W" "B" "G" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:33267(1d)] "data/raw/Vaibs.HW-Chars/Train/B/2306.jpg" "data/raw/Vaibs.HW-Chars/Train/W/6426.jpg" "data/raw/Vaibs.HW-Chars/Train/B/1684.jpg" "data/raw/Vaibs.HW-Chars/Train/G/_1_1686.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:33267] "B" "W" "B" "G" ...
+\end{verbatim}
+
+\protect\phantomsection\label{func.ds.group_by_class}
+Now, let's write a function that groups our \emph{split dataset} by \emph{Character Class} to see whether it is properly balanced:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ds.group\_by\_class }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{  y }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(}\FunctionTok{rownames}\NormalTok{(x))}
+
+  \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{classID =}\NormalTok{ y) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{group\_by}\NormalTok{(classID) }\SpecialCharTok{|\textgreater{}}
+    \FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{())  }
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
+
+So, we can see that this is true for the \emph{training set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds.flattened.split}\SpecialCharTok{$}\NormalTok{train\_set}\SpecialCharTok{$}\NormalTok{x.train), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #        3408
+##  2 $        3408
+##  3 &        3408
+##  4 @        3408
+##  5 0        3408
+##  6 1        3408
+##  7 2        3408
+##  8 3        3408
+##  9 4        3408
+## 10 5        3408
+## 11 6        3408
+## 12 7        3408
+## 13 8        3408
+## 14 9        3408
+## 15 A        3408
+## 16 B        3408
+## 17 C        3408
+## 18 D        3408
+## 19 E        3408
+## 20 F        3408
+## 21 G        3408
+## 22 H        3408
+## 23 I        3408
+## 24 J        3408
+## 25 K        3408
+## 26 L        3408
+## 27 M        3408
+## 28 N        3408
+## 29 P        3408
+## 30 Q        3408
+## 31 R        3408
+## 32 S        3408
+## 33 T        3408
+## 34 U        3408
+## 35 V        3408
+## 36 W        3408
+## 37 X        3408
+## 38 Y        3408
+## 39 Z        3408
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+As well as for the \emph{test set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds.flattened.split}\SpecialCharTok{$}\NormalTok{test\_set}\SpecialCharTok{$}\NormalTok{x.test), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #         853
+##  2 $         853
+##  3 &         853
+##  4 @         853
+##  5 0         853
+##  6 1         853
+##  7 2         853
+##  8 3         853
+##  9 4         853
+## 10 5         853
+## 11 6         853
+## 12 7         853
+## 13 8         853
+## 14 9         853
+## 15 A         853
+## 16 B         853
+## 17 C         853
+## 18 D         853
+## 19 E         853
+## 20 F         853
+## 21 G         853
+## 22 H         853
+## 23 I         853
+## 24 J         853
+## 25 K         853
+## 26 L         853
+## 27 M         853
+## 28 N         853
+## 29 P         853
+## 30 Q         853
+## 31 R         853
+## 32 S         853
+## 33 T         853
+## 34 U         853
+## 35 V         853
+## 36 W         853
+## 37 X         853
+## 38 Y         853
+## 39 Z         853
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+The same is true for the \emph{Flatten 0.1/0.9 Train/Test Split Set}:
+
+\begin{verbatim}
+## The Flattened Split of the 0.1/0.9 Train/Test Set 
+## was cached in the following file:
+## data/dataset/train/ds.flatten-split(10%train-set).rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.flatten.}\FloatTok{0.1}\NormalTok{split.file))}
+\NormalTok{ds\_flattened.}\FloatTok{0.1}\NormalTok{split\_list }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.flatten.}\FloatTok{0.1}\NormalTok{split.file)}
+\end{Highlighting}
+\end{Shaded}
+
+The \emph{Flattened Split} of the \emph{0.1/0.9 Train/Test Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_flattened.}\FloatTok{0.1}\NormalTok{split\_list)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:16614, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:16614(1d)] "data/raw/Vaibs.HW-Chars/Train/Z/3405.jpg" "data/raw/Vaibs.HW-Chars/Train/S/10166.jpg" "data/raw/Vaibs.HW-Chars/Train/B/_1_2054.jpg" "data/raw/Vaibs.HW-Chars/Train/S/24667.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:149565, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ x.files: chr [1:149565(1d)] "data/raw/Vaibs.HW-Chars/Train/S/5303.jpg" "data/raw/Vaibs.HW-Chars/Train/N/20577.jpg" "data/raw/Vaibs.HW-Chars/Train/M/11629.jpg" "data/raw/Vaibs.HW-Chars/Train/9/16969.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+\end{verbatim}
+
+Again, after grouping our splits by \emph{Character Class}, we can see that they are properly balanced.
+
+\newpage
+
+So, for the \emph{training set}, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_flattened.}\FloatTok{0.1}\NormalTok{split\_list}\SpecialCharTok{$}\NormalTok{train\_set}\SpecialCharTok{$}\NormalTok{x.train),}
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #         426
+##  2 $         426
+##  3 &         426
+##  4 @         426
+##  5 0         426
+##  6 1         426
+##  7 2         426
+##  8 3         426
+##  9 4         426
+## 10 5         426
+## 11 6         426
+## 12 7         426
+## 13 8         426
+## 14 9         426
+## 15 A         426
+## 16 B         426
+## 17 C         426
+## 18 D         426
+## 19 E         426
+## 20 F         426
+## 21 G         426
+## 22 H         426
+## 23 I         426
+## 24 J         426
+## 25 K         426
+## 26 L         426
+## 27 M         426
+## 28 N         426
+## 29 P         426
+## 30 Q         426
+## 31 R         426
+## 32 S         426
+## 33 T         426
+## 34 U         426
+## 35 V         426
+## 36 W         426
+## 37 X         426
+## 38 Y         426
+## 39 Z         426
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+And for the \emph{test set}, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_flattened.}\FloatTok{0.1}\NormalTok{split\_list}\SpecialCharTok{$}\NormalTok{test\_set}\SpecialCharTok{$}\NormalTok{x.test), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #        3835
+##  2 $        3835
+##  3 &        3835
+##  4 @        3835
+##  5 0        3835
+##  6 1        3835
+##  7 2        3835
+##  8 3        3835
+##  9 4        3835
+## 10 5        3835
+## 11 6        3835
+## 12 7        3835
+## 13 8        3835
+## 14 9        3835
+## 15 A        3835
+## 16 B        3835
+## 17 C        3835
+## 18 D        3835
+## 19 E        3835
+## 20 F        3835
+## 21 G        3835
+## 22 H        3835
+## 23 I        3835
+## 24 J        3835
+## 25 K        3835
+## 26 L        3835
+## 27 M        3835
+## 28 N        3835
+## 29 P        3835
+## 30 Q        3835
+## 31 R        3835
+## 32 S        3835
+## 33 T        3835
+## 34 U        3835
+## 35 V        3835
+## 36 W        3835
+## 37 X        3835
+## 38 Y        3835
+## 39 Z        3835
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+\subparagraph{Normalized Training Set Splits}\label{normalized-training-set-splits}
 
 \hfill\break
+
+For the \emph{Normalized} dataset, the \emph{Balanced Splitting} feature is implemented in the following subsections of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L71-L194}{Splitting the Training Dataset (Array of Matrices)} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Default Splitting:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L72-L112}{Splitting by Default (0.8/0.2 Ratio Train/Test Sets)} subsection;
+\item
+  \textbf{Splitting into a 01/0.9 ratio \emph{Train/Test} Sets:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L113-L151}{Splitting into 0.1/0.9 Ratio Train/Test Sets (for the Models' Tuning)} subsection.
+\end{itemize}
+
+Finally, the subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L152-L193}{Splitting by Default Without Balancing (for the Final Retraining of the Best Model)} implements the \emph{Default Non-Balanced Splitting} feature, which splits the dataset into a 0.8/0.2 ratio \emph{\underline{imbalanced} Train/Test Sets} (for retraining the \emph{Final Best Model} that will be developed at the end of the study).
+
+\begin{noteblock}
+All of the \emph{split datasets} listed above in this section are created by the custom helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L520}{ds.split.img\_mx.array} (defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L519-L1080}{Data processing} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L520}{data-helper.R} script), which is called for each pair of \emph{Train/Test} sets from the corresponding sections of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R}{prepare-training-set.R} script.
+
+\end{noteblock}
+
+Again, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
+
+\begin{verbatim}
+## The Default Split Set was cached in the following file:
+## data/dataset/train/ds.split.train_0.8.backup.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.split.train\_0.}\FloatTok{8.}\NormalTok{backup.path))}
+\NormalTok{ds\_norm.split }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.split.train\_0.}\FloatTok{8.}\NormalTok{backup.path)}
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
+
+The \emph{Default Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_norm.split)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:132912, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:132912] "B" "D" "Q" "S" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:33267, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:33267] "B" "W" "B" "G" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+\end{verbatim}
+
+After grouping our splits by \emph{Character Class}, we can see that they are also properly balanced.
+
+\newpage
+
+So, for the \emph{training set}, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_norm.split}\SpecialCharTok{$}\NormalTok{train\_set}\SpecialCharTok{$}\NormalTok{x.train), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #        3408
+##  2 $        3408
+##  3 &        3408
+##  4 @        3408
+##  5 0        3408
+##  6 1        3408
+##  7 2        3408
+##  8 3        3408
+##  9 4        3408
+## 10 5        3408
+## 11 6        3408
+## 12 7        3408
+## 13 8        3408
+## 14 9        3408
+## 15 A        3408
+## 16 B        3408
+## 17 C        3408
+## 18 D        3408
+## 19 E        3408
+## 20 F        3408
+## 21 G        3408
+## 22 H        3408
+## 23 I        3408
+## 24 J        3408
+## 25 K        3408
+## 26 L        3408
+## 27 M        3408
+## 28 N        3408
+## 29 P        3408
+## 30 Q        3408
+## 31 R        3408
+## 32 S        3408
+## 33 T        3408
+## 34 U        3408
+## 35 V        3408
+## 36 W        3408
+## 37 X        3408
+## 38 Y        3408
+## 39 Z        3408
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+And for the \emph{test set}, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_norm.split}\SpecialCharTok{$}\NormalTok{test\_set}\SpecialCharTok{$}\NormalTok{x.test), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #         853
+##  2 $         853
+##  3 &         853
+##  4 @         853
+##  5 0         853
+##  6 1         853
+##  7 2         853
+##  8 3         853
+##  9 4         853
+## 10 5         853
+## 11 6         853
+## 12 7         853
+## 13 8         853
+## 14 9         853
+## 15 A         853
+## 16 B         853
+## 17 C         853
+## 18 D         853
+## 19 E         853
+## 20 F         853
+## 21 G         853
+## 22 H         853
+## 23 I         853
+## 24 J         853
+## 25 K         853
+## 26 L         853
+## 27 M         853
+## 28 N         853
+## 29 P         853
+## 30 Q         853
+## 31 R         853
+## 32 S         853
+## 33 T         853
+## 34 U         853
+## 35 V         853
+## 36 W         853
+## 37 X         853
+## 38 Y         853
+## 39 Z         853
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+The same is true for the \emph{0.1/0.9 Train/Test Split Set}:
+
+\begin{verbatim}
+## The 0.1/0.9 *Train/Test* split set 
+## was cached in the following file:
+## data/dataset/train/ds.split.train_0.1.backup.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.split.train\_0.}\FloatTok{1.}\NormalTok{file))}
+\NormalTok{ds\_norm.split0}\FloatTok{.1} \OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.split.train\_0.}\FloatTok{1.}\NormalTok{file)}
+\end{Highlighting}
+\end{Shaded}
+
+The \emph{0.1/0.9 Train/Test Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_norm.split0}\FloatTok{.1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:16614, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:149565, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+\end{verbatim}
+
+And, finally, after grouping our last balanced splits by \emph{Character Class}, we can see that they are properly balanced, as all the others we have examined so far.
+
+\newpage
+
+So, for the \emph{training set}, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_norm.split0}\FloatTok{.1}\SpecialCharTok{$}\NormalTok{train\_set}\SpecialCharTok{$}\NormalTok{x.train), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #         426
+##  2 $         426
+##  3 &         426
+##  4 @         426
+##  5 0         426
+##  6 1         426
+##  7 2         426
+##  8 3         426
+##  9 4         426
+## 10 5         426
+## 11 6         426
+## 12 7         426
+## 13 8         426
+## 14 9         426
+## 15 A         426
+## 16 B         426
+## 17 C         426
+## 18 D         426
+## 19 E         426
+## 20 F         426
+## 21 G         426
+## 22 H         426
+## 23 I         426
+## 24 J         426
+## 25 K         426
+## 26 L         426
+## 27 M         426
+## 28 N         426
+## 29 P         426
+## 30 Q         426
+## 31 R         426
+## 32 S         426
+## 33 T         426
+## 34 U         426
+## 35 V         426
+## 36 W         426
+## 37 X         426
+## 38 Y         426
+## 39 Z         426
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+And for the \emph{test set}, we have:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_norm.split0}\FloatTok{.1}\SpecialCharTok{$}\NormalTok{test\_set}\SpecialCharTok{$}\NormalTok{x.test), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #        3835
+##  2 $        3835
+##  3 &        3835
+##  4 @        3835
+##  5 0        3835
+##  6 1        3835
+##  7 2        3835
+##  8 3        3835
+##  9 4        3835
+## 10 5        3835
+## 11 6        3835
+## 12 7        3835
+## 13 8        3835
+## 14 9        3835
+## 15 A        3835
+## 16 B        3835
+## 17 C        3835
+## 18 D        3835
+## 19 E        3835
+## 20 F        3835
+## 21 G        3835
+## 22 H        3835
+## 23 I        3835
+## 24 J        3835
+## 25 K        3835
+## 26 L        3835
+## 27 M        3835
+## 28 N        3835
+## 29 P        3835
+## 30 Q        3835
+## 31 R        3835
+## 32 S        3835
+## 33 T        3835
+## 34 U        3835
+## 35 V        3835
+## 36 W        3835
+## 37 X        3835
+## 38 Y        3835
+## 39 Z        3835
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+\subparagraph{\texorpdfstring{Imbalanced Split Dataset for Retraining the \emph{Best Final Model}}{Imbalanced Split Dataset for Retraining the Best Final Model}}\label{imbalanced-split-dataset-for-retraining-the-best-final-model}
+
+\hfill\break
+
+This split is implemented in the section {[}Splitting by Default Without Balancing (for the Final Retraining of the Best Model){]} of the script by executing the custom helper function {[}ds.split.img\_mx.array{]} mentioned above (the same one used for any other splits described in the \hyperref[normalized-training-set-splits]{Normalized Training Set Splits} section) with the argument value \texttt{balanced\ =\ FALSE}.
+
+As before, we can load our \emph{Default Imbalanced Split Sets} from the cache file:
+
+\begin{verbatim}
+## The Default Imbalanced Split Set was cached in the following file:
+## data/dataset/train/ds.imbalanced.final-retraining.backup.rds
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.imbalanced.final\_retraining.file))}
+\NormalTok{ds\_norm.imbalanced\_split }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(ds.imbalanced.final\_retraining.file)}
+\end{Highlighting}
+\end{Shaded}
+
+The \emph{Default Split Set} has the following structure:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{str}\NormalTok{(ds\_norm.imbalanced\_split)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 2
+##  $ train_set:List of 2
+##   ..$ x.train: logi [1:667211, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:667211] "S" "F" "M" "1" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+##  $ test_set :List of 2
+##   ..$ x.test : logi [1:166821, 1:28, 1:28] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 3
+##   .. .. ..$ : chr [1:166821] "#" "1" "4" "L" ...
+##   .. .. ..$ : NULL
+##   .. .. ..$ : NULL
+##   ..$ x.files: NULL
+\end{verbatim}
+
+Now, we can assess the degree of imbalance in these samples:
+
+\newpage
+
+For the \emph{training set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_norm.imbalanced\_split}\SpecialCharTok{$}\NormalTok{train\_set}\SpecialCharTok{$}\NormalTok{x.train), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #       12480
+##  2 $       12959
+##  3 &       10400
+##  4 @       30407
+##  5 0       52403
+##  6 1       35018
+##  7 2       31480
+##  8 3       31996
+##  9 4       30489
+## 10 5       25853
+## 11 6       31103
+## 12 7       32864
+## 13 8       31036
+## 14 9       30655
+## 15 A       13764
+## 16 B        6932
+## 17 C       10848
+## 18 D       12407
+## 19 E       26101
+## 20 F        9308
+## 21 G        4354
+## 22 H        9706
+## 23 I       11098
+## 24 J        3408
+## 25 K        3467
+## 26 L       17318
+## 27 M        9671
+## 28 N       17136
+## 29 P        8876
+## 30 Q        3765
+## 31 R       16398
+## 32 S       20728
+## 33 T       24682
+## 34 U       13108
+## 35 V        5796
+## 36 W        5812
+## 37 X        4084
+## 38 Y        5409
+## 39 Z        3892
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+And for the \emph{test set}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(ds\_norm.imbalanced\_split}\SpecialCharTok{$}\NormalTok{test\_set}\SpecialCharTok{$}\NormalTok{x.test), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #        3120
+##  2 $        3240
+##  3 &        2600
+##  4 @        7602
+##  5 0       13101
+##  6 1        8755
+##  7 2        7871
+##  8 3        8000
+##  9 4        7623
+## 10 5        6464
+## 11 6        7776
+## 12 7        8216
+## 13 8        7759
+## 14 9        7664
+## 15 A        3441
+## 16 B        1734
+## 17 C        2712
+## 18 D        3102
+## 19 E        6526
+## 20 F        2327
+## 21 G        1089
+## 22 H        2427
+## 23 I        2775
+## 24 J         853
+## 25 K         867
+## 26 L        4330
+## 27 M        2418
+## 28 N        4285
+## 29 P        2219
+## 30 Q         942
+## 31 R        4100
+## 32 S        5182
+## 33 T        6171
+## 34 U        3277
+## 35 V        1450
+## 36 W        1454
+## 37 X        1022
+## 38 Y        1353
+## 39 Z         974
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+\subsubsection{Validation Dataset for the Final Test}\label{validation-dataset-for-the-final-test}
+
+\hfill\break
+
+For the \emph{Final Test}, we will use the \emph{entire preprocessed} \hyperref[validation_set.struct]{Validation Set} as described in the section \hyperref[standardizing-binarizing-the-image-data]{Standardizing \& Binarizing the Image Data} above, without any splitting or sampling.
+
+As previously mentioned, to obtain a more accurate assessment of the results, we will additionally employ the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#balanced-accuracy-and-f_1-score}{F1-score} metric, given that the \emph{validation dataset} exhibits a significant class imbalance.
+
+We can observe this using the \emph{custom helper function} \hyperref[func.ds.group_by_class]{ds.group\_by\_class} we defined above in the section \hyperref[flatten-training-set-splits]{Flatten Training Set Splits}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{ds.group\_by\_class}\NormalTok{(final\_test.img.std\_bin.array}\SpecialCharTok{$}\NormalTok{img\_dat.array), }
+      \AttributeTok{n =}\NormalTok{ N.classes)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #        1300
+##  2 $        1350
+##  3 &         520
+##  4 @        1250
+##  5 0         368
+##  6 1        1675
+##  7 2        1267
+##  8 3        1301
+##  9 4        1277
+## 10 5        1388
+## 11 6        1594
+## 12 7         190
+## 13 8        1198
+## 14 9        1195
+## 15 A         392
+## 16 B         385
+## 17 C         168
+## 18 D         322
+## 19 E         308
+## 20 F         324
+## 21 G         363
+## 22 H         343
+## 23 I         381
+## 24 J         126
+## 25 K         240
+## 26 L         210
+## 27 M         251
+## 28 N         235
+## 29 P         175
+## 30 Q         405
+## 31 R         366
+## 32 S         168
+## 33 T         384
+## 34 U         210
+## 35 V         224
+## 36 W         182
+## 37 X         119
+## 38 Y         189
+## 39 Z         181
+\end{verbatim}
+
+\normalsize
 
 \chapter{Methods and Analysis}\label{methods-and-analysis}
 
