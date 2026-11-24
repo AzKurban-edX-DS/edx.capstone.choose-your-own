@@ -178,9 +178,9 @@ The workflow systematically develops and tests four distinct machine learning ar
 
 Additionally, for each model, it generates a visual representation of the following metrics:
 
-* [ROC curves](https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/);
+* [ROC curves](https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc#:~:text=Precision%2Drecall%20curves%20are%20created,x%2Daxis%20across%20all%20thresholds.);
 * [Confusion Matrix](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#the-confusion-matrix);
-* **A custom metric:** *Per-Class Accuracy (PCA)* (calculated by the user-defined helper function [MCClassifier.accuracy.by_class](#func.MCClassifier.accuracy.by_class) described in section [Models Helper / Calculating PCA & Constructing Bar Chart](#appndx_a.mh.calc_pca.bar_chart) of [Appendix A](#appndx_a)).
+* (*A custom metric*) ***Per-Class Accuracy (PCA)*** (calculated by the user-defined helper function [MCClassifier.accuracy.by_class](#func.MCClassifier.accuracy.by_class) described in section [Models Helper / Calculating PCA & Constructing Bar Chart](#appndx_a.mh.calc_pca.bar_chart) of [Appendix A](#appndx_a)).
 
 ##### [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) Models
 \
@@ -205,6 +205,27 @@ The *DL models* are implemented in the following sections of the script:
 
   * *CNN-Based Basic (CNNB) MCC* implemented by the script subsection [CNN-Based Basic MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L671-L812) and described in subsection [CNN-Based Basic (CNNB) MCC Model];
   * *Fine-Tuned CNN (TCNN) MCC* implemented by the script subsection [CNN-Based MCC Model Tuning](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L813-L1066) and described in subsection [Tuned CNN-Based (TCNN) MCC Model].
+
+
+##### Visualization of Model Evaluation Results
+\
+
+Each model’s evaluation results are visualized by running the dedicated helper script (shared across all models), [model-visualization.shared.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R), which implements the visualization feature.
+
+This script is called from the following model-specific sections of the [index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R) script:
+
+- At [line 283](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L283) from the [The Best Model Evaluation Results Visualization](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L235-L291) subsection of the [kNN+PCA MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L178-L291) section; 
+- At [line 410](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L410) from the [The Best Model Evaluation Results Visualization](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L345-L418) subsection of the [Random Forest (RF) MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L292-L418) section;
+- At [line 563](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L563) from the [Model Evaluation Results Visualization](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L472-L571) subsection of the [DNN-Based Basic MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L420-L571) section;
+- At [line 727](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L727) from the [The Best Model Evaluation Results Visualization](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L642-L734) subsection of the [DNN-Based MCC Model Tuning](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L572-L734) section;
+- At [line 883](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L883) from the [Model Evaluation Results Visualization](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L793-L891) subsection of the [CNN-Based Basic MCC Model](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L738-L891) section;
+- At [line 1091](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L1091) from the [Final Test Results Visualization](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L978-L1178) subsection of the [CNN-Based MCC Model Tuning](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L892-L1178) section.
+
+As already mentioned at the beginning of the [Machine Learning Model Pipelines] section, the [model-visualization.shared.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R) script visualizes the following metrics:
+ 
+* [ROC curves](https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/) (implemented in the [Plotting ROC Curves](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R#L19-L32) section of the script);
+* ***Per-Class Accuracy (PCA)*** (implemented in the [Plotting Per-Class Accuracy Bar Chart](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R#L33-L45) section);
+* [Confusion Matrix](https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html) (implemented in the [Plotting Confusion Matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R#L46-L69) section).
 
 
 ##### The *Final Test* of the Best Model

@@ -44,6 +44,8 @@ put_log("The following values of the Model Predictions Per-Class Accuracy have b
 Sys.sleep(6)
 
 ## Plotting Confusion Matrix ---------------------------------------------------
+# Reference:
+# https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html
 put_log("Plotting the confusion matrix based on the `BDL MCC` Model evaluation results, 
 please wait...")
 
