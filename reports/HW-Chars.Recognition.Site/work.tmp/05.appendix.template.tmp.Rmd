@@ -1,4 +1,13 @@
 # Appendix A: Support Functions {#appndx_a}
+
+::: {.noteblock data-latex=""}
+The complete source code of the functions described in this Section is available in the [foo_section]() Section of the [foo_script.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/foo_script.R#L-L) script on _GitHub_.
+:::
+
+```{r appndx_a@foo_section$setup, include=FALSE}
+open_logfile(".appndx-a.foo_secton")
+
+```
 ## Data Helper Functions {#appndx_a.data_helper}
 \
 
@@ -200,8 +209,16 @@ The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx
 # ---------------------------------
 
 ## Models Helper {#appndx_a.models.helper}
+```{r appndx_a@models_helper$setup, include=FALSE}
+open_logfile(".appndx-a.foo_secton")
+```
 
 ### Calculating PCA & Constructing Bar Chart {#appndx_a.mh.calc_pca.bar_chart}
+
+::: {.noteblock data-latex=""}
+The complete source code of the functions described in this Section is available in the [Plotting Per-Class Accuracy (PCA) Bar Chart](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/models-helper.R#L891-L1108) Section of the [models-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/models-helper.R) script on _GitHub_.
+:::
+
 
 #### [foo](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L) Function {#func.foo}
 \
@@ -299,5 +316,18 @@ The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx
 \newpage
 
 
+
+
+
+```{r appndx_a@models_helper$finalize, include=FALSE}
+log_close()
+```
+
+
+# Finalize
+
+```{r appndx_a@foo_section$finalize, include=FALSE}
+log_close()
+```
 
 

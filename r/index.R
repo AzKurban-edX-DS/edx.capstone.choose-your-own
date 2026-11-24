@@ -177,7 +177,7 @@ log_close()
 stopifnot(file.exists(knn_pca.tune.script.path,
                       knn_pca.retrain.best_k.script.path,
                       knn_pca.best.eval.script.path))
-#### Init Paths ----------------------------------------------------------------
+### Init Paths -----------------------------------------------------------------
 
 k1_8nn_pca.model.backup.path <-
   file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
@@ -200,7 +200,7 @@ knn_pca.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
 if(!dir.exists(knn_pca.data.plots.dat.dir))
   dir.create(knn_pca.data.plots.dat.dir)
 
-#### Run Scripts ---------------------------------------------------------------
+### Run Scripts ----------------------------------------------------------------
 
 if(!file.exists(knn_pca.eval.results.backup)) {
   if(!file.exists(k_best.nn_pca.model.backup.path)) {
@@ -232,7 +232,7 @@ if(!file.exists(knn_pca.eval.results.backup)) {
          keep.source = TRUE)
 }
 
-#### The Best Model Evaluation Results Visualization ---------------------------
+### The Best Model Evaluation Results Visualization ---------------------------
 
 open_logfile(".visual.eval-results.k(best)nn+pca")
 
@@ -342,7 +342,7 @@ if(!file.exists(fit_rf.final.backup.path)) {
          keep.source = TRUE)
 }
 
-#### The Best Model Evaluation Results Visualization ---------------------------
+### The Best Model Evaluation Results Visualization ---------------------------
 
 open_logfile(".visual.eval-results.rf-final")
 
@@ -639,7 +639,7 @@ if(!file.exists(tdnn_mcc.final.eval_result.file)) {
          keep.source = TRUE)
 }
 
-#### Final Model Evaluation Results Visualization ------------------------------
+#### The Best Model Evaluation Results Visualization ---------------------------
 
 open_logfile(".tdnn-mcc.visual.eval-results")
 stopifnot(file.exists(tdnn_mcc.final.file,

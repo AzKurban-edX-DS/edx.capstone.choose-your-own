@@ -172,7 +172,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-23}
+\date{2026-11-24}
 
 \begin{document}
 \maketitle
@@ -482,11 +482,11 @@ Additionally, for each model, it generates a visual representation of the follow
 \begin{itemize}
 \tightlist
 \item
-  \href{https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/}{ROC curves};
+  \href{https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc\#:~:text=Precision\%2Drecall\%20curves\%20are\%20created,x\%2Daxis\%20across\%20all\%20thresholds.}{ROC curves};
 \item
   \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#the-confusion-matrix}{Confusion Matrix};
 \item
-  \textbf{A custom metric:} \emph{Per-Class Accuracy (PCA)} (calculated by the user-defined helper function \hyperref[func.MCClassifier.accuracy.by_class]{MCClassifier.accuracy.by\_class} described in section \hyperref[appndx_a.mh.calc_pca.bar_chart]{Models Helper / Calculating PCA \& Constructing Bar Chart} of \hyperref[appndx_a]{Appendix A}).
+  (\emph{A custom metric}) \textbf{\emph{Per-Class Accuracy (PCA)}} (calculated by the user-defined helper function \hyperref[func.MCClassifier.accuracy.by_class]{MCClassifier.accuracy.by\_class} described in section \hyperref[appndx_a.mh.calc_pca.bar_chart]{Models Helper / Calculating PCA \& Constructing Bar Chart} of \hyperref[appndx_a]{Appendix A}).
 \end{itemize}
 
 \paragraph{\texorpdfstring{\href{https://soulpageit.com/ai-glossary/shallow-learning-explained/}{Shallow Learning (SL)} Models}{Shallow Learning (SL) Models}}\label{shallow-learning-sl-models}
@@ -532,6 +532,42 @@ The \emph{DL models} are implemented in the following sections of the script:
   \item
     \emph{Fine-Tuned CNN (TCNN) MCC} implemented by the script subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L813-L1066}{CNN-Based MCC Model Tuning} and described in subsection \hyperref[tuned-cnn-based-tcnn-mcc-model]{Tuned CNN-Based (TCNN) MCC Model}.
   \end{itemize}
+\end{itemize}
+
+\paragraph{Visualization of Model Evaluation Results}\label{visualization-of-model-evaluation-results}
+
+\hfill\break
+
+Each model's evaluation results are visualized by running the dedicated helper script (shared across all models), \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R}{model-visualization.shared.R}, which implements the visualization feature.
+
+This script is called from the following model-specific sections of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R}{index.R} script:
+
+\begin{itemize}
+\tightlist
+\item
+  At \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L283}{line 283} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L235-L291}{The Best Model Evaluation Results Visualization} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L178-L291}{kNN+PCA MCC Model} section;
+\item
+  At \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L410}{line 410} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L345-L418}{The Best Model Evaluation Results Visualization} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L292-L418}{Random Forest (RF) MCC Model} section;
+\item
+  At \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L563}{line 563} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L472-L571}{Model Evaluation Results Visualization} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L420-L571}{DNN-Based Basic MCC Model} section;
+\item
+  At \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L727}{line 727} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L642-L734}{The Best Model Evaluation Results Visualization} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L572-L734}{DNN-Based MCC Model Tuning} section;
+\item
+  At \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L883}{line 883} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L793-L891}{Model Evaluation Results Visualization} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L738-L891}{CNN-Based Basic MCC Model} section;
+\item
+  At \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L1091}{line 1091} from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L978-L1178}{Final Test Results Visualization} subsection of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L892-L1178}{CNN-Based MCC Model Tuning} section.
+\end{itemize}
+
+As already mentioned at the beginning of the \hyperref[machine-learning-model-pipelines]{Machine Learning Model Pipelines} section, the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R}{model-visualization.shared.R} script visualizes the following metrics:
+
+\begin{itemize}
+\tightlist
+\item
+  \href{https://www.geeksforgeeks.org/machine-learning/roc-curves-for-multiclass-classification-in-r/}{ROC curves} (implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R\#L19-L32}{Plotting ROC Curves} section of the script);
+\item
+  \textbf{\emph{Per-Class Accuracy (PCA)}} (implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R\#L33-L45}{Plotting Per-Class Accuracy Bar Chart} section);
+\item
+  \href{https://cran.r-project.org/web/packages/cvms/vignettes/Creating_a_confusion_matrix.html}{Confusion Matrix} (implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/model-visualization.shared.R\#L46-L69}{Plotting Confusion Matrix} section).
 \end{itemize}
 
 \paragraph{\texorpdfstring{The \emph{Final Test} of the Best Model}{The Final Test of the Best Model}}\label{the-final-test-of-the-best-model}
@@ -749,9 +785,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \footnotesize
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px"
-##  [8] "J: 32x32px" "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px"
-## [15] "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px"
+## [10] "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 \normalsize
@@ -1227,9 +1262,8 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \footnotesize
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px"
-##  [8] "J: 28x28px" "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px"
-## [15] "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px" "6: 28x28px"
+## [10] "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 \normalsize
@@ -2606,7 +2640,7 @@ We can observe this using the \emph{custom helper function} \hyperref[func.ds.gr
 \subsection{Data Loading}\label{appndx_a.data_helper.loading}
 
 \begin{noteblock}
-The complete source code of the functions described in this Section is available in the the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{Data Loading} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{data-helper.R} script on \emph{GitHub}.
+The complete source code of the functions described in this Section is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{Data Loading} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R\#L5-L419}{data-helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
 
@@ -3944,67 +3978,234 @@ The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/m
 
 \subsection{Calculating PCA \& Constructing Bar Chart}\label{appndx_a.mh.calc_pca.bar_chart}
 
-\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{MCClassifier.accuracy.by\_class} Function}{MCClassifier.accuracy.by\_class Function}}\label{func.MCClassifier.accuracy.by_class}
-
-\hfill\break
-
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.usage}
-\paragraph{\texorpdfstring{\hyperref[L]{Usage}}{Usage}}\label{usage-5}
-
-\hfill\break
-
 \begin{noteblock}
-In the \emph{code snippet} above, \emph{this function} is called internally from the \hyperref[func.outer_MCClassifier.accuracy.by_class]{outer\_MCClassifier.accuracy.by\_class} function described above in \emph{this Section}.
-
-In the \emph{code snippet} above, a pointer to \emph{this function} is passed in the \hyperref[func.load_image.list.args.fn.load_image.dat]{fn.load\_image.dat} argument to the \hyperref[func.load_image.list]{load\_image.list} function described above in \emph{this Section}.
+The complete source code of the functions described in this Section is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/models-helper.R\#L891-L1108}{Plotting Per-Class Accuracy (PCA) Bar Chart} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/models-helper.R}{models-helper.R} script on \emph{GitHub}.
 
 \end{noteblock}
+
+\subsubsection{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L901}{MCClassifier.accuracy.by\_class} Function}{MCClassifier.accuracy.by\_class Function}}\label{func.MCClassifier.accuracy.by_class}
+
+\hfill\break
+
+Calculates \texttt{Per-Class\ Accuracy\ (PCA)} values as part of the \texttt{Multiclass\ Classifier} (\texttt{MCC}) model's evaluation process.
+
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.usage}
+\paragraph{\texorpdfstring{\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L1057}{Usage}}{Usage}}\label{usage-5}
+
+\hfill\break
+
+In the \emph{code snippet} below, \emph{this function} is called internally from the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L1033}{barPlot.accuracy\_by\_class.default} function, which is a \emph{default method} of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L968}{barPlot.accuracy\_by\_class} \emph{generic function}, defined in section \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L963}{\texttt{barPlot.accuracy\_by\_class} Generic Function} of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R}{models-helper.R} script.
+
+\begin{verbatim}
+## The Random Forest MCC model's data was cached in the following 
+## directory path, stored in the `data.models.rf.dir` object:
+## data/models/rf-mcc
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Setup {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+
+\CommentTok{\#\textquotesingle{}The cache file for the results of retraining }
+\CommentTok{\#\textquotesingle{}the fine{-}tuned RF MCC best model:  }
+\NormalTok{fit\_rf.final.backup.path }\OtherTok{\textless{}{-}} \FunctionTok{file.path}\NormalTok{(data.models.rf.dir, }
+                                      \StringTok{"fit\_rf.final.ntree400.back.rds"}\NormalTok{)}
+
+\CommentTok{\# Loading the results of retraining the best model from the cache:}
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(fit\_rf.final.backup.path))}
+\NormalTok{fit\_rf.final }\OtherTok{\textless{}{-}} \FunctionTok{readRDS}\NormalTok{(fit\_rf.final.backup.path)}
+
+\FunctionTok{plot}\NormalTok{(fit\_rf.final,}
+     \AttributeTok{main =} \StringTok{"Fine{-}tuning Results of the \textasciigrave{}RF MCC\textasciigrave{} Model by the \textasciigrave{}mtry\textasciigrave{} Parameter"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/MCClassifier.accuracy.by_class@usage$setup-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{targets }\OtherTok{\textless{}{-}}\NormalTok{ fit\_rf.final}\SpecialCharTok{$}\NormalTok{test}\SpecialCharTok{$}\NormalTok{targets}
+\NormalTok{predicted.values }\OtherTok{\textless{}{-}}\NormalTok{ fit\_rf.final}\SpecialCharTok{$}\NormalTok{test}\SpecialCharTok{$}\NormalTok{predicted  }
+
+\NormalTok{per\_class.accuracy }\OtherTok{\textless{}{-}} \FunctionTok{MCClassifier.accuracy.by\_class}\NormalTok{(targets,}
+\NormalTok{                                                       predicted.values,}
+\NormalTok{                                                       Y.Labels)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `#` (of size 852) is 1.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `$` (of size 852) is 1.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `&` (of size 852) is 1.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `@` (of size 852) is 1.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `0` (of size 852) is 0.958920187793427.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `1` (of size 852) is 0.72887323943662.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `2` (of size 852) is 0.836854460093897.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `3` (of size 852) is 0.950704225352113.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `4` (of size 852) is 0.893192488262911.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `5` (of size 852) is 0.842723004694836.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `6` (of size 852) is 0.908450704225352.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `7` (of size 852) is 0.958920187793427.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `8` (of size 852) is 0.881455399061033.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `9` (of size 852) is 0.916666666666667.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `A` (of size 852) is 0.876760563380282.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `B` (of size 852) is 0.896713615023474.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `C` (of size 852) is 0.926056338028169.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `D` (of size 852) is 0.884976525821596.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `E` (of size 852) is 0.928403755868545.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `F` (of size 852) is 0.924882629107981.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `G` (of size 852) is 0.591549295774648.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `H` (of size 852) is 0.895539906103286.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `I` (of size 852) is 0.692488262910798.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `J` (of size 852) is 0.911971830985915.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `K` (of size 852) is 0.938967136150235.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `L` (of size 852) is 0.534037558685446.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `M` (of size 852) is 0.956572769953052.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `N` (of size 852) is 0.931924882629108.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `P` (of size 852) is 0.956572769953052.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `Q` (of size 852) is 0.688967136150235.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `R` (of size 852) is 0.890845070422535.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `S` (of size 852) is 0.867370892018779.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `T` (of size 852) is 0.923708920187793.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `U` (of size 852) is 0.928403755868545.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `V` (of size 852) is 0.911971830985915.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `W` (of size 852) is 0.961267605633803.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `X` (of size 852) is 0.935446009389671.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `Y` (of size 852) is 0.820422535211268.
+## Function `MCClassifier.accuracy.by_class`:
+## Accuracy for the class `Z` (of size 852) is 0.910798122065728.
+\end{verbatim}
+
+\normalsize
+
+\newpage
+
+\footnotesize
+
+\begin{verbatim}
+## Class Labels values stored in the `Y.Label` object
+## are as follows:
+##  [1] # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+## Levels: # $ & @ 0 1 2 3 4 5 6 7 8 9 A B C D E F G H I J K L M N P Q R S T U V W X Y Z
+\end{verbatim}
+
+\normalsize
+
+\footnotesize
+
+\begin{verbatim}
+## Per-Class Accuracy values are as follows:
+##      
+## class  accuracy
+##     # 1.0000000
+##     $ 1.0000000
+##     & 1.0000000
+##     @ 1.0000000
+##     0 0.9589202
+##     1 0.7288732
+##     2 0.8368545
+##     3 0.9507042
+##     4 0.8931925
+##     5 0.8427230
+##     6 0.9084507
+##     7 0.9589202
+##     8 0.8814554
+##     9 0.9166667
+##     A 0.8767606
+##     B 0.8967136
+##     C 0.9260563
+##     D 0.8849765
+##     E 0.9284038
+##     F 0.9248826
+##     G 0.5915493
+##     H 0.8955399
+##     I 0.6924883
+##     J 0.9119718
+##     K 0.9389671
+##     L 0.5340376
+##     M 0.9565728
+##     N 0.9319249
+##     P 0.9565728
+##     Q 0.6889671
+##     R 0.8908451
+##     S 0.8673709
+##     T 0.9237089
+##     U 0.9284038
+##     V 0.9119718
+##     W 0.9612676
+##     X 0.9354460
+##     Y 0.8204225
+##     Z 0.9107981
+\end{verbatim}
+
+\normalsize
+
+\newpage
 
 \protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args}
 \paragraph{Arguments}\label{arguments-5}
 
 \hfill\break
 
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg1}
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.targets}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{arg1:} ;
+  \textbf{targets:} Target values of the \texttt{Test\ Set} used for the model's evaluation;
 \end{itemize}
 
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg2}
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.predicted.values}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{arg2:} (Optional, \emph{Numeric}, \(0\) by default) ;
+  \textbf{predicted.values:} Predicted values obtained as a result of the model's evaluation;
 \end{itemize}
 
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg3}
+\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.class.labels}
 \begin{itemize}
 \tightlist
 \item
-  \textbf{arg3:} (Optional, \emph{Numeric}, \texttt{NA} by default) ;
-\end{itemize}
-
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg4}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{arg4:} (Optional, \emph{Integer}, \texttt{NA} by default) ;
-\end{itemize}
-
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg5}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{arg5:} (Optional, \emph{Boolean}, \texttt{FALSE} by default) ;
-\end{itemize}
-
-\protect\phantomsection\label{func.MCClassifier.accuracy.by_class.args.arg6}
-\begin{itemize}
-\tightlist
-\item
-  \textbf{arg6:} (Optional, \emph{Character}, \texttt{NULL} by default) ;
+  \textbf{class.labels:} \texttt{MCC} Class Labels (in \emph{this Project}: the values stored in the \texttt{Y.Labels} object);
 \end{itemize}
 
 \protect\phantomsection\label{func.MCClassifier.accuracy.by_class.details}
@@ -4012,8 +4213,10 @@ In the \emph{code snippet} above, a pointer to \emph{this function} is passed in
 
 \hfill\break
 
+This function calculates a custom metric, the \emph{Per-Class Accuracy (PCA)}, as part of a \emph{Multiclass Classifier (MCC)} model's evaluation process.
+
 \begin{noteblock}
-This is an auxiliary function that is used internally in the \hyperref[]{} function as shown above in the \hyperref[func.MCClassifier.accuracy.by_class.usage]{Usage} Section of \emph{this Description}.
+This is an auxiliary function that is used internally in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L968}{barPlot.accuracy\_by\_class} \emph{generic function} as shown above in the \hyperref[func.MCClassifier.accuracy.by_class.usage]{Usage} Section of \emph{this Description}.
 
 \end{noteblock}
 
@@ -4022,21 +4225,55 @@ This is an auxiliary function that is used internally in the \hyperref[]{} funct
 
 \hfill\break
 
+\texttt{Single-column\ matrix} containing a list of the \texttt{PCA} values for the \texttt{MCC} model being evaluated.
+
+\newpage
+
 \protect\phantomsection\label{func.MCClassifier.accuracy.by_class.code}
 \paragraph{Source Code}\label{source-code-5}
 
 \hfill\break
 
-The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{source code} of the function is shown below:
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L901}{source code} of the function is shown below:
 
-The simplified version of the function's source code is shown below:
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{MCClassifier.accuracy.by\_class }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(targets,}
+\NormalTok{                                           predicted.values,}
+\NormalTok{                                           class.labels) \{}
+  \FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{class}\NormalTok{(class.labels) }\SpecialCharTok{==} \StringTok{"factor"}\NormalTok{)}
+  
+  \FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{class}\NormalTok{(predicted.values) }\SpecialCharTok{==} \StringTok{"factor"} \SpecialCharTok{\&\&} 
+              \FunctionTok{sum}\NormalTok{(}\FunctionTok{levels}\NormalTok{(predicted.values) }\SpecialCharTok{!=} \FunctionTok{levels}\NormalTok{(class.labels)) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)}
 
-\begin{noteblock}
-The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{source code}is also available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L-L}{Image Processing} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
+\NormalTok{  categorical\_targets }\OtherTok{\textless{}{-}} 
+    \FunctionTok{length}\NormalTok{(}\FunctionTok{shape}\NormalTok{(targets)) }\SpecialCharTok{==} \DecValTok{2} \SpecialCharTok{\&\&} 
+    \FunctionTok{shape}\NormalTok{(targets)[}\DecValTok{2}\NormalTok{] }\SpecialCharTok{==} \FunctionTok{length}\NormalTok{(}\FunctionTok{levels}\NormalTok{(class.labels))}
+  
+  \FunctionTok{sapply}\NormalTok{(class.labels, }\ControlFlowTok{function}\NormalTok{(class) \{}
+    \ControlFlowTok{if}\NormalTok{(categorical\_targets) \{}
+\NormalTok{      targets.idx }\OtherTok{\textless{}{-}} \FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(y.test.cat))      }
+\NormalTok{      idx }\OtherTok{\textless{}{-}}\NormalTok{ targets.idx[targets[, }\FunctionTok{as.integer}\NormalTok{(class)] }\SpecialCharTok{==} \DecValTok{1}\NormalTok{]}
+\NormalTok{    \} }\ControlFlowTok{else}\NormalTok{ \{}
+      \FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{class}\NormalTok{(targets) }\SpecialCharTok{==} \StringTok{"factor"} \SpecialCharTok{\&\&} 
+                  \FunctionTok{sum}\NormalTok{(}\FunctionTok{levels}\NormalTok{(targets) }\SpecialCharTok{!=} \FunctionTok{levels}\NormalTok{(class.labels)) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)}
+      
+\NormalTok{      targets.idx }\OtherTok{\textless{}{-}} \FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{length}\NormalTok{(targets))}
+\NormalTok{      idx }\OtherTok{\textless{}{-}}\NormalTok{ targets.idx[targets }\SpecialCharTok{==}\NormalTok{ class]}
+\NormalTok{    \}}
 
-The complete version of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L80}{source code} is available in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L-L}{Image Processing} Section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R\#L}{data.helper.R} script on \emph{GitHub}.
-
-\end{noteblock}
+\NormalTok{    n }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(idx)}
+\NormalTok{    accuracy }\OtherTok{\textless{}{-}} \FunctionTok{mean}\NormalTok{(predicted.values[idx] }\SpecialCharTok{==}\NormalTok{ class)}
+    
+    \FunctionTok{put\_log}\NormalTok{(}\StringTok{"Function \textasciigrave{}MCClassifier.accuracy.by\_class\textasciigrave{}:}
+\StringTok{Accuracy for the class \textasciigrave{}\%1\textasciigrave{} (of size \%2) is \%3."}\NormalTok{,}
+\NormalTok{            class, n, accuracy) }
+\NormalTok{    accuracy}
+\NormalTok{  \}) }\SpecialCharTok{|\textgreater{}} 
+    \FunctionTok{matrix}\NormalTok{(}\AttributeTok{ncol =} \DecValTok{1}\NormalTok{, }\AttributeTok{dimnames =} \FunctionTok{list}\NormalTok{(}\AttributeTok{class =}\NormalTok{ class.labels, }\StringTok{"accuracy"}\NormalTok{)) }
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
 
 \newpage
 

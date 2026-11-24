@@ -5,7 +5,7 @@
 ### Data Loading {#appndx_a.data_helper.loading}
 
 ::: {.noteblock data-latex=""}
-The complete source code of the functions described in this Section is available in the the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) Section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) script on _GitHub_.
+The complete source code of the functions described in this Section is available in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) Section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/data-helper.R#L5-L419) script on _GitHub_.
 :::
 
 #### [kaggle_cli.download](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.kaggle_cli.download}
@@ -689,64 +689,92 @@ magick_img2matrix <- function(img){
 \newpage
 
 ## Models Helper {#appndx_a.models.helper}
+```{r appndx_a@models_helper$setup, include=FALSE}
+open_logfile(".appndx-a.foo_secton")
+```
 
 ### Calculating PCA & Constructing Bar Chart {#appndx_a.mh.calc_pca.bar_chart}
 
-#### [MCClassifier.accuracy.by_class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L) Function {#func.MCClassifier.accuracy.by_class}
+::: {.noteblock data-latex=""}
+The complete source code of the functions described in this Section is available in the [Plotting Per-Class Accuracy (PCA) Bar Chart](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/models-helper.R#L891-L1108) Section of the [models-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/tree/main/r/support-functions/models-helper.R) script on _GitHub_.
+:::
+
+#### [MCClassifier.accuracy.by_class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L901) Function {#func.MCClassifier.accuracy.by_class}
 \
 
+Calculates `Per-Class Accuracy (PCA)` values as part of the `Multiclass Classifier` (`MCC`) model's  evaluation process.
 
 ::: { #func.MCClassifier.accuracy.by_class.usage .sidebar }
-##### [Usage](#L)
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L1057)
 \
 
+In the *code snippet* below, *this function* is called internally from the [barPlot.accuracy_by_class.default](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L1033) function, which is a *default method* of the [barPlot.accuracy_by_class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L968) *generic function*, defined in section [`barPlot.accuracy_by_class` Generic Function](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L963) of the [models-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R) script.
 
-```{r MCClassifier.accuracy.by_class@usage.setup, include=FALSE}
-# path <- file.path(knitr.proj_root, proj_path)
-
-```
-```{r MCClassifier.accuracy.by_class@usage, eval=FALSE}
-```
-```{r MCClassifier.accuracy.by_class@usage.exe, eval=TRUE}
-```
-```{r MCClassifier.accuracy.by_class@usage.result, echo=FALSE}
-```
-```{r MCClassifier.accuracy.by_class@usage.finalize, include=FALSE}
+```{r MCClassifier.accuracy.by_class@usage$cache_file, echo=FALSE}
+print_log("The Random Forest MCC model's data was cached in the following 
+directory path, stored in the `data.models.rf.dir` object:
+%1", data.models.rf.dir)
 ```
 
-::: {.noteblock data-latex=""}
-In the *code snippet* above, *this function* is called internally from the [outer_MCClassifier.accuracy.by_class](#func.outer_MCClassifier.accuracy.by_class) function described above in *this Section*.
+```{r MCClassifier.accuracy.by_class@usage$setup, output.size="footnotesize"}
+# Setup ---------------------------------------------------------
 
-In the *code snippet* above, a pointer to *this function* is passed in the [fn.load_image.dat](#func.load_image.list.args.fn.load_image.dat) argument to the [load_image.list](#func.load_image.list) function described above in *this Section*.
+#'The cache file for the results of retraining 
+#'the fine-tuned RF MCC best model:  
+fit_rf.final.backup.path <- file.path(data.models.rf.dir, 
+                                      "fit_rf.final.ntree400.back.rds")
+
+# Loading the results of retraining the best model from the cache:
+stopifnot(file.exists(fit_rf.final.backup.path))
+fit_rf.final <- readRDS(fit_rf.final.backup.path)
+
+plot(fit_rf.final,
+     main = "Fine-tuning Results of the `RF MCC` Model by the `mtry` Parameter")
+```
+```{r MCClassifier.accuracy.by_class@usage.exe, output.size="footnotesize"}
+
+targets <- fit_rf.final$test$targets
+predicted.values <- fit_rf.final$test$predicted  
+
+per_class.accuracy <- MCClassifier.accuracy.by_class(targets,
+                                                       predicted.values,
+                                                       Y.Labels)
+```
+
+\newpage
+
+```{r MCClassifier.accuracy.by_class@usage$result, echo=FALSE, output.size="footnotesize"}
+print_log("Class Labels values stored in the `Y.Label` object
+are as follows:
+%1", capture.output(Y.Labels))
+
+print_log("Per-Class Accuracy values are as follows:
+%1", capture.output(per_class.accuracy))
+```
+```{r MCClassifier.accuracy.by_class@usage$cleanup, include=FALSE}
+rm(fit_rf.final, 
+   targets, 
+   predicted.values, 
+   per_class.accuracy)
+```
 :::
-:::
+
+\newpage
 
 ::: { #func.MCClassifier.accuracy.by_class.args .sidebar }
 ##### Arguments
 \
 
-::: { #func.MCClassifier.accuracy.by_class.args.arg1 .sidebar }
-- **arg1:** ; 
+::: { #func.MCClassifier.accuracy.by_class.args.targets .sidebar }
+- **targets:** Target values of the `Test Set` used for the model's evaluation; 
 
 :::
-::: { #func.MCClassifier.accuracy.by_class.args.arg2 .sidebar }
-- **arg2:**  (Optional, *Numeric*, $0$ by default) ; 
+::: { #func.MCClassifier.accuracy.by_class.args.predicted.values .sidebar }
+- **predicted.values:** Predicted values obtained as a result of the model's evaluation; 
 
 :::
-::: { #func.MCClassifier.accuracy.by_class.args.arg3 .sidebar }
-- **arg3:**  (Optional, *Numeric*, `NA` by default) ; 
-
-:::
-::: { #func.MCClassifier.accuracy.by_class.args.arg4 .sidebar }
-- **arg4:**  (Optional, *Integer*, `NA` by default) ; 
-
-:::
-::: { #func.MCClassifier.accuracy.by_class.args.arg5 .sidebar }
-- **arg5:**  (Optional, *Boolean*, `FALSE` by default) ; 
-
-:::
-::: { #func.MCClassifier.accuracy.by_class.args.arg6 .sidebar }
-- **arg6:**  (Optional, *Character*, `NULL` by default) ; 
+::: { #func.MCClassifier.accuracy.by_class.args.class.labels .sidebar }
+- **class.labels:** `MCC` Class Labels (in *this Project*: the values stored in the `Y.Labels` object); 
 
 :::
 :::
@@ -755,9 +783,10 @@ In the *code snippet* above, a pointer to *this function* is passed in the [fn.l
 ##### Details
 \
 
+This function calculates a custom metric, the *Per-Class Accuracy (PCA)*, as part of a *Multiclass Classifier (MCC)* model's evaluation process.
 
 ::: {.noteblock data-latex=""}
-This is an auxiliary function that is used internally in the [](#) function as shown above in the [Usage](#func.MCClassifier.accuracy.by_class.usage) Section of *this Description*.
+This is an auxiliary function that is used internally in the [barPlot.accuracy_by_class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L968) *generic function* as shown above in the [Usage](#func.MCClassifier.accuracy.by_class.usage) Section of *this Description*.
 :::
 :::
 
@@ -765,25 +794,58 @@ This is an auxiliary function that is used internally in the [](#) function as s
 ##### Value
 \
 
+`Single-column matrix` containing a list of the `PCA` values for the `MCC` model being evaluated.
 :::
+
+\newpage
 
 ::: { #func.MCClassifier.accuracy.by_class.code .sidebar }
 ##### Source Code
 \
 
-The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L) of the function is shown below:
-
-The simplified version of the function's source code is shown below:
+The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L901) of the function is shown below:
 ```{r MCClassifier.accuracy.by_class#source, eval=FALSE}
 
+MCClassifier.accuracy.by_class <- function(targets,
+                                           predicted.values,
+                                           class.labels) {
+  stopifnot(class(class.labels) == "factor")
+  
+  stopifnot(class(predicted.values) == "factor" && 
+              sum(levels(predicted.values) != levels(class.labels)) == 0)
+
+  categorical_targets <- 
+    length(shape(targets)) == 2 && 
+    shape(targets)[2] == length(levels(class.labels))
+  
+  sapply(class.labels, function(class) {
+    if(categorical_targets) {
+      targets.idx <- seq_len(nrow(y.test.cat))      
+      idx <- targets.idx[targets[, as.integer(class)] == 1]
+    } else {
+      stopifnot(class(targets) == "factor" && 
+                  sum(levels(targets) != levels(class.labels)) == 0)
+      
+      targets.idx <- seq_len(length(targets))
+      idx <- targets.idx[targets == class]
+    }
+
+    n <- length(idx)
+    accuracy <- mean(predicted.values[idx] == class)
+    
+    put_log("Function `MCClassifier.accuracy.by_class`:
+Accuracy for the class `%1` (of size %2) is %3.",
+            class, n, accuracy) 
+    accuracy
+  }) |> 
+    matrix(ncol = 1, dimnames = list(class = class.labels, "accuracy")) 
+}
 ```
-
-::: {.noteblock data-latex=""}
-The [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L)is also available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L-L) Section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L) script on _GitHub_.
-
-The complete version of the [source code](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L80) is available in the [Image Processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L-L) Section of the [data.helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L) script on _GitHub_.
 :::
-:::
+
+```{r appndx_a@models_helper$finalize, include=FALSE}
+log_close()
+```
 
 \newpage
 
