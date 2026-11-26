@@ -114,6 +114,7 @@
 \hypersetup{backref, pdfpagemode=Normal, colorlinks=true, implicit=false}
 \usepackage{tcolorbox}
 \usepackage{xcolor}
+\newcommand{\myquote}[1]{\textcolor{darkgray}{\textit{``#1''}}}
 \tcbuselibrary{skins}
 % 1. Environment with a thick colored left accent bar
 \newtcolorbox{accentquote}{
@@ -172,7 +173,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-24}
+\date{2026-11-26}
 
 \begin{document}
 \maketitle
@@ -211,7 +212,7 @@ This project is the second assignment of the `Data Science: Capstone' course (PH
 
 I would like to extend my deepest gratitude to Professor \textbf{Rafael A. Irizarry} for designing and delivering the comprehensive courses within the \textbf{\emph{Professional Certificate Program in Data Science}}. Prof.~\textbf{Irizarry}'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
 
-I am equally grateful for his textbook, \emph{Introduction to Data Science}, (\href{https://rafalab.dfci.harvard.edu/dsbook-part-1/}{part 1}\autocite{IDS1} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/}{part 2}\autocite{IDS2}). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof.~\textbf{Irizarry}'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+I am equally grateful for his textbook, \emph{Introduction to Data Science}, (\href{https://rafalab.dfci.harvard.edu/dsbook-part-1/}{part 1} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/}{part 2})\autocite{IDS1,IDS2}. This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof.~\textbf{Irizarry}'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
 
 \chapter{Overview and Executive Summary}\label{intro}
 
@@ -785,8 +786,8 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \footnotesize
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px" "6: 32x32px"
-## [10] "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
+##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 \normalsize
@@ -799,7 +800,7 @@ Figure \ref{fig:intro-ds-overview-img-diff-size-sample} below shows what these i
 
 \newpage
 
-Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html\#binarize-the-data}{Section 21.3 Matrix Operations in R / Binarize the data} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_21.5_BD}.
+Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html\#binarize-the-data}{Section 21.5.5 Binarize the data} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_21.5.5}.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1262,8 +1263,8 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \footnotesize
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px" "6: 28x28px"
-## [10] "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
+##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 \normalsize
@@ -1568,7 +1569,7 @@ To use the \emph{Training Set} datasets for training our models. we need to spli
 \begin{noteblock}
 The \emph{Validation Set} used in our project plays the role of the \emph{Independent Set} in the terms used in the \emph{Textbook}\autocite{IDS2_29.6}. We can treat it this way because \underline{it is entirely independent} of the \emph{Training Set}, and is used \textbf{solely to \underline{evaluate our best model}} at the end of the study.
 
-Also, we split each of our datasets (into the \emph{Train/Test} sets) only once; we do not use the \emph{k-fold cross-validation} (described in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#k-fold-cross-validation}{Section 29.6 Cross-validation / K-fold cross-validation} of the \emph{Course Textbook}\autocite{IDS2_29.6_KFCV}) explicitly in our scripts because of the restricted time we have for the models' training, although it is used under the hood in the \href{https://topepo.github.io/caret/model-training-and-tuning.html}{caret::train} function used for the \hyperref[shallow-learning-models]{Shallow Learning Models}, i.e., for the \hyperref[knn_pca_model]{kNN+PCA MCC Model} and \hyperref[rf_model]{Random Forest (RF) MCC Model}.
+Also, we split each of our datasets (into the \emph{Train/Test} sets) only once; we do not use the \emph{k-fold cross-validation} (described in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html\#k-fold-cross-validation}{Section 29.6.1: K-fold cross-validation} of the \emph{Course Textbook}\autocite{IDS2_29.6.1}) explicitly in our scripts because of the restricted time we have for the models' training, although it is used under the hood in the \href{https://topepo.github.io/caret/model-training-and-tuning.html}{caret::train} function used for the \hyperref[shallow-learning-models]{Shallow Learning Models}, i.e., for the \hyperref[knn_pca_model]{kNN+PCA MCC Model} and \hyperref[rf_model]{Random Forest (RF) MCC Model}.
 
 \end{noteblock}
 
@@ -1652,7 +1653,7 @@ We use two types of split sets (both for \emph{Normalized} and \emph{Flattened} 
   \textbf{0.1/0.9 ratio split of the \emph{Train/Test} sets:} ``lite'' \emph{Training Set} to use for tuning the models (due to the time-consuming nature of such operations) and ``heavy'' \emph{Test Set} to use the maximum amount of available data for testing to achieve more reliable results.
 \end{itemize}
 
-\subparagraph{Flatten Training Set Splits}\label{flatten-training-set-splits}
+\subparagraph{Splitting the Flattened Training Set}\label{splitting-the-flattened-training-set}
 
 \hfill\break
 
@@ -1663,6 +1664,8 @@ This script itself \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-
 
 \end{noteblock}
 
+\protect\phantomsection\label{ds_flatten.default_splitting}
+The \emph{default splitting} is implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R\#L23-L51}{Splitting by Default (into 0.8/0.2 Train/Test Set)} section.
 As always, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
 
 \begin{verbatim}
@@ -1844,7 +1847,12 @@ As well as for the \emph{test set}:
 
 \newpage
 
-The same is true for the \emph{Flatten 0.1/0.9 Train/Test Split Set}:
+The same is true for the \emph{0.1/0.9 Train/Test Set}. Let's verify this.
+
+\protect\phantomsection\label{ds_flatten.splitting0.1_0.9}
+The \emph{Flattened Data Split} into \emph{0.1/0.9 Train/Test Set} is implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R\#L52-L84}{Splitting into 0.1/0.9 Train/Test Set (for the Models' Tuning)} section.
+
+As above, for the \emph{default splitting}, we can load the previously cached dataset from the backup file:
 
 \begin{verbatim}
 ## The Flattened Split of the 0.1/0.9 Train/Test Set 
@@ -1859,7 +1867,7 @@ The same is true for the \emph{Flatten 0.1/0.9 Train/Test Split Set}:
 \end{Highlighting}
 \end{Shaded}
 
-The \emph{Flattened Split} of the \emph{0.1/0.9 Train/Test Set} has the following structure:
+The \emph{Flattened 0.1/0.9 Train/Test Set} has the following structure:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2020,9 +2028,9 @@ For the \emph{Normalized} dataset, the \emph{Balanced Splitting} feature is impl
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Default Splitting:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L72-L112}{Splitting by Default (0.8/0.2 Ratio Train/Test Sets)} subsection;
+  \textbf{Default Splitting:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L72-L112}{Splitting by Default (0.8/0.2 Ratio Train/Test Set)} subsection;
 \item
-  \textbf{Splitting into a 01/0.9 ratio \emph{Train/Test} Sets:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L113-L151}{Splitting into 0.1/0.9 Ratio Train/Test Sets (for the Models' Tuning)} subsection.
+  \textbf{Splitting into a 01/0.9 \emph{Train/Test} Sets:} implemented in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L113-L151}{Splitting into 0.1/0.9 Ratio Train/Test Set (for the Models' Tuning)} subsection.
 \end{itemize}
 
 Finally, the subsection \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R\#L152-L193}{Splitting by Default Without Balancing (for the Final Retraining of the Best Model)} implements the \emph{Default Non-Balanced Splitting} feature, which splits the dataset into a 0.8/0.2 ratio \emph{\underline{imbalanced} Train/Test Sets} (for retraining the \emph{Final Best Model} that will be developed at the end of the study).
@@ -2541,7 +2549,7 @@ For the \emph{Final Test}, we will use the \emph{entire preprocessed} \hyperref[
 
 As previously mentioned, to obtain a more accurate assessment of the results, we will additionally employ the \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html\#balanced-accuracy-and-f_1-score}{F1-score} metric, given that the \emph{validation dataset} exhibits a significant class imbalance.
 
-We can observe this using the \emph{custom helper function} \hyperref[func.ds.group_by_class]{ds.group\_by\_class} we defined above in the section \hyperref[flatten-training-set-splits]{Flatten Training Set Splits}:
+We can observe this using the \emph{custom helper function} \hyperref[func.ds.group_by_class]{ds.group\_by\_class} we defined above in the section \hyperref[splitting-the-flattened-training-set]{Splitting the Flattened Training Set}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2599,15 +2607,297 @@ We can observe this using the \emph{custom helper function} \hyperref[func.ds.gr
 
 \normalsize
 
-\chapter{Methods and Analysis}\label{methods-and-analysis}
+\chapter{Methods and Analysis}\label{chapter_MA}
+
+\begin{noteblock}
+To reduce computation time when working with the models, we use the \emph{parallelization} feature, implemented in the \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel} package, as introduced in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html\#parallelization}{Section 31.4: Parallelization} and explained in more detail in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html\#sec-knn-in-practice}{Section 31.5: Model tuning and diagnostics} of the \emph{Textbook}\autocite{IDS2_31.4,IDS2_31.5}.
+
+\end{noteblock}
 
 \section{Shallow Learning Models}\label{shallow-learning-models}
 
+Motivated by the example described in \emph{Sections} \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html\#sec-two-or-seven}{28.3.1: Example: Is it a 2 or a 7?} and \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html\#sec-smoothing-ml-connection}{28.5: Connecting smoothing to machine learning} of the \emph{Course Textbook (New Edition)}, we decided to start with a \textcolor{darkgray}{\textit{``popular machine learning algorithm, k-nearest neighbors, which is based on the concept of smoothing''}}\autocite{IDS2_28.5}. Below, we describe in detail \hyperref[knn_pca_model]{the model based on this algorithm}.
+
+The next model we examine in this section employs the \emph{Random Forests (RF)} algorithm described in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Section 30.5: Random forests} of the \emph{Textbook}, which is \textcolor{darkgray}{\textit{``a very popular machine learning approach that addresses the shortcomings of decision trees using a clever idea''}}\autocite{IDS2_30.5}.
+This model is described in detail in the subsection \hyperref[rf_model]{Random Forest (RF) MCC Model} below.
+
+\href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html\#sec-knn-in-practice}{Section 31.5: Model tuning and diagnostics} of the \emph{Course Textbook} helps us understand \textcolor{darkgray}{\textit{``the process of model selection and tuning''}}. Specifically, \emph{the author} demonstrates \textcolor{darkgray}{\textit{``how to train and evaluate models in `R`, choose appropriate hyperparameters, such as `k` for kNN and tree-related parameters for random forests, and assess performance using cross-validation''}}\autocite{IDS2_31.5}
+
+\newpage
+
 \subsection{kNN+PCA MCC Model}\label{knn_pca_model}
+
+To implement the \emph{k-Nearest Neighbors (kNN)} algorithm, we use the \href{https://topepo.github.io/caret/index.html}{caret} package. Also, inspired by what we learned from \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html\#sec-pca}{Section 23.5: Principal Component Analysis (PCA)} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_23.5}, we use \emph{PCA} in the \href{https://topepo.github.io/caret/model-training-and-tuning.html}{caret::train} function, which, as explained in \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html\#dimension-reduction-with-pca}{Section 31.3.2: Dimension reduction with PCA} of the \emph{Textbook}, \textcolor{darkgray}{\textit{``includes PCA as one of its available preprocessing steps''}}\autocite{IDS2_31.3.2}.
+
+\subsubsection{Model Building and Tuning}\label{knn_pca_mcc.build}
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R}{1.knn+pca.build\&tune.R} script implements the \emph{kNN+PCA MCC} model building and tuning.
+
+\paragraph{\texorpdfstring{Prepare \emph{Training Set}}{Prepare Training Set}}\label{knn_pca_mcc.train_set.tuning}
+
+\hfill\break
+
+The implementation starts in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R\#L23-L95}{Prepare Input Datasets} section with loading the preliminary prepared and cached \emph{Flattened Split Dataset} as described \hyperref[ds_flatten.splitting0.1_0.9]{above} in the \hyperref[ds_flatten.splitting0.1_0.9]{Splitting the Flattened Training Set} section.
+
+Below, we show a simplified \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R\#L27-L94}{code snippet} that performs this operation.
+
+\begin{noteblock}
+The code snippet below loads the dataset using the custom helper function \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L227}{load\_datasets} defined in the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R\#L5-L291}{Data Loading} section of the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R}{data-helper.R} script.
+
+Here and from now on, we use the \emph{``light'' version} of the \emph{Split Train/Test Set} for model tuning, which allocates \(10\)\% of the data to the training set, to reduce the time cost of the tuning process.
+
+\end{noteblock}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Loading Split Flattened Dataset allocated 10\% for the Training Set}
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{file.exists}\NormalTok{(ds.flatten.}\FloatTok{0.1}\NormalTok{split.file))}
+\NormalTok{ds }\OtherTok{\textless{}{-}} \FunctionTok{load\_datasets}\NormalTok{(ds.flatten.}\FloatTok{0.1}\NormalTok{split.file)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## Function `load_datasets`: Loading dataset from the backup file... 
+## Function `load_datasets`:
+## The dataset has been loaded from the following backup file:
+## data/dataset/train/ds.flatten-split(10%train-set).rds
+\end{verbatim}
+
+\normalsize
+
+\footnotesize
+
+\begin{verbatim}
+## The Split Flattened Dataset has the follwoing structure:
+## List of 2
+##  $ train:List of 2
+##   ..$ x           : logi [1:16614, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:16614] "Z" "S" "B" "S" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ class_groups:List of 2
+##   .. ..$ classID     : Factor w/ 39 levels "#","$","&","@",..: 39 32 16 32 22 12 32 10 26 35 ...
+##   .. ..$ groupByClass: tibble [39 x 2] (S3: tbl_df/tbl/data.frame)
+##   .. .. ..$ classID: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
+##   .. .. ..$ n      : int [1:39] 426 426 426 426 426 426 426 426 426 426 ...
+##  $ test :List of 3
+##   ..$ x           : logi [1:149565, 1:784] FALSE FALSE FALSE FALSE FALSE FALSE ...
+##   .. ..- attr(*, "dimnames")=List of 2
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+##   .. .. ..$ : chr [1:784] "1" "2" "3" "4" ...
+##   ..$ files       : chr [1:149565(1d)] "data/raw/Vaibs.HW-Chars/Train/S/5303.jpg" "data/raw/Vaibs.HW-Chars/Train/N/20577.jpg" "data/raw/Vaibs.HW-Chars/Train/M/11629.jpg" "data/raw/Vaibs.HW-Chars/Train/9/16969.jpg" ...
+##   .. ..- attr(*, "dimnames")=List of 1
+##   .. .. ..$ : chr [1:149565] "S" "N" "M" "9" ...
+##   ..$ class_groups:List of 2
+##   .. ..$ classID     : Factor w/ 39 levels "#","$","&","@",..: 32 28 27 14 4 1 30 14 11 1 ...
+##   .. ..$ groupByClass: tibble [39 x 2] (S3: tbl_df/tbl/data.frame)
+##   .. .. ..$ classID: Factor w/ 39 levels "#","$","&","@",..: 1 2 3 4 5 6 7 8 9 10 ...
+##   .. .. ..$ n      : int [1:39] 3835 3835 3835 3835 3835 3835 3835 3835 3835 3835 ...
+\end{verbatim}
+
+\normalsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x\_train }\OtherTok{\textless{}{-}}\NormalTok{ ds}\SpecialCharTok{$}\NormalTok{train}\SpecialCharTok{$}\NormalTok{x}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## The Train set is balanced with respect to the set of classes:
+## # A tibble: 39 x 2
+##    classID     n
+##    <fct>   <int>
+##  1 #         426
+##  2 $         426
+##  3 &         426
+##  4 @         426
+##  5 0         426
+##  6 1         426
+##  7 2         426
+##  8 3         426
+##  9 4         426
+## 10 5         426
+## 11 6         426
+## 12 7         426
+## 13 8         426
+## 14 9         426
+## 15 A         426
+## 16 B         426
+## 17 C         426
+## 18 D         426
+## 19 E         426
+## 20 F         426
+## 21 G         426
+## 22 H         426
+## 23 I         426
+## 24 J         426
+## 25 K         426
+## 26 L         426
+## 27 M         426
+## 28 N         426
+## 29 P         426
+## 30 Q         426
+## 31 R         426
+## 32 S         426
+## 33 T         426
+## 34 U         426
+## 35 V         426
+## 36 W         426
+## 37 X         426
+## 38 Y         426
+## 39 Z         426
+\end{verbatim}
+
+\normalsize
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{y\_train }\OtherTok{\textless{}{-}}\NormalTok{ ds}\SpecialCharTok{$}\NormalTok{train}\SpecialCharTok{$}\NormalTok{class\_groups}\SpecialCharTok{$}\NormalTok{classID}
+\FunctionTok{rm}\NormalTok{(ds)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## The `y_train` object data structure (contains the set of Target Labels):
+## Factor w/ 39 levels "#","$","&","@",..: 39 32 16 32 22 12 32 10 26 35 ...
+\end{verbatim}
+
+\normalsize
+
+Finally, the code snippet below verifies the \emph{Train Set} consistency:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{sum}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(y\_train) }\SpecialCharTok{!=} \FunctionTok{rownames}\NormalTok{(x\_train)) }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)}
+\FunctionTok{stopifnot}\NormalTok{(}\FunctionTok{nrow}\NormalTok{(x\_train) }\SpecialCharTok{==} \FunctionTok{length}\NormalTok{(y\_train))}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Model Tuning}\label{knn_pca_mcc.tuning}
+
+\hfill\break
+
+Taking into account the insight we gained from \href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html\#optimizing-tuning-parameters}{Section 31.5.1: Optimizing tuning parameters} of the \emph{Course Textbook} about selecting the tuning parameter \(k\) in the kNN algorithm, while using \href{https://cran.r-project.org/web/packages/caret/refman/caret.html\#train}{caret::train} with \emph{cross-validation}, we decided to start with the following \(k\) values:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{k.values }\OtherTok{\textless{}{-}} \FunctionTok{seq\_len}\NormalTok{(}\DecValTok{8}\NormalTok{)}
+\FunctionTok{print}\NormalTok{(k.values)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 2 3 4 5 6 7 8
+\end{verbatim}
+
+\newpage
+
+The code snippet below \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R\#L105-L131}{trains and tunes} the model with the \(k\) values we selected above (as we already mentioned \hyperref[chapter_MA]{at the beginning of \emph{this Chapter}}, here we also use the \emph{parallelization} feature from the \href{https://cran.r-project.org/web/packages/doParallel/index.html}{doParallel} package\autocite{IDS2_31.4,IDS2_31.5.1}, trying to reduce the time cost of the tuning process \textbf{as much as possible}):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cl }\OtherTok{\textless{}{-}} \FunctionTok{makeCluster}\NormalTok{(N\_pcCores)}
+\FunctionTok{registerDoParallel}\NormalTok{(cl)}
+
+\NormalTok{k.values }\OtherTok{\textless{}{-}} \FunctionTok{seq\_len}\NormalTok{(}\DecValTok{8}\NormalTok{)}
+
+\NormalTok{k1\_8nn\_pca.model }\OtherTok{\textless{}{-}} 
+  \FunctionTok{train}\NormalTok{(x\_train, }
+\NormalTok{        y\_train, }
+        \AttributeTok{method =} \StringTok{"knn"}\NormalTok{, }
+        \AttributeTok{preProcess =} \StringTok{"pca"}\NormalTok{,}
+        \AttributeTok{trControl =} \FunctionTok{trainControl}\NormalTok{(}\StringTok{"cv"}\NormalTok{, }
+                                 \AttributeTok{number =} \DecValTok{5}\NormalTok{, }
+                                 \AttributeTok{p =} \FloatTok{0.95}\NormalTok{,}
+                                 \AttributeTok{preProcOptions =} \FunctionTok{list}\NormalTok{(}\AttributeTok{thresh =} \FloatTok{0.9}\NormalTok{),}
+                                 \AttributeTok{verboseIter =} \ConstantTok{TRUE}\NormalTok{),}
+        \AttributeTok{tuneGrid =} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{k =}\NormalTok{ k.values))}
+
+\FunctionTok{rm}\NormalTok{(x\_train)}
+\FunctionTok{rm}\NormalTok{(y\_train)}
+
+\FunctionTok{stopCluster}\NormalTok{(cl)}
+\FunctionTok{stopImplicitCluster}\NormalTok{()}
+\FunctionTok{rm}\NormalTok{(cl)}
+\end{Highlighting}
+\end{Shaded}
+
+\footnotesize
+
+\begin{verbatim}
+## The pre-trained `kNN+PCA MCC` Model tuned result:
+## k-Nearest Neighbors 
+## 
+## 16575 samples
+##   784 predictor
+##    39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
+## 
+## Pre-processing: ignore (784) 
+## Resampling: Cross-Validated (5 fold) 
+## Summary of sample sizes: 13260, 13260, 13260, 13260, 13260 
+## Resampling results across tuning parameters:
+## 
+##   k  Accuracy   Kappa    
+##   1  0.7770739  0.7712074
+##   2  0.7617496  0.7554799
+##   3  0.7860633  0.7804334
+##   4  0.7879336  0.7823529
+##   5  0.7878130  0.7822291
+##   6  0.7887179  0.7831579
+##   7  0.7884163  0.7828483
+##   8  0.7867270  0.7811146
+## 
+## Accuracy was used to select the optimal model using the largest value.
+## The final value used for the model was k = 6.
+\end{verbatim}
+
+\normalsize
+
+The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R\#L186-L199}{code snippet} below visualizes the \emph{pre-trained model} tuning results and figures out the best \(k\) value:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# The Model tuning visualzation:}
+\FunctionTok{trellis.par.set}\NormalTok{(}\FunctionTok{caretTheme}\NormalTok{())}
+\FunctionTok{plot}\NormalTok{(k1\_8nn\_pca.model, }
+     \AttributeTok{main =} \StringTok{"\textasciigrave{}kNN+PCA\textasciigrave{} Multiclass Classifier Model Tuning Results"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{C:/git/edx/ds/capstone/edx.capstone.choose-your-own/reports/HW-Chars.Recognition.Site/index_files/figure-latex/knn_pca@train$visual_resuls-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{acc.max.idx }\OtherTok{\textless{}{-}} \FunctionTok{which.max}\NormalTok{(k1\_8nn\_pca.model}\SpecialCharTok{$}\NormalTok{results}\SpecialCharTok{$}\NormalTok{Accuracy)}
+\NormalTok{k1\_8nn\_pca.max\_accuracy }\OtherTok{\textless{}{-}}\NormalTok{ k1\_8nn\_pca.model}\SpecialCharTok{$}\NormalTok{results}\SpecialCharTok{$}\NormalTok{Accuracy[acc.max.idx]}
+\NormalTok{k1\_8nn.best }\OtherTok{\textless{}{-}}\NormalTok{ k1\_8nn\_pca.model}\SpecialCharTok{$}\NormalTok{results}\SpecialCharTok{$}\NormalTok{k[acc.max.idx]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The best result of tuning are as follows:
+##   k  accuracy
+## 1 6 0.7887179
+\end{verbatim}
+
+\newpage
+
+\subsubsection{\texorpdfstring{Retraining the \emph{Best Model}}{Retraining the Best Model}}\label{knn_pca_mcc.retrain}
+
+\paragraph{\texorpdfstring{Prepare \emph{Training Set}}{Prepare Training Set}}\label{knn_pca_mcc.train_set.retrain}
+
+\hfill\break
 
 \subsection{Random Forest (RF) MCC Model}\label{rf_model}
 
-\href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forests (RF)} approach explained in {[}Section 30.5 Random forests{]} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_30_5_RF}
+\href{https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html\#sec-random-forests}{Random Forests (RF)} approach explained in {[}Section 30.5: Random forests{]} of the \emph{Course Textbook (New Edition)}\autocite{IDS2_30.5}
 
 \section{Deep Learning Models}\label{deep-learning-models}
 

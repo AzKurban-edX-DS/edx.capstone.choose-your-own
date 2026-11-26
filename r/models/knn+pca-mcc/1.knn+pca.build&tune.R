@@ -24,7 +24,7 @@ stopifnot(file.exists(ds.flatten.0.1split.file),
 
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Training Set ------------
+### Loading Split Flattened Dataset allocated 10% for the Training Set ---------
 
 put_log("Loading the Split Flattened Dataset from the backup file...")
 
@@ -113,7 +113,9 @@ k.values <- seq_len(8)
 # Dimension reduction with PCA
 # https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca
 
-k1_8nn_pca.model <- caret::train(x_train, y_train, method = "knn", 
+k1_8nn_pca.model <- caret::train(x_train, 
+                                 y_train, 
+                                 method = "knn", 
                                  preProcess = "pca",
                                  trControl = trainControl("cv", 
                                                           number = 5, 
@@ -196,27 +198,7 @@ k1_8nn_pca.max_accuracy
 
 k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
 k1_8nn.best
-# 5
-# 
-# k-Nearest Neighbors 
-
-# 75032 samples
-# 784 predictor
-# 39 classes: '#', '$', '&', '@', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' 
-# 
-# Pre-processing: principal component signal extraction (743), centered (743), scaled (743), remove (41) 
-# Resampling: Cross-Validated (5 fold) 
-# Summary of sample sizes: 60022, 60023, 60030, 60025, 60028 
-# Resampling results across tuning parameters:
-
-# k  Accuracy   Kappa    
-# 1  0.8520766  0.8461487
-# 3  0.8610591  0.8554102
-# 5  0.8632982  0.8576989
-# 7  0.8625919  0.8569392
-
-# Accuracy was used to select the optimal model using the largest value.
-# The final value used for the model was k = 5.
+# 6
 
 ## Finalizing ------------------------------------------------------------------
 

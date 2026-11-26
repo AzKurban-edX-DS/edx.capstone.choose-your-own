@@ -54,7 +54,14 @@ getwd()
 dir()
 ```
 
+::: {.noteblock data-latex=""}
+:::
+Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in [Section 21.5.5 Binarize the data](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data) of the *Course Textbook (New Edition)*[@IDS2_21.5.5].
+
+[](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L)
+
 [](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions)
+[data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R)
 
 ## [load-raw-image-data.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/load-raw-image-data.R) Script {#appndx_b.load_raw_image_data}
 \
