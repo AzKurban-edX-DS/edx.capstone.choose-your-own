@@ -1,0 +1,184 @@
+# Methods and Analysis {#chapter_MA}
+
+::: {.noteblock data-latex=""}
+To reduce computation time when working with the models, we use the *parallelization* feature, implemented in the [doParallel](https://cran.r-project.org/web/packages/doParallel/index.html) package, as introduced in [Section 31.4: Parallelization](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#parallelization) and explained in more detail in [Section 31.5: Model tuning and diagnostics](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice) of the *Textbook*[@IDS2_31.4;@IDS2_31.5].
+:::
+
+## Shallow Learning Models
+
+Motivated by the example described in *Sections* [28.3.1: Example: Is it a 2 or a 7?](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-two-or-seven) and [28.5: Connecting smoothing to machine learning](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-smoothing-ml-connection) of the *Course Textbook (New Edition)*, we decided to start with a \myquote{popular machine learning algorithm, k-nearest neighbors, which is based on the concept of smoothing}[@IDS2_28.5]. Below, we describe in detail [the model based on this algorithm](#knn_pca_model).
+
+The next model we examine in this section employs the *Random Forests (RF)* algorithm described in [Section 30.5: Random forests](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) of the *Textbook*, which is \myquote{a very popular machine learning approach that addresses the shortcomings of decision trees using a clever idea}[@IDS2_30.5].
+This model is described in detail in the subsection [Random Forest (RF) MCC Model](#rf_model) below.
+
+[Section 31.5: Model tuning and diagnostics](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice) of the *Course Textbook* helps us understand \myquote{the process of model selection and tuning}. Specifically, *the author* demonstrates \myquote{how to train and evaluate models in `R`, choose appropriate hyperparameters, such as `k` for kNN and tree-related parameters for random forests, and assess performance using cross-validation}[@IDS2_31.5] 
+
+\newpage
+
+### kNN+PCA MCC Model {#knn_pca_model}
+
+```{r knn_pca@setup, include=FALSE}
+open_logfile("..knn+pca.tuning")
+
+### Init Paths -----------------------------------------------------------------
+
+k1_8nn_pca.model.backup.path <-
+  file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
+
+k_best.nn_pca.model.backup.path <-
+  file.path(knn_pca.data.dir, "k_best.nn+pca.rds")
+
+knn_pca.eval.results.backup <-
+  file.path(knn_pca.data.dir, "knn+pca.eval-results.rds")
+
+tblResults.knn_pca.backup <- 
+  file.path(knn_pca.data.dir, "tblResults.knn_pca.backup.rds")
+
+knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
+                                           "knn+pca-tuned.eval.confusion-matrix.png")
+
+knn_pca.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
+                                         "knn+pca-tuned.eval.plots_dat.rds")
+
+if(!dir.exists(knn_pca.data.plots.dat.dir))
+  dir.create(knn_pca.data.plots.dat.dir)
+
+
+```
+To implement the *k-Nearest Neighbors (kNN)* algorithm, we use the [caret](https://topepo.github.io/caret/index.html) package. Also, inspired by what we learned from [Section 23.5: Principal Component Analysis (PCA)](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html#sec-pca) of the *Course Textbook (New Edition)*[@IDS2_23.5], we use *PCA* in the [caret::train](https://topepo.github.io/caret/model-training-and-tuning.html) function, which, as explained in  [Section 31.3.2: Dimension reduction with PCA](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca) of the *Textbook*, \myquote{includes PCA as one of its available preprocessing steps}[@IDS2_31.3.2].
+
+#### Model Building and Tuning {#knn_pca_mcc.build}
+
+The [1.knn+pca.build&tune.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R) script implements the *kNN+PCA MCC* model building and tuning.
+
+##### Prepare *Training Set* {#knn_pca_mcc.train_set.tuning}
+\
+
+The implementation starts in the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L23-L95) section with loading the preliminary prepared and cached *Flattened Split Dataset* as described [above](#ds_flatten.splitting0.1_0.9) in the [Splitting the Flattened Training Set](#ds_flatten.splitting0.1_0.9) section. 
+
+Below, we show a simplified [code snippet](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L27-L94) that performs this operation.
+
+::: {.noteblock data-latex=""}
+The code snippet below loads the dataset using the custom helper function [load_datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L227) defined in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L5-L291) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R) script. 
+
+Here and from now on, we use the *"light" version* of the *Split Train/Test Set* for model tuning, which allocates $10$% of the data to the training set, to reduce the time cost of the tuning process.
+:::
+
+```{r knn_pca@ds_load, output.size="footnotesize"}
+### Loading Split Flattened Dataset allocated 10% for the Training Set
+stopifnot(file.exists(ds.flatten.0.1split.file))
+ds <- load_datasets(ds.flatten.0.1split.file)
+```
+```{r knn_pca@ds_load$echo-off, echo=FALSE, output.size="footnotesize"}
+put_log("The Split Flattened Dataset has the follwoing structure:
+%1", capture.output(str(ds)))
+```
+```{r knn_pca@ds_load$x_train}
+x_train <- ds$train$x
+```
+```{r knn_pca@ds_load$x_train.balanced, echo=FALSE, output.size="footnotesize"}
+put_log("The Train set is balanced with respect to the set of classes:
+%1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
+```
+```{r knn_pca@ds_load$y_train}
+y_train <- ds$train$class_groups$classID
+rm(ds)
+```
+```{r knn_pca@ds_load$y_train.struct, echo=FALSE, output.size="footnotesize"}
+put_log("The `y_train` object data structure (contains the set of Target Labels):
+%1", capture.output(str(y_train)))
+```
+
+Finally, the code snippet below verifies the *Train Set* consistency:
+```{r knn_pca@ds_load$train_set$verify}
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(nrow(x_train) == length(y_train))
+```
+
+##### Model Tuning {#knn_pca_mcc.tuning}
+\
+
+Taking into account the insight we gained from [Section 31.5.1: Optimizing tuning parameters](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#optimizing-tuning-parameters) of the *Course Textbook* about selecting the tuning parameter $k$ in the kNN algorithm, while using [caret::train](https://cran.r-project.org/web/packages/caret/refman/caret.html#train) with *cross-validation*, we decided to start with the following $k$ values:
+```{r knn_pca_mcc@tuning$k.values }
+k.values <- seq_len(8)
+print(k.values)
+```
+
+\newpage
+
+The code snippet below [trains and tunes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L105-L131) the model with the $k$ values we selected above (as we already mentioned [at the beginning of *this Chapter*](#chapter_MA), here we also use the *parallelization* feature from the [doParallel](https://cran.r-project.org/web/packages/doParallel/index.html) package[@IDS2_31.4;@IDS2_31.5.1], trying to reduce the time cost of the tuning process **as much as possible**):
+```{r knn_pca@train, eval=FALSE}
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+k.values <- seq_len(8)
+
+k1_8nn_pca.model <- 
+  train(x_train, 
+        y_train, 
+        method = "knn", 
+        preProcess = "pca",
+        trControl = trainControl("cv", 
+                                 number = 5, 
+                                 p = 0.95,
+                                 preProcOptions = list(thresh = 0.9),
+                                 verboseIter = TRUE),
+        tuneGrid = data.frame(k = k.values))
+
+rm(x_train)
+rm(y_train)
+
+stopCluster(cl)
+stopImplicitCluster()
+rm(cl)
+
+```
+```{r knn_pca@train$load_from_cache, include=FALSE}
+
+stopifnot(file.exists(k1_8nn_pca.model.backup.path))
+k1_8nn_pca.model <- readRDS(k1_8nn_pca.model.backup.path)
+```
+```{r knn_pca@train$resuls, echo=FALSE, output.size="footnotesize"}
+put_log("The pre-trained `kNN+PCA MCC` Model tuned result:
+%1", capture.output(k1_8nn_pca.model))
+```
+
+The [code snippet](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L186-L199) below visualizes the *pre-trained model* tuning results and figures out the best $k$ value:
+```{r knn_pca@train$visual_resuls }
+# The Model tuning visualzation:
+trellis.par.set(caretTheme())
+plot(k1_8nn_pca.model, 
+     main = "`kNN+PCA` Multiclass Classifier Model Tuning Results")
+
+acc.max.idx <- which.max(k1_8nn_pca.model$results$Accuracy)
+k1_8nn_pca.max_accuracy <- k1_8nn_pca.model$results$Accuracy[acc.max.idx]
+k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
+```
+```{r knn_pca@train$print_resuls, echo=FALSE}
+print_log("The best result of tuning are as follows:
+%1", capture.output(data.frame(k = as.integer(k1_8nn.best),
+                               accuracy = k1_8nn_pca.max_accuracy)))
+```
+
+\newpage
+
+#### Retraining the *Best Model* {#knn_pca_mcc.retrain}
+
+
+
+
+
+##### Prepare *Training Set* {#knn_pca_mcc.train_set.retrain}
+\
+
+
+
+
+
+
+
+
+
+```{r intro.datasets-knn_pca@close-log, include=FALSE}
+log_close()
+```

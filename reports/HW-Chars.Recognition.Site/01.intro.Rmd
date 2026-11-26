@@ -13,7 +13,7 @@ This project is the second assignment of the ‘Data Science: Capstone’ course
 
 I would like to extend my deepest gratitude to Professor **Rafael A. Irizarry** for designing and delivering the comprehensive courses within the ***Professional Certificate Program in Data Science***. Prof. **Irizarry**'s instruction has provided me with the essential theoretical foundations and practical toolkit required for modern data analysis.
 
-I am equally grateful for his textbook, *Introduction to Data Science*, ([part 1](https://rafalab.dfci.harvard.edu/dsbook-part-1/)[@IDS1] and [part 2](https://rafalab.dfci.harvard.edu/dsbook-part-2/)[@IDS2]). This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof. **Irizarry**'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
+I am equally grateful for his textbook, *Introduction to Data Science*, ([part 1](https://rafalab.dfci.harvard.edu/dsbook-part-1/) and [part 2](https://rafalab.dfci.harvard.edu/dsbook-part-2/))[@IDS1; @IDS2]. This text served as an indispensable guide throughout my coursework, offering clear explanations and robust examples that bridged the gap between theory and execution. Prof. **Irizarry**'s dedication to creating clear, accessible educational material has profoundly enhanced my learning experience and will undoubtedly continue to serve as a key reference in my future endeavors.
 
 # Overview and Executive Summary {#intro}
 
@@ -349,7 +349,7 @@ print.image_grid(img.dat,
 
 \newpage
 
-Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in [Section 21.3 Matrix Operations in R / Binarize the data](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data) of the *Course Textbook (New Edition)*[@IDS2_21.5_BD].
+Also, given the linear nature of the black-and-white character images in the dataset, meaning halftones play no significant role, it seems appropriate to perform image binarization, as explained in [Section 21.5.5 Binarize the data](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data) of the *Course Textbook (New Edition)*[@IDS2_21.5.5].
 
 
 ```{r intro.ds-overview@img.diff-size$hist }
@@ -628,7 +628,7 @@ To use the *Training Set* datasets for training our models. we need to split the
 ::: {.noteblock data-latex=""}
 The *Validation Set* used in our project plays the role of the *Independent Set* in the terms used in the *Textbook*[@IDS2_29.6]. We can treat it this way because \underline{it is entirely independent} of the *Training Set*, and is used **solely to \underline{evaluate our best model}** at the end of the study.
 
-Also, we split each of our datasets (into the *Train/Test* sets) only once; we do not use the *k-fold cross-validation* (described in [Section 29.6 Cross-validation / K-fold cross-validation](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation) of the *Course Textbook*[@IDS2_29.6_KFCV]) explicitly in our scripts because of the restricted time we have for the models’ training, although it is used under the hood in the [caret::train](https://topepo.github.io/caret/model-training-and-tuning.html) function used for the [Shallow Learning Models], i.e., for the [kNN+PCA MCC Model] and [Random Forest (RF) MCC Model].
+Also, we split each of our datasets (into the *Train/Test* sets) only once; we do not use the *k-fold cross-validation* (described in [Section 29.6.1: K-fold cross-validation](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation) of the *Course Textbook*[@IDS2_29.6.1]) explicitly in our scripts because of the restricted time we have for the models’ training, although it is used under the hood in the [caret::train](https://topepo.github.io/caret/model-training-and-tuning.html) function used for the [Shallow Learning Models], i.e., for the [kNN+PCA MCC Model] and [Random Forest (RF) MCC Model].
 :::
 
 Before we split our datasets, there is one thing left to do: to train our [Shallow Learning Models] (the [kNN+PCA MCC](#knn_pca_model) and [Random Forest MCC](#rf_model) ones) and the [DNN-Based Basic MCC Model](#dnnb_model), the *training dataset* (let's call it the *Normalized Training Dataset*) needs to be flattened; that is, our *image data matrices* must be coerced into vectors of $x*y$ length (the number of pixels: $28*28 = 784$ in our case). 
@@ -678,7 +678,7 @@ We use two types of split sets (both for *Normalized* and *Flattened* datasets):
 - **0.8/0.2 ratio split of the *Train/Test* sets:** (*by default*) for preliminary training and retraining the best models after tuning;  
 - **0.1/0.9 ratio split of the *Train/Test* sets:** “lite” *Training Set* to use for tuning the models (due to the time-consuming nature of such operations) and “heavy” *Test Set* to use the maximum amount of available data for testing to achieve more reliable results.
 
-###### Flatten Training Set Splits
+###### Splitting the Flattened Training Set
 \
 
 The feature that creates *balanced split datasets* is implemented in the [prepare-flattened-datasets.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R) script, which invokes the custom helper function [ds.flatten.sample](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L908) (defined in the [Data processing](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L519-L1080) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L908) script), which, in fact, performs the actual splitting of the provided data according to the specified proportion.
@@ -687,6 +687,8 @@ The feature that creates *balanced split datasets* is implemented in the [prepar
 This script itself [is invoked](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L61) from the [Splitting the Flattened Dataset](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L53-L70) section of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L61) script, which also implements all other splitting operations listed above in the [The Train/Test Model-Specific Split Datasets] section.
 :::
 
+::: { #ds_flatten.default_splitting .sidebar }
+The *default splitting* is implemented in the [Splitting by Default (into 0.8/0.2 Train/Test Set)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R#L23-L51) section.
 As always, the result of the data processing is cached on the local disk, so we can later load the dataset from the backup file:
 
 ```{r ds.flattened.split@print_backup_flle_name, echo=FALSE}
@@ -697,6 +699,7 @@ print_log("The Default Flattened Split Set was cached in the following file:
 stopifnot(file.exists(ds.flatten.split.file))
 ds.flattened.split <- readRDS(ds.flatten.split.file)
 ```
+:::
 
 \newpage
 
@@ -738,7 +741,13 @@ print(ds.group_by_class(ds.flattened.split$test_set$x.test),
 
 \newpage
 
-The same is true for the *Flatten 0.1/0.9 Train/Test Split Set*:
+The same is true for the *0.1/0.9 Train/Test Set*. Let's verify this.
+
+::: { #ds_flatten.splitting0.1_0.9 .sidebar }
+The *Flattened Data Split* into *0.1/0.9 Train/Test Set* is implemented in the [Splitting into 0.1/0.9 Train/Test Set (for the Models' Tuning)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-flattened-datasets.R#L52-L84) section.
+
+As above, for the *default splitting*, we can load the previously cached dataset from the backup file:
+
 ```{r ds.flattened0.1split@print_backup_flle_name, echo=FALSE}
 print_log("The Flattened Split of the 0.1/0.9 Train/Test Set 
 was cached in the following file:
@@ -748,8 +757,9 @@ was cached in the following file:
 stopifnot(file.exists(ds.flatten.0.1split.file))
 ds_flattened.0.1split_list <- readRDS(ds.flatten.0.1split.file)
 ```
+:::
 
-The *Flattened Split* of the *0.1/0.9 Train/Test Set* has the following structure:
+The *Flattened 0.1/0.9 Train/Test Set* has the following structure:
 ```{r ds.flattened.split0.1@struct}
 str(ds_flattened.0.1split_list)
 ```
@@ -783,8 +793,8 @@ rm(ds.flattened.split0.1,
 
 For the *Normalized* dataset, the *Balanced Splitting* feature is implemented in the following subsections of the [Splitting the Training Dataset (Array of Matrices)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L71-L194) section of the [prepare-training-set.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R) script:
 
-- **Default Splitting:** implemented in the [Splitting by Default (0.8/0.2 Ratio Train/Test Sets)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L72-L112) subsection;
-- **Splitting into a 01/0.9 ratio *Train/Test* Sets:** implemented in the [Splitting into 0.1/0.9 Ratio Train/Test Sets (for the Models' Tuning)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L113-L151) subsection.
+- **Default Splitting:** implemented in the [Splitting by Default (0.8/0.2 Ratio Train/Test Set)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L72-L112) subsection;
+- **Splitting into a 01/0.9 *Train/Test* Sets:** implemented in the [Splitting into 0.1/0.9 Ratio Train/Test Set (for the Models' Tuning)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L113-L151) subsection.
 
 Finally, the subsection [Splitting by Default Without Balancing (for the Final Retraining of the Best Model)](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/prepare-training-set.R#L152-L193) implements the *Default Non-Balanced Splitting* feature, which splits the dataset into a 0.8/0.2 ratio *\underline{imbalanced} Train/Test Sets* (for retraining the *Final Best Model* that will be developed at the end of the study).
 
@@ -870,18 +880,6 @@ print(ds.group_by_class(ds_norm.split0.1$test_set$x.test),
 rm(ds_norm.split0.1)
 ```
 
-
-
-
-```{r intro.ds-overview@, include=FALSE}
-```
-
-
-
-```{r intro.datasets-overview@close-log, include=FALSE}
-log_close()
-```
-
 \newpage
 
 ###### Imbalanced Split Dataset for Retraining the *Best Final Model*
@@ -935,9 +933,13 @@ For the *Final Test*, we will use the *entire preprocessed* [Validation Set](#va
 
 As previously mentioned, to obtain a more accurate assessment of the results, we will additionally employ the [F1-score](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#balanced-accuracy-and-f_1-score) metric, given that the *validation dataset* exhibits a significant class imbalance.
 
-We can observe this using the *custom helper function* [ds.group_by_class](#func.ds.group_by_class) we defined above in the section [Flatten Training Set Splits]:
+We can observe this using the *custom helper function* [ds.group_by_class](#func.ds.group_by_class) we defined above in the section [Splitting the Flattened Training Set]:
 ``` {r ds.validation_set@groupped_by_class, output.size="footnotesize"}
 print(ds.group_by_class(final_test.img.std_bin.array$img_dat.array), 
       n = N.classes)
+```
+
+```{r intro.datasets-overview@close-log, include=FALSE}
+log_close()
 ```
 

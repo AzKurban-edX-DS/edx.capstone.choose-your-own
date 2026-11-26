@@ -49,8 +49,8 @@ and backed up to the following file:
 %1", ds.train.flatten.file)
 }
 
-# Splitting The Training Set Into Train/Test Sets ------------------------------
-## Splitting the Flattened Dataset -------------------------------------------
+# Splitting The Training Set Into Train/Test Set -------------------------------
+## Splitting the Flattened Dataset ---------------------------------------------
 
 stopifnot(dir.exists(support_scripts.dir))
 ds.prepare_flattened.script.path <- file.path(support_scripts.dir, 
@@ -69,7 +69,7 @@ put_end_date(start)
 log_close()
 
 ## Splitting the Training Dataset (Array of Matrices) --------------------------
-### Splitting by Default (0.8/0.2 Ratio Train/Test Sets) -----------------------
+### Splitting by Default (0.8/0.2 Ratio Train/Test Set) ------------------------
 
 put_log("Preparing Default Split Datasets (of 80%-size Training Set) for training 
 the NN-based Multiclass Classifier (MCC) Models...")
@@ -110,7 +110,7 @@ has already been constructed and backed up to the following file:
 
 put_end_date(start)
 
-### Splitting into 0.1/0.9 Ratio Train/Test Sets (for the Models' Tuning) ------
+### Splitting into 0.1/0.9 Ratio Train/Test Set (for the Models' Tuning) ------
 
 put_log("Preparing Split Datasets of 10%-size Training Set) for training 
 the NN-based Multiclass Classifier (MCC) Models...")

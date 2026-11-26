@@ -27,8 +27,6 @@
                   by describing matrix algebra, dimension reduction, regularization, and matrix factorization.},
 }
 
-
-
 @book{IDS2,
   author       = {Rafael A. Irizarry},
   title        = {Introduction to Data Science, Part II},
@@ -71,7 +69,7 @@
                   we begin by reviewing some basic matrix functionality in R.},
 }
 
-@book{IDS2_21.3.5,
+@book{IDS2_21.5,
   author       = {Rafael A. Irizarry},
   title        = {Introduction to Data Science, Part II, Section 21.5 Motivating tasks},
   date         = {2024-12-27},
@@ -85,9 +83,9 @@
 
 
 
-@book{IDS2_21.5_BD,
+@book{IDS2_21.5.5,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 21.3 Matrix Operations in R / Binarize the data },
+  title        = {Introduction to Data Science, Part II, Section 21.5.5: Binarize the data },
   date         = {2024-12-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/matrices-in-R.html#binarize-the-data},
   langid       = {english},
@@ -124,7 +122,7 @@
 
 @book{IDS2_27,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Chapter 27 Performance Metrics},
+  title        = {Introduction to Data Science, Part II, Chapter 27: Performance Metrics},
   date         = {2024-12-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html},
   langid       = {english},
@@ -135,7 +133,7 @@
 
 @book{IDS2_27_3,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 27.3 The confusion matrix},
+  title        = {Introduction to Data Science, Part II, Section 27.3: The confusion matrix},
   date         = {2024-12-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/evaluation-metrics.html#the-confusion-matrix},
   langid       = {english},
@@ -143,6 +141,62 @@
   annotation   = {Generally speaking, overall accuracy can be misleading. 
                   To understand why, we begin by constructing a confusion matrix, 
                   a table that counts how often each combination of prediction and true outcome occurs.},
+}
+
+@book{IDS2_28,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Chapter 28: Conditional Expectations and Smoothing},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {In practice, these conditional probabilities are unknown and must be estimated from noisy data. 
+                  Smoothing, also known as curve fitting or low-pass filtering, 
+                  is a general technique for uncovering underlying trends when the exact shape of the trend is not known.
+                  In fact, many of the most widely used machine learning algorithms can be viewed, either directly or indirectly, 
+                  as smoothing procedures, which is why smoothing is a foundational concept in this field.},
+}
+
+@book{IDS2_28.3,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 28.3.1: Smoothing},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-two-or-seven},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {Smoothing is a core idea in machine learning and statistical modeling: 
+                  when data are noisy, we often assume that the underlying trend changes 
+                  gradually rather than jumping erratically from point to point. 
+                  The goal of smoothing is to recover this hidden structure from the data.},
+}
+
+@book{IDS2_28.3.1,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 28.3.1: Smoothing / Example: Is it a 2 or a 7},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-two-or-seven},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {To motivate the need for smoothing and make the connection with machine learning, 
+                  we will construct a simplified version of the MNIST dataset with just two classes 
+                  for the outcome and two predictors.},
+}
+
+@book{IDS2_28.5,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 28.5: Connecting smoothing to machine learning},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-smoothing-ml-connection},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {To see how smoothing relates to machine learning with a concrete example, 
+                  consider again the example from Section 28.3.1. If we define the outcome 𝑌 =1 
+                  for digits that are seven and 𝑌 =0 for digits that are 2, 
+                  then we are interested in estimating the conditional probability},
 }
 
 @book{IDS2_29,
@@ -159,6 +213,19 @@
                   with the caret package later in Section 31.1.3.},
 }
 
+@book{IDS2_29.1,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 29.1: Motivation with k-nearest neighbors},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {With k-nearest neighbors (kNN), we estimate p(x) in a similar way to bin smoothing. 
+                  First, we define the distance between all observations based on the features. 
+                  Then, for any point x0, we estimate p(x0) by identifying the k nearest points to x0 
+                  and taking an average of the ys associated with these points. 
+                  We refer to the set of points used to compute the average as the neighborhood.},
+}
+
 @book{IDS2_29.6,
   author       = {Rafael A. Irizarry},
   title        = {Introduction to Data Science, Part II, Section 29.6 Cross-validation},
@@ -173,9 +240,9 @@
 }
 
 
-@book{IDS2_29.6_KFCV,
+@book{IDS2_29.6.1,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 29.6 Cross-validation / K-fold cross-validation},
+  title        = {Introduction to Data Science, Part II, Section 29.6.1: K-fold cross-validation},
   date         = {2025-10-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#k-fold-cross-validation},
   urldate      = {2025-10-27},
@@ -186,51 +253,22 @@
                   In the illustrations below we show an example that uses `B = 5`.},
 }
 
-@book{IDS2_31_3,
+@book{IDS2_30.2,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 31.3 Preprocessing},
+  title        = {Introduction to Data Science, Part II, Section 30.2: k-nearest neighbors},
   date         = {2024-12-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing},
-  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#k-nearest-neighbors},
   urldate      = {2025-02-18},
   langid       = {english},
   langidopts   = {variant=american},
-  sorttitle    = {Introduction to Data Science, Part II},
-  annotation   = {We often transform predictors before running machine learning algorithms. 
-                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
+  annotation   = {We introduced the kNN algorithm in Section 29.1. In Section 29.8, we noted that 𝑘 =65 
+                  provided the highest estimated accuracy. Using 𝑘 =65, we obtain an accuracy 0.825, 
+                  an improvement over regression.},
 }
 
-@book{IDS2_31_3_PCA,
+@book{IDS2_30.5,
   author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 31.3 Preprocessing / Dimension reduction with PCA},
-  date         = {2024-12-27},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca},
-  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
-  urldate      = {2025-02-18},
-  langid       = {english},
-  langidopts   = {variant=american},
-  sorttitle    = {Introduction to Data Science, Part II},
-  annotation   = {We often transform predictors before running machine learning algorithms. 
-                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
-}
-
-
-@book{IDS2_29_1_kNN,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 29.1 Motivation with k-nearest neighbors},
-  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/resampling-methods.html#sec-knn-cv-intro},
-  langid       = {english},
-  langidopts   = {variant=american},
-  annotation   = {With k-nearest neighbors (kNN), we estimate p(x) in a similar way to bin smoothing. 
-                  First, we define the distance between all observations based on the features. 
-                  Then, for any point x0, we estimate p(x0) by identifying the k nearest points to x0 
-                  and taking an average of the ys associated with these points. 
-                  We refer to the set of points used to compute the average as the neighborhood.},
-}
-
-@book{IDS2_30_5_RF,
-  author       = {Rafael A. Irizarry},
-  title        = {Introduction to Data Science, Part II, Section 30.5 Random forests},
+  title        = {Introduction to Data Science, Part II, Section 30.5: Random forests},
   date         = {2024-12-27},
   url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests},
   subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
@@ -242,6 +280,85 @@
                   that addresses the shortcomings of decision trees using a clever idea. 
                   The goal is to improve prediction performance and reduce instability 
                   by averaging multiple decision trees: a forest of trees constructed with randomness. },
+}
+
+@book{IDS2_31.3,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.3: Preprocessing},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#preprocessing},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {We often transform predictors before running machine learning algorithms. 
+                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
+}
+
+@book{IDS2_31.3.1,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.3.1: Feature Filtering},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#feature-filtering},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {As a first example, we focus on this last type of preprocessing by examining the variability 
+                  of each predictor. Specifically, we compute the standard deviation of each feature and observe 
+                  that many have values close to zero, indicating minimal variation.},
+}
+
+@book{IDS2_31.3.2,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.3.2: Dimension reduction with PCA},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca},
+  subtitle     = {Statistics and Prediction Algorithms Through Case Studies},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  sorttitle    = {Introduction to Data Science, Part II},
+  annotation   = {We often transform predictors before running machine learning algorithms. 
+                  We also remove predictors that are clearly not useful. We call these steps preprocessing.},
+}
+
+@book{IDS2_31.4,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.4: Parallelization},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#parallelization},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {To enable parallelization, we use the doParallel package. 
+                  We will demonstrate this setup in the next section.},
+}
+
+@book{IDS2_31.5,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.5: Model tuning and diagnostics},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {In Sections 29.1 and 30.5, we introduced the k-nearest neighbors (kNN) 
+                  and random forest algorithms, along with their intuition and formulation. 
+                  In this section, we use these two methods as working examples 
+                  to illustrate the process of model selection and tuning.},
+}
+
+@book{IDS2_31.5.1,
+  author       = {Rafael A. Irizarry},
+  title        = {Introduction to Data Science, Part II, Section 31.5.1: Optimizing tuning parameters},
+  date         = {2024-12-27},
+  url          = {https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#optimizing-tuning-parameters},
+  urldate      = {2025-02-18},
+  langid       = {english},
+  langidopts   = {variant=american},
+  annotation   = {We start by demonstrating how we select the tuning parameter 𝑘 in the `kNN` algorithm. 
+                  In `caret`, this is done using the tuneGrid argument in the train function.},
 }
 
 @ARTICLE{LFID_HHGE5128907,

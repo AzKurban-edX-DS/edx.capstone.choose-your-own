@@ -38,6 +38,7 @@ header-includes:
         implicit=false}
   - \usepackage{tcolorbox}
   - \usepackage{xcolor}
+  - \newcommand{\myquote}[1]{\textcolor{darkgray}{\textit{``#1''}}}
   - \tcbuselibrary{skins}
   - |
     % 1. Environment with a thick colored left accent bar
@@ -189,10 +190,7 @@ getwd()
 ```{r child = file.path(doc_dir, '01.intro.Rmd') }
 ```
 
-```{r child = file.path(doc_dir, '02.0-1.methods.Rmd')}
-```
-
-```{r child = file.path(doc_dir, '02.2.kNN+PCA.MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.0-2.Methods.kNN+PCA.MCC.Rmd')}
 ```
 
 ```{r child = file.path(doc_dir, '02.3.RF.MCC.Rmd')}

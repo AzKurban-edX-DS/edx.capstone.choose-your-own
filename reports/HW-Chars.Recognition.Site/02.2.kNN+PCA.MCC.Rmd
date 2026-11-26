@@ -1,3 +1,0 @@
-### kNN+PCA MCC Model {#knn_pca_model}
-
-
