@@ -99,6 +99,8 @@ put_end_date(start)
 put_log("The pre-trained Model has been loaded from the following file:
 %1", k1_8nn_pca.model.backup.path)
 
+acc.max.idx <- which.max(k1_8nn_pca.model$results$Accuracy)
+k1_8nn_pca.max_accuracy <- k1_8nn_pca.model$results$Accuracy[acc.max.idx]
 k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
 
 cl <- makeCluster(N_pcCores)

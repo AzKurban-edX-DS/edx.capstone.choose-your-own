@@ -14,7 +14,7 @@ This model is described in detail in the subsection [Random Forest (RF) MCC Mode
 [Section 31.5: Model tuning and diagnostics](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice) of the *Course Textbook* helps us understand \myquote{the process of model selection and tuning}. Specifically, *the author* demonstrates \myquote{how to train and evaluate models in `R`, choose appropriate hyperparameters, such as `k` for kNN and tree-related parameters for random forests, and assess performance using cross-validation}[@IDS2_31.5] 
 
 \newpage
-
+# --------
 ### kNN+PCA MCC Model {#knn_pca_model}
 
 ```{r knn_pca@setup, include=FALSE}
@@ -49,7 +49,11 @@ To implement the *k-Nearest Neighbors (kNN)* algorithm, we use the [caret](https
 
 #### Model Building and Tuning {#knn_pca_mcc.build}
 
-The [1.knn+pca.build&tune.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R) script implements the *kNN+PCA MCC* model building and tuning.
+The *kNN+PCA MCC Model Building and Tuning* feature is implemented by the [1.knn+pca.build&tune.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R) script, which is conditionally [called from the *Main script*](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L209) ([index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R)) during execution.
+
+::: {.noteblock data-latex=""}
+*"Conditionally"* means that the *Main script* calls the *secondary script* only if the results of the *secondary script* execution are not yet cached on disk; otherwise, it just loads the results from the cache.   
+:::
 
 ##### Prepare *Training Set* {#knn_pca_mcc.train_set.tuning}
 \
@@ -132,9 +136,19 @@ stopCluster(cl)
 stopImplicitCluster()
 rm(cl)
 
+put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
+
+put_log("Saving the pre-trained model in the backup file...")
+
+saveRDS(k1_8nn_pca.model, 
+        file = k1_8nn_pca.model.backup.path)
+```
+```{r knn_pca@train$model_cached, echo=FALSE}
+put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
+for *k* values ranged from 1 to 8 has been backed up in the following file:
+`%1`", k1_8nn_pca.model.backup.path)
 ```
 ```{r knn_pca@train$load_from_cache, include=FALSE}
-
 stopifnot(file.exists(k1_8nn_pca.model.backup.path))
 k1_8nn_pca.model <- readRDS(k1_8nn_pca.model.backup.path)
 ```
@@ -150,9 +164,10 @@ trellis.par.set(caretTheme())
 plot(k1_8nn_pca.model, 
      main = "`kNN+PCA` Multiclass Classifier Model Tuning Results")
 
-acc.max.idx <- which.max(k1_8nn_pca.model$results$Accuracy)
-k1_8nn_pca.max_accuracy <- k1_8nn_pca.model$results$Accuracy[acc.max.idx]
-k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
+# acc.max.idx <- which.max(k1_8nn_pca.model$results$Accuracy)
+# k1_8nn_pca.max_accuracy <- k1_8nn_pca.model$results$Accuracy[acc.max.idx]
+# k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
+
 ```
 ```{r knn_pca@train$print_resuls, echo=FALSE}
 print_log("The best result of tuning are as follows:
@@ -164,7 +179,7 @@ print_log("The best result of tuning are as follows:
 
 #### Retraining the *Best Model* {#knn_pca_mcc.retrain}
 
-
+The identification and retraining of the *best kNN+PCA model* are performed using the [2.knn+pca.re-train.best-k.R]() script, which the *Main script* [invokes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
 
 
 

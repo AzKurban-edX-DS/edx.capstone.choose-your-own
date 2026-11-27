@@ -173,7 +173,7 @@
 \makeatother
 \subtitle{edX HarvardX: PH125.9x - Data Science: Capstone}
 \author{Azamat Kurbanaev}
-\date{2026-11-26}
+\date{2026-11-27}
 
 \begin{document}
 \maketitle
@@ -786,8 +786,9 @@ We can use the following code snippet to prepare a few sample images, both 28x28
 \footnotesize
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px" "J: 32x32px"
-##  [9] "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px" "Q: 32x32px" "S: 32x32px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 32x32px" "L: 32x32px" "I: 32x32px"
+##  [8] "J: 32x32px" "6: 32x32px" "B: 32x32px" "D: 32x32px" "5: 32x32px" "9: 32x32px" "G: 32x32px"
+## [15] "Q: 32x32px" "S: 32x32px"
 \end{verbatim}
 
 \normalsize
@@ -1263,8 +1264,9 @@ For that purpose, we extract the preprocessed image data of the \emph{Training S
 \footnotesize
 
 \begin{verbatim}
-##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px" "J: 28x28px"
-##  [9] "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px" "Q: 28x28px" "S: 28x28px"
+##  [1] "#: 28x28px" "$: 28x28px" "&: 28x28px" "@: 28x28px" "1: 28x28px" "L: 28x28px" "I: 28x28px"
+##  [8] "J: 28x28px" "6: 28x28px" "B: 28x28px" "D: 28x28px" "5: 28x28px" "9: 28x28px" "G: 28x28px"
+## [15] "Q: 28x28px" "S: 28x28px"
 \end{verbatim}
 
 \normalsize
@@ -2631,7 +2633,12 @@ To implement the \emph{k-Nearest Neighbors (kNN)} algorithm, we use the \href{ht
 
 \subsubsection{Model Building and Tuning}\label{knn_pca_mcc.build}
 
-The \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R}{1.knn+pca.build\&tune.R} script implements the \emph{kNN+PCA MCC} model building and tuning.
+The \emph{kNN+PCA MCC Model Building and Tuning} feature is implemented by the \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn\%2Bpca-mcc/1.knn\%2Bpca.build\%26tune.R}{1.knn+pca.build\&tune.R} script, which is conditionally \href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R\#L209}{called from the \emph{Main script}} (\href{https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R}{index.R}) during execution.
+
+\begin{noteblock}
+\emph{``Conditionally''} means that the \emph{Main script} calls the \emph{secondary script} only if the results of the \emph{secondary script} execution are not yet cached on disk; otherwise, it just loads the results from the cache.
+
+\end{noteblock}
 
 \paragraph{\texorpdfstring{Prepare \emph{Training Set}}{Prepare Training Set}}\label{knn_pca_mcc.train_set.tuning}
 

@@ -190,7 +190,7 @@ plot(k1_8nn_pca.model,
 
 acc.max.idx <- which.max(k1_8nn_pca.model$results$Accuracy)
 acc.max.idx
-# 5
+# 6
 
 k1_8nn_pca.max_accuracy <- k1_8nn_pca.model$results$Accuracy[acc.max.idx]
 k1_8nn_pca.max_accuracy
