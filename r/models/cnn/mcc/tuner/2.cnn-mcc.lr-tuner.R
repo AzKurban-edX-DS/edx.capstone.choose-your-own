@@ -5,10 +5,25 @@
 ## Setup -----------------------------------------------------------------------
 open_logfile(".cnn_mcc.model-tuning.learning-rate")
 stopifnot(exists("cnn_mcc.tuner.dir"),
-          file.exists(tcnn_mcc.arch.best_hp.config.file))
+          file.exists(tcnn_mcc.arch.best_hp.config.file,
+                      ds.0.1train.tcnn_mcc.tuner))
 
 start <- put_start_date()
 
+## Load Input Datasets ---------------------------------------------------------
+put_log("Loading the 0.1/0.9 `x_train/x_test` Set for the CNN-Based Tuner...")
+ds <- readRDS(ds.0.1train.tcnn_mcc.tuner)
+put_log("The 0.1/0.9 `x_train/x_test` Set for the CNN-Based Tuner 
+has been loaded to the following file:
+%1", ds.0.1train.tcnn_mcc.tuner)
+
+x_train <- ds$train$x
+y_train <- ds$train$y
+
+x_test <- ds$test$x
+y_test <- ds$test$y
+
+rm(ds)
 
 ## Tuning the `learning rate` parameter ----------------------------------------
 
@@ -114,6 +129,11 @@ tuner.result <-
 
 stopCluster(cl)
 stopImplicitCluster()
+
+rm(x_train,
+   y_train,
+   x_test,
+   y_test)
 
 if(!is.null(tuner.result$error) ||
    !is.null(tuner.result$hypermodel$error)) {

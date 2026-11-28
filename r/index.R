@@ -896,6 +896,8 @@ stopifnot(file.exists(cnn_mcc.arch_tuner.script.path,
                       tcnn_mcc.final_test.script.path))
 
 #### Init Paths ----------------------------------------------------------------
+ds.0.1train.tcnn_mcc.tuner <- file.path(cnn_mcc.tuner.dir, 
+                               "ds.0.1train.tcnn_mcc.tuner.rds")
 
 tcnn_mcc.arch.best_hp.config.file <- file.path(cnn_mcc.tuner.dir, 
                                          paste0('arch-tuned.best-hp.config', 

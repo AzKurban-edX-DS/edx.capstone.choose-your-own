@@ -1,0 +1,530 @@
+---
+title: "Choose Your Own Project: Handwritten Character Recognition"
+subtitle: "edX HarvardX: PH125.9x - Data Science: Capstone"
+site: bookdown::bookdown_site
+author: "Azamat Kurbanaev"
+date: "`r Sys.Date()`"
+bibliography: ref.bib
+csl: bit-numerical-mathematics.csl 
+envir:
+  .GlobalEnv
+output: 
+  bookdown::pdf_document2: 
+    df_print: paged
+    toc: true
+    toc_depth: 4
+    fig_caption: true
+    keep_tex: true
+    css: custom.css
+    citation_package: biblatex
+    delete_merged_file: true
+documentclass: report
+biblatexoptions:
+  - backend=biber
+  - natbib=true 
+  - style=numeric
+  - backref=true
+  - sorting=none
+colorlinks: true
+linkcolor: red
+citecolor: blue
+header-includes:
+  - \usepackage{awesomebox}
+  - \usepackage{hyperref}
+  - \usepackage{amsmath}
+  - \hypersetup{backref,
+        pdfpagemode=Normal,
+        colorlinks=true,
+        implicit=false}
+  - \usepackage{tcolorbox}
+  - \usepackage{xcolor}
+  - \newcommand{\myquote}[1]{\textcolor{darkgray}{\textit{``#1''}}}
+  - \tcbuselibrary{skins}
+  - |
+    % 1. Environment with a thick colored left accent bar
+    \newtcolorbox{accentquote}{
+      enhanced,
+      colback=gray!5!white,     % Light background
+      colframe=gray!20!white,   % Subtle outer border (or make transparent)
+      borderline west={4pt}{0pt}{blue!60!black}, % Thick left accent bar
+      boxrule=0pt,
+      left=12pt,
+      right=12pt,
+      top=8pt,
+      bottom=8pt,
+      before skip=10pt,
+      after skip=10pt
+    }
+
+    % 2. Environment with a left icon/title banner
+    \newtcolorbox{iconquote}{
+      enhanced,
+      colback=blue!3!white,
+      colframe=blue!30!black,
+      boxrule=0.5pt,
+      left=10pt,
+      right=10pt,
+      top=8pt,
+      bottom=8pt,
+      before skip=10pt,
+      after skip=10pt,
+      fonttitle=\bfseries,
+      title=💡 Note
+    }
+
+vignette: >
+  %\VignetteIndexEntry{RMarkdown Citations - Numeric Style}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::knitr}
+---
+
+
+
+<!--chapter:end:index.Rmd-->
+
+
+# Preface {-}
+
+Placeholder
+
+
+## Project Description
+## Environment Setup
+### Batch Execution & Cleanup Scripts
+## Running the Project
+### The Main `R` Script
+#### Setup & Initialization
+#### Downloading & Preprocessing Input Datasets
+#### Machine Learning Model Pipelines
+##### [Shallow Learning (SL)](https://soulpageit.com/ai-glossary/shallow-learning-explained/) Models
+##### [Deep Learning (DL)](https://soulpageit.com/ai-glossary/deep-learning-explained/) Models
+##### Visualization of Model Evaluation Results
+##### The *Final Test* of the Best Model
+###### The Most Frequent Error Results Review 
+## Datasets Overview
+### Preprocessing Raw Image Data
+#### Standardizing & Binarizing the Image Data
+#### Preparing the Training Datasets
+##### The Train/Test Split Datasets
+###### Splitting the Flattened Training Set
+###### Normalized Training Set Splits
+###### Imbalanced Split Dataset for Retraining the *Best Final Model*
+#### Validation Dataset for the Final Test 
+
+<!--chapter:end:01.intro.Rmd-->
+
+# Methods and Analysis {#chapter_MA}
+
+::: {.noteblock data-latex=""}
+To reduce computation time when working with the models, we use the *parallelization* feature, implemented in the [doParallel](https://cran.r-project.org/web/packages/doParallel/index.html) package, as introduced in [Section 31.4: Parallelization](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#parallelization) and explained in more detail in [Section 31.5: Model tuning and diagnostics](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice) of the *Textbook*[@IDS2_31.4;@IDS2_31.5].
+:::
+
+## Shallow Learning Models
+
+Motivated by the example described in *Sections* [28.3.1: Example: Is it a 2 or a 7?](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-two-or-seven) and [28.5: Connecting smoothing to machine learning](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/conditionals-and-smoothing.html#sec-smoothing-ml-connection) of the *Course Textbook (New Edition)*, we decided to start with a \myquote{popular machine learning algorithm, k-nearest neighbors, which is based on the concept of smoothing}[@IDS2_28.5]. Below, we describe in detail [the model based on this algorithm](#knn_pca_model).
+
+The next model we examine in this section employs the *Random Forests (RF)* algorithm described in [Section 30.5: Random forests](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) of the *Textbook*, which is \myquote{a very popular machine learning approach that addresses the shortcomings of decision trees using a clever idea}[@IDS2_30.5].
+This model is described in detail in the subsection [Random Forest (RF) MCC Model](#rf_model) below.
+
+[Section 31.5: Model tuning and diagnostics](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice) of the *Course Textbook* helps us understand \myquote{the process of model selection and tuning}. Specifically, *the author* demonstrates \myquote{how to train and evaluate models in `R`, choose appropriate hyperparameters, such as `k` for kNN and tree-related parameters for random forests, and assess performance using cross-validation}[@IDS2_31.5] 
+
+\newpage
+@# --------
+
+### kNN+PCA MCC Model {#knn_pca_model}
+
+```{r knn_pca@setup, include=FALSE}
+open_logfile("..knn+pca.tuning")
+
+### Init Paths -----------------------------------------------------------------
+
+k1_8nn_pca.model.backup.path <-
+  file.path(knn_pca.data.dir, "k1-8nn+pca(0.1train-set).rds")
+
+k_best.nn_pca.model.backup.path <-
+  file.path(knn_pca.data.dir, "k_best.nn+pca.rds")
+
+knn_pca.eval.results.backup <-
+  file.path(knn_pca.data.dir, "knn+pca.eval-results.rds")
+
+tblResults.knn_pca.backup <- 
+  file.path(knn_pca.data.dir, "tblResults.knn_pca.backup.rds")
+
+knn_pca.eval.conf.mx.img_file <- file.path(knn_pca.data.plots.dat.dir,
+                                           "knn+pca-tuned.eval.confusion-matrix.png")
+
+knn_pca.eval.plots_dat.file <- file.path(knn_pca.data.plots.dat.dir,
+                                         "knn+pca-tuned.eval.plots_dat.rds")
+
+if(!dir.exists(knn_pca.data.plots.dat.dir))
+  dir.create(knn_pca.data.plots.dat.dir)
+
+
+```
+To implement the *k-Nearest Neighbors (kNN)* algorithm, we use the [caret](https://topepo.github.io/caret/index.html) package. Also, inspired by what we learned from [Section 23.5: Principal Component Analysis (PCA)](https://rafalab.dfci.harvard.edu/dsbook-part-2/highdim/dimension-reduction.html#sec-pca) of the *Course Textbook (New Edition)*[@IDS2_23.5], we use *PCA* in the [caret::train](https://topepo.github.io/caret/model-training-and-tuning.html) function, which, as explained in  [Section 31.3.2: Dimension reduction with PCA](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#dimension-reduction-with-pca) of the *Textbook*, \myquote{includes PCA as one of its available preprocessing steps}[@IDS2_31.3.2].
+
+#### Model Building and Tuning {#knn_pca_mcc.build}
+
+The *kNN+PCA MCC Model Building and Tuning* feature is implemented by the [1.knn+pca.build&tune.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R) script, which is conditionally [called from the *Main script*](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L209) ([index.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R)) during execution.
+
+::: {.noteblock data-latex=""}
+*"Conditionally"* means that the *Main script* calls the *secondary script* only if the results of the *secondary script* execution are not yet cached on disk; otherwise, it just loads the results from the cache.   
+:::
+
+##### Prepare *Training Set* {#knn_pca_mcc.train_set.tuning}
+\
+
+The implementation starts in the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L23-L95) section with loading the preliminary prepared and cached *Flattened Split Dataset* as described [above](#ds_flatten.splitting0.1_0.9) in the [Splitting the Flattened Training Set](#ds_flatten.splitting0.1_0.9) section. 
+
+Below, we show a simplified [code snippet](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L27-L94) that performs this operation.
+
+::: {.noteblock data-latex=""}
+The code snippet below loads the dataset using the custom helper function [load_datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L227) defined in the [Data Loading](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L5-L291) section of the [data-helper.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R) script. 
+
+Here and from now on, we use the *"light" version* of the *Split Train/Test Set* for model tuning, which allocates $10$% of the data to the training set, to reduce the time cost of the tuning process.
+:::
+
+```{r knn_pca@ds_load, output.size="footnotesize"}
+### Loading Split Flattened Dataset allocated 10% for the Training Set
+stopifnot(file.exists(ds.flatten.0.1split.file))
+ds <- load_datasets(ds.flatten.0.1split.file)
+```
+```{r knn_pca@ds_load$echo-off, echo=FALSE, output.size="footnotesize"}
+put_log("The Split Flattened Dataset has the follwoing structure:
+%1", capture.output(str(ds)))
+```
+```{r knn_pca@ds_load$x_train}
+x_train <- ds$train$x
+```
+```{r knn_pca@ds_load$x_train.balanced, echo=FALSE, output.size="footnotesize"}
+put_log("The Train set is balanced with respect to the set of classes:
+%1", capture.output(print(ds$train$class_groups$groupByClass, n = N.classes)))
+```
+```{r knn_pca@ds_load$y_train}
+y_train <- ds$train$class_groups$classID
+rm(ds)
+```
+```{r knn_pca@ds_load$y_train.struct, echo=FALSE, output.size="footnotesize"}
+put_log("The `y_train` object data structure (contains the set of Target Labels):
+%1", capture.output(str(y_train)))
+```
+
+Finally, the code snippet below verifies the *Train Set* consistency:
+```{r knn_pca@ds_load$train_set$verify}
+stopifnot(sum(as.character(y_train) != rownames(x_train)) == 0)
+stopifnot(nrow(x_train) == length(y_train))
+```
+
+##### Model Tuning {#knn_pca_mcc.tuning}
+\
+
+Taking into account the insight we gained from [Section 31.5.1: Optimizing tuning parameters](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#optimizing-tuning-parameters) of the *Course Textbook* about selecting the tuning parameter $k$ in the kNN algorithm, while using [caret::train](https://cran.r-project.org/web/packages/caret/refman/caret.html#train) with *cross-validation*, we decided to start with the following $k$ values:
+```{r knn_pca_mcc@tuning$k.values }
+k.values <- seq_len(8)
+print(k.values)
+```
+
+\newpage
+
+The code snippet below [trains and tunes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L105-L131) the model with the $k$ values we selected above (as we already mentioned [at the beginning of *this Chapter*](#chapter_MA), here we also use the *parallelization* feature from the [doParallel](https://cran.r-project.org/web/packages/doParallel/index.html) package[@IDS2_31.4;@IDS2_31.5.1], trying to reduce the time cost of the tuning process **as much as possible**):
+```{r knn_pca@train, eval=FALSE}
+cl <- makeCluster(N_pcCores)
+registerDoParallel(cl)
+
+k.values <- seq_len(8)
+
+k1_8nn_pca.model <- 
+  train(x_train, 
+        y_train, 
+        method = "knn", 
+        preProcess = "pca",
+        trControl = trainControl("cv", 
+                                 number = 5, 
+                                 p = 0.95,
+                                 preProcOptions = list(thresh = 0.9),
+                                 verboseIter = TRUE),
+        tuneGrid = data.frame(k = k.values))
+
+rm(x_train)
+rm(y_train)
+
+stopCluster(cl)
+stopImplicitCluster()
+rm(cl)
+
+put_log("The Model `kNN+PCA` has been trained on the 10% size Training Set")
+
+put_log("Saving the pre-trained model in the backup file...")
+
+saveRDS(k1_8nn_pca.model, 
+        file = k1_8nn_pca.model.backup.path)
+```
+```{r knn_pca@train$model_cached, echo=FALSE}
+put_log("The Model `kNN+PCA` pre-trained on the 10% size Training Set 
+for *k* values ranged from 1 to 8 has been backed up in the following file:
+`%1`", k1_8nn_pca.model.backup.path)
+```
+```{r knn_pca@train$load_from_cache, include=FALSE}
+stopifnot(file.exists(k1_8nn_pca.model.backup.path))
+k1_8nn_pca.model <- readRDS(k1_8nn_pca.model.backup.path)
+```
+```{r knn_pca@train$resuls, echo=FALSE, output.size="footnotesize"}
+put_log("The pre-trained `kNN+PCA MCC` Model tuned result:
+%1", capture.output(k1_8nn_pca.model))
+```
+
+The [code snippet](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L186-L199) below visualizes the *pre-trained model* tuning results and figures out the best $k$ value:
+```{r knn_pca@train$visual_resuls }
+# The Model tuning visualzation:
+trellis.par.set(caretTheme())
+plot(k1_8nn_pca.model, 
+     main = "`kNN+PCA` Multiclass Classifier Model Tuning Results")
+
+# acc.max.idx <- which.max(k1_8nn_pca.model$results$Accuracy)
+# k1_8nn_pca.max_accuracy <- k1_8nn_pca.model$results$Accuracy[acc.max.idx]
+# k1_8nn.best <- k1_8nn_pca.model$results$k[acc.max.idx]
+
+```
+```{r knn_pca@train$print_resuls, echo=FALSE}
+print_log("The best result of tuning are as follows:
+%1", capture.output(data.frame(k = as.integer(k1_8nn.best),
+                               accuracy = k1_8nn_pca.max_accuracy)))
+```
+
+#### Retraining the *Best Model* {#knn_pca_mcc.retraining_best}
+
+The identification and retraining of the *best model* are performed using the [2.knn+pca.re-train.best-k.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/2.knn%2Bpca.re-train.best-k.R) script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L218) during execution, provided that the cached result of the operation does not yet exist.
+
+
+
+##### Prepare *Training Set* {#knn_pca_mcc.train_set.retrain}
+\
+
+The script section [Load Flattened Training Set]() implements a feature that extracts the *Training Set* from the *Flattened Train/Test Set* prepared by *default splitting*, as described above in the [Splitting the Flattened Training Set] section, after loading it from cache.
+
+##### Retrain the *Best Model* {#knn_pca_mcc.best.retrain}
+\
+
+#### The *Best Model* Evaluation {#knn_pca_mcc.evaluation_best}
+
+The *best model* evaluation is performed using the [3.knn+pca.best-eval.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/3.knn%2Bpca.best-eval.R) script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L227) during execution, provided that the cached result of the operation does not yet exist.
+
+##### Prepare *Test Set* {#knn_pca_mcc.eval.test_set}
+\
+
+
+##### Evaluate the *Best Model* {#knn_pca_mcc.best.eval}
+\
+
+
+
+
+
+
+
+
+
+```{r intro.datasets-knn_pca@close-log, include=FALSE}
+log_close()
+```
+
+<!--chapter:end:02.1.1.kNN+PCA.MCC.Rmd-->
+
+
+
+### Random Forest (RF) MCC Model {#rf_model}
+#### Model Building and Tuning  {#rf.build}
+##### Prepare *Training Set* {#rf.train_set.tuning}
+##### Model Tuning {#rf.tuning}
+#### Retraining the *Best Model* {#rf.retraining_best}
+##### Prepare *Training Set* {#rf.retrain.train_set}
+##### Retrain the *Best Model* {#rf.best.retrain}
+#### The *Best Model* Evaluation {#rf.evaluation_best}
+##### Prepare *Test Set* {#rf.eval.test_set}
+##### Evaluate the *Best Model* {#rf.best.eval}
+
+<!--chapter:end:02.1.2.RF.MCC.Rmd-->
+
+
+
+## Deep Learning Models
+### Based on *Dense Neural Network* (*DNN*-Based) *Multiclass Classifier (MCC)* Models
+#### *DNN-Based Basic (DNNB) MCC* Model {#dnnb_model}
+##### The Model Building  {#dnnb.build}
+###### Prepare *Training Set* {#dnnb.train_set.tuning}
+###### Define & Train the Model {#dnnb.train}
+##### The *DNNB MCC* Model Evaluation {#dnnb.evaluation}
+###### Prepare *Test Set* {#dnnb.eval.test_set}
+###### Evaluate the Pre-trained Model {#dnnb.best.eval}
+
+<!--chapter:end:02.2.1.1.DNNB-MCC.Rmd-->
+
+
+
+#### Tuned DNN-Based (TDNN) MCC Model
+##### Model Building and Tuning  {#tdnn.build}
+###### Prepare *Training Set* {#tdnn.train_set.tuning}
+###### Model Tuning {#tdnn.tuning}
+##### Retraining the *Best Model* {#tdnn.retraining_best}
+###### Prepare *Training Set* {#tdnn.retrain.train_set}
+###### Retrain the *Best Model* {#tdnn.best.retrain}
+##### The *Best Model* Evaluation {#tdnn.evaluation_best}
+###### Prepare *Test Set* {#tdnn.eval.test_set}
+###### Evaluate the *Best Model* {#tdnn.best.eval}
+
+<!--chapter:end:02.2.1.2.TDNN-MCC.Rmd-->
+
+
+
+### Based on *Convolutional Neural Network* (*CNN*-Based) *Multiclass Classifier (MCC)* Models
+#### *CNN-Based Basic (CNNB) MCC* Model {#cnnb_model}
+##### The Model Building  {#cnnb.build}
+###### Prepare *Training Set* {#cnnb.train_set.tuning}
+###### Define & Train the Model {#cnnb.train}
+##### The *CNNB MCC* Model Evaluation {#cnnb.evaluation}
+###### Prepare *Test Set* {#cnnb.eval.test_set}
+###### Evaluate the Pre-trained Model {#cnnb.best.eval}
+
+<!--chapter:end:02.2.2.1.CNNB-MCC.Rmd-->
+
+
+
+#### Tuned CNN-Based (TCNN) MCC Model
+##### Model Building and Tuning  {#tcnn.build}
+###### Tuning the Model *Architecture* {#tcnn.arch.tuning}
+####### Prepare *Training Set* {#tcnn.arch.tuning.train_set}
+####### Perform Tuning {#tcnn.arch.tuning.train_set}
+###### Tuning the Model *Learning Rate* {#tcnn.lr.tuning}
+####### Load *Training Set* {#tcnn.lr.tuning.train_set}
+####### Perform Tuning {#tcnn.lr.tuning.do}
+##### Retraining the *Best Model* {#tcnn.retraining_best}
+###### Prepare *Training Set* {#tcnn.best.retrain.train_set}
+###### Retrain the *Best Model* {#tcnn.best.retrain}
+#### TCNN MCC (The *Best Model*): Final Test {#tcnn.final_test}
+##### Load the *Final Test Set* {#tcnn.final_test_set}
+##### Perform the *Best Model* {#tcnn.do.final_test}
+
+<!--chapter:end:02.2.2.2.TCNN-MCC.Rmd-->
+
+# Results
+
+
+## The Most Confusing Characters for Recognition
+
+<!--chapter:end:03.results.Rmd-->
+
+# Conclusion
+
+
+
+<!--chapter:end:04.conclusion.Rmd-->
+
+
+# Appendix A: Support Functions {#appndx_a}
+
+Placeholder
+
+
+## Data Helper Script {#appndx_a.data_helper}
+### Data Loading {#appndx_a.data_helper.loading}
+#### [kaggle_cli.download](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.kaggle_cli.download}
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R#L16)
+##### Arguments
+##### Details
+##### Source Code
+#### [load_image.list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L80) Function {#func.load_image.list}
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L12)
+##### Arguments
+##### Details
+##### Value
+##### Source Code
+#### [img.file.get_list](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L421) Function {#func.img.file.get_list}
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)
+##### Arguments
+##### Details
+##### Value
+##### Source Code
+#### [load.img_trimmed.dat](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L) Function {#func.load.img_trimmed.dat}
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.train2trimmed_img.dat.R#L12)
+##### Arguments
+##### Details
+##### Value
+##### Source Code
+### Image Processing {#appndx_a.data_helper.img_proc}
+#### [magick_img2matrix](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L485) Function {#func.magick_img2matrix}
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/data-helper.R#L)
+##### Arguments
+##### Details
+##### Value
+##### Source Code
+## Models Helper {#appndx_a.models.helper}
+### Calculating PCA & Constructing Bar Chart {#appndx_a.mh.calc_pca.bar_chart}
+#### [MCClassifier.accuracy.by_class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L901) Function {#func.MCClassifier.accuracy.by_class}
+##### [Usage](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-functions/models-helper.R#L1057)
+##### Arguments
+##### Details
+##### Value
+##### Source Code
+
+<!--chapter:end:05.appendix-a.Rmd-->
+
+
+# Appendix B: Support Scripts {#appndx_b}
+
+Placeholder
+
+
+## [r-global.path.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r-global.path.R) Script {#appndx_b.r_global.path}
+## [setup.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R) Script {#appndx_b.setup}
+### [Install Packages](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L8-L85) Section  
+### [Load Libraries & resolve conflicts](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L86-L167) Section  
+### [Load Logging Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L168-L177) Section  
+### [Init Project Directories](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L178-L425) Section  
+### [Init Input Data Paths](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L426-L444) Section  
+### [Init Project Script Paths](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L445-L547) Section  
+### [Load Common Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L548-L557) Section  
+### [Load Data Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L558-L569) Section  
+### [Load Model Helper Functions](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L570-L581) Section  
+### [Load `CNN_MCC.HyperModel` helper class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L582-L594) Section  
+### [Load `CNN_MCC.HyperParameters` helper class](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/setup.R#L595-L607) Section  
+## [ds.kaggle.download.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/support-scripts/ds.kaggle.download.R) Script {#appndx_b.ds.kaggle.download}
+
+<!--chapter:end:06.appendix-b.Rmd-->
+
+# Appendix C: Device (Laptop) Used for Development & Testing {#appndx_c}
+
+## [Ninkear](https://ninkear.com/collections/laptops) Laptop
+\
+
+### System
+
+#### Device Specifications
+
+- **Processor:**	    13th Gen Intel(R) Core(TM) i7-13620H (2.40 GHz)
+- **Installed RAM:**  32.0 GB (31.7 GB usable)
+- **System type:**	  64-bit operating system, x64-based processor
+
+#### Windows Specifications
+
+- **Edition:**      Windows 11 Pro
+- **Version:**	    25H2
+- **Installed on:** 12/14/2024
+- **OS build:**	    26200.8973
+- **Experience:**	  Windows Feature Experience Pack 1000.26100.344.0
+
+
+
+
+
+<!--chapter:end:07.appendix-c.Rmd-->
+
+---
+title: "citations"
+output: html_document
+---
+
+M. O. Alshrief, W. El-Tarhouni and K. A. Bozed, "Ensemble machine learning model for classification of handwritten digit recognition," 2022 IEEE 2nd International Maghreb Meeting of the Conference on Sciences and Techniques of Automatic Control and Computer Engineering (MI-STA), Sabratha, Libya, 2022, pp. 580-585, doi: 10.1109/MI-STA54861.2022.9837750.Abstract: Recognizing handwritten numbers is a commonly used application in machine learning. It is used in various applications, including postal mail sorting zip code recognition, writer identification and verification, diacritical processing, and recognition of handwritten digits on a bank check. Each of the 10 digits (0-9) is designated as a category in the context of machine learning-based classification tasks. However, due to the variety of handwriting styles from one person to another, it difficult for a person to distinguish. In addition, each learning algorithm may have its own set of benefits and drawbacks, implying that one algorithm may be able to learn some but not all of the special aspects of handwritten numbers. In order to enhance the effectiveness of the categorization process, a technique for reading handwritten numbers has been presented. Using a convolutional neural network architecture, the image properties of handwritten numerals are retrieved (CNN). Additionally, to train the classifiers, Support Vector Machine (SVM), Random Forest (RF), and Logistic Regression Model were utilized (LRM). The group classifier was able to achieve a recognition accuracy of 98 percent in the experiments using the MNISET dataset. keywords: {Support vector machines;Handwriting recognition;Machine learning algorithms;Conferences;Feature extraction;Classification algorithms;Convolutional neural networks;Handwritten digits recognition;Machine learning;Ensemble learning;Convolutional Neural Network.},URL: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9837750&isnumber=9837478
+
+
+<!--chapter:end:citations.Rmd-->
+

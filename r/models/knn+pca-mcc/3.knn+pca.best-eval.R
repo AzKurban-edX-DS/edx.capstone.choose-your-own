@@ -11,7 +11,7 @@ stopifnot(file.exists(ds.flatten.split.file,
 
 start <- put_start_date()
 
-## Prepare Test Datasets -------------------------------------------------------
+## Load Flatten Test Set -------------------------------------------------------
 
 start <- put_start_date()
 

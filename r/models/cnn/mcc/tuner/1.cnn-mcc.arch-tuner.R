@@ -9,9 +9,9 @@ stopifnot(exists("cnn_mcc.tuner.dir"),
 
 start <- put_start_date()
 
-## Prepare Input Datasets for the DNN MCC Model Tuning -------------------------
+## Prepare Input Datasets ------------------------------------------------------
 
-put_log("Loading the Input Datasets of standardized image data...")
+put_log("Loading the 0.1/0.9 Train/Test SEt...")
 ds <- load.cnn_datasets(ds.split.train_0.1.file)
 train_set <- ds$train
 test_set <- ds$test
@@ -177,6 +177,19 @@ put_log("The Test Set is balanced by the set of Classes:
 
 rm(y.test.groups)
 
+### Cache the Train/Test Set for Reuse -----------------------------------------
+
+put_log("Saving the 0.1/0.9 `x_train/x_test` Set for the CNN-Based Tuner...")
+saveRDS(list(train = list(x = x_train,
+                          y = y_train),
+             test = list(x = x_test,
+                         y = y_test)
+             ),
+        file = ds.0.1train.tcnn_mcc.tuner)
+
+put_log("The 0.1/0.9 `x_train/x_test` Set for the CNN-Based Tuner 
+has been cached to the following file:
+%1", ds.0.1train.tcnn_mcc.tuner)
 
 ## Tuning the Model Architecture -----------------------------------------------
 
@@ -236,6 +249,11 @@ tuner.result <-
                               checkpoints.dir = cnn_mcc.arch_tuner.checkpoints.dir)
 stopCluster(cl)
 stopImplicitCluster()
+
+rm(x_train,
+   y_train,
+   x_test,
+   y_test)
 
 if(!is.null(tuner.result$error) ||
    !is.null(tuner.result$hypermodel$error)) {

@@ -15,8 +15,7 @@ stopifnot(file.exists(ds.flatten.split.file,
                       k1_8nn_pca.model.backup.path),
           exists("k_best.nn_pca.model.backup.path"))
 
-## Prepare Train Datasets ------------------------------------------------------
-
+## Load Flattened Training Set -------------------------------------------------
 
 start <- put_start_date()
 

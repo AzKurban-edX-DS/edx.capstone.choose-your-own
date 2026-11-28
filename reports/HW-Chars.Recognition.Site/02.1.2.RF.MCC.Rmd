@@ -1,0 +1,56 @@
+### Random Forest (RF) MCC Model {#rf_model}
+
+```{r rf@setup, include=FALSE}
+open_logfile(".rmd_render.tcnn")
+
+#Init paths
+
+
+```
+
+
+[Random Forests (RF)](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/algorithms.html#sec-random-forests) approach explained in [Section 30.5: Random forests] of the *Course Textbook (New Edition)*[@IDS2_30.5]
+
+#### Model Building and Tuning  {#rf.build}
+
+The model building and tuning feature are implemented by the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+##### Prepare *Training Set* {#rf.train_set.tuning}
+\
+
+
+##### Model Tuning {#rf.tuning}
+\
+
+
+
+#### Retraining the *Best Model* {#rf.retraining_best}
+
+The identification and retraining of the *best model* are performed using the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+##### Prepare *Training Set* {#rf.retrain.train_set}
+\
+
+The script section [Load Flattened Training Set]() implements a feature that extracts the *Training Set* from the *Flattened Train/Test Set* prepared by *default splitting*, as described above in the [Splitting the Flattened Training Set] section, after loading it from cache.
+
+##### Retrain the *Best Model* {#rf.best.retrain}
+\
+
+#### The *Best Model* Evaluation {#rf.evaluation_best}
+
+The *best model* evaluation is performed using the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+##### Prepare *Test Set* {#rf.eval.test_set}
+\
+
+##### Evaluate the *Best Model* {#rf.best.eval}
+\
+
+
+
+
+```{r rf@finalize, include=FALSE}
+log_close()
+```
+
+\newpage

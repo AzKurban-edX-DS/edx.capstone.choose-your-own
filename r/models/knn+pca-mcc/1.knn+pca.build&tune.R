@@ -20,13 +20,11 @@ stopifnot(file.exists(ds.flatten.0.1split.file),
 
 
 
-## Prepare Input Datasets ------------------------------------------------------
+## Load Light (Flattened) Training Set -----------------------------------------
 
 start <- put_start_date()
 
-### Loading Split Flattened Dataset allocated 10% for the Training Set ---------
-
-put_log("Loading the Split Flattened Dataset from the backup file...")
+put_log("Loading the Split Flattened Dataset allocated 10% for the Training Set...")
 
 ds <- load_datasets(ds.flatten.0.1split.file)
 

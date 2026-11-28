@@ -1,0 +1,105 @@
+#### Tuned CNN-Based (TCNN) MCC Model
+
+```{r tcnn@setup, include=FALSE}
+open_logfile(".rmd_render.tcnn")
+
+# Init paths ----------------------------
+ds.0.1train.tcnn_mcc.tuner <- file.path(cnn_mcc.tuner.dir, 
+                               "ds.0.1train.tcnn_mcc.tuner.rds")
+
+tcnn_mcc.arch.best_hp.config.file <- file.path(cnn_mcc.tuner.dir, 
+                                         paste0('arch-tuned.best-hp.config', 
+                                                '.rds'))
+
+tcnn_mcc.best_hp.config.file <- file.path(cnn_mcc.tuner.dir,
+                                          "tcnn-mcc.best-hp.config.rds")
+
+tcnn_mcc.final.file <- file.path(cnn_mcc.tuner.dir, 
+                                 "tcnn-mcc.final-model.keras")
+
+tcnn_mcc.final.train_history.file <- file.path(cnn_mcc.tuner.dir, 
+                                               "tcnn-mcc.final-train-history.rds")
+
+tcnn_mcc.final.eval_result.file <- file.path(cnn_mcc.tuner.dir,
+                                             "tcnn-mcc.final.eval-result.rds")
+
+tblResults.tcnn.backup <- file.path(cnn_mcc.tuner.dir,
+                                    "tblResults.tcnn.backup.rds")
+
+tblTotalResults.backup <- file.path(cnn_mcc.tuner.dir,
+                                    "tblTotalResults.backup.rds")
+
+tcnn_mcc.final.plot_img.file <- file.path(cnn_mcc.tuner.plots.dat.dir, 
+                                          "tcnn_mcc.final-model.png")
+
+tcnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                                "tcnn-mcc.final.eval.plots_dat.rds")
+
+tcnn_mcc.final.eval.conf.mx.img_file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                                  "tcnn-mcc.final.eval.confusion-matrix.png")
+
+tcnn_mcc.final.eval.plots_dat.file <- file.path(cnn_mcc.tuner.plots.dat.dir,
+                                                "tcnn-mcc.final.eval.plots_dat.rds")
+
+```
+
+
+##### Model Building and Tuning  {#tcnn.build}
+\
+
+###### Tuning the Model *Architecture* {#tcnn.arch.tuning}
+\
+
+The model *architecture* tuning feature is implemented by the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+
+
+####### Prepare *Training Set* {#tcnn.arch.tuning.train_set}
+\
+
+####### Perform Tuning {#tcnn.arch.tuning.train_set}
+\
+
+
+###### Tuning the Model *Learning Rate* {#tcnn.lr.tuning}
+\
+
+The model *learning rate* tuning feature is implemented by the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+####### Load *Training Set* {#tcnn.lr.tuning.train_set}
+\
+
+####### Perform Tuning {#tcnn.lr.tuning.do}
+\
+
+
+##### Retraining the *Best Model* {#tcnn.retraining_best}
+\
+
+The identification and retraining of the *best model* are performed using the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+###### Prepare *Training Set* {#tcnn.best.retrain.train_set}
+\
+
+###### Retrain the *Best Model* {#tcnn.best.retrain}
+\
+
+
+#### TCNN MCC (The *Best Model*): Final Test {#tcnn.final_test}
+
+The *Final Test* of the *Best (CNN-Based MCC) Model* developed in *this study* is performed using the [4.tcnn-mcc.final-test.R] script, which the *Main script* invokes during execution, provided that the cached result of the operation does not yet exist.
+
+The *Final Test* of the *Best (CNN-Based MCC) Model* developed in *this study* is performed using the [4.tcnn-mcc.final-test.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/cnn/mcc/tuner/4.tcnn-mcc.final-test.R) script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L970) during execution, provided that the cached result of the operation does not yet exist.
+
+
+##### Load the *Final Test Set* {#tcnn.final_test_set}
+\
+
+
+##### Perform the *Best Model* {#tcnn.do.final_test}
+
+```{r tcnn@finalize, include=FALSE}
+log_close()
+```
+
+

@@ -190,22 +190,22 @@ getwd()
 ```{r child = file.path(doc_dir, '01.intro.Rmd') }
 ```
 
-```{r child = file.path(doc_dir, '02.0-2.Methods.kNN+PCA.MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.1.1.kNN+PCA.MCC.Rmd')}
 ```
 
-```{r child = file.path(doc_dir, '02.3.RF.MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.1.2.RF.MCC.Rmd')}
 ```
 
-```{r child = file.path(doc_dir, '02.4(1)DNNB-MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.2.1.1.DNNB-MCC.Rmd')}
 ```
 
-```{r child = file.path(doc_dir, '02.4.2.TDNN-MCC.Rmd')}
+```{r child = file.path(doc_dir, '02.2.1.2.TDNN-MCC.Rmd')}
 ```
 
-```{r child = file.path(doc_dir, '02.5(1)CNNB-MCC.model.Rmd')}
+```{r child = file.path(doc_dir, '02.2.2.1.CNNB-MCC.Rmd')}
 ```
 
-```{r child = file.path(doc_dir, '02.5.2.TCNN-MCC.model.Rmd')}
+```{r child = file.path(doc_dir, '02.2.2.2.TCNN-MCC.Rmd')}
 ```
 
 ```{r child = file.path(doc_dir, '03.results.Rmd')}

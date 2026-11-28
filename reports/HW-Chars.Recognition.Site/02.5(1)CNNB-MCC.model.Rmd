@@ -1,4 +1,0 @@
-## Convolutional Neural Network Based (CNN) MCC Models
-
-### CNN-Based Basic (CNNB) MCC Model
-

@@ -14,7 +14,8 @@ This model is described in detail in the subsection [Random Forest (RF) MCC Mode
 [Section 31.5: Model tuning and diagnostics](https://rafalab.dfci.harvard.edu/dsbook-part-2/ml/ml-in-practice.html#sec-knn-in-practice) of the *Course Textbook* helps us understand \myquote{the process of model selection and tuning}. Specifically, *the author* demonstrates \myquote{how to train and evaluate models in `R`, choose appropriate hyperparameters, such as `k` for kNN and tree-related parameters for random forests, and assess performance using cross-validation}[@IDS2_31.5] 
 
 \newpage
-# --------
+@# --------
+
 ### kNN+PCA MCC Model {#knn_pca_model}
 
 ```{r knn_pca@setup, include=FALSE}
@@ -58,7 +59,7 @@ The *kNN+PCA MCC Model Building and Tuning* feature is implemented by the [1.knn
 ##### Prepare *Training Set* {#knn_pca_mcc.train_set.tuning}
 \
 
-The implementation starts in the [Prepare Input Datasets](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L23-L95) section with loading the preliminary prepared and cached *Flattened Split Dataset* as described [above](#ds_flatten.splitting0.1_0.9) in the [Splitting the Flattened Training Set](#ds_flatten.splitting0.1_0.9) section. 
+The implementation starts in the [Load Light (Flattened) Training Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L23-L93) section with loading the preliminary prepared and cached *Flattened Split Dataset* as described [above](#ds_flatten.splitting0.1_0.9) in the [Splitting the Flattened Training Set](#ds_flatten.splitting0.1_0.9) section. 
 
 Below, we show a simplified [code snippet](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/1.knn%2Bpca.build%26tune.R#L27-L94) that performs this operation.
 
@@ -175,15 +176,31 @@ print_log("The best result of tuning are as follows:
                                accuracy = k1_8nn_pca.max_accuracy)))
 ```
 
-\newpage
+#### Retraining the *Best Model* {#knn_pca_mcc.retraining_best}
 
-#### Retraining the *Best Model* {#knn_pca_mcc.retrain}
-
-The identification and retraining of the *best kNN+PCA model* are performed using the [2.knn+pca.re-train.best-k.R]() script, which the *Main script* [invokes](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+The identification and retraining of the *best model* are performed using the [2.knn+pca.re-train.best-k.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/2.knn%2Bpca.re-train.best-k.R) script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L218) during execution, provided that the cached result of the operation does not yet exist.
 
 
 
 ##### Prepare *Training Set* {#knn_pca_mcc.train_set.retrain}
+\
+
+The script section [Load Flattened Training Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/2.knn%2Bpca.re-train.best-k.R#L18-L83) implements a feature that extracts the *Training Set* from the *Flattened Train/Test Set* prepared by *default splitting*, as described above in the [Splitting the Flattened Training Set] section, after loading it from cache.
+
+##### Retrain the *Best Model* {#knn_pca_mcc.best.retrain}
+\
+
+#### The *Best Model* Evaluation {#knn_pca_mcc.evaluation_best}
+
+The *best model* evaluation is performed using the [3.knn+pca.best-eval.R](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/3.knn%2Bpca.best-eval.R) script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L227) during execution, provided that the cached result of the operation does not yet exist.
+
+##### Prepare *Test Set* {#knn_pca_mcc.eval.test_set}
+\
+
+The script section [Load Flattened Test Set](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/models/knn%2Bpca-mcc/3.knn%2Bpca.best-eval.R#L14-L81) implements a feature that extracts the *Test Set* from the *Flattened Train/Test Set* prepared by *default splitting*, as described above in the [Splitting the Flattened Training Set] section, after loading it from cache.
+
+
+##### Evaluate the *Best Model* {#knn_pca_mcc.best.eval}
 \
 
 

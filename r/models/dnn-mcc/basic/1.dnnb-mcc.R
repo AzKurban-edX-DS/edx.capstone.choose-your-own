@@ -6,8 +6,6 @@
 open_logfile(".dnnb-mcc.model-building")
 start <- put_start_date()
 
-stopifnot(file.exists(ds.flatten.split.file))
-
 # Dense Neural Network Based Basic Multiclass Classifier (DNNB MCC)  Model
 
 # References:

@@ -1,0 +1,79 @@
+#### Tuned DNN-Based (TDNN) MCC Model
+
+```{r tdnn@setup, include=FALSE}
+open_logfile(".rmd_render.tdnn")
+
+# Init paths ----------------------------------
+tdnn_mcc.best_hp.config.file <- file.path(dnn_mcc.tuner.dir,
+                                               "tdnn-mcc.best-hp.config.rds")
+
+tdnn_mcc.final.file <- file.path(dnn_mcc.tuner.dir, 
+                                     "tdnn-mcc.final-model.keras")
+
+tdnn_mcc.final.train_history.file <- file.path(dnn_mcc.tuner.dir, 
+                                                      "tdnn-mcc.final-train-history.rds")
+
+tdnn_mcc.final.eval_result.file <- file.path(dnn_mcc.tuner.dir,
+                                        "tdnn-mcc.final.eval-result.rds")
+
+tblResults.tdnn.backup <- file.path(dnn_mcc.tuner.dir,
+                                        "tblResults.tdnn.backup.rds")
+
+tdnn_mcc.final.plot_img.file <- file.path(dnn_mcc.tuner.plots.dat.dir, 
+                                          "tdnn_mcc.final-model.png")
+
+
+tdnn_mcc.final.eval.plots_dat.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
+                                          "tdnn-mcc.final.eval.plots_dat.rds")
+
+tdnn_mcc.final.eval.conf.mx.img_file <- file.path(dnn_mcc.tuner.plots.dat.dir,
+                                                  "tdnn-mcc.final.eval.confusion-matrix.png")
+
+tdnn_mcc.final.eval.plots_dat.file <- file.path(dnn_mcc.tuner.plots.dat.dir,
+                                                "tdnn-mcc.final.eval.plots_dat.rds")
+
+```
+
+
+##### Model Building and Tuning  {#tdnn.build}
+\
+
+The model building and tuning feature are implemented by the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+###### Prepare *Training Set* {#tdnn.train_set.tuning}
+\
+
+
+###### Model Tuning {#tdnn.tuning}
+\
+
+
+
+##### Retraining the *Best Model* {#tdnn.retraining_best}
+\
+
+The identification and retraining of the *best model* are performed using the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+###### Prepare *Training Set* {#tdnn.retrain.train_set}
+\
+
+###### Retrain the *Best Model* {#tdnn.best.retrain}
+\
+
+##### The *Best Model* Evaluation {#tdnn.evaluation_best}
+\
+
+The *best model* evaluation is performed using the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+###### Prepare *Test Set* {#tdnn.eval.test_set}
+\
+
+###### Evaluate the *Best Model* {#tdnn.best.eval}
+\
+
+
+```{r tdnn@finalize, include=FALSE}
+log_close()
+```
+
+\newpage

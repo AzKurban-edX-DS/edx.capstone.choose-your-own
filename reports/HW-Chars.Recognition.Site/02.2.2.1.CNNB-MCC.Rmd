@@ -1,0 +1,58 @@
+### Based on *Convolutional Neural Network* (*CNN*-Based) *Multiclass Classifier (MCC)* Models
+
+#### *CNN-Based Basic (CNNB) MCC* Model {#cnnb_model}
+
+```{r cnnb@setup, include=FALSE}
+open_logfile(".rmd_render.cnnb")
+
+# Init paths -------------------
+
+cnnb_mcc.file <- file.path(data.cnnb_mcc.dir, 
+                           "cnnb_mcc.pre-trained.keras")
+
+cnnb_mcc.train_history.file <- file.path(data.cnnb_mcc.dir, 
+                                         "cnnb_mcc.train_history.rds")
+
+cnnb_mcc.eval.result.file <- file.path(data.cnnb_mcc.dir,
+                                       "cnnb_mcc.eval.result.rds")
+
+tblResults.cnnb.backup <- file.path(data.cnnb_mcc.dir,
+                                       "tblResults.cnnb.backup.rds")
+cnnb_mcc.plot_img.file <- file.path(cnnb_mcc.plots.dat.dir,
+                                    "cnnb_mcc.model.png")
+
+cnnb_mcc.eval.cm_img.file <- file.path(cnnb_mcc.plots.dat.dir,
+                                       "cnnb_mcc.eval.cm.png")
+
+cnnb_mcc.eval.plots_dat.file <- file.path(cnnb_mcc.plots.dat.dir,
+                                          "cnnb_mcc.eval.plots_dat.rds")
+
+
+
+
+```
+
+
+##### The Model Building  {#cnnb.build}
+
+The model building feature are implemented by the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+###### Prepare *Training Set* {#cnnb.train_set.tuning}
+\
+
+###### Define & Train the Model {#cnnb.train}
+\
+
+##### The *CNNB MCC* Model Evaluation {#cnnb.evaluation}
+
+###### Prepare *Test Set* {#cnnb.eval.test_set}
+\
+
+###### Evaluate the Pre-trained Model {#cnnb.best.eval}
+\
+
+
+```{r cnnb@finalize, include=FALSE}
+log_close()
+```
+

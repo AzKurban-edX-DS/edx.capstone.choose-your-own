@@ -1,0 +1,71 @@
+## Deep Learning Models
+
+
+### Based on *Dense Neural Network* (*DNN*-Based) *Multiclass Classifier (MCC)* Models
+
+#### *DNN-Based Basic (DNNB) MCC* Model {#dnnb_model}
+
+```{r dnnb@setup, include=FALSE}
+open_logfile(".rmd_render.dnnb")
+
+# Init paths --------------------------------
+dnnb_mcc.file <- file.path(data.dnn_mcc.basic.dir, 
+                                       "dnnb_mcc.pre-trained.keras")
+
+dnnb_mcc.train_history.file <- file.path(data.dnn_mcc.basic.dir, 
+                                                     "dnnb_mcc.train_history.rds")
+
+dnnb_mcc.eval.result.file <- file.path(data.dnn_mcc.basic.dir,
+                                       "dnnb_mcc.eval.result.rds")
+
+tblResults.dnnb.backup <- file.path(data.dnn_mcc.basic.dir,
+                                       "tblResults.dnnb.backup.rds")
+
+dnnb_mcc.plot_img.file <- file.path(dnnb_mcc.plots.dat.dir,
+                                    "dnnb_mcc.model.png")
+
+
+dnnb_mcc.eval.cm_img.file <- file.path(dnnb_mcc.plots.dat.dir,
+                                            "dnnb_mcc.eval.cm.png")
+
+dnnb_mcc.eval.plots_dat.file <- file.path(dnnb_mcc.plots.dat.dir,
+                                          "dnnb_mcc.eval.plots_dat.rds")
+
+if(!dir.exists(data.dnn_mcc.basic.dir))
+  dir.create(data.dnn_mcc.basic.dir)
+
+if(!dir.exists(dnnb_mcc.plots.dat.dir))
+  dir.create(dnnb_mcc.plots.dat.dir)
+
+
+
+```
+
+##### The Model Building  {#dnnb.build}
+\
+
+The model building feature are implemented by the [.R]() script, which the *Main script* [invokes conditionally](https://github.com/AzKurban-edX-DS/edx.capstone.choose-your-own/blob/main/r/index.R#L) during execution, provided that the cached result of the operation does not yet exist.
+
+
+###### Prepare *Training Set* {#dnnb.train_set.tuning}
+\
+
+###### Define & Train the Model {#dnnb.train}
+\
+
+##### The *DNNB MCC* Model Evaluation {#dnnb.evaluation}
+\
+
+
+###### Prepare *Test Set* {#dnnb.eval.test_set}
+\
+
+###### Evaluate the Pre-trained Model {#dnnb.best.eval}
+\
+
+
+```{r dnnb@finalize, include=FALSE}
+log_close()
+```
+
+\newpage
